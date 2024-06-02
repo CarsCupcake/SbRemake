@@ -1,17 +1,22 @@
 package me.carscupcake.sbremake.item;
 
+import lombok.Getter;
+import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.event.GetItemStatEvent;
+import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.text.Component;
-import net.minestom.server.color.DyeColor;
-import net.minestom.server.item.ItemMeta;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jglrxavpok.hephaistos.nbt.NBT;
 import org.jglrxavpok.hephaistos.nbt.NBTCompound;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -27,7 +32,18 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     @Deprecated(forRemoval = true, since = "beginning")
     private static final ConcurrentHashMap<String, ISbItem> items = new ConcurrentHashMap<>();
 
+    public static void initSbItem(ISbItem item) {
+        items.put(item.getId(), item);
+    }
+
+    public static @Nullable SbItemStack from(String id) {
+        ISbItem item = items.get(id);
+        if (item == null) return null;
+       return item.create();
+    }
+
     public static SbItemStack from(ItemStack stack) {
+        if (stack == null || stack.material() == Material.AIR) return null;
         NBTCompound compound = stack.meta().toNBT().getCompound("ExtraAttributes");
         if (compound == null || !compound.contains("id")) return base(stack.material());
         return new SbItemStack(stack, items.get(compound.getString("id")));
@@ -66,6 +82,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     Soulbound or not
     Rarity - Type String
      */
+    private static final Stat[] redStats = {Stat.Vitality};
+    private static final Stat[] greenStats = {Stat.Health, Stat.Defense, Stat.Intelligence};
     public List<String> buildLore() {
         boolean space = false;
         List<String> lore = new ArrayList<>();
@@ -75,6 +93,16 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
 
         }
         //Todo Stats
+        for (Stat stat : redStats) {
+            double value = getStat(stat);
+            if (value == 0) continue;
+            lore.add(STR."§7\{stat.getName()} §c\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}");
+        }
+        for (Stat stat : greenStats) {
+            double value = getStat(stat);
+            if (value == 0) continue;
+            lore.add(STR."§7\{stat.getName()} §a\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}");
+        }
         //Todo Gemstones
         if (space) {
             space = false;
@@ -93,11 +121,21 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
             lore.add("§8This item can be reforged!");
         }
         ItemRarity rarity = getRarity();
-        lore.add(rarity.getPrefix() + rarity.getDisplay().toUpperCase() + " " + sbItem.getType().getDisplay().toUpperCase());
+        lore.add(STR."\{rarity.getPrefix()}\{rarity.getDisplay().toUpperCase()} \{sbItem.getType().getDisplay().toUpperCase()}");
         return lore;
     }
     public ItemRarity getRarity() {
         //TODO add custom rarity getter
         return sbItem.getRarity();
+    }
+
+    public double getStat(Stat stat) {
+        GetItemStatEvent event = new GetItemStatEvent(this, stat, sbItem.getStat(stat));
+        MinecraftServer.getGlobalEventHandler().call(event);
+        return event.getValue() * event.getMultiplier();
+    }
+
+    public static Set<String> getIds() {
+        return items.keySet();
     }
 }

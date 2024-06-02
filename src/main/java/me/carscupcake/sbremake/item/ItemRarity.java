@@ -4,7 +4,16 @@ import lombok.Getter;
 
 @Getter
 public enum ItemRarity {
-    COMMON('f', "Common");
+    COMMON('f', "Common"),
+    UNCOMMON('c', "Uncommon"),
+    RARE('9', "Rare"),
+    EPIC('5', "Epic"),
+    LEGENDARY('6', "Legendary"),
+    MYTHIC('d', "Mythic"),
+    DIVINE('b', "Divine"),
+    SPECIAL('c', "Special"),
+    VERY_SPECIAL('4', "Very Special"),
+    ADMIN('4', "Admin");
     private final char prefix;
     private final String display;
     ItemRarity(char prefix, String display) {

@@ -4,7 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum ItemType {
-    Sword(true, "Sword");
+    None(""),
+    Sword(true, "Sword"),
+    Helmet(true, "Helmet"),
+    Chestplate(true, "Chestplate"),
+    Leggings(true, "Leggings"),
+    Boots(true, "Boots");
     private final boolean reforgable;
     private final String display;
     ItemType(String display) {

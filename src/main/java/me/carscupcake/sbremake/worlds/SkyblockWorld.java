@@ -7,6 +7,7 @@ import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
 import me.carscupcake.sbremake.worlds.impl.HubWorld;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.AnvilLoader;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.InstanceContainer;
@@ -175,6 +176,8 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         public boolean onPlayerAdd(SkyblockPlayer player) {
             return true;
         }
+
+        public abstract Pos spawn();
     }
     private static Map<InputStream, String> extract(String filePath) throws IOException {
         Map<InputStream, String> extractedMap = new HashMap<>();

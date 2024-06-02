@@ -2,18 +2,16 @@ package me.carscupcake.sbremake;
 
 import me.carscupcake.sbremake.blocks.CauldronHandler;
 import me.carscupcake.sbremake.command.*;
-import me.carscupcake.sbremake.listeners.AsyncPlayerConfigurationListener;
-import me.carscupcake.sbremake.listeners.PlayerBlockPlaceListener;
-import me.carscupcake.sbremake.listeners.Tick;
+import me.carscupcake.sbremake.command.testing.GetItemCommand;
+import me.carscupcake.sbremake.command.testing.SetHealthCommand;
+import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.command.ConsoleSender;
-import net.minestom.server.event.GlobalEventHandler;
-import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
-import net.minestom.server.event.player.PlayerBlockPlaceEvent;
-import net.minestom.server.event.player.PlayerTickEvent;
+import net.minestom.server.event.player.*;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.instance.block.Block;
@@ -24,11 +22,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,7 +32,7 @@ public class Main {
     public static final Object _lock = new Object();
     public static volatile AtomicBoolean running = new AtomicBoolean(true);
     public static volatile org.slf4j.Logger LOGGER;
-    public static void main(String[] args) throws URISyntaxException {
+    public static void main(String[] args) {
         MinecraftServer server = MinecraftServer.init();
         LOGGER = MinecraftServer.LOGGER;
         System.out.println("Server Initiated");
@@ -46,11 +41,13 @@ public class Main {
         Block.CAULDRON.withHandler(new CauldronHandler());
         SkyblockWorld.Hub.get().init(MinecraftServer.getInstanceManager().createInstanceContainer());
         System.out.println("Create Instance");
-        GlobalEventHandler handler = MinecraftServer.getGlobalEventHandler();
+        ISbItem.init();
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, new AsyncPlayerConfigurationListener());
+        MinecraftServer.getGlobalEventHandler().addListener(PlayerPacketOutEvent.class, new PacketOutListener());
+        MinecraftServer.getGlobalEventHandler().addListener(PlayerSpawnEvent.class, new PlayerSpawnListener());
+        MinecraftServer.getGlobalEventHandler().addListener(PlayerSwapItemEvent.class, new SwapSlotListener());
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
-        MinecraftServer.getGlobalEventHandler().addListener(PlayerTickEvent.class, new Tick());
 
         CommandManager commandManager = MinecraftServer.getCommandManager();
         //Commands from the demo Implementation (to lazy to code them by myself lol)
@@ -86,11 +83,19 @@ public class Main {
         commandManager.register(new RelightCommand());
         commandManager.register(new KillCommand());
         commandManager.register(new WeatherCommand());
+        commandManager.register(new SetHealthCommand());
+
+        commandManager.register(new GetItemCommand());
+
         OpenToLAN.open();
         MojangAuth.init();
         System.out.println("Starting...");
-        server.start("127.0.0.1", Integer.parseInt(args[0]));
-        System.out.println("Done!");
+        int port = 25565;
+        try {
+            port = Integer.parseInt(args[0]);
+        } catch (Exception ignore) {}
+        server.start("127.0.0.1", port);
+        System.out.println(STR."Started Server on port \{port}");
         java.lang.Thread.ofPlatform().daemon(false).name("Console").start(() -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             ConsoleSender console = new ConsoleSender();
@@ -113,6 +118,7 @@ public class Main {
                 }
             }
         });
+        SkyblockPlayer.statsLoop();
     }
 
     public static File getFolderFromResource(String folder)
