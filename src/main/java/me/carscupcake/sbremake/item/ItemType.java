@@ -5,17 +5,18 @@ import lombok.Getter;
 @Getter
 public enum ItemType {
     None(""),
-    Sword(true, "Sword"),
-    Helmet(true, "Helmet"),
-    Chestplate(true, "Chestplate"),
-    Leggings(true, "Leggings"),
-    Boots(true, "Boots");
+    Sword(true, true, "Sword"),
+    Longsword(true, true, "Longsword"),
+    Helmet(true, false, "Helmet"),
+    Chestplate(true, false, "Chestplate"),
+    Leggings(true, false, "Leggings"),
+    Boots(true, false, "Boots");
     private final boolean reforgable;
     private final String display;
     ItemType(String display) {
-        this(false, display);
+        this(false, true, display);
     }
-    ItemType(boolean reforgable, String display) {
+    ItemType(boolean reforgable, boolean statInMainHand, String display) {
         this.reforgable = reforgable;
         this.display = display;
     }

@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.blocks.CauldronHandler;
 import me.carscupcake.sbremake.command.*;
 import me.carscupcake.sbremake.command.testing.GetItemCommand;
 import me.carscupcake.sbremake.command.testing.SetHealthCommand;
+import me.carscupcake.sbremake.command.testing.SpawnDummyCommand;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -83,9 +84,10 @@ public class Main {
         commandManager.register(new RelightCommand());
         commandManager.register(new KillCommand());
         commandManager.register(new WeatherCommand());
-        commandManager.register(new SetHealthCommand());
 
+        commandManager.register(new SetHealthCommand());
         commandManager.register(new GetItemCommand());
+        commandManager.register(new SpawnDummyCommand());
 
         OpenToLAN.open();
         MojangAuth.init();
@@ -96,7 +98,7 @@ public class Main {
         } catch (Exception ignore) {}
         server.start("127.0.0.1", port);
         System.out.println(STR."Started Server on port \{port}");
-        java.lang.Thread.ofPlatform().daemon(false).name("Console").start(() -> {
+        java.lang.Thread.ofPlatform().daemon(true).name("Console").start(() -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             ConsoleSender console = new ConsoleSender();
             while (running.get()) {

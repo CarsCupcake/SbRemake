@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.item.ItemHideFlag;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.tag.Tag;
@@ -56,7 +57,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     }
     public SbItemStack update() {
         if (!sbItem.allowUpdates()) return this;
-        return new SbItemStack(item.with(builder -> builder.lore(buildLore().stream().map(Component::text).toList()).displayName(Component.text(getRarity().getPrefix() + displayName()))), sbItem);
+        return new SbItemStack(item.with(builder -> builder.lore(buildLore().stream().map(Component::text).toList()).displayName(Component.text(getRarity().getPrefix() + displayName())))
+                .withMeta(builder -> builder.hideFlag(ItemHideFlag.HIDE_ATTRIBUTES, ItemHideFlag.HIDE_DYE, ItemHideFlag.HIDE_UNBREAKABLE, ItemHideFlag.HIDE_ENCHANTS)), sbItem);
     }
 
     public String displayName() {
@@ -82,8 +84,10 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     Soulbound or not
     Rarity - Type String
      */
-    private static final Stat[] redStats = {Stat.Vitality};
-    private static final Stat[] greenStats = {Stat.Health, Stat.Defense, Stat.Intelligence};
+    private static final Stat[] redStats = {Stat.Damage, Stat.Strength, Stat.CritChance, Stat.CritDamage, Stat.AttackSpeed, Stat.AttackSpeed, Stat.SwingRange};
+    private static final Stat[] greenStats = {Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck, Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed,
+    Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune,
+    Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed,  Stat.Health, Stat.Vitality, Stat.Mending};
     public List<String> buildLore() {
         boolean space = false;
         List<String> lore = new ArrayList<>();
@@ -96,12 +100,14 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         for (Stat stat : redStats) {
             double value = getStat(stat);
             if (value == 0) continue;
-            lore.add(STR."§7\{stat.getName()} §c\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}");
+            lore.add(STR."§7\{stat.getName()} §c\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}");
+            space = true;
         }
         for (Stat stat : greenStats) {
             double value = getStat(stat);
             if (value == 0) continue;
-            lore.add(STR."§7\{stat.getName()} §a\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}");
+            lore.add(STR."§7\{stat.getName()} §a\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}");
+            space = true;
         }
         //Todo Gemstones
         if (space) {

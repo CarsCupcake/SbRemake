@@ -36,6 +36,6 @@ public class TitansChestplate implements ISbItem, ISbItem.StatProvider {
 
     @Override
     public Map<Stat, Double> stats() {
-        return Map.of(Stat.Health, 300d, Stat.Defense, 200d, Stat.Intelligence, 75d);
+        return Map.of(Stat.Health, 300d, Stat.Defense, 200d, Stat.Intelligence, 75d, Stat.Strength, 20d);
     }
 }
