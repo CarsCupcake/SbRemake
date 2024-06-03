@@ -44,10 +44,11 @@ public class Main {
         System.out.println("Create Instance");
         ISbItem.init();
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());
+        MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockBreakEvent.class, new PlayerBlockBreakListener());
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, new AsyncPlayerConfigurationListener());
         MinecraftServer.getGlobalEventHandler().addListener(PlayerPacketOutEvent.class, new PacketOutListener());
         MinecraftServer.getGlobalEventHandler().addListener(PlayerSpawnEvent.class, new PlayerSpawnListener());
-        MinecraftServer.getGlobalEventHandler().addListener(PlayerSwapItemEvent.class, new SwapSlotListener());
+        MinecraftServer.getGlobalEventHandler().addListener(PlayerChangeHeldSlotEvent.class, new SwapSlotListener());
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
 
         CommandManager commandManager = MinecraftServer.getCommandManager();

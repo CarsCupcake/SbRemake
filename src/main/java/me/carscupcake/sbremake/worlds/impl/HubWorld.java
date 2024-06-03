@@ -11,6 +11,6 @@ public class HubWorld extends SkyblockWorld.WorldProvider {
 
     @Override
     public Pos spawn() {
-        return new Pos(-2.5, 70.5, -70.5, 180, 0);
+        return new Pos(-2.5, 70.5, -70.5, 180, 0).add(0, 11, 0);
     }
 }

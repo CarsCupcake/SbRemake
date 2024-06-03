@@ -47,17 +47,20 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         if (stack == null || stack.material() == Material.AIR) return null;
         NBTCompound compound = stack.meta().toNBT().getCompound("ExtraAttributes");
         if (compound == null || !compound.contains("id")) return base(stack.material());
-        return new SbItemStack(stack, items.get(compound.getString("id")));
+        ISbItem iSbItem = items.get(compound.getString("id"));
+        if (iSbItem == null) return base(stack.material());
+        return new SbItemStack(stack, iSbItem);
     }
 
     public static SbItemStack base(Material material) {
         return new SbItemStack(ItemStack.builder(material)
-                .set(Tag.NBT("ExtraAttributes"), NBT.Compound(mutableNBTCompound -> mutableNBTCompound.put("id", NBT.String(material.namespace().value()))))
-                .build(), items.get(material.namespace().value()));
+                .set(Tag.NBT("ExtraAttributes"), NBT.Compound(mutableNBTCompound -> mutableNBTCompound.put("id", NBT.String(material.namespace().value().toUpperCase()))))
+                .build(), items.get(material.namespace().value().toUpperCase()));
     }
     public SbItemStack update() {
+        List<String> lore = buildLore();
         if (!sbItem.allowUpdates()) return this;
-        return new SbItemStack(item.with(builder -> builder.lore(buildLore().stream().map(Component::text).toList()).displayName(Component.text(getRarity().getPrefix() + displayName())))
+        return new SbItemStack(item.with(builder -> builder.lore(lore.stream().map(Component::text).toList()).displayName(Component.text(getRarity().getPrefix() + displayName())))
                 .withMeta(builder -> builder.hideFlag(ItemHideFlag.HIDE_ATTRIBUTES, ItemHideFlag.HIDE_DYE, ItemHideFlag.HIDE_UNBREAKABLE, ItemHideFlag.HIDE_ENCHANTS)), sbItem);
     }
 
