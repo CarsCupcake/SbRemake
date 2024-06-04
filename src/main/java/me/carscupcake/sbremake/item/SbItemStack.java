@@ -87,8 +87,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     Soulbound or not
     Rarity - Type String
      */
-    private static final Stat[] redStats = {Stat.Damage, Stat.Strength, Stat.CritChance, Stat.CritDamage, Stat.AttackSpeed, Stat.AttackSpeed, Stat.SwingRange};
-    private static final Stat[] greenStats = {Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck, Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed,
+    private static final Stat[] redStats = {Stat.Damage, Stat.Strength, Stat.CritChance, Stat.CritDamage, Stat.AttackSpeed, Stat.AttackSpeed};
+    private static final Stat[] greenStats = {Stat.SwingRange, Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck, Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed,
     Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune,
     Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed,  Stat.Health, Stat.Vitality, Stat.Mending};
     public List<String> buildLore() {
@@ -99,7 +99,6 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
             lore.addAll(sbItem.getLore().build(this));
 
         }
-        //Todo Stats
         for (Stat stat : redStats) {
             double value = getStat(stat);
             if (value == 0) continue;

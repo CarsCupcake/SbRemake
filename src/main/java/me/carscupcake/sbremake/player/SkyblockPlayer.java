@@ -8,28 +8,35 @@ import me.carscupcake.sbremake.event.HealthRegenEvent;
 import me.carscupcake.sbremake.event.ManaRegenEvent;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.attribute.Attribute;
 import net.minestom.server.entity.*;
+import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.EntityAttackEvent;
+import net.minestom.server.event.entity.EntityFireEvent;
+import net.minestom.server.event.entity.EntityShootEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.PlayerItemAnimationEvent;
 import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.event.trait.PlayerEvent;
 import net.minestom.server.item.ItemStack;
-import net.minestom.server.network.packet.client.play.ClientAnimationPacket;
+import net.minestom.server.item.Material;
+import net.minestom.server.network.packet.client.play.*;
 import net.minestom.server.network.packet.server.play.ActionBarPacket;
 import net.minestom.server.network.packet.server.play.UpdateHealthPacket;
 import net.minestom.server.network.player.PlayerConnection;
+import net.minestom.server.particle.Particle;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -46,9 +53,9 @@ public class SkyblockPlayer extends Player {
                 }
             })
             .addListener(PlayerPacketEvent.class, event -> {
+                SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
                 if (event.getPacket() instanceof ClientAnimationPacket packet) {
                     if (packet.hand() != Hand.MAIN) return;
-                    SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
                     long time = System.currentTimeMillis();
                     long delta = time - player.lastAttack;
                     if (delta < player.attackCooldown()) return;
@@ -58,7 +65,43 @@ public class SkyblockPlayer extends Player {
                     if (entity.getEntityType() == EntityType.PLAYER) return;
                     player.lastAttack = time;
                     entity.damage(player);
+                    return;
                 }
+                if (event.getPacket() instanceof ClientHeldItemChangePacket) {
+                    player.bowStartPull = -1;
+                }
+                if (event.getPacket() instanceof ClientPlayerDiggingPacket packet) {
+                    if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
+                        if (player.bowStartPull < 0) return;
+                        if (player.getItemInHand(Hand.MAIN).material() != Material.BOW) return;
+                        long chargingTime = System.currentTimeMillis() - player.bowStartPull;
+                        double chargingSeconds = Math.min(1d, chargingTime / 1000d);
+                        player.bowStartPull = -1;
+                        PlayerProjectile projectile = new PlayerProjectile(player, EntityType.ARROW);
+                        projectile.shoot(player.getPosition().add(0, 1.5, 0), 3 * chargingSeconds, 1);
+                        ProjectileMeta meta = (ProjectileMeta) projectile.getEntityMeta();
+                        meta.setShooter(player);
+                        final boolean crits = chargingSeconds >= 1;
+                        projectile.scheduler().buildTask(() -> {
+                            if (projectile.isDead() || projectile.isRemoved()) {
+                                return;
+                            }
+                            if (projectile.isOnGround()) {
+                                projectile.remove();
+                                return;
+                            }
+                            if(crits) ParticleUtils.spawnParticle(projectile.getInstance(), projectile.getPosition(), Particle.CRIT, 1);
+                        }).repeat(Duration.ofMillis(50)).schedule();
+                    }
+                    return;
+                }
+                if (event.getPacket() instanceof ClientUseItemPacket packet) {
+                    if (packet.hand() != Hand.MAIN) return;
+                    if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
+                        player.bowStartPull = System.currentTimeMillis();
+                    }
+                }
+
             })
             .addListener(PickupItemEvent.class, event -> {
                 final Entity entity = event.getLivingEntity();
@@ -80,6 +123,10 @@ public class SkyblockPlayer extends Player {
 
     @Getter
     private double sbHealth;
+
+
+    @Getter
+    private long bowStartPull = -1;
 
     private long lastAttack;
 

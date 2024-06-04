@@ -142,6 +142,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                     System.out.println("load end");
                     LightingChunk.relight(container, container.getChunks());
                     System.out.println("light end");
+                    container.loadChunk(spawn().chunkX(), spawn().chunkZ());
                 });
                 addWorld(this);
                 register();
