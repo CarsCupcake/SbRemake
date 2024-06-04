@@ -12,24 +12,30 @@ import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.ServerFlag;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.attribute.Attribute;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
+import net.minestom.server.entity.metadata.projectile.ArrowMeta;
 import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.entity.EntityFireEvent;
 import net.minestom.server.event.entity.EntityShootEvent;
+import net.minestom.server.event.entity.projectile.ProjectileCollideWithBlockEvent;
+import net.minestom.server.event.entity.projectile.ProjectileCollideWithEntityEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.PlayerItemAnimationEvent;
 import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.event.trait.PlayerEvent;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.client.play.*;
-import net.minestom.server.network.packet.server.play.ActionBarPacket;
-import net.minestom.server.network.packet.server.play.UpdateHealthPacket;
+import net.minestom.server.network.packet.server.play.*;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.timer.Task;
@@ -37,6 +43,7 @@ import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -77,18 +84,33 @@ public class SkyblockPlayer extends Player {
                         long chargingTime = System.currentTimeMillis() - player.bowStartPull;
                         double chargingSeconds = Math.min(1d, chargingTime / 1000d);
                         player.bowStartPull = -1;
-                        PlayerProjectile projectile = new PlayerProjectile(player, EntityType.ARROW);
-                        projectile.shoot(player.getPosition().add(0, 1.5, 0), 3 * chargingSeconds, 1);
-                        ProjectileMeta meta = (ProjectileMeta) projectile.getEntityMeta();
-                        meta.setShooter(player);
+                        Instance i = player.getInstance();
+                        EntityProjectile projectile = new EntityProjectile(player, EntityType.ARROW) {
+                            @Override
+                            public void tick(long L) {
+                                if (this.instance == null) {
+                                    if (!this.isRemoved()) this.remove();
+                                    return;
+                                }
+                                super.tick(L);
+                            }
+                        };
+                        var pos = player.getPosition().add(0D, player.getEyeHeight(), 0D);
+                        if (i == null) {
+                            System.out.println("HUH");
+                            return;
+                        }
+                        projectile.setInstance(i, pos);
+                        projectile.setVelocity(player.getPosition().direction().normalize().mul(60 * chargingSeconds));
+                        projectile.setView((float)Math.toDegrees(Math.atan2(projectile.getVelocity().x(), projectile.getVelocity().z())), (float)Math.toDegrees(Math.atan2(projectile.getVelocity().y(), Math.sqrt(projectile.getVelocity().x() * projectile.getVelocity().x() + projectile.getVelocity().z() * projectile.getVelocity().z()))));
+                        projectile.setNoGravity(false);
                         final boolean crits = chargingSeconds >= 1;
                         projectile.scheduler().buildTask(() -> {
-                            if (projectile.isDead() || projectile.isRemoved()) {
+                            if (projectile.isRemoved() || projectile.getInstance() == null || projectile.getVelocity() == Vec.ZERO) {
                                 return;
                             }
-                            if (projectile.isOnGround()) {
-                                projectile.remove();
-                                return;
+                            for (Player pl : projectile.getInstance().getPlayers().stream().filter(player1 -> player1.getDistance(projectile) < 16d * 8d).toList()) {
+                                pl.sendPacket(new EntityVelocityPacket(projectile.getEntityId(), projectile.getVelocity().mul((double)(8000.0F / (float) ServerFlag.SERVER_TICKS_PER_SECOND))));
                             }
                             if(crits) ParticleUtils.spawnParticle(projectile.getInstance(), projectile.getPosition(), Particle.CRIT, 1);
                         }).repeat(Duration.ofMillis(50)).schedule();
@@ -100,6 +122,28 @@ public class SkyblockPlayer extends Player {
                     if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
                         player.bowStartPull = System.currentTimeMillis();
                     }
+                }
+
+            })
+            .addListener(ProjectileCollideWithBlockEvent.class, event -> {
+                event.getEntity().remove();
+                event.setCancelled(true);
+            })
+            .addListener(ProjectileCollideWithEntityEvent.class, event -> {
+                Entity shooter = ((ProjectileMeta) event.getEntity().getEntityMeta()).getShooter();
+                Entity target = event.getTarget();
+                event.getEntity().remove();
+
+                if (shooter instanceof SkyblockPlayer &&  target instanceof SkyblockPlayer) return;
+
+                if (shooter instanceof SkyblockPlayer player) {
+                    //TODO Player to Entity Projectile Hit
+                    return;
+                }
+
+                if (target instanceof SkyblockPlayer player) {
+                    //TODO Entity to Player Projectile Hit
+                    return;
                 }
 
             })
