@@ -10,6 +10,7 @@ import me.carscupcake.sbremake.event.ManaRegenEvent;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
+import me.carscupcake.sbremake.item.impl.bow.BowItem;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.kyori.adventure.text.Component;
@@ -39,6 +40,7 @@ import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -54,16 +56,26 @@ public class SkyblockPlayer extends Player {
     }).addListener(PlayerPacketEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         if (event.getPacket() instanceof ClientAnimationPacket packet) {
-            if (packet.hand() != Hand.MAIN) return;
-            long time = System.currentTimeMillis();
-            long delta = time - player.lastAttack;
-            if (delta < player.attackCooldown()) return;
-            Entity result = player.getLineOfSightEntity(player.getStat(Stat.SwingRange), entity -> entity.getEntityType() != EntityType.PLAYER && entity instanceof LivingEntity);
-            if (result == null) return;
-            if (!(result instanceof SkyblockEntity entity)) return;
-            if (entity.getEntityType() == EntityType.PLAYER) return;
-            player.lastAttack = time;
-            entity.damage(player);
+            if (packet.hand() == Hand.MAIN) {
+                long time = System.currentTimeMillis();
+                long delta = time - player.lastAttack;
+                if (delta >= player.attackCooldown()) {
+                    Entity result = player.getLineOfSightEntity(player.getStat(Stat.SwingRange), entity -> entity.getEntityType() != EntityType.PLAYER && entity instanceof LivingEntity);
+                    if (result instanceof SkyblockEntity entity && entity.getEntityType() != EntityType.PLAYER){
+                        player.lastAttack = time;
+                        entity.damage(player);
+                        return;
+                    }
+                }
+                SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                if (item.sbItem() instanceof Shortbow shortbow) {
+                    if (delta < shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) return;
+                    player.lastAttack = time;
+                    SkyblockPlayerArrow.shootBow(player, 1000L, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
+                    player.bowStartPull = -1;
+                    return;
+                }
+            }
             return;
         }
         if (event.getPacket() instanceof ClientHeldItemChangePacket) {
@@ -75,7 +87,9 @@ public class SkyblockPlayer extends Player {
                 if (player.getItemInHand(Hand.MAIN).material() != Material.BOW) return;
                 long chargingTime = System.currentTimeMillis() - player.bowStartPull;
                 player.bowStartPull = -1;
-                SkyblockPlayerArrow.launchArrow(player, chargingTime, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
+                SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem bowItem)) return;
+                SkyblockPlayerArrow.shootBow(player, chargingTime, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
             }
             return;
         }
@@ -83,8 +97,12 @@ public class SkyblockPlayer extends Player {
             if (packet.hand() != Hand.MAIN) return;
             if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
                 SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
-                if (item.sbItem() instanceof Shortbow) {
-                    //Todo Shortbow shoot
+                if (item.sbItem() instanceof Shortbow shortbow) {
+                    long now = System.currentTimeMillis();
+                    long delta = now - player.lastAttack;
+                    if (delta < shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) return;
+                    player.lastAttack = now;
+                    SkyblockPlayerArrow.shootBow(player, 1000L, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
                     event.setCancelled(true);
                     player.bowStartPull = -1;
                     return;
@@ -101,6 +119,11 @@ public class SkyblockPlayer extends Player {
         Entity target = event.getTarget();
         event.getEntity().remove();
 
+        if (!(target instanceof SkyblockEntity) && !(target instanceof SkyblockPlayer)) {
+            event.setCancelled(true);
+            return;
+        }
+
         if (shooter instanceof SkyblockPlayer && target instanceof SkyblockPlayer) return;
 
         if (shooter instanceof SkyblockPlayer player) {
@@ -110,8 +133,7 @@ public class SkyblockPlayer extends Player {
                 event.getEntity().remove();
                 return;
             }
-            SkyblockEntity entity = (SkyblockEntity) target;
-            entity.damage(projectile);
+            ((SkyblockEntity) target).damage(projectile);
             return;
         }
 
@@ -145,7 +167,7 @@ public class SkyblockPlayer extends Player {
     @Getter
     private long bowStartPull = -1;
 
-    private long lastAttack;
+    private long lastAttack = System.currentTimeMillis();
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
@@ -200,6 +222,10 @@ public class SkyblockPlayer extends Player {
     }
 
     public double getStat(Stat stat) {
+        return getStat(stat, false);
+    }
+
+    public double getStat(Stat stat, boolean isBow) {
         PlayerStatEvent event = new PlayerStatEvent(this, new ArrayList<>(), stat);
         event.modifiers().add(new PlayerStatEvent.BasicModifier("§aBase Value", stat.getBaseValue(), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Innate));
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
@@ -210,7 +236,7 @@ public class SkyblockPlayer extends Player {
             event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
         }
         SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
-        if (item != null && item.sbItem().getType().isStatsInMainhand()) {
+        if (item != null && (item.sbItem().getType().isStatsInMainhand() || (isBow && item.sbItem() instanceof BowItem))) {
             event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", item.getStat(stat), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
         }
         MinecraftServer.getGlobalEventHandler().call(event);

@@ -70,8 +70,6 @@ public interface ISbItem {
             SbItemStack.initSbItem(new BaseSbItem(material, name));
         }
 
-        SbItemStack.initSbItem(new BaseItemExtention(Material.BOW, Map.of(Stat.Damage, 30d), ItemRarity.COMMON, ItemType.Bow));
-
         Reflections reflections = new Reflections("me.carscupcake.sbremake.item.impl");
         for (Class<? extends ISbItem> clazz : reflections.getSubTypesOf(ISbItem.class)) {
             try {

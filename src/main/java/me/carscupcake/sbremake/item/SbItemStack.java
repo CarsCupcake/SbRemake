@@ -143,7 +143,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         if (sbItem.getType().isReforgable()) /* Todo add reforge check*/ {
             lore.add("§8This item can be reforged!");
         }
-        lore.add(STR."\{rarity.getPrefix()}\{rarity.getDisplay().toUpperCase()} \{sbItem.getType().getDisplay().toUpperCase()}");
+        lore.add(STR."\{rarity.getPrefix()}§l\{rarity.getDisplay().toUpperCase()} \{sbItem.getType().getDisplay().toUpperCase()}");
         return lore;
     }
 

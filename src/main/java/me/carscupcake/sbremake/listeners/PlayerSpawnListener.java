@@ -11,5 +11,9 @@ public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
         playerSpawnEvent.getPlayer().spawn();
         SkyblockPlayer player = (SkyblockPlayer) playerSpawnEvent.getPlayer();
         player.teleport(player.getWorldProvider().spawn());
+        if (playerSpawnEvent.isFirstSpawn()) {
+            player.getInventory().clear();
+            //TODO load stored inv
+        }
     }
 }

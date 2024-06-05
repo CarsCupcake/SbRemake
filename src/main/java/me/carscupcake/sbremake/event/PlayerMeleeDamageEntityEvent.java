@@ -94,6 +94,8 @@ public class PlayerMeleeDamageEntityEvent implements PlayerEvent, CancellableEve
                 }
                 newString.append(prefixes[prefixCounter]);
                 prefixCounter++;
+                if (prefixCounter >= prefixes.length)
+                    prefixCounter = 0;
             }
             builder.append(newString.reverse());
             builder.append(new StringBuilder(prefixes[prefixCounter]).reverse());
