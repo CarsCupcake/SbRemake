@@ -74,7 +74,7 @@ public class PlayerProjectileDamageEntityEvent implements PlayerEvent, Cancellab
         StringBuilder builder = new StringBuilder(damageTagPrefix);
         if (crit) {
             int prefixCounter = 0;
-            String str = StringUtils.cleanDouble(calculateHit(), 0);
+            String str = StringUtils.cleanDouble(calculateCritHit(), 0);
             StringBuilder sb = new StringBuilder(str);
             sb.reverse();
             str = sb.toString();

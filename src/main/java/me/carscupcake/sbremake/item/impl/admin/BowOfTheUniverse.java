@@ -5,12 +5,13 @@ import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.item.Lore;
+import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import net.minestom.server.item.Material;
 
 import java.util.List;
 import java.util.Map;
 
-public class BowOfTheUniverse implements ISbItem, ISbItem.StatProvider {
+public class BowOfTheUniverse implements ISbItem, ISbItem.StatProvider, Shortbow {
     @Override
     public String getId() {
         return "UNIVERSE_BOW";

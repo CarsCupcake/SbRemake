@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.item;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.GetItemStatEvent;
+import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
@@ -97,6 +98,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
 
     public List<String> buildLore() {
         boolean space = false;
+        ItemRarity rarity = getRarity();
         List<String> lore = new ArrayList<>();
         if (sbItem.getLorePlacement() == ISbItem.LorePlace.Top) {
             space = true;
@@ -134,10 +136,13 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
             lore.addAll(sbItem.getLore().build(this));
             lore.add("  ");
         }
+        if (sbItem instanceof Shortbow) {
+            lore.add(STR."\{rarity.getPrefix()}Shortbow: Instatntly shoots!");
+            lore.add("  ");
+        }
         if (sbItem.getType().isReforgable()) /* Todo add reforge check*/ {
             lore.add("§8This item can be reforged!");
         }
-        ItemRarity rarity = getRarity();
         lore.add(STR."\{rarity.getPrefix()}\{rarity.getDisplay().toUpperCase()} \{sbItem.getType().getDisplay().toUpperCase()}");
         return lore;
     }

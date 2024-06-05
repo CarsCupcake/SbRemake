@@ -13,5 +13,7 @@ public class AsyncPlayerConfigurationListener implements Consumer<AsyncPlayerCon
         asyncPlayerConfigurationEvent.setSpawningInstance(provider.getContainer());
         ((SkyblockPlayer) asyncPlayerConfigurationEvent.getPlayer()).setWorldProvider(provider);
         asyncPlayerConfigurationEvent.getPlayer().setPermissionLevel(4);
+        asyncPlayerConfigurationEvent.getPlayer().getInventory().clear();
+        //TODO load stored inv
     }
 }

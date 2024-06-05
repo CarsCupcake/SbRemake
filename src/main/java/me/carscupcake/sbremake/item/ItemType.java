@@ -12,7 +12,7 @@ public enum ItemType {
     Leggings(true, false, "Leggings"),
     Boots(true, false, "Boots"),
     Arrow(false, false, "Arrow"),
-    Bow(false, true, "Bow");
+    Bow(false, false, "Bow");
     private final boolean reforgable;
     private final boolean statsInMainhand;
     private final String display;

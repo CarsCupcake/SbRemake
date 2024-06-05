@@ -10,6 +10,7 @@ import me.carscupcake.sbremake.event.ManaRegenEvent;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
+import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
@@ -81,6 +82,13 @@ public class SkyblockPlayer extends Player {
         if (event.getPacket() instanceof ClientUseItemPacket packet) {
             if (packet.hand() != Hand.MAIN) return;
             if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
+                SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                if (item.sbItem() instanceof Shortbow) {
+                    //Todo Shortbow shoot
+                    event.setCancelled(true);
+                    player.bowStartPull = -1;
+                    return;
+                }
                 player.bowStartPull = System.currentTimeMillis();
             }
         }
