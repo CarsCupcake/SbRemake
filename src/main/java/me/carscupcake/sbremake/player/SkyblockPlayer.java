@@ -68,6 +68,7 @@ public class SkyblockPlayer extends Player {
                     }
                 }
                 SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                if (item == null) return;
                 if (item.sbItem() instanceof Shortbow shortbow) {
                     if (delta < shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) return;
                     player.lastAttack = time;
