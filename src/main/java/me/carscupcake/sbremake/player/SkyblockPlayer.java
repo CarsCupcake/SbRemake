@@ -5,9 +5,11 @@ import lombok.Setter;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
+import me.carscupcake.sbremake.event.EntityMeleeDamagePlayerEvent;
 import me.carscupcake.sbremake.event.HealthRegenEvent;
 import me.carscupcake.sbremake.event.ManaRegenEvent;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
+import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
 import me.carscupcake.sbremake.item.impl.bow.BowItem;
@@ -17,17 +19,20 @@ import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.attribute.Attribute;
-import net.minestom.server.attribute.AttributeModifier;
-import net.minestom.server.attribute.AttributeOperation;
 import net.minestom.server.entity.*;
+import net.minestom.server.entity.damage.Damage;
 import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithBlockEvent;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithEntityEvent;
+import net.minestom.server.event.inventory.InventoryClickEvent;
+import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.PlayerPacketEvent;
+import net.minestom.server.inventory.InventoryType;
+import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.client.play.ClientAnimationPacket;
@@ -35,6 +40,8 @@ import net.minestom.server.network.packet.client.play.ClientHeldItemChangePacket
 import net.minestom.server.network.packet.client.play.ClientPlayerDiggingPacket;
 import net.minestom.server.network.packet.client.play.ClientUseItemPacket;
 import net.minestom.server.network.packet.server.play.ActionBarPacket;
+import net.minestom.server.network.packet.server.play.DamageEventPacket;
+import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
 import net.minestom.server.network.packet.server.play.UpdateHealthPacket;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.timer.Task;
@@ -42,121 +49,158 @@ import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
 public class SkyblockPlayer extends Player {
     private static final UUID speedUUID = UUID.randomUUID();
     private static final EventNode<Event> PLAYER_NODE = EventNode.all("player.events").addListener(EntityAttackEvent.class, event -> {
-        final Entity source = event.getEntity();
-        final Entity entity = event.getTarget();
+                final Entity source = event.getEntity();
+                final Entity entity = event.getTarget();
 
-        if (entity instanceof SkyblockPlayer target) {
-            if (source.getEntityType() == EntityType.PLAYER) return;
-            return;
-        }
-    }).addListener(PlayerPacketEvent.class, event -> {
-        SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-        if (event.getPacket() instanceof ClientAnimationPacket packet) {
-            if (packet.hand() == Hand.MAIN) {
-                long time = System.currentTimeMillis();
-                long delta = time - player.lastAttack;
-                if (delta >= player.attackCooldown()) {
-                    Entity result = player.getLineOfSightEntity(player.getStat(Stat.SwingRange), entity -> entity.getEntityType() != EntityType.PLAYER && entity instanceof LivingEntity);
-                    if (result instanceof SkyblockEntity entity && entity.getEntityType() != EntityType.PLAYER) {
-                        player.lastAttack = time;
-                        entity.damage(player);
-                        return;
-                    }
+                if (entity instanceof SkyblockPlayer target) {
+                    if (source.getEntityType() == EntityType.PLAYER) return;
+                    if (!(source instanceof SkyblockEntity sbEntity)) return;
+                    target.damage(sbEntity);
                 }
-                SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
-                if (item == null) return;
-                if (item.sbItem() instanceof Shortbow shortbow && player.shortbowTask == null) {
-                    if (delta < shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) return;
-                    player.lastAttack = time;
-                    SkyblockPlayerArrow.shootBow(player, 1000L, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
+            }).addListener(PlayerPacketEvent.class, event -> {
+                SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+                if (event.getPacket() instanceof ClientAnimationPacket packet) {
+                    if (packet.hand() == Hand.MAIN) {
+                        long time = System.currentTimeMillis();
+                        long delta = time - player.lastAttack;
+                        if (delta >= player.attackCooldown()) {
+                            Entity result = player.getLineOfSightEntity(player.getStat(Stat.SwingRange), entity -> entity.getEntityType() != EntityType.PLAYER && entity instanceof LivingEntity);
+                            if (result instanceof SkyblockEntity entity && entity.getEntityType() != EntityType.PLAYER) {
+                                player.lastAttack = time;
+                                entity.damage(player);
+                                return;
+                            }
+                        }
+                        SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                        if (item == null) return;
+                        if (item.sbItem() instanceof Shortbow shortbow && player.shortbowTask == null) {
+                            if (delta < shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) return;
+                            player.lastAttack = time;
+                            SkyblockPlayerArrow.shootBow(player, 1000L, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
+                            player.bowStartPull = -1;
+                            return;
+                        }
+                    }
+                    return;
+                }
+                if (event.getPacket() instanceof ClientHeldItemChangePacket) {
                     player.bowStartPull = -1;
+                    if (player.shortbowTask != null) {
+                        player.shortbowTask.cancel();
+                        player.shortbowTask = null;
+                    }
+                }
+                if (event.getPacket() instanceof ClientPlayerDiggingPacket packet) {
+                    if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
+                        if (player.bowStartPull < 0) return;
+                        if (player.getItemInHand(Hand.MAIN).material() != Material.BOW) return;
+                        long chargingTime = System.currentTimeMillis() - player.bowStartPull;
+                        player.bowStartPull = -1;
+                        SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                        if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem)) return;
+                        SkyblockPlayerArrow.shootBow(player, chargingTime, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
+                    }
                     return;
                 }
-            }
-            return;
-        }
-        if (event.getPacket() instanceof ClientHeldItemChangePacket) {
-            player.bowStartPull = -1;
-            if (player.shortbowTask != null) {
-                player.shortbowTask.cancel();
-                player.shortbowTask = null;
-            }
-        }
-        if (event.getPacket() instanceof ClientPlayerDiggingPacket packet) {
-            if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
-                if (player.bowStartPull < 0) return;
-                if (player.getItemInHand(Hand.MAIN).material() != Material.BOW) return;
-                long chargingTime = System.currentTimeMillis() - player.bowStartPull;
-                player.bowStartPull = -1;
-                SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
-                if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem)) return;
-                SkyblockPlayerArrow.shootBow(player, chargingTime, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
-            }
-            return;
-        }
-        if (event.getPacket() instanceof ClientUseItemPacket packet) {
-            if (packet.hand() != Hand.MAIN) return;
-            if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
-                SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
-                if (item.sbItem() instanceof Shortbow shortbow) {
-                    long shootCd = shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true));
-                    player.lastShortbowKeepAlive = System.currentTimeMillis();
-                    if (player.shortbowTask != null) {
+                if (event.getPacket() instanceof ClientUseItemPacket packet) {
+                    if (packet.hand() != Hand.MAIN) return;
+                    if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
+                        SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                        if (item.sbItem() instanceof Shortbow shortbow) {
+                            long shootCd = shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true));
+                            player.lastShortbowKeepAlive = System.currentTimeMillis();
+                            if (player.shortbowTask != null) {
+                                return;
+                            }
+                            player.makeShortbowTask(shootCd, item);
+                            return;
+                        }
+                        player.bowStartPull = System.currentTimeMillis();
+                    }
+                }
+
+            }).addListener(ProjectileCollideWithBlockEvent.class, event -> {
+                event.getEntity().remove();
+                event.setCancelled(true);
+            }).addListener(ProjectileCollideWithEntityEvent.class, event -> {
+                Entity shooter = ((ProjectileMeta) event.getEntity().getEntityMeta()).getShooter();
+                Entity target = event.getTarget();
+                event.getEntity().remove();
+
+                if (!(target instanceof SkyblockEntity) && !(target instanceof SkyblockPlayer)) {
+                    event.setCancelled(true);
+                    return;
+                }
+
+                if (shooter instanceof SkyblockPlayer && target instanceof SkyblockPlayer) return;
+
+                if (shooter instanceof SkyblockPlayer) {
+                    if (!(event.getEntity() instanceof SkyblockPlayerArrow projectile)) {
+                        Main.LOGGER.warn("Illegal Arrow Found!");
+                        event.getEntity().remove();
                         return;
                     }
-                    player.makeShortbowTask(shootCd, item);
+                    ((SkyblockEntity) target).damage(projectile);
                     return;
                 }
-                player.bowStartPull = System.currentTimeMillis();
-            }
-        }
 
-    }).addListener(ProjectileCollideWithBlockEvent.class, event -> {
-        event.getEntity().remove();
-        event.setCancelled(true);
-    }).addListener(ProjectileCollideWithEntityEvent.class, event -> {
-        Entity shooter = ((ProjectileMeta) event.getEntity().getEntityMeta()).getShooter();
-        Entity target = event.getTarget();
-        event.getEntity().remove();
+                if (target instanceof SkyblockPlayer player) {
+                    //TODO Entity to Player Projectile Hit
+                    return;
+                }
 
-        if (!(target instanceof SkyblockEntity) && !(target instanceof SkyblockPlayer)) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (shooter instanceof SkyblockPlayer && target instanceof SkyblockPlayer) return;
-
-        if (shooter instanceof SkyblockPlayer player) {
-            //TODO Player to Entity Projectile Hit
-            if (!(event.getEntity() instanceof SkyblockPlayerArrow projectile)) {
-                Main.LOGGER.warn("Illegal Arrow Found!");
-                event.getEntity().remove();
-                return;
-            }
-            ((SkyblockEntity) target).damage(projectile);
-            return;
-        }
-
-        if (target instanceof SkyblockPlayer player) {
-            //TODO Entity to Player Projectile Hit
-            return;
-        }
-
-    }).addListener(PickupItemEvent.class, event -> {
-        final Entity entity = event.getLivingEntity();
-        if (entity instanceof SkyblockPlayer player) {
-            // Cancel event if player does not have enough inventory space
-            final ItemStack itemStack = event.getItemEntity().getItemStack();
-            SbItemStack sbItemStack = SbItemStack.from(itemStack);
-            event.setCancelled(!player.getInventory().addItemStack(sbItemStack.update(player).item()));
-        }
-    });
+            }).addListener(PickupItemEvent.class, event -> {
+                final Entity entity = event.getLivingEntity();
+                if (entity instanceof SkyblockPlayer player) {
+                    // Cancel event if player does not have enough inventory space
+                    final ItemStack itemStack = event.getItemEntity().getItemStack();
+                    SbItemStack sbItemStack = SbItemStack.from(itemStack);
+                    event.setCancelled(!player.getInventory().addItemStack(sbItemStack.update(player).item()));
+                }
+            })
+            .addListener(InventoryPreClickEvent.class, event -> {
+                if (event.getInventory() != null) return;
+                if (event.getSlot() < 41 || event.getSlot() > 44) {
+                    if (event.getClickType() == ClickType.START_SHIFT_CLICK) {
+                        SbItemStack clicked = SbItemStack.from(event.getClickedItem());
+                        if (clicked == null) return;
+                        int slot = getSlot(clicked.sbItem().getType());
+                        if (slot < 0) {
+                            event.setCancelled(event.getClickedItem().material().isArmor());
+                            return;
+                        }
+                        if (!event.getPlayer().getInventory().getItemStack(slot).isAir()) {
+                            return;
+                        }
+                        event.setCancelled(true);
+                        event.getPlayer().getInventory().setItemStack(slot, clicked.item());
+                        event.getPlayer().getInventory().setItemStack(event.getSlot(), ItemStack.of(Material.AIR));
+                    }
+                     return;
+                }
+                SbItemStack cursor = SbItemStack.from(event.getCursorItem());
+                if (cursor == null) return;
+                if (getSlot(cursor.sbItem().getType()) != event.getSlot()) {
+                    event.setCancelled(true);
+                }
+            });
+    private static int getSlot(ItemType type) {
+        return switch (type) {
+            case Helmet -> EquipmentSlot.HELMET.armorSlot();
+            case Chestplate -> EquipmentSlot.CHESTPLATE.armorSlot();
+            case Leggings -> EquipmentSlot.LEGGINGS.armorSlot();
+            case Boots -> EquipmentSlot.BOOTS.armorSlot();
+            default -> -1;
+        };
+    }
     public static Task regenTask;
     private SkyblockWorld.WorldProvider worldProvider = null;
     @Setter
@@ -164,11 +208,9 @@ public class SkyblockPlayer extends Player {
     @Getter
     public double mana = 100;
     private final ActionBar actionBar = new ActionBar(this);
-    private boolean login = true;
 
     @Getter
     private double sbHealth;
-
 
     @Getter
     private long bowStartPull = -1;
@@ -178,9 +220,9 @@ public class SkyblockPlayer extends Player {
     private long lastShortbowKeepAlive = System.currentTimeMillis();
 
     private Task shortbowTask = null;
+
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
-        login = false;
         sbHealth = getMaxSbHealth();
     }
 
@@ -329,12 +371,23 @@ public class SkyblockPlayer extends Player {
         return (long) (attackSpeedMultiplier * 500d);
     }
 
-    public void damage(LivingEntity entity) {
-
+    public void damage(SkyblockEntity entity) {
+        EntityMeleeDamagePlayerEvent event = new EntityMeleeDamagePlayerEvent(entity, this);
+        MinecraftServer.getGlobalEventHandler().call(event);
+        if (event.isCancelled()) return;
+        sendPacket(new DamageEventPacket(getEntityId(), 0, entity.getEntityId(), 0, getPosition()));
+        setSbHealth(getSbHealth() - event.calculateDamage());
+        if (hasKb()) {
+            this.takeKnockback(0.4f, Math.sin(entity.getPosition().yaw() * 0.017453292), -Math.cos(entity.getPosition().yaw() * 0.017453292));
+        }
     }
 
     public void damage(double damage, double trueDamage) {
 
+    }
+
+    public boolean hasKb() {
+        return true;
     }
 
     private static float getMaxHearts(double maxHealth) {

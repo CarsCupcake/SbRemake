@@ -1,64 +1,77 @@
 package me.carscupcake.sbremake.command;
 
+import me.carscupcake.sbremake.entity.SkyblockEntity;
+import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.arguments.ArgumentEnum;
 import net.minestom.server.command.builder.arguments.ArgumentType;
+import net.minestom.server.command.builder.arguments.minecraft.SuggestionType;
 import net.minestom.server.command.builder.arguments.minecraft.registry.ArgumentEntityType;
+import net.minestom.server.command.builder.arguments.minecraft.registry.ArgumentRegistry;
 import net.minestom.server.command.builder.condition.Conditions;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
 import net.minestom.server.utils.location.RelativeVec;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+
 public class SummonCommand extends Command {
 
-    private final ArgumentEntityType entity;
+    private final ArgumentEnum<EntityClass> entity;
     private final Argument<RelativeVec> pos;
-    private final Argument<EntityClass> entityClass;
 
     public SummonCommand() {
         super("summon");
         setCondition(Conditions::playerOnly);
 
-        entity = ArgumentType.EntityType("entity type");
+        entity = ArgumentType.Enum("entity type", EntityClass.class);
         pos = ArgumentType.RelativeVec3("pos").setDefaultValue(() -> new RelativeVec(
                 new Vec(0, 0, 0),
                 RelativeVec.CoordinateType.RELATIVE,
                 true, true, true
         ));
-        entityClass = ArgumentType.Enum("class", EntityClass.class)
-                .setFormat(ArgumentEnum.Format.LOWER_CASED)
-                .setDefaultValue(EntityClass.CREATURE);
-        addSyntax(this::execute, entity, pos, entityClass);
-        setDefaultExecutor((sender, context) -> sender.sendMessage("Usage: /summon <type> <x> <y> <z> <class>"));
+        addSyntax(this::execute, entity, pos);
+        setDefaultExecutor((sender, context) -> sender.sendMessage("Usage: /summon <type> <x> <y> <z>"));
     }
 
     private void execute(@NotNull CommandSender commandSender, @NotNull CommandContext commandContext) {
-        final Entity entity = commandContext.get(entityClass).instantiate(commandContext.get(this.entity));
-        //noinspection ConstantConditions - One couldn't possibly execute a command without being in an instance
-        entity.setInstance(((Player) commandSender).getInstance(), commandContext.get(pos).fromSender(commandSender));
+        try {
+            final Entity entity = commandContext.get(this.entity).newInstance();
+            //noinspection ConstantConditions - One couldn't possibly execute a command without being in an instance
+            entity.setInstance(((Player) commandSender).getInstance(), commandContext.get(pos).fromSender(commandSender));
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            commandSender.sendMessage(STR."§cAn Error occurred while executing the command! §7(\{e.getClass().getSimpleName()})");
+        }
     }
 
     @SuppressWarnings("unused")
-    enum EntityClass {
-        BASE(Entity::new),
-        LIVING(LivingEntity::new),
-        CREATURE(EntityCreature::new);
-        private final EntityFactory factory;
+    enum EntityClass implements EntityFactory{
+        GraveyardZombie(me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie.class);
+        private final Class<? extends SkyblockEntity> entityClazz;
 
-        EntityClass(EntityFactory factory) {
-            this.factory = factory;
+        EntityClass(Class<? extends SkyblockEntity> entityClazz) {
+            this.entityClazz = entityClazz;
+        }
+        EntityClass() {
+            this(null);
         }
 
-        public Entity instantiate(EntityType type) {
-            return factory.newInstance(type);
+        @Override
+        public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+            if (entityClazz == null)
+                throw new NullPointerException("Illegal!");
+            return entityClazz.getConstructor().newInstance();
         }
     }
 
     interface EntityFactory {
-        Entity newInstance(EntityType type);
+        SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException;
     }
 }

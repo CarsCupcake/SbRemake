@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.entity;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerProjectileDamageEntityEvent;
-import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.SkyblockPlayerArrow;
 import me.carscupcake.sbremake.util.StringUtils;
@@ -12,12 +11,20 @@ import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.Player;
+import net.minestom.server.entity.ai.EntityAIGroup;
+import net.minestom.server.entity.ai.goal.MeleeAttackGoal;
+import net.minestom.server.entity.ai.goal.RandomStrollGoal;
+import net.minestom.server.entity.ai.target.ClosestEntityTarget;
+import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
 import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.event.EventDispatcher;
+import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Function;
@@ -25,6 +32,7 @@ import java.util.function.Function;
 public abstract class SkyblockEntity extends EntityCreature {
     public SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType, UUID.randomUUID());
+        setHealth(getMaxHealth());
     }
 
     @Override
@@ -133,6 +141,7 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     /**
      * Is called to modifier and execute on damage
+     *
      * @param amount the calcualted damaege amount
      * @return the new damage amount
      */
@@ -144,12 +153,23 @@ public abstract class SkyblockEntity extends EntityCreature {
         Basic() {
             @Override
             public String apply(SkyblockEntity skyblockEntity) {
-                return STR."§8[§7Lv\{skyblockEntity.getLevel()}§8] §c\{skyblockEntity.getName()} §a\{StringUtils.cleanDouble(skyblockEntity.getHealth())}§7/§a\{StringUtils.cleanDouble(skyblockEntity.getMaxHealth())}§c\{Stat.Health.getSymbol()}";
+                return STR."§8[§7Lv\{skyblockEntity.getLevel()}§8] §c\{skyblockEntity.getName()} §a\{StringUtils.cleanDouble(skyblockEntity.getHealth(), 0)}§7/§a\{StringUtils.cleanDouble(skyblockEntity.getMaxHealth())}§c\{Stat.Health.getSymbol()}";
             }
         }
     }
 
     public static void init() {
 
+    }
+
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), // Attack the target
+                new RandomStrollGoal(entity, 20) // Walk around
+        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), // First target the last entity which attacked you
+                new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player) // If there is none, target the nearest player
+        ));
+        return aiGroup;
     }
 }

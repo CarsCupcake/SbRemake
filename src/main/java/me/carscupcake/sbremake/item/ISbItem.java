@@ -6,6 +6,7 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.item.metadata.LeatherArmorMeta;
 import net.minestom.server.item.metadata.PlayerHeadMeta;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.Nullable;
@@ -57,6 +58,9 @@ public interface ISbItem {
         ItemStack.Builder builder = ItemStack.builder(getMaterial());
         if (getMaterial() == Material.PLAYER_HEAD && this instanceof HeadWithValue value) {
             builder.meta(new PlayerHeadMeta.Builder().playerSkin(new PlayerSkin(value.value(), "")).build());
+        }
+        if (this instanceof ColoredLeather leather) {
+            builder.meta(new LeatherArmorMeta.Builder().color(leather.color()).build());
         }
         SbItemStack itemStack = SbItemStack.from(builder.set(Tag.NBT("ExtraAttributes"), NBT.Compound(mutableNBTCompound -> mutableNBTCompound.put("id", NBT.String(getId())))).build());
         return itemStack.update();
