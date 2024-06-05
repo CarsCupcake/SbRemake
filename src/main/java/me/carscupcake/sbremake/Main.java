@@ -35,6 +35,7 @@ public class Main {
     public static volatile org.slf4j.Logger LOGGER;
     public static void main(String[] args) {
         MinecraftServer server = MinecraftServer.init();
+        MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
         LOGGER = MinecraftServer.LOGGER;
         System.out.println("Server Initiated");
         System.out.println("Fetch Manager");

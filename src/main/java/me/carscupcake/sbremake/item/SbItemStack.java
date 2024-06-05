@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.item;
 
-import lombok.Getter;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.util.StringUtils;
@@ -17,12 +16,14 @@ import org.jglrxavpok.hephaistos.nbt.NBTCompound;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A Wrapper for an ItemStack to use some Sb featurs
- * @param item the item that gets wrapped
+ *
+ * @param item   the item that gets wrapped
  * @param sbItem the Sb item
  */
 public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
@@ -40,7 +41,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     public static @Nullable SbItemStack from(String id) {
         ISbItem item = items.get(id);
         if (item == null) return null;
-       return item.create();
+        return item.create();
     }
 
     public static SbItemStack from(ItemStack stack) {
@@ -57,6 +58,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
                 .set(Tag.NBT("ExtraAttributes"), NBT.Compound(mutableNBTCompound -> mutableNBTCompound.put("id", NBT.String(material.namespace().value().toUpperCase()))))
                 .build(), items.get(material.namespace().value().toUpperCase()));
     }
+
     public SbItemStack update() {
         List<String> lore = buildLore();
         if (!sbItem.allowUpdates()) return this;
@@ -68,6 +70,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         //TODO Implement Modifiers
         return sbItem.getName();
     }
+
     /*
     Lore Placement:
 
@@ -89,8 +92,9 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
      */
     private static final Stat[] redStats = {Stat.Damage, Stat.Strength, Stat.CritChance, Stat.CritDamage, Stat.AttackSpeed, Stat.AttackSpeed};
     private static final Stat[] greenStats = {Stat.SwingRange, Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck, Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed,
-    Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune,
-    Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed,  Stat.Health, Stat.Vitality, Stat.Mending};
+            Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune,
+            Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed, Stat.Health, Stat.Vitality, Stat.Mending};
+
     public List<String> buildLore() {
         boolean space = false;
         List<String> lore = new ArrayList<>();
@@ -99,17 +103,22 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
             lore.addAll(sbItem.getLore().build(this));
 
         }
-        for (Stat stat : redStats) {
-            double value = getStat(stat);
-            if (value == 0) continue;
-            lore.add(STR."§7\{stat.getName()} §c\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}");
+        if (sbItem.statsReplacement() != null) {
+            lore.addAll(Objects.requireNonNull(sbItem.statsReplacement()).build(this));
             space = true;
-        }
-        for (Stat stat : greenStats) {
-            double value = getStat(stat);
-            if (value == 0) continue;
-            lore.add(STR."§7\{stat.getName()} §a\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}");
-            space = true;
+        } else {
+            for (Stat stat : redStats) {
+                double value = getStat(stat);
+                if (value == 0) continue;
+                lore.add(STR."§7\{stat.getName()} §c\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}");
+                space = true;
+            }
+            for (Stat stat : greenStats) {
+                double value = getStat(stat);
+                if (value == 0) continue;
+                lore.add(STR."§7\{stat.getName()} §a\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}");
+                space = true;
+            }
         }
         //Todo Gemstones
         if (space) {
@@ -132,6 +141,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         lore.add(STR."\{rarity.getPrefix()}\{rarity.getDisplay().toUpperCase()} \{sbItem.getType().getDisplay().toUpperCase()}");
         return lore;
     }
+
     public ItemRarity getRarity() {
         //TODO add custom rarity getter
         return sbItem.getRarity();

@@ -2,8 +2,10 @@ package me.carscupcake.sbremake.entity;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
+import me.carscupcake.sbremake.event.PlayerProjectileDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.SkyblockPlayerArrow;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.collision.BoundingBox;
@@ -61,15 +63,28 @@ public abstract class SkyblockEntity extends EntityCreature {
         float damage = (float) ((event.isCrit()) ? event.calculateCritHit() : event.calculateHit());
         damage = onDamage(damage);
         if (damage <= 0) return;
-        spawnDamageTag(event);
+        spawnDamageTag(this, event.getDamageTag());
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
         if (canTakeKnockback())
             this.takeKnockback(0.4f, Math.sin(player.getPosition().yaw() * 0.017453292), -Math.cos(player.getPosition().yaw() * 0.017453292));
     }
 
-    public static void spawnDamageTag(PlayerMeleeDamageEntityEvent event) {
+    public void damage(SkyblockPlayerArrow projectile) {
+        PlayerProjectileDamageEntityEvent event = new PlayerProjectileDamageEntityEvent(this, projectile);
+        EventDispatcher.call(event);
+        if (event.isCancelled()) return;
+        float damage = (float) ((event.isCrit()) ? event.calculateCritHit() : event.calculateHit());
+        damage = onDamage(damage);
+        if (damage <= 0) return;
+        spawnDamageTag(this, event.getDamageTag());
+        damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
+        if (canTakeKnockback())
+            this.takeKnockback(0.4f, Math.sin(projectile.getPosition().yaw() * 0.017453292), -Math.cos(projectile.getPosition().yaw() * 0.017453292));
+    }
+
+    public static void spawnDamageTag(SkyblockEntity entity, String tag) {
         EntityCreature creature = new EntityCreature(EntityType.ARMOR_STAND, UUID.randomUUID());
-        creature.setCustomName(Component.text(event.getDamageTag()));
+        creature.setCustomName(Component.text(tag));
         creature.setCustomNameVisible(true);
         creature.setInvisible(true);
         creature.setNoGravity(true);
@@ -77,7 +92,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         ArmorStandMeta meta = (ArmorStandMeta) creature.getEntityMeta();
         meta.setHasNoBasePlate(true);
         meta.setMarker(true);
-        BoundingBox bb = creature.getBoundingBox();
+        BoundingBox bb = entity.getBoundingBox();
         int random = new Random().nextInt(4);
         double x = switch (random) {
             case 0 -> bb.maxX() + 0.5;
@@ -89,8 +104,8 @@ public abstract class SkyblockEntity extends EntityCreature {
             case 3 -> bb.minZ() - 0.5;
             default -> 0;
         };
-        Pos pos = event.getTarget().getPosition().add(x, 0.7d, z);
-        creature.setInstance(event.getTarget().getInstance(), pos.add(0, new Random().nextDouble(0.5) - 0.25, 0));
+        Pos pos = entity.getPosition().add(x, 0.7d, z);
+        creature.setInstance(entity.getInstance(), pos.add(0, new Random().nextDouble(0.5) - 0.25, 0));
         creature.scheduler().buildTask(creature::remove).delay(Duration.ofSeconds(1)).schedule();
     }
 
