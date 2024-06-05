@@ -15,6 +15,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.ai.EntityAIGroup;
 import net.minestom.server.entity.ai.goal.MeleeAttackGoal;
 import net.minestom.server.entity.ai.goal.RandomStrollGoal;
+import net.minestom.server.entity.ai.goal.RangedAttackGoal;
 import net.minestom.server.entity.ai.target.ClosestEntityTarget;
 import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
 import net.minestom.server.entity.damage.DamageType;
@@ -164,11 +165,28 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), // Attack the target
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK),
                 new RandomStrollGoal(entity, 20) // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), // First target the last entity which attacked you
-                new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player) // If there is none, target the nearest player
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32),
+                new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player)
+        ));
+        return aiGroup;
+    }
+
+    protected static RangedAttackGoal createRangedAttackGoal(SkyblockEntity entity) {
+        RangedAttackGoal rangedAttackGoal = new RangedAttackGoal(entity, 80, 25, 15, false, 1, 0.2, TimeUnit.SERVER_TICK);
+        rangedAttackGoal.setProjectileGenerator(_ -> new SkyblockEntityProjectile(entity, EntityType.ARROW));
+        return rangedAttackGoal;
+    }
+
+    protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity),
+                new RandomStrollGoal(entity, 5) // Walk around
+        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32),
+                new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player)
         ));
         return aiGroup;
     }

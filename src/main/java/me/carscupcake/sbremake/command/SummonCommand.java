@@ -2,15 +2,13 @@ package me.carscupcake.sbremake.command;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
+import me.carscupcake.sbremake.entity.impl.spidersDen.GravelSkeleton;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.arguments.ArgumentEnum;
 import net.minestom.server.command.builder.arguments.ArgumentType;
-import net.minestom.server.command.builder.arguments.minecraft.SuggestionType;
-import net.minestom.server.command.builder.arguments.minecraft.registry.ArgumentEntityType;
-import net.minestom.server.command.builder.arguments.minecraft.registry.ArgumentRegistry;
 import net.minestom.server.command.builder.condition.Conditions;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
@@ -18,8 +16,6 @@ import net.minestom.server.utils.location.RelativeVec;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SummonCommand extends Command {
 
@@ -37,7 +33,7 @@ public class SummonCommand extends Command {
                 true, true, true
         ));
         addSyntax(this::execute, entity, pos);
-        setDefaultExecutor((sender, context) -> sender.sendMessage("Usage: /summon <type> <x> <y> <z>"));
+        setDefaultExecutor((sender, _) -> sender.sendMessage("Usage: /summon <type> <x> <y> <z>"));
     }
 
     private void execute(@NotNull CommandSender commandSender, @NotNull CommandContext commandContext) {
@@ -51,9 +47,9 @@ public class SummonCommand extends Command {
         }
     }
 
-    @SuppressWarnings("unused")
     enum EntityClass implements EntityFactory{
-        GraveyardZombie(me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie.class);
+        GraveyardZombie(GraveyardZombie.class),
+        GravelSkeleton(GravelSkeleton.class);
         private final Class<? extends SkyblockEntity> entityClazz;
 
         EntityClass(Class<? extends SkyblockEntity> entityClazz) {
