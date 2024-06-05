@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.item;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
@@ -61,7 +62,10 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     }
 
     public SbItemStack update() {
-        List<String> lore = buildLore();
+        return update(null);
+    }
+    public SbItemStack update(@Nullable SkyblockPlayer player) {
+        List<String> lore = buildLore(player);
         if (!sbItem.allowUpdates()) return this;
         return new SbItemStack(item.with(builder -> builder.lore(lore.stream().map(Component::text).toList()).displayName(Component.text(getRarity().getPrefix() + displayName())))
                 .withMeta(builder -> builder.hideFlag(ItemHideFlag.HIDE_ATTRIBUTES, ItemHideFlag.HIDE_DYE, ItemHideFlag.HIDE_UNBREAKABLE, ItemHideFlag.HIDE_ENCHANTS)), sbItem);
@@ -91,12 +95,12 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     Soulbound or not
     Rarity - Type String
      */
-    private static final Stat[] redStats = {Stat.Damage, Stat.Strength, Stat.CritChance, Stat.CritDamage, Stat.AttackSpeed, Stat.AttackSpeed};
+    private static final Stat[] redStats = {Stat.Damage, Stat.Strength, Stat.CritChance, Stat.CritDamage, Stat.AttackSpeed};
     private static final Stat[] greenStats = {Stat.SwingRange, Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck, Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed,
             Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune,
             Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed, Stat.Health, Stat.Vitality, Stat.Mending};
 
-    public List<String> buildLore() {
+    public List<String> buildLore(@Nullable SkyblockPlayer player) {
         boolean space = false;
         ItemRarity rarity = getRarity();
         List<String> lore = new ArrayList<>();
@@ -120,6 +124,9 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
                 if (value == 0) continue;
                 lore.add(STR."§7\{stat.getName()} §a\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}");
                 space = true;
+            }
+            if (sbItem instanceof Shortbow shortbow) {
+                lore.add(STR."§7Shot Cooldown: §a\{StringUtils.cleanDouble(((player == null) ? shortbow.getShortbowCooldown(getStat(Stat.AttackSpeed)) : shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) / 1000d)}s");
             }
         }
         //Todo Gemstones

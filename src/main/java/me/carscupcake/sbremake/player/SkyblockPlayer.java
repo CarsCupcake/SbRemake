@@ -17,6 +17,8 @@ import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.attribute.Attribute;
+import net.minestom.server.attribute.AttributeModifier;
+import net.minestom.server.attribute.AttributeOperation;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
 import net.minestom.server.event.Event;
@@ -40,11 +42,11 @@ import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter
 public class SkyblockPlayer extends Player {
+    private static final UUID speedUUID = UUID.randomUUID();
     private static final EventNode<Event> PLAYER_NODE = EventNode.all("player.events").addListener(EntityAttackEvent.class, event -> {
         final Entity source = event.getEntity();
         final Entity entity = event.getTarget();
@@ -61,7 +63,7 @@ public class SkyblockPlayer extends Player {
                 long delta = time - player.lastAttack;
                 if (delta >= player.attackCooldown()) {
                     Entity result = player.getLineOfSightEntity(player.getStat(Stat.SwingRange), entity -> entity.getEntityType() != EntityType.PLAYER && entity instanceof LivingEntity);
-                    if (result instanceof SkyblockEntity entity && entity.getEntityType() != EntityType.PLAYER){
+                    if (result instanceof SkyblockEntity entity && entity.getEntityType() != EntityType.PLAYER) {
                         player.lastAttack = time;
                         entity.damage(player);
                         return;
@@ -69,7 +71,7 @@ public class SkyblockPlayer extends Player {
                 }
                 SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
                 if (item == null) return;
-                if (item.sbItem() instanceof Shortbow shortbow) {
+                if (item.sbItem() instanceof Shortbow shortbow && player.shortbowTask == null) {
                     if (delta < shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) return;
                     player.lastAttack = time;
                     SkyblockPlayerArrow.shootBow(player, 1000L, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
@@ -81,6 +83,10 @@ public class SkyblockPlayer extends Player {
         }
         if (event.getPacket() instanceof ClientHeldItemChangePacket) {
             player.bowStartPull = -1;
+            if (player.shortbowTask != null) {
+                player.shortbowTask.cancel();
+                player.shortbowTask = null;
+            }
         }
         if (event.getPacket() instanceof ClientPlayerDiggingPacket packet) {
             if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
@@ -89,7 +95,7 @@ public class SkyblockPlayer extends Player {
                 long chargingTime = System.currentTimeMillis() - player.bowStartPull;
                 player.bowStartPull = -1;
                 SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
-                if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem bowItem)) return;
+                if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem)) return;
                 SkyblockPlayerArrow.shootBow(player, chargingTime, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
             }
             return;
@@ -99,13 +105,12 @@ public class SkyblockPlayer extends Player {
             if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
                 SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
                 if (item.sbItem() instanceof Shortbow shortbow) {
-                    long now = System.currentTimeMillis();
-                    long delta = now - player.lastAttack;
-                    if (delta < shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) return;
-                    player.lastAttack = now;
-                    SkyblockPlayerArrow.shootBow(player, 1000L, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
-                    event.setCancelled(true);
-                    player.bowStartPull = -1;
+                    long shootCd = shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true));
+                    player.lastShortbowKeepAlive = System.currentTimeMillis();
+                    if (player.shortbowTask != null) {
+                        return;
+                    }
+                    player.makeShortbowTask(shootCd, item);
                     return;
                 }
                 player.bowStartPull = System.currentTimeMillis();
@@ -149,7 +154,7 @@ public class SkyblockPlayer extends Player {
             // Cancel event if player does not have enough inventory space
             final ItemStack itemStack = event.getItemEntity().getItemStack();
             SbItemStack sbItemStack = SbItemStack.from(itemStack);
-            event.setCancelled(!player.getInventory().addItemStack(sbItemStack.update().item()));
+            event.setCancelled(!player.getInventory().addItemStack(sbItemStack.update(player).item()));
         }
     });
     public static Task regenTask;
@@ -170,6 +175,9 @@ public class SkyblockPlayer extends Player {
 
     private long lastAttack = System.currentTimeMillis();
 
+    private long lastShortbowKeepAlive = System.currentTimeMillis();
+
+    private Task shortbowTask = null;
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         login = false;
@@ -192,6 +200,31 @@ public class SkyblockPlayer extends Player {
         this.worldProvider = provider;
     }
 
+    private void makeShortbowTask(long shortbowCd, SbItemStack item) {
+        long now = System.currentTimeMillis();
+        Shortbow sb = (Shortbow) item.sbItem();
+        this.shortbowTask = MinecraftServer.getSchedulerManager().buildTask(() -> {
+            if (System.currentTimeMillis() - lastShortbowKeepAlive > 249 || isRemoved() || isDead()) {
+                shortbowTask.cancel();
+                shortbowTask = null;
+                return;
+            }
+            long cd = sb.getShortbowCooldown(getStat(Stat.AttackSpeed, true));
+            if (cd != shortbowCd) {
+                shortbowTask.cancel();
+                makeShortbowTask(cd, item);
+                return;
+            }
+            long n = System.currentTimeMillis();
+            if (n - lastAttack < shortbowCd) {
+                Main.LOGGER.warn("Unusual Shortbow behaviour!");
+                return;
+            }
+            lastAttack = System.currentTimeMillis();
+            SkyblockPlayerArrow.shootBow(SkyblockPlayer.this, 1000L, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
+        }).delay(TaskSchedule.millis((now - lastAttack < shortbowCd) ? shortbowCd - (now - lastAttack) : 0)).repeat(TaskSchedule.millis(shortbowCd)).schedule();
+    }
+
     public static void statsLoop() {
         MinecraftServer.getGlobalEventHandler().addChild(PLAYER_NODE);
         regenTask = MinecraftServer.getSchedulerManager().buildTask(() -> {
@@ -207,6 +240,8 @@ public class SkyblockPlayer extends Player {
                 double maxHealth = getMaxHearts(player.getMaxSbHealth());
                 if (maxHealth != player.getMaxHealth())
                     player.getAttribute(Attribute.MAX_HEALTH).setBaseValue((float) maxHealth);
+
+                player.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((float) (0.1 * (player.getStat(Stat.Speed) / 100d)));
 
                 double maxManaPool = player.getManaPool();
                 if (maxManaPool > player.getMana()) {

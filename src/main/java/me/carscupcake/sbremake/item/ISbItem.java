@@ -2,8 +2,11 @@ package me.carscupcake.sbremake.item;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.util.StringUtils;
+import net.minestom.server.MinecraftServer;
+import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.item.metadata.PlayerHeadMeta;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.Nullable;
 import org.jglrxavpok.hephaistos.nbt.NBT;
@@ -51,8 +54,11 @@ public interface ISbItem {
     }
 
     default SbItemStack create() {
-        ItemStack item = ItemStack.builder(getMaterial()).set(Tag.NBT("ExtraAttributes"), NBT.Compound(mutableNBTCompound -> mutableNBTCompound.put("id", NBT.String(getId())))).build();
-        SbItemStack itemStack = SbItemStack.from(item);
+        ItemStack.Builder builder = ItemStack.builder(getMaterial());
+        if (getMaterial() == Material.PLAYER_HEAD && this instanceof HeadWithValue value) {
+            builder.meta(new PlayerHeadMeta.Builder().playerSkin(new PlayerSkin(value.value(), "")).build());
+        }
+        SbItemStack itemStack = SbItemStack.from(builder.set(Tag.NBT("ExtraAttributes"), NBT.Compound(mutableNBTCompound -> mutableNBTCompound.put("id", NBT.String(getId())))).build());
         return itemStack.update();
     }
 
@@ -75,7 +81,11 @@ public interface ISbItem {
             try {
                 if (clazz.isInterface()) continue;
                 Constructor<? extends ISbItem> constructor = clazz.getConstructor();
-                SbItemStack.initSbItem(constructor.newInstance());
+                ISbItem instance = constructor.newInstance();
+                SbItemStack.initSbItem(instance);
+                if (instance instanceof Listener listener) {
+                    MinecraftServer.getGlobalEventHandler().addChild(listener.node());
+                }
             } catch (Exception e) {
                 e.printStackTrace(System.err);
             }

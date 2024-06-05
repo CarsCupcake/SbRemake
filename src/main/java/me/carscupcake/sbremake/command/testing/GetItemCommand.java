@@ -31,7 +31,7 @@ public class GetItemCommand extends Command {
             sender.sendMessage(STR."§cThe item with the id \"\{context.get(argument)}\" was not found");
             return;
         }
-        item.update();
+        item.update((SkyblockPlayer) sender);
         ((SkyblockPlayer) sender).getInventory().addItemStack(item.item());
     }
 }

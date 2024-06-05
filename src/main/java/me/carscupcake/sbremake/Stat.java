@@ -11,7 +11,7 @@ public enum Stat {
     Intelligence("Intelligence", "✎", "§b", false),
     CritChance("Crit Chance", "☣", "§9", true, 30, -1),
     CritDamage("Crit Damage", "☠", "§9", true, 50, -1),
-    AttackSpeed("Attack Speed", "⚔", "§e", true, 0, 100),
+    AttackSpeed("Bonus Attack Speed", "⚔", "§e", true, 0, 100),
     AbilityDamage("Ability Damage", "๑", "§c", true),
     MagicFind("Magic Find", "✯", "§b", false, 0, 900),
     PetLuck("Pet Luck", "♣", "§d", false),
@@ -64,5 +64,10 @@ public enum Stat {
     }
     Stat(String name, String symbol, String prefix, boolean isPercentValue) {
         this(name, symbol, prefix, isPercentValue, 0, -1);
+    }
+
+    @Override
+    public String toString() {
+        return STR."\{prefix}\{symbol} \{name}";
     }
 }

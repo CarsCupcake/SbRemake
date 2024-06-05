@@ -17,8 +17,10 @@ public interface BowItem {
     }
 
     static List<Vec> getShootVectors(Vec origin, int arrowsToShoot) {
-        if (arrowsToShoot == 1) return List.of(origin);
         List<Vec> vs = new ArrayList<>();
+        if (arrowsToShoot % 2 != 0)
+            vs.add(origin);
+        if (arrowsToShoot == 1) return vs;
         boolean b = (arrowsToShoot - 1) % 2 == 0;
         int loopCycles = (arrowsToShoot - ((b) ? 1 : 0)) / 2;
         for (int i = 0; i < loopCycles; i++) {

@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.listeners;
 
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.event.player.PlayerChangeHeldSlotEvent;
 import net.minestom.server.event.player.PlayerSwapItemEvent;
 
@@ -11,6 +12,6 @@ public class SwapSlotListener implements Consumer<PlayerChangeHeldSlotEvent> {
     public void accept(PlayerChangeHeldSlotEvent playerSwapItemEvent) {
         SbItemStack stack = SbItemStack.from(playerSwapItemEvent.getPlayer().getInventory().getItemStack(playerSwapItemEvent.getSlot()));
         if (stack == null) return;
-        playerSwapItemEvent.getPlayer().getInventory().setItemStack(playerSwapItemEvent.getSlot(), stack.update().item());
+        playerSwapItemEvent.getPlayer().getInventory().setItemStack(playerSwapItemEvent.getSlot(), stack.update((SkyblockPlayer) playerSwapItemEvent.getPlayer()).item());
     }
 }

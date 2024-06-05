@@ -55,6 +55,7 @@ public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> mo
         ItemHeld("Item Held"),
         Skills("Skills"),
         PetStats("Pet Stats"),
+        Ability("Ability"),
         Uncategorized("Uncategorized");
         StatsCategory(String item) {
 
