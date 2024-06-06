@@ -24,7 +24,7 @@ public class AspectOfTheEnd implements ISbItem, ISbItem.StatProvider {
     private final List<Ability> abilities = List.of(new ItemAbility<>("Transmission", AbilityType.RIGHT_CLICK, playerInteractEvent -> {
         Pos pos = playerInteractEvent.getPlayer().getPosition().add(0, playerInteractEvent.player().getEyeHeight(), 0);
         Vec dir = pos.direction().normalize().mul(0.5);
-        playerInteractEvent.player().playSound(Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.PLAYER, 1, 1));
+        playerInteractEvent.player().playSound(Sound.sound(Key.key("minecraft", "entity.enderman.teleport"), Sound.Source.PLAYER, 1, 1f));
         for (int i = 1; i <= 16; i++) {
             Pos newPos = pos.add(dir);
             Block b = playerInteractEvent.getPlayer().getInstance().getBlock(newPos);

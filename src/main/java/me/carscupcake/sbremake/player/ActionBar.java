@@ -65,6 +65,8 @@ public class ActionBar {
 
         @Override
         public String get(SkyblockPlayer player) {
+            if (player.isNotEnoughMana())
+                return "§c§lNOT ENOUGH MANA";
             return STR."\{Stat.Intelligence.getPrefix()}\{StringUtils.cleanDouble(player.getMana(), 1)}/\{StringUtils.cleanDouble(player.getManaPool(), 1)} \{Stat.Intelligence.getSymbol()}";
         }
     }

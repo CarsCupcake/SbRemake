@@ -230,6 +230,11 @@ public class SkyblockPlayer extends Player {
     @Getter
     @Setter
     private String lastAbility = null;
+    @Getter
+    @Setter
+    private boolean notEnoughMana = false;
+
+    private boolean oftick = false;
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
@@ -282,16 +287,19 @@ public class SkyblockPlayer extends Player {
         regenTask = MinecraftServer.getSchedulerManager().buildTask(() -> {
             Audiences.players().forEachAudience(audience -> {
                 SkyblockPlayer player = (SkyblockPlayer) audience;
-                double maxSbHp = player.getMaxSbHealth();
-                if (player.getSbHealth() < maxSbHp) {
-                    double healthGained = (1.5 + maxSbHp / 100d) * player.getStat(Stat.HealthRegen) / 100;
-                    HealthRegenEvent event = new HealthRegenEvent(player, healthGained);
-                    MinecraftServer.getGlobalEventHandler().call(event);
-                    player.addSbHealth((float) event.getRegenAmount());
-                }
-                double maxHealth = getMaxHearts(player.getMaxSbHealth());
-                if (maxHealth != player.getMaxHealth())
-                    player.getAttribute(Attribute.MAX_HEALTH).setBaseValue((float) maxHealth);
+                if (!player.oftick){
+                    player.oftick = true;
+                    double maxSbHp = player.getMaxSbHealth();
+                    if (player.getSbHealth() < maxSbHp) {
+                        double healthGained = (1.5 + maxSbHp / 100d) * player.getStat(Stat.HealthRegen) / 100;
+                        HealthRegenEvent event = new HealthRegenEvent(player, healthGained);
+                        MinecraftServer.getGlobalEventHandler().call(event);
+                        player.addSbHealth((float) event.getRegenAmount());
+                    }
+                    double maxHealth = getMaxHearts(player.getMaxSbHealth());
+                    if (maxHealth != player.getMaxHealth())
+                        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue((float) maxHealth);
+                } else player.oftick = false;
 
                 player.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((float) (0.1 * (player.getStat(Stat.Speed) / 100d)));
 
@@ -305,9 +313,10 @@ public class SkyblockPlayer extends Player {
 
                 ActionBarPacket packet = new ActionBarPacket(Component.text(player.actionBar.build()));
                 player.setLastAbility(null);
+                player.setNotEnoughMana(false);
                 player.sendPacket(packet);
             });
-        }).repeat(TaskSchedule.seconds(2)).schedule();
+        }).repeat(TaskSchedule.seconds(1)).schedule();
     }
 
     public double getStat(Stat stat) {

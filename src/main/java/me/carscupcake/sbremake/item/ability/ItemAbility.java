@@ -3,6 +3,8 @@ package me.carscupcake.sbremake.item.ability;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.minestom.server.event.trait.PlayerEvent;
 
 import java.util.function.Consumer;
@@ -38,7 +40,13 @@ public record ItemAbility<TEvent extends PlayerEvent>(String name, AbilityType<T
         if (!abilityType.canExecute(event))
             return false;
         for (Requirement<TEvent> requirement : requirements)
-            if (!requirement.requirement(event)) return false;
+            if (!requirement.requirement(event)) {
+                if (requirement instanceof ManaRequirement<TEvent>) {
+                    ((SkyblockPlayer) event.getPlayer()).setNotEnoughMana(true);
+                    event.getPlayer().playSound(Sound.sound(Key.key("minecraft", "entity.enderman.teleport"), Sound.Source.PLAYER, 1, 0.1f));
+                }
+                return false;
+            }
         return true;
     }
 
