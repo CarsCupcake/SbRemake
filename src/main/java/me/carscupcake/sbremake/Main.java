@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.command.testing.GetItemCommand;
 import me.carscupcake.sbremake.command.testing.SetHealthCommand;
 import me.carscupcake.sbremake.command.testing.SpawnDummyCommand;
 import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
@@ -21,8 +22,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.channels.SocketChannel;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.Collections;
@@ -50,6 +53,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addListener(PlayerPacketOutEvent.class, new PacketOutListener());
         MinecraftServer.getGlobalEventHandler().addListener(PlayerSpawnEvent.class, new PlayerSpawnListener());
         MinecraftServer.getGlobalEventHandler().addListener(PlayerChangeHeldSlotEvent.class, new SwapSlotListener());
+        MinecraftServer.getGlobalEventHandler().addChild(Ability.ABILITY_NODE);
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
 
         CommandManager commandManager = MinecraftServer.getCommandManager();
@@ -123,6 +127,7 @@ public class Main {
             }
         });
         SkyblockPlayer.statsLoop();
+
     }
 
     public static File getFolderFromResource(String folder)
@@ -143,5 +148,8 @@ public class Main {
             System.out.println(Objects.requireNonNull(f.listFiles()).length);
             return f;
         }
+
+
+
     }
 }

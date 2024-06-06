@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.item;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.GetItemStatEvent;
+import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
@@ -106,11 +107,11 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         List<String> lore = new ArrayList<>();
         if (sbItem.getLorePlacement() == ISbItem.LorePlace.Top) {
             space = true;
-            lore.addAll(sbItem.getLore().build(this));
+            lore.addAll(sbItem.getLore().build(this, player));
 
         }
         if (sbItem.statsReplacement() != null) {
-            lore.addAll(Objects.requireNonNull(sbItem.statsReplacement()).build(this));
+            lore.addAll(Objects.requireNonNull(sbItem.statsReplacement()).build(this, player));
             space = true;
         } else {
             for (Stat stat : redStats) {
@@ -135,12 +136,17 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
             lore.add(" ");
         }
         if (sbItem.getLorePlacement() == ISbItem.LorePlace.AboveAbility && sbItem.getLore() != Lore.EMPTY) {
-            lore.addAll(sbItem.getLore().build(this));
+            lore.addAll(sbItem.getLore().build(this, player));
             lore.add("  ");
         }
-        //Todo Ability Lores
+        for (Ability ability : getAbilities()) {
+            if (ability.showInLore()) {
+                lore.addAll(ability.buildLore(this, player));
+                lore.add("§a  ");
+            }
+        }
         if (sbItem.getLorePlacement() == ISbItem.LorePlace.BelowAbility && sbItem.getLore() != Lore.EMPTY) {
-            lore.addAll(sbItem.getLore().build(this));
+            lore.addAll(sbItem.getLore().build(this, player));
             lore.add("  ");
         }
         if (sbItem instanceof Shortbow) {
@@ -167,5 +173,10 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
 
     public static Set<String> getIds() {
         return items.keySet();
+    }
+
+    public List<Ability> getAbilities() {
+        //Later add stuff like hype ability
+        return sbItem.getDefaultAbilities();
     }
 }

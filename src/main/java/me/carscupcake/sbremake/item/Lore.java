@@ -1,5 +1,8 @@
 package me.carscupcake.sbremake.item;
 
+import me.carscupcake.sbremake.player.SkyblockPlayer;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.*;
 
 public record Lore(List<String> base, HashMap<String, IPlaceHolder> placeHolderHashMap) {
@@ -14,12 +17,12 @@ public record Lore(List<String> base, HashMap<String, IPlaceHolder> placeHolderH
 
     public static final Lore EMPTY = new Lore(new ArrayList<>(), new HashMap<>());
 
-    public List<String> build(SbItemStack item) {
+    public List<String> build(SbItemStack item, @Nullable SkyblockPlayer player) {
         List<String> lore = new ArrayList<>();
         for (String line : base) {
             if (line.isBlank()) continue;
             for (Map.Entry<String, IPlaceHolder> placeHolderEntry : placeHolderHashMap.entrySet()) {
-                if (line.contains(placeHolderEntry.getKey())) line = line.replace(placeHolderEntry.getKey(), placeHolderEntry.getValue().replace(item));
+                if (line.contains(placeHolderEntry.getKey())) line = line.replace(placeHolderEntry.getKey(), placeHolderEntry.getValue().replace(item, player));
             }
             lore.add(line);
         }
@@ -27,7 +30,7 @@ public record Lore(List<String> base, HashMap<String, IPlaceHolder> placeHolderH
     }
 
     public interface IPlaceHolder {
-        String replace(SbItemStack item);
+        String replace(SbItemStack item, @Nullable SkyblockPlayer player);
     }
 
     private static final Set<Character> chars = Set.of('o', 'r', 'k', 'm', 'l', 'n');

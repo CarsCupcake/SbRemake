@@ -1,9 +1,14 @@
 package me.carscupcake.sbremake.item;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.event.PlayerInteractEvent;
+import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.PlayerSkin;
+import net.minestom.server.event.Event;
+import net.minestom.server.event.EventNode;
+import net.minestom.server.event.player.PlayerBlockInteractEvent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
@@ -14,6 +19,8 @@ import org.jglrxavpok.hephaistos.nbt.NBT;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public interface ISbItem {
@@ -52,6 +59,10 @@ public interface ISbItem {
 
     default LorePlace getLorePlacement() {
         return LorePlace.AboveAbility;
+    }
+
+    default List<Ability> getDefaultAbilities() {
+        return new ArrayList<>();
     }
 
     default SbItemStack create() {
@@ -95,4 +106,8 @@ public interface ISbItem {
             }
         }
     }
+    EventNode<Event> ABILITY_NODE = EventNode.all("item.ability")
+            .addListener(PlayerInteractEvent.class, event -> {
+
+            });
 }

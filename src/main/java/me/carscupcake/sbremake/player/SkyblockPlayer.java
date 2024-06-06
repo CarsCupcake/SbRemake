@@ -9,6 +9,7 @@ import me.carscupcake.sbremake.entity.SkyblockEntityProjectile;
 import me.carscupcake.sbremake.event.*;
 import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.item.ability.FullSetBonus;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
 import me.carscupcake.sbremake.item.impl.bow.BowItem;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
@@ -30,10 +31,7 @@ import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import net.minestom.server.network.packet.client.play.ClientAnimationPacket;
-import net.minestom.server.network.packet.client.play.ClientHeldItemChangePacket;
-import net.minestom.server.network.packet.client.play.ClientPlayerDiggingPacket;
-import net.minestom.server.network.packet.client.play.ClientUseItemPacket;
+import net.minestom.server.network.packet.client.play.*;
 import net.minestom.server.network.packet.server.play.ActionBarPacket;
 import net.minestom.server.network.packet.server.play.DamageEventPacket;
 import net.minestom.server.network.packet.server.play.UpdateHealthPacket;
@@ -116,7 +114,19 @@ public class SkyblockPlayer extends Player {
                     return;
                 }
                 player.bowStartPull = System.currentTimeMillis();
+                return;
             }
+            MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player));
+            return;
+        }
+
+        if (event.getPacket() instanceof ClientPlayerBlockPlacementPacket packet) {
+            if (packet.hand() != Hand.MAIN) return;
+            MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, packet.blockPosition(), packet.blockFace()));
+        }
+
+        if (event.getPacket() instanceof ClientInteractEntityPacket packet) {
+            MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, player.getInstance().getEntities().stream().filter(entity -> entity.getEntityId() == packet.targetId()).findFirst().orElse(null)));
         }
 
     }).addListener(ProjectileCollideWithBlockEvent.class, event -> {
@@ -217,6 +227,10 @@ public class SkyblockPlayer extends Player {
 
     private Task shortbowTask = null;
 
+    @Getter
+    @Setter
+    private String lastAbility = null;
+
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         sbHealth = getMaxSbHealth();
@@ -290,6 +304,7 @@ public class SkyblockPlayer extends Player {
                 }
 
                 ActionBarPacket packet = new ActionBarPacket(Component.text(player.actionBar.build()));
+                player.setLastAbility(null);
                 player.sendPacket(packet);
             });
         }).repeat(TaskSchedule.seconds(2)).schedule();
@@ -318,6 +333,10 @@ public class SkyblockPlayer extends Player {
         if (stat.getMaxValue() > 0 && stat.getMaxValue() < value) value = stat.getMaxValue();
         if (value < 0) value = 0;
         return value;
+    }
+
+    public int getFullSetBonusPieceAmount(FullSetBonus bonus) {
+        return 0;
     }
 
     public double getMaxSbHealth() {

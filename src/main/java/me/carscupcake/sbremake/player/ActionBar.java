@@ -52,7 +52,7 @@ public class ActionBar {
 
         @Override
         public String get(SkyblockPlayer player) {
-            return STR."\{Stat.Defense.getPrefix()}\{StringUtils.cleanDouble(player.getStat(Stat.Defense))} \{Stat.Defense.getSymbol()}";
+            return (player.getLastAbility() != null) ? player.getLastAbility() : STR."\{Stat.Defense.getPrefix()}\{StringUtils.cleanDouble(player.getStat(Stat.Defense))} \{Stat.Defense.getSymbol()}";
         }
     }
 
