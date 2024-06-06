@@ -1,16 +1,19 @@
 package me.carscupcake.sbremake.item.ability;
 
 import me.carscupcake.sbremake.event.PlayerInteractEvent;
-import net.minestom.server.event.Event;
 import net.minestom.server.event.trait.PlayerEvent;
 
 public interface AbilityType<T extends PlayerEvent> {
     Class<T> type();
+
     default boolean canExecute(T o) {
         return o.getClass() == type();
     }
+
     boolean isSneak();
+
     String name();
+
     AbilityType<PlayerInteractEvent> RIGHT_CLICK = new AbilityType<>() {
         @Override
         public Class<PlayerInteractEvent> type() {
@@ -24,7 +27,7 @@ public interface AbilityType<T extends PlayerEvent> {
 
         @Override
         public String name() {
-            return "RIGHT_CLICK";
+            return "Right Click";
         }
     };
     AbilityType<PlayerInteractEvent> SNEAK_RIGHT_CLICK = new AbilityType<>() {
