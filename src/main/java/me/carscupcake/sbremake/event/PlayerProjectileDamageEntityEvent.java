@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.SkyblockPlayerArrow;
 import me.carscupcake.sbremake.util.StringUtils;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.trait.CancellableEvent;
 import net.minestom.server.event.trait.PlayerEvent;
@@ -22,4 +23,8 @@ public class PlayerProjectileDamageEntityEvent extends PlayerToEntityDamageEvent
         this.projectile = projectile;
     }
 
+    @Override
+    public Pos damagerPos() {
+        return projectile.getPosition();
+    }
 }

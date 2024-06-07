@@ -5,6 +5,7 @@ import lombok.Setter;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.event.trait.CancellableEvent;
 import net.minestom.server.event.trait.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
@@ -71,6 +72,10 @@ public abstract class PlayerToEntityDamageEvent implements PlayerEvent, Cancella
 
     public double calculateHit() {
         return (5 + weaponDamage) * (1 + (strength / 100)) * additiveMultiplier * multiplicativeMultiplier + bonusModifier;
+    }
+
+    public Pos damagerPos() {
+        return player.getPosition();
     }
 
     private static final String[] prefixes = {"f§", "e§", "6§", "c§", "f§"};

@@ -3,6 +3,8 @@ package me.carscupcake.sbremake.entity;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerProjectileDamageEntityEvent;
+import me.carscupcake.sbremake.event.PlayerToEntityDamageEvent;
+import me.carscupcake.sbremake.event.PlayerToEntityMageDamage;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.SkyblockPlayerArrow;
 import me.carscupcake.sbremake.util.StringUtils;
@@ -63,32 +65,45 @@ public abstract class SkyblockEntity extends EntityCreature {
         return -1;
     }
 
+    public double abilityDamageMultiplier() {
+        return 1;
+    }
+
     public abstract String getName();
 
     public void damage(SkyblockPlayer player) {
         PlayerMeleeDamageEntityEvent event = new PlayerMeleeDamageEntityEvent(player, this, player.getStat(Stat.Damage), player.getStat(Stat.Strength), player.getStat(Stat.CritDamage), player.getStat(Stat.CritChance));
         EventDispatcher.call(event);
+        damage(event);
+    }
+
+    public void mageDamage(SkyblockPlayer player, double baseAbilityDamage, double abilityScaling) {
+        PlayerToEntityMageDamage event = new PlayerToEntityMageDamage(player, this, baseAbilityDamage, player.getStat(Stat.Intelligence), abilityScaling);
+        EventDispatcher.call(event);
         if (event.isCancelled()) return;
-        float damage = (float) ((event.isCrit()) ? event.calculateCritHit() : event.calculateHit());
+        float damage = (float) (event.calculateHit() * abilityDamageMultiplier());
         damage = onDamage(damage);
         if (damage <= 0) return;
         spawnDamageTag(this, event.getDamageTag());
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
-        if (canTakeKnockback())
-            this.takeKnockback(0.4f, Math.sin(player.getPosition().yaw() * 0.017453292), -Math.cos(player.getPosition().yaw() * 0.017453292));
     }
 
     public void damage(SkyblockPlayerArrow projectile) {
         PlayerProjectileDamageEntityEvent event = new PlayerProjectileDamageEntityEvent(this, projectile);
         EventDispatcher.call(event);
+        damage(event);
+    }
+
+    public void damage(PlayerToEntityDamageEvent event) {
         if (event.isCancelled()) return;
         float damage = (float) ((event.isCrit()) ? event.calculateCritHit() : event.calculateHit());
+        damage = damage * (1 - (getDefense() / (getDefense() + 100)));
         damage = onDamage(damage);
         if (damage <= 0) return;
         spawnDamageTag(this, event.getDamageTag());
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
         if (canTakeKnockback())
-            this.takeKnockback(0.4f, Math.sin(projectile.getPosition().yaw() * 0.017453292), -Math.cos(projectile.getPosition().yaw() * 0.017453292));
+            this.takeKnockback(0.4f, Math.sin(event.damagerPos().yaw() * 0.017453292), -Math.cos(event.damagerPos().yaw() * 0.017453292));
     }
 
     public static void spawnDamageTag(SkyblockEntity entity, String tag) {
@@ -165,12 +180,9 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK),
-                new RandomStrollGoal(entity, 20) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 20) // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32),
-                new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player)
-        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player)));
         return aiGroup;
     }
 
@@ -182,12 +194,9 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity),
-                new RandomStrollGoal(entity, 5) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollGoal(entity, 5) // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32),
-                new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player)
-        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player)));
         return aiGroup;
     }
 }

@@ -42,7 +42,7 @@ public record ItemAbility<TEvent extends PlayerEvent>(String name, AbilityType<T
         for (Requirement<TEvent> requirement : requirements)
             if (!requirement.requirement(event)) {
                 if (requirement instanceof ManaRequirement<TEvent>) {
-                    ((SkyblockPlayer) event.getPlayer()).setNotEnoughMana(true);
+                    ((SkyblockPlayer) event.getPlayer()).setNotEnoughMana();
                     event.getPlayer().playSound(Sound.sound(Key.key("minecraft", "entity.enderman.teleport"), Sound.Source.PLAYER, 1, 0.1f));
                 }
                 return false;

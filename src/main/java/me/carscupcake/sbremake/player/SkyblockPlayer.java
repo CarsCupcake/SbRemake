@@ -228,17 +228,27 @@ public class SkyblockPlayer extends Player {
     private Task shortbowTask = null;
 
     @Getter
-    @Setter
     private String lastAbility = null;
+    private int lastAbilityTicks = 0;
     @Getter
-    @Setter
     private boolean notEnoughMana = false;
+    private int notEnoughManaTicks = 0;
 
     private boolean oftick = false;
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         sbHealth = getMaxSbHealth();
+    }
+
+    public void setLastAbility(String s) {
+        lastAbility = s;
+        lastAbilityTicks = 2;
+    }
+
+    public void setNotEnoughMana() {
+        notEnoughMana = true;
+        notEnoughManaTicks = 2;
     }
 
     /**
@@ -312,8 +322,16 @@ public class SkyblockPlayer extends Player {
                 }
 
                 ActionBarPacket packet = new ActionBarPacket(Component.text(player.actionBar.build()));
-                player.setLastAbility(null);
-                player.setNotEnoughMana(false);
+                if (player.lastAbility != null) {
+                    player.lastAbilityTicks--;
+                    if (player.lastAbilityTicks == 0)
+                        player.lastAbility = null;
+                }
+                if (player.notEnoughMana) {
+                    player.notEnoughManaTicks--;
+                    if (player.notEnoughManaTicks == 0)
+                        player.notEnoughMana = false;
+                }
                 player.sendPacket(packet);
             });
         }).repeat(TaskSchedule.seconds(1)).schedule();
