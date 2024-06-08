@@ -18,18 +18,18 @@ public record CooldownRequirement<T extends PlayerEvent>(long cooldown, Temporal
         this(seconds, TimeUnit.SECOND);
     }
 
-    public static Map<SkyblockPlayer, Date> cooldowns = new HashMap<>();
+    public static Map<SkyblockPlayer, Long> cooldowns = new HashMap<>();
     @Override
     public boolean requirement(T t) {
-        Date done = cooldowns.get((SkyblockPlayer) t.getPlayer());
+        Long done = cooldowns.get((SkyblockPlayer) t.getPlayer());
         if (done != null) {
-            long delta = System.currentTimeMillis() - done.getTime();
+            long delta = System.currentTimeMillis() - done;
             if (delta > 0) {
                 cooldowns.remove((SkyblockPlayer) t.getPlayer());
                 return true;
             }
             int seconds = (int) ((delta * -1) / 1000d);
-            t.getPlayer().sendMessage(STR."§cOn Cooldown for \{seconds}s");
+            t.getPlayer().sendMessage(STR."§cThe ability is on Cooldown for \{seconds}s.");
             return false;
         }
         return true;
@@ -37,7 +37,7 @@ public record CooldownRequirement<T extends PlayerEvent>(long cooldown, Temporal
 
     @Override
     public void execute(T t) {
-        cooldowns.put((SkyblockPlayer) t.getPlayer(), new Date(System.currentTimeMillis() + timeUnit.getDuration().toMillis() * cooldown));
+        cooldowns.put((SkyblockPlayer) t.getPlayer(), System.currentTimeMillis() + timeUnit.getDuration().toMillis() * cooldown);
         MinecraftServer.getSchedulerManager().buildTask(() -> cooldowns.remove((SkyblockPlayer) t.getPlayer())).delay(cooldown, ChronoUnit.SECONDS).schedule();
     }
 }

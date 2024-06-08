@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.item.impl.sword;
 
+import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.ItemType;
@@ -7,7 +8,6 @@ import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.ability.*;
 import net.minestom.server.item.Material;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,5 +44,14 @@ public class InkWand implements ISbItem {
     @Override
     public List<Ability> getDefaultAbilities() {
         return abilities;
+    }
+
+    @Override
+    public double getStat(Stat stat) {
+        return switch (stat) {
+            case Damage -> 130;
+            case Strength -> 90;
+            default -> 0;
+        };
     }
 }

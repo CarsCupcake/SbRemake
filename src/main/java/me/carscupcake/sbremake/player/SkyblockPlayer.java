@@ -40,6 +40,7 @@ import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -239,6 +240,7 @@ public class SkyblockPlayer extends Player {
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         sbHealth = getMaxSbHealth();
+        setNoGravity(true);
     }
 
     public void setLastAbility(String s) {
@@ -258,6 +260,9 @@ public class SkyblockPlayer extends Player {
         super.spawn();
         setHealth(getMaxHealth());
         teleport(worldProvider.spawn());
+        this.scheduler().buildTask(() ->  {
+            setNoGravity(false);
+        }).delay(Duration.ofSeconds(2)).schedule();
     }
 
     public void setWorldProvider(SkyblockWorld.WorldProvider provider) {
