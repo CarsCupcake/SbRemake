@@ -20,6 +20,7 @@ import net.minestom.server.entity.ai.goal.RandomStrollGoal;
 import net.minestom.server.entity.ai.goal.RangedAttackGoal;
 import net.minestom.server.entity.ai.target.ClosestEntityTarget;
 import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
+import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.event.EventDispatcher;
@@ -33,12 +34,12 @@ import java.util.UUID;
 import java.util.function.Function;
 
 public abstract class SkyblockEntity extends EntityCreature {
+    private float health = getMaxHealth();
     public SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType, UUID.randomUUID());
         setHealth(getMaxHealth());
     }
 
-    @Override
     public abstract float getMaxHealth();
 
     public double getDamage() {
@@ -139,13 +140,14 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     @Override
     public void setHealth(float health) {
-        super.setHealth(health);
+        this.health = Math.max(0, Math.min(getMaxHealth(), health));
+        super.setHealth((float) (getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * (health / getMaxHealth())));
         update();
     }
 
     @Override
     public float getHealth() {
-        return super.getHealth();
+        return health;
     }
 
     public void update() {

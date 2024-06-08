@@ -17,8 +17,8 @@ import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
-import net.minestom.server.attribute.Attribute;
 import net.minestom.server.entity.*;
+import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -265,6 +265,10 @@ public class SkyblockPlayer extends Player {
         }).delay(Duration.ofSeconds(2)).schedule();
     }
 
+    public float getMaxHealth() {
+        return (float) getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+    }
+
     public void setWorldProvider(SkyblockWorld.WorldProvider provider) {
         if (worldProvider != null && provider != worldProvider) {
             provider.addPlayer(this);
@@ -313,10 +317,10 @@ public class SkyblockPlayer extends Player {
                     }
                     double maxHealth = getMaxHearts(player.getMaxSbHealth());
                     if (maxHealth != player.getMaxHealth())
-                        player.getAttribute(Attribute.MAX_HEALTH).setBaseValue((float) maxHealth);
+                        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue((float) maxHealth);
                 } else player.oftick = false;
 
-                player.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((float) (0.1 * (player.getStat(Stat.Speed) / 100d)));
+                player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue((float) (0.1 * (player.getStat(Stat.Speed) / 100d)));
 
                 double maxManaPool = player.getManaPool();
                 if (maxManaPool > player.getMana()) {

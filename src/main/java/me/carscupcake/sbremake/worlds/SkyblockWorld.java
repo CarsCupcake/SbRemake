@@ -8,10 +8,11 @@ import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
 import me.carscupcake.sbremake.worlds.impl.HubWorld;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.instance.AnvilLoader;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
+import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.registry.DynamicRegistry;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.world.DimensionType;
 import org.kohsuke.github.GitHub;
@@ -85,7 +86,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
     public static abstract class WorldProvider {
         private final Set<SkyblockPlayer> players = Collections.synchronizedSet(new HashSet<>());
         public abstract SkyblockWorld type();
-        public DimensionType getDimension() {
+        public DynamicRegistry.Key<DimensionType> getDimension() {
             return DimensionType.OVERWORLD;
         }
         @Getter

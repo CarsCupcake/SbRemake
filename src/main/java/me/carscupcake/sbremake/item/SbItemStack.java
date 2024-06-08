@@ -6,16 +6,15 @@ import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.item.ItemHideFlag;
+import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jglrxavpok.hephaistos.nbt.NBT;
-import org.jglrxavpok.hephaistos.nbt.NBTCompound;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,27 +48,28 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
 
     public static SbItemStack from(ItemStack stack) {
         if (stack == null || stack.material() == Material.AIR) return null;
-        NBTCompound compound = stack.meta().toNBT().getCompound("ExtraAttributes");
-        if (compound == null || !compound.contains("id")) return base(stack.material());
+        CompoundBinaryTag compound = (CompoundBinaryTag) stack.getTag(Tag.NBT("ExtraAttributes"));
+        if (!compound.keySet().contains("id")) return base(stack.material());
         ISbItem iSbItem = items.get(compound.getString("id"));
         if (iSbItem == null) return base(stack.material());
         return new SbItemStack(stack, iSbItem);
     }
 
     public static SbItemStack base(Material material) {
-        return new SbItemStack(ItemStack.builder(material)
-                .set(Tag.NBT("ExtraAttributes"), NBT.Compound(mutableNBTCompound -> mutableNBTCompound.put("id", NBT.String(material.namespace().value().toUpperCase()))))
-                .build(), items.get(material.namespace().value().toUpperCase()));
+        ISbItem item = items.get(material.namespace().value().toUpperCase());
+        return item.create();
     }
 
     public SbItemStack update() {
         return update(null);
     }
+
     public SbItemStack update(@Nullable SkyblockPlayer player) {
-        List<String> lore = buildLore(player);
         if (!sbItem.allowUpdates()) return this;
-        return new SbItemStack(item.with(builder -> builder.lore(lore.stream().map(Component::text).toList()).displayName(Component.text(getRarity().getPrefix() + displayName())))
-                .withMeta(builder -> builder.hideFlag(ItemHideFlag.HIDE_ATTRIBUTES, ItemHideFlag.HIDE_DYE, ItemHideFlag.HIDE_UNBREAKABLE, ItemHideFlag.HIDE_ENCHANTS)), sbItem);
+        List<Component> lore = new ArrayList<>();
+        for (String s : buildLore(player))
+            lore.add(Component.text(s));
+        return new SbItemStack(item.with(ItemComponent.LORE, lore).with(ItemComponent.CUSTOM_NAME, Component.text(getRarity().getPrefix() + displayName())), sbItem);
     }
 
     public String displayName() {
@@ -97,9 +97,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     Rarity - Type String
      */
     private static final Stat[] redStats = {Stat.Damage, Stat.Strength, Stat.CritChance, Stat.CritDamage, Stat.AttackSpeed};
-    private static final Stat[] greenStats = {Stat.SwingRange, Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck, Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed,
-            Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune,
-            Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed, Stat.Vitality, Stat.Mending};
+    private static final Stat[] greenStats = {Stat.SwingRange, Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck, Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed, Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune, Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed, Stat.Vitality, Stat.Mending};
 
     public List<String> buildLore(@Nullable SkyblockPlayer player) {
         boolean space = false;

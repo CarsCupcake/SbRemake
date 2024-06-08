@@ -20,6 +20,8 @@ import net.minestom.server.item.Material;
 import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class DisplayCommand extends Command {
 
     public DisplayCommand() {
@@ -58,7 +60,7 @@ public class DisplayCommand extends Command {
         var entity = new Entity(EntityType.BLOCK_DISPLAY);
         var meta = (BlockDisplayMeta) entity.getEntityMeta();
         meta.setTransformationInterpolationDuration(20);
-        meta.setBlockState(Block.ORANGE_CANDLE_CAKE.stateId());
+        meta.setBlockState(Objects.requireNonNull(Block.fromStateId(Block.ORANGE_CANDLE_CAKE.stateId())));
         entity.setInstance(player.getInstance(), player.getPosition()).join();
 
         if (context.has("follow")) {

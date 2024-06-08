@@ -42,7 +42,6 @@ public class Main {
         LOGGER = MinecraftServer.LOGGER;
         System.out.println("Server Initiated");
         System.out.println("Fetch Manager");
-        MinecraftServer.getBiomeManager().loadVanillaBiomes();
         Block.CAULDRON.withHandler(new CauldronHandler());
         SkyblockWorld.Hub.get().init(MinecraftServer.getInstanceManager().createInstanceContainer());
         System.out.println("Create Instance");

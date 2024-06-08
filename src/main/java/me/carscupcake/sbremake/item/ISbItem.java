@@ -4,18 +4,20 @@ import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerInteractEvent;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.util.StringUtils;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
-import net.minestom.server.event.player.PlayerBlockInteractEvent;
+import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import net.minestom.server.item.metadata.LeatherArmorMeta;
-import net.minestom.server.item.metadata.PlayerHeadMeta;
+import net.minestom.server.item.component.AttributeList;
+import net.minestom.server.item.component.DyedItemColor;
+import net.minestom.server.item.component.HeadProfile;
 import net.minestom.server.tag.Tag;
+import net.minestom.server.utils.Unit;
 import org.jetbrains.annotations.Nullable;
-import org.jglrxavpok.hephaistos.nbt.NBT;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
@@ -66,14 +68,15 @@ public interface ISbItem {
     }
 
     default SbItemStack create() {
-        ItemStack.Builder builder = ItemStack.builder(getMaterial());
+        ItemStack.Builder builder = ItemStack.builder(getMaterial()).set(ItemComponent.ATTRIBUTE_MODIFIERS, new AttributeList(List.of(), false));
         if (getMaterial() == Material.PLAYER_HEAD && this instanceof HeadWithValue value) {
-            builder.meta(new PlayerHeadMeta.Builder().playerSkin(new PlayerSkin(value.value(), "")).build());
+            builder.set(ItemComponent.PROFILE, new HeadProfile(new PlayerSkin(value.value(), "")));
         }
         if (this instanceof ColoredLeather leather) {
-            builder.meta(new LeatherArmorMeta.Builder().color(leather.color()).build());
+            builder.set(ItemComponent.DYED_COLOR, new DyedItemColor(leather.color().asRGB(), false));
         }
-        SbItemStack itemStack = SbItemStack.from(builder.set(Tag.NBT("ExtraAttributes"), NBT.Compound(mutableNBTCompound -> mutableNBTCompound.put("id", NBT.String(getId())))).build());
+        ItemStack item = builder.set(ItemComponent.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE).set(Tag.NBT("ExtraAttributes"),  CompoundBinaryTag.builder().putString("id", getId()).build()).build();
+        SbItemStack itemStack = SbItemStack.from(item);
         return itemStack.update();
     }
 
