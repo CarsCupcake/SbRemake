@@ -18,10 +18,11 @@ public non-sealed abstract class FullSetBonus implements Ability {
     }
     public abstract void start(SkyblockPlayer player);
     public abstract void stop(SkyblockPlayer player);
+    public abstract FullSetBonus instance();
 
     @Override
     public String headline(SbItemStack item, SkyblockPlayer player) {
-        int pieces = player.getFullSetBonusPieceAmount(this);
+        int pieces = (player == null) ? 0 : player.getFullSetBonusPieceAmount(this);
         if (isTiered()) {
             return STR."§6Tiered Bonus: \{name} \{(pieces == minPieces) ? "§6" : "§7"}(\{pieces}/\{maxPieces})";
         }

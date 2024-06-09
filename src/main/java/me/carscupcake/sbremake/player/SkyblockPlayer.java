@@ -9,6 +9,7 @@ import me.carscupcake.sbremake.entity.SkyblockEntityProjectile;
 import me.carscupcake.sbremake.event.*;
 import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.FullSetBonus;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
 import me.carscupcake.sbremake.item.impl.bow.BowItem;
@@ -25,6 +26,7 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithBlockEvent;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithEntityEvent;
+import net.minestom.server.event.inventory.InventoryClickEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.PlayerPacketEvent;
@@ -41,8 +43,7 @@ import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 public class SkyblockPlayer extends Player {
@@ -188,14 +189,20 @@ public class SkyblockPlayer extends Player {
                 event.setCancelled(true);
                 event.getPlayer().getInventory().setItemStack(slot, clicked.item());
                 event.getPlayer().getInventory().setItemStack(event.getSlot(), ItemStack.of(Material.AIR));
+                ((SkyblockPlayer) event.getPlayer()).recalculateArmor();
             }
             return;
         }
         SbItemStack cursor = SbItemStack.from(event.getCursorItem());
-        if (cursor == null) return;
+        if (cursor == null) {
+            return;
+        }
         if (getSlot(cursor.sbItem().getType()) != event.getSlot()) {
             event.setCancelled(true);
         }
+    }).addListener(InventoryClickEvent.class, event -> {
+        if (event.getInventory() != null || (event.getSlot() < 41 || event.getSlot() > 44)) return;
+        ((SkyblockPlayer) event.getPlayer()).recalculateArmor();
     });
 
     private static int getSlot(ItemType type) {
@@ -237,6 +244,8 @@ public class SkyblockPlayer extends Player {
 
     private boolean oftick = false;
 
+    private final Map<FullSetBonus, Integer> fullSetBonuses = new HashMap<>();
+
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         sbHealth = getMaxSbHealth();
@@ -254,15 +263,13 @@ public class SkyblockPlayer extends Player {
     }
 
     /**
-     * This is to setup stuff, when the player gets spawned (respawn or server join)
+     * This is to set up stuff, when the player gets spawned (respawn or server join)
      */
     public void spawn() {
         super.spawn();
         setHealth(getMaxHealth());
         teleport(worldProvider.spawn());
-        this.scheduler().buildTask(() ->  {
-            setNoGravity(false);
-        }).delay(Duration.ofSeconds(2)).schedule();
+        this.scheduler().buildTask(() -> setNoGravity(false)).delay(Duration.ofSeconds(2)).schedule();
     }
 
     public float getMaxHealth() {
@@ -303,47 +310,43 @@ public class SkyblockPlayer extends Player {
 
     public static void statsLoop() {
         MinecraftServer.getGlobalEventHandler().addChild(PLAYER_NODE);
-        regenTask = MinecraftServer.getSchedulerManager().buildTask(() -> {
-            Audiences.players().forEachAudience(audience -> {
-                SkyblockPlayer player = (SkyblockPlayer) audience;
-                if (!player.oftick){
-                    player.oftick = true;
-                    double maxSbHp = player.getMaxSbHealth();
-                    if (player.getSbHealth() < maxSbHp) {
-                        double healthGained = (1.5 + maxSbHp / 100d) * player.getStat(Stat.HealthRegen) / 100;
-                        HealthRegenEvent event = new HealthRegenEvent(player, healthGained);
-                        MinecraftServer.getGlobalEventHandler().call(event);
-                        player.addSbHealth((float) event.getRegenAmount());
-                    }
-                    double maxHealth = getMaxHearts(player.getMaxSbHealth());
-                    if (maxHealth != player.getMaxHealth())
-                        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue((float) maxHealth);
-                } else player.oftick = false;
-
-                player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue((float) (0.1 * (player.getStat(Stat.Speed) / 100d)));
-
-                double maxManaPool = player.getManaPool();
-                if (maxManaPool > player.getMana()) {
-                    double manaGained = maxManaPool * 0.02d;
-                    ManaRegenEvent e = new ManaRegenEvent(player, manaGained);
-                    MinecraftServer.getGlobalEventHandler().call(e);
-                    player.addMana(e.getRegenAmount() * e.getMultiplier());
+        regenTask = MinecraftServer.getSchedulerManager().buildTask(() -> Audiences.players().forEachAudience(audience -> {
+            SkyblockPlayer player = (SkyblockPlayer) audience;
+            if (!player.oftick) {
+                player.oftick = true;
+                double maxSbHp = player.getMaxSbHealth();
+                if (player.getSbHealth() != maxSbHp) {
+                    double healthGained = (1.5 + maxSbHp / 100d) * player.getStat(Stat.HealthRegen) / 100;
+                    HealthRegenEvent event = new HealthRegenEvent(player, healthGained);
+                    MinecraftServer.getGlobalEventHandler().call(event);
+                    player.addSbHealth((float) event.getRegenAmount());
                 }
+                double maxHealth = getMaxHearts(player.getMaxSbHealth());
+                if (maxHealth != player.getMaxHealth())
+                    player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue((float) maxHealth);
+            } else player.oftick = false;
 
-                ActionBarPacket packet = new ActionBarPacket(Component.text(player.actionBar.build()));
-                if (player.lastAbility != null) {
-                    player.lastAbilityTicks--;
-                    if (player.lastAbilityTicks == 0)
-                        player.lastAbility = null;
-                }
-                if (player.notEnoughMana) {
-                    player.notEnoughManaTicks--;
-                    if (player.notEnoughManaTicks == 0)
-                        player.notEnoughMana = false;
-                }
-                player.sendPacket(packet);
-            });
-        }).repeat(TaskSchedule.seconds(1)).schedule();
+            player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue((float) (0.1 * (player.getStat(Stat.Speed) / 100d)));
+
+            double maxManaPool = player.getManaPool();
+            if (maxManaPool > player.getMana()) {
+                double manaGained = maxManaPool * 0.02d;
+                ManaRegenEvent e = new ManaRegenEvent(player, manaGained);
+                MinecraftServer.getGlobalEventHandler().call(e);
+                player.addMana(e.getRegenAmount() * e.getMultiplier());
+            }
+
+            ActionBarPacket packet = new ActionBarPacket(Component.text(player.actionBar.build()));
+            if (player.lastAbility != null) {
+                player.lastAbilityTicks--;
+                if (player.lastAbilityTicks == 0) player.lastAbility = null;
+            }
+            if (player.notEnoughMana) {
+                player.notEnoughManaTicks--;
+                if (player.notEnoughManaTicks == 0) player.notEnoughMana = false;
+            }
+            player.sendPacket(packet);
+        })).repeat(TaskSchedule.seconds(1)).schedule();
     }
 
     public double getStat(Stat stat) {
@@ -372,7 +375,7 @@ public class SkyblockPlayer extends Player {
     }
 
     public int getFullSetBonusPieceAmount(FullSetBonus bonus) {
-        return 0;
+        return fullSetBonuses.getOrDefault(bonus, 0);
     }
 
     public double getMaxSbHealth() {
@@ -450,6 +453,42 @@ public class SkyblockPlayer extends Player {
 
     public boolean hasKb() {
         return true;
+    }
+
+    public void recalculateArmor() {
+        Map<FullSetBonus, Integer> copy = new HashMap<>(fullSetBonuses);
+        fullSetBonuses.clear();
+        for (EquipmentSlot slot : EquipmentSlot.armors()) {
+            SbItemStack stack = SbItemStack.from(getInventory().getItemStack(slot.armorSlot()));
+            if (stack == null) continue;
+            for (Ability ability : stack.getAbilities())
+                if (ability instanceof FullSetBonus fullSetBonus)
+                    fullSetBonuses.put(fullSetBonus, fullSetBonuses.getOrDefault(fullSetBonus, 0) + 1);
+        }
+        Set<FullSetBonus> bonuses = new HashSet<>(copy.keySet());
+        bonuses.addAll(fullSetBonuses.keySet());
+        for (FullSetBonus bonus : bonuses) {
+            int old = copy.getOrDefault(bonus, 0);
+            int neu = fullSetBonuses.getOrDefault(bonus, 0);
+            if (neu == old) continue;
+            if (neu < bonus.getMinPieces() && old >= bonus.getMinPieces()) {
+                bonus.stop(this);
+                continue;
+            }
+            if (old < bonus.getMinPieces() && neu >= bonus.getMinPieces()) {
+                bonus.start(this);
+                continue;
+            }
+            if (neu >= bonus.getMinPieces()) {
+                bonus.stop(this);
+                bonus.start(this);
+            }
+        }
+        for (EquipmentSlot slot : EquipmentSlot.armors()) {
+            SbItemStack stack = SbItemStack.from(getInventory().getItemStack(slot.armorSlot()));
+            if (stack == null) continue;
+            getInventory().setItemStack(slot.armorSlot(), stack.update(this).item());
+        }
     }
 
     private static float getMaxHearts(double maxHealth) {

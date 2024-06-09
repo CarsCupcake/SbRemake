@@ -5,8 +5,11 @@ import me.carscupcake.sbremake.item.ColoredLeather;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.ItemType;
+import me.carscupcake.sbremake.item.ability.Ability;
 import net.minestom.server.color.Color;
 import net.minestom.server.item.Material;
+
+import java.util.List;
 
 public class LapisLeggings implements ISbItem, ColoredLeather {
     @Override
@@ -43,5 +46,9 @@ public class LapisLeggings implements ISbItem, ColoredLeather {
     @Override
     public Color color() {
         return new Color(0x0000ff);
+    }
+    @Override
+    public List<Ability> getDefaultAbilities() {
+        return List.of(HealthFullSetBonus.INSTANCE);
     }
 }
