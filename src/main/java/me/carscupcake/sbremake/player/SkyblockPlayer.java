@@ -49,6 +49,7 @@ import java.util.*;
 import java.util.function.UnaryOperator;
 
 @Getter
+@SuppressWarnings({"unused", "preview", "UnstableApiUsage"})
 public class SkyblockPlayer extends Player {
     private static final UUID speedUUID = UUID.randomUUID();
     private static final EventNode<Event> PLAYER_NODE = EventNode.all("player.events").addListener(EntityAttackEvent.class, event -> {
@@ -280,7 +281,7 @@ public class SkyblockPlayer extends Player {
     //For some reason the default implementation does not work :/
     @Override
     public void sendMessage(@NotNull String message) {
-        SystemMessage chatMessage = new SystemMessage(message, false);
+        SystemMessagePackage chatMessage = new SystemMessagePackage(message, false);
         sendPacket(chatMessage);
     }
 
@@ -564,7 +565,10 @@ public class SkyblockPlayer extends Player {
             networkBuffer.write(NetworkBuffer.VAR_INT, chatType.id);
             networkBuffer.write(NetworkBuffer.COMPONENT, senderName);
             networkBuffer.write(NetworkBuffer.BOOLEAN, hasTargetName);
-            if (hasTargetName) networkBuffer.write(NetworkBuffer.COMPONENT, targetname);
+            if (hasTargetName) {
+                assert targetname != null;
+                networkBuffer.write(NetworkBuffer.COMPONENT, targetname);
+            }
 
         }
 
@@ -597,8 +601,8 @@ public class SkyblockPlayer extends Player {
             }
         }
     }
-    public record SystemMessage(Component message, boolean actionbar) implements ServerPacket.Play {
-        public SystemMessage(String message, boolean actionbar) {
+    public record SystemMessagePackage(Component message, boolean actionbar) implements ServerPacket.Play {
+        public SystemMessagePackage(String message, boolean actionbar) {
             this(Component.text(message), actionbar);
         }
 
