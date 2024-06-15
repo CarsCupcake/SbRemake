@@ -1,17 +1,12 @@
 package me.carscupcake.sbremake.listeners;
 
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import net.minestom.server.MinecraftServer;
-import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Metadata;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerPacketOutEvent;
 import net.minestom.server.item.Material;
-import net.minestom.server.network.packet.server.play.ChunkBatchFinishedPacket;
-import net.minestom.server.network.packet.server.play.ChunkBatchStartPacket;
-import net.minestom.server.network.packet.server.play.ChunkDataPacket;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
 
 import java.util.Map;

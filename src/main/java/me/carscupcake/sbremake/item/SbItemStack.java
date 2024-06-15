@@ -16,25 +16,18 @@ import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A Wrapper for an ItemStack to use some Sb featurs
+ * A Wrapper for an ItemStack to use some Sb features
  *
  * @param item   the item that gets wrapped
  * @param sbItem the Sb item
  */
 public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
 
-    /**
-     * Use Audiences
-     */
-    @Deprecated(forRemoval = true, since = "beginning")
-    private static final ConcurrentHashMap<String, ISbItem> items = new ConcurrentHashMap<>();
+    private static final Map<String, ISbItem> items = new HashMap<>();
 
     public static void initSbItem(ISbItem item) {
         items.put(item.getId(), item);

@@ -14,8 +14,8 @@ import java.util.Random;
 @Getter
 @Setter
 public class PlayerToEntityMageDamage implements PlayerEvent, CancellableEvent {
-    public String damageTagPrefix;
-    public String damageTagSuffix;
+    public String damageTagPrefix = "§7";
+    public String damageTagSuffix = "";
     private double additiveMultiplier = 1;
     private double multiplicativeMultiplier = 1;
     private double bonusModifier = 0;

@@ -2,9 +2,7 @@ package me.carscupcake.sbremake;
 
 import me.carscupcake.sbremake.blocks.CauldronHandler;
 import me.carscupcake.sbremake.command.*;
-import me.carscupcake.sbremake.command.testing.GetItemCommand;
-import me.carscupcake.sbremake.command.testing.SetHealthCommand;
-import me.carscupcake.sbremake.command.testing.SpawnDummyCommand;
+import me.carscupcake.sbremake.command.testing.*;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.listeners.*;
@@ -93,6 +91,7 @@ public class Main {
         commandManager.register(new SetHealthCommand());
         commandManager.register(new GetItemCommand());
         commandManager.register(new SpawnDummyCommand());
+        commandManager.register(new ToggleCommand("toggle"));
 
         OpenToLAN.open();
         MojangAuth.init();

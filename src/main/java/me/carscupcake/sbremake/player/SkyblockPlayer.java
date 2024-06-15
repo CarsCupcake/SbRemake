@@ -33,17 +33,20 @@ import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.network.NetworkBuffer;
 import net.minestom.server.network.packet.client.play.*;
-import net.minestom.server.network.packet.server.play.ActionBarPacket;
-import net.minestom.server.network.packet.server.play.DamageEventPacket;
-import net.minestom.server.network.packet.server.play.UpdateHealthPacket;
+import net.minestom.server.network.packet.server.ServerPacket;
+import net.minestom.server.network.packet.server.ServerPacketIdentifier;
+import net.minestom.server.network.packet.server.play.*;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.function.UnaryOperator;
 
 @Getter
 public class SkyblockPlayer extends Player {
@@ -118,16 +121,26 @@ public class SkyblockPlayer extends Player {
                 player.bowStartPull = System.currentTimeMillis();
                 return;
             }
+            long now = System.currentTimeMillis();
+            if (now - player.lastInteractPacket < 100) return;
+            player.lastInteractPacket = now;
             MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player));
             return;
         }
 
         if (event.getPacket() instanceof ClientPlayerBlockPlacementPacket packet) {
             if (packet.hand() != Hand.MAIN) return;
+            long now = System.currentTimeMillis();
+            if (now - player.lastInteractPacket < 100) return;
+            player.lastInteractPacket = now;
             MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, packet.blockPosition(), packet.blockFace()));
         }
 
         if (event.getPacket() instanceof ClientInteractEntityPacket packet) {
+            if (packet.type() instanceof ClientInteractEntityPacket.Attack) return;
+            long now = System.currentTimeMillis();
+            if (now - player.lastInteractPacket < 100) return;
+            player.lastInteractPacket = now;
             MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, player.getInstance().getEntities().stream().filter(entity -> entity.getEntityId() == packet.targetId()).findFirst().orElse(null)));
         }
 
@@ -244,6 +257,8 @@ public class SkyblockPlayer extends Player {
 
     private boolean oftick = false;
 
+    private long lastInteractPacket = 0;
+
     private final Map<FullSetBonus, Integer> fullSetBonuses = new HashMap<>();
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
@@ -262,6 +277,13 @@ public class SkyblockPlayer extends Player {
         notEnoughManaTicks = 2;
     }
 
+    //For some reason the default implementation does not work :/
+    @Override
+    public void sendMessage(@NotNull String message) {
+        SystemMessage chatMessage = new SystemMessage(message, false);
+        sendPacket(chatMessage);
+    }
+
     /**
      * This is to set up stuff, when the player gets spawned (respawn or server join)
      */
@@ -270,6 +292,7 @@ public class SkyblockPlayer extends Player {
         setHealth(getMaxHealth());
         teleport(worldProvider.spawn());
         this.scheduler().buildTask(() -> setNoGravity(false)).delay(Duration.ofSeconds(2)).schedule();
+        sendPacket(new ClearTitlesPacket(true));
     }
 
     public float getMaxHealth() {
@@ -517,5 +540,77 @@ public class SkyblockPlayer extends Player {
             health = 40;
         }
         return health;
+    }
+
+    public record DisguisedChatMessage(Component message, ChatType chatType, Component senderName,
+                                       boolean hasTargetName,
+                                       @Nullable Component targetname) implements ServerPacket.Play, ServerPacket.ComponentHolding {
+        public DisguisedChatMessage(String message) {
+            this(Component.text(message), ChatType.Chat, Component.text(""));
+        }
+
+        public DisguisedChatMessage(Component message, ChatType chatType, Component senderName) {
+            this(message, chatType, senderName, false, null);
+        }
+
+        @Override
+        public int playId() {
+            return ServerPacketIdentifier.DISGUISED_CHAT;
+        }
+
+        @Override
+        public void write(@NotNull NetworkBuffer networkBuffer) {
+            networkBuffer.write(NetworkBuffer.COMPONENT, message);
+            networkBuffer.write(NetworkBuffer.VAR_INT, chatType.id);
+            networkBuffer.write(NetworkBuffer.COMPONENT, senderName);
+            networkBuffer.write(NetworkBuffer.BOOLEAN, hasTargetName);
+            if (hasTargetName) networkBuffer.write(NetworkBuffer.COMPONENT, targetname);
+
+        }
+
+        @Override
+        public @NotNull Collection<Component> components() {
+            final ArrayList<Component> list = new ArrayList<>();
+            list.add(message);
+            list.add(senderName);
+            if (targetname != null) list.add(targetname);
+            return List.copyOf(list);
+        }
+
+        @Override
+        public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> unaryOperator) {
+            return new DisguisedChatMessage(unaryOperator.apply(message), chatType, unaryOperator.apply(senderName), hasTargetName, unaryOperator.apply(targetname));
+        }
+
+        public enum ChatType {
+            Chat(7),
+            MsgIn(3),
+            MsgOut(4),
+            TeamMessageIn(6),
+            TeamMessageOut(5),
+            SayCommand(1),
+            Narration(0);
+            private final int id;
+
+            ChatType(int id) {
+                this.id = id;
+            }
+        }
+    }
+    public record SystemMessage(Component message, boolean actionbar) implements ServerPacket.Play {
+        public SystemMessage(String message, boolean actionbar) {
+            this(Component.text(message), actionbar);
+        }
+
+        @Override
+        public int playId() {
+            return ServerPacketIdentifier.SYSTEM_CHAT;
+        }
+
+        @Override
+        public void write(@NotNull NetworkBuffer networkBuffer) {
+            networkBuffer.write(NetworkBuffer.COMPONENT, message);
+            networkBuffer.write(NetworkBuffer.BOOLEAN, actionbar);
+        }
     }
 }
