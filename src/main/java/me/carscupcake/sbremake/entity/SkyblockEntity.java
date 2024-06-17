@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity;
 
+import lombok.Setter;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerProjectileDamageEntityEvent;
@@ -7,10 +8,15 @@ import me.carscupcake.sbremake.event.PlayerToEntityDamageEvent;
 import me.carscupcake.sbremake.event.PlayerToEntityMageDamage;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.SkyblockPlayerArrow;
+import me.carscupcake.sbremake.util.ParticleUtils;
+import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.StringUtils;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.collision.BoundingBox;
+import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
@@ -24,6 +30,9 @@ import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.event.EventDispatcher;
+import net.minestom.server.particle.Particle;
+import net.minestom.server.timer.Task;
+import net.minestom.server.timer.TaskSchedule;
 import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +44,7 @@ import java.util.function.Function;
 
 public abstract class SkyblockEntity extends EntityCreature {
     private float health = getMaxHealth();
+
     public SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType, UUID.randomUUID());
         setHealth(getMaxHealth());
@@ -73,9 +83,17 @@ public abstract class SkyblockEntity extends EntityCreature {
     public abstract String getName();
 
     public void damage(SkyblockPlayer player) {
-        PlayerMeleeDamageEntityEvent event = new PlayerMeleeDamageEntityEvent(player, this, player.getStat(Stat.Damage), player.getStat(Stat.Strength), player.getStat(Stat.CritDamage), player.getStat(Stat.CritChance));
+        damage(player, true);
+    }
+
+    public void damage(SkyblockPlayer player, boolean ferocity) {
+        PlayerMeleeDamageEntityEvent event = new PlayerMeleeDamageEntityEvent(player, this, player.getStat(Stat.Damage), player.getStat(Stat.Strength), player.getStat(Stat.CritDamage), player.getStat(Stat.CritChance), player.getStat(Stat.Ferocity));
+        event.setCanDoFerocity(ferocity);
         EventDispatcher.call(event);
         damage(event);
+        if (event.isCanDoFerocity()) {
+            doFerocity(player, event.getFerocity());
+        }
     }
 
     public void mageDamage(SkyblockPlayer player, double baseAbilityDamage, double abilityScaling) {
@@ -105,6 +123,17 @@ public abstract class SkyblockEntity extends EntityCreature {
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
         if (canTakeKnockback())
             this.takeKnockback(0.4f, Math.sin(event.damagerPos().yaw() * 0.017453292), -Math.cos(event.damagerPos().yaw() * 0.017453292));
+    }
+
+    public void doFerocity(SkyblockPlayer player, double ferocity) {
+        int ticks = (int) (ferocity * 0.01);
+        double pers = (ferocity - (ticks * 100)) / 100d;
+        if (new Random().nextDouble() <= pers) ticks++;
+        if (ticks == 0) return;
+        player.getInstance().playSound(Sound.sound(SoundType.ITEM_FLINTANDSTEEL_USE.getKey(), Sound.Source.AMBIENT, 1, 0f), getPosition());
+        FerocityRunnable runnable = new FerocityRunnable(ticks, player);
+        Task task = this.scheduler().scheduleTask(runnable, TaskSchedule.tick(10), TaskSchedule.tick(10));
+        runnable.setSelve(task);
     }
 
     public static void spawnDamageTag(SkyblockEntity entity, String tag) {
@@ -200,5 +229,62 @@ public abstract class SkyblockEntity extends EntityCreature {
         ));
         aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player)));
         return aiGroup;
+    }
+
+    public class FerocityRunnable implements Runnable {
+
+        @Setter
+        public Task selve = null;
+
+        private int ticks;
+        private final SkyblockPlayer player;
+
+        public FerocityRunnable(int ticks, SkyblockPlayer player) {
+            this.ticks = ticks;
+            this.player = player;
+        }
+
+        @Override
+        public void run() {
+            ticks--;
+            damage(player, false);
+            Particle.Dust dust = Particle.Dust.DUST.withColor(new Color(0xFF0000));
+            Pos manage = getPosition();
+
+            Vec a;
+            Vec b;
+            Pos start;
+            if (manage.yaw() >= -45 && manage.yaw() <= 45) {
+                start = manage.add(-1, 0.5, 0);
+                a = start.asVec();
+                b = start.add(2, 1.5, 0).asVec();
+            } else {
+                if (manage.yaw() >= 135 || manage.yaw() <= -135) {
+                    start = manage.add(1, 0.5, 0);
+                    a = start.asVec();
+                    b = start.add(-2, 1.5, 0).asVec();
+                } else {
+                    if (manage.yaw() >= 45) {
+                        start = manage.add(0, 0.5, -1);
+                        a = start.asVec();
+                        b = start.add(0, 1.5, 2).asVec();
+                    } else {
+                        start = manage.add(0, 0.5, 1);
+                        a = start.asVec();
+                        b = start.add(0, 1.5, -2).asVec();
+                    }
+                }
+            }
+            Vec between = b.sub(a);
+            double length = between.length();
+            between = between.normalize().mul(0.3);
+            double steps = length / 0.3D;
+            for (int i = 0; i < steps; i++) {
+                a = a.add(between);
+                ParticleUtils.spawnParticle(instance, a, dust, 1);
+            }
+            player.getInstance().playSound(SoundType.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR.create(0.1f, 2f), getPosition());
+            if (ticks <= 0) selve.cancel();
+        }
     }
 }

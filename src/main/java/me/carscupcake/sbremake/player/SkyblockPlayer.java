@@ -14,10 +14,13 @@ import me.carscupcake.sbremake.item.ability.FullSetBonus;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
 import me.carscupcake.sbremake.item.impl.bow.BowItem;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
+import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
@@ -43,6 +46,7 @@ import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.Duration;
 import java.util.*;
@@ -515,6 +519,14 @@ public class SkyblockPlayer extends Player {
         }
     }
 
+    public void playSound(SoundType type, Sound.Source source, float volume, float pitch) {
+        playSound(Sound.sound(type.getKey(), source, volume, pitch));
+    }
+
+    public void playSound(SoundType type, Sound.Source source, float volume, float pitch, Pos location) {
+        playSound(Sound.sound(type.getKey(), source, volume, pitch), location);
+    }
+
     private static float getMaxHearts(double maxHealth) {
         float health = 0;
         if (maxHealth < 125) {
@@ -572,7 +584,7 @@ public class SkyblockPlayer extends Player {
 
         }
 
-        @Override
+        @Override @Unmodifiable
         public @NotNull Collection<Component> components() {
             final ArrayList<Component> list = new ArrayList<>();
             list.add(message);

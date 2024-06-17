@@ -28,14 +28,17 @@ public abstract class PlayerToEntityDamageEvent implements PlayerEvent, Cancella
     private double strength;
     private double critDamage;
     private double critChance;
+    private double ferocity;
+    private boolean canDoFerocity = true;
 
-    public PlayerToEntityDamageEvent(SkyblockPlayer player, SkyblockEntity target, double weaponDamage, double strength, double critDamage, double critChance) {
+    public PlayerToEntityDamageEvent(SkyblockPlayer player, SkyblockEntity target, double weaponDamage, double strength, double critDamage, double critChance, double ferocity) {
         this.player = player;
         this.target = target;
         this.weaponDamage = weaponDamage;
         this.strength = strength;
         this.critDamage = critDamage;
         this.critChance = critChance;
+        this.ferocity = ferocity;
         crit = new Random().nextDouble() <= (critChance / 100d);
         if (crit) {
             damageTagPrefix = "§f✧";

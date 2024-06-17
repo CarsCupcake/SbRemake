@@ -1,8 +1,6 @@
 package me.carscupcake.sbremake;
 
 import me.carscupcake.sbremake.blocks.CauldronHandler;
-import me.carscupcake.sbremake.command.*;
-import me.carscupcake.sbremake.command.testing.*;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.listeners.*;
@@ -11,19 +9,20 @@ import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.command.ConsoleSender;
+import net.minestom.server.command.builder.Command;
 import net.minestom.server.event.player.*;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.instance.block.Block;
+import org.reflections.Reflections;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.SocketAddress;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.channels.SocketChannel;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.Collections;
@@ -34,6 +33,7 @@ public class Main {
     public static final Object _lock = new Object();
     public static volatile AtomicBoolean running = new AtomicBoolean(true);
     public static volatile org.slf4j.Logger LOGGER;
+
     public static void main(String[] args) {
         MinecraftServer server = MinecraftServer.init();
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
@@ -54,44 +54,17 @@ public class Main {
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
 
         CommandManager commandManager = MinecraftServer.getCommandManager();
-        //Commands from the demo Implementation (to lazy to code them by myself lol)
-        commandManager.register(new TestCommand());
-        commandManager.register(new EntitySelectorCommand());
-        commandManager.register(new HealthCommand());
-        commandManager.register(new LegacyCommand());
-        commandManager.register(new DimensionCommand());
-        commandManager.register(new ShutdownCommand());
-        commandManager.register(new TeleportCommand());
-        commandManager.register(new PlayersCommand());
-        commandManager.register(new FindCommand());
-        commandManager.register(new TitleCommand());
-        commandManager.register(new BookCommand());
-        commandManager.register(new ShootCommand());
-        commandManager.register(new HorseCommand());
-        commandManager.register(new EchoCommand());
-        commandManager.register(new SummonCommand());
-        commandManager.register(new RemoveCommand());
-        commandManager.register(new GiveCommand());
-        commandManager.register(new AutoViewCommand());
-        commandManager.register(new SaveCommand());
-        commandManager.register(new GamemodeCommand());
-        commandManager.register(new ExecuteCommand());
-        commandManager.register(new RedirectTestCommand());
-        commandManager.register(new DebugGridCommand());
-        commandManager.register(new DisplayCommand());
-        commandManager.register(new NotificationCommand());
-        commandManager.register(new TestCommand2());
-        commandManager.register(new ConfigCommand());
-        commandManager.register(new SidebarCommand());
-        commandManager.register(new SetEntityType());
-        commandManager.register(new RelightCommand());
-        commandManager.register(new KillCommand());
-        commandManager.register(new WeatherCommand());
-
-        commandManager.register(new SetHealthCommand());
-        commandManager.register(new GetItemCommand());
-        commandManager.register(new SpawnDummyCommand());
-        commandManager.register(new ToggleCommand("toggle"));
+        Reflections reflections = new Reflections("me.carscupcake.sbremake.command");
+        for (Class<? extends Command> clazz : reflections.getSubTypesOf(Command.class)) {
+            try {
+                if (clazz.isInterface()) continue;
+                Constructor<? extends Command> constructor = clazz.getConstructor();
+                Command instance = constructor.newInstance();
+                commandManager.register(instance);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
 
         OpenToLAN.open();
         MojangAuth.init();
@@ -99,7 +72,8 @@ public class Main {
         int port = 25565;
         try {
             port = Integer.parseInt(args[0]);
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         server.start("127.0.0.1", port);
         System.out.println(STR."Started Server on port \{port}");
         java.lang.Thread.ofPlatform().daemon(true).name("Console").start(() -> {
@@ -128,15 +102,10 @@ public class Main {
 
     }
 
-    public static File getFolderFromResource(String folder)
-            throws URISyntaxException, IOException {
+    public static File getFolderFromResource(String folder) throws URISyntaxException, IOException {
 
         // get path of the current running JAR
-        String jarPath = Main.class.getProtectionDomain()
-                .getCodeSource()
-                .getLocation()
-                .toURI()
-                .getPath();
+        String jarPath = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 
         // file walks JAR
         URI uri = URI.create(STR."jar:file:\{jarPath}");
@@ -146,7 +115,6 @@ public class Main {
             System.out.println(Objects.requireNonNull(f.listFiles()).length);
             return f;
         }
-
 
 
     }

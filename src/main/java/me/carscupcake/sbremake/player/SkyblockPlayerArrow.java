@@ -7,7 +7,6 @@ import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
 import me.carscupcake.sbremake.item.impl.bow.BowItem;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.util.ParticleUtils;
-import net.kyori.adventure.sound.Sound;
 import net.minestom.server.ServerFlag;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityProjectile;
@@ -17,7 +16,6 @@ import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.server.play.EntityVelocityPacket;
 import net.minestom.server.particle.Particle;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 
@@ -28,6 +26,7 @@ public class SkyblockPlayerArrow extends EntityProjectile {
     private final double strength;
     private final double critDamage;
     private final double critChance;
+    private final double ferocity;
     private final boolean canCrit;
 
     public SkyblockPlayerArrow(@NotNull SkyblockPlayer player, SkyblockArrow arrow, boolean crits, boolean critParticlesEnabled) {
@@ -40,12 +39,14 @@ public class SkyblockPlayerArrow extends EntityProjectile {
             for (Player pl : this.getInstance().getPlayers().stream().filter(player1 -> player1.getDistance(this) < 16d * 8d).toList()) {
                 pl.sendPacket(new EntityVelocityPacket(this.getEntityId(), this.getVelocity().mul((double) (8000.0F / (float) ServerFlag.SERVER_TICKS_PER_SECOND))));
             }
-            if (crits && critParticlesEnabled) ParticleUtils.spawnParticle(this.getInstance(), this.getPosition(), Particle.CRIT, 1);
+            if (crits && critParticlesEnabled)
+                ParticleUtils.spawnParticle(this.getInstance(), this.getPosition(), Particle.CRIT, 1);
         }).repeat(Duration.ofMillis(50)).schedule();
         weaponDamage = player.getStat(Stat.Damage, true);
         strength = player.getStat(Stat.Strength, true);
         critDamage = player.getStat(Stat.CritDamage, true);
         critChance = player.getStat(Stat.CritChance, true);
+        ferocity = player.getStat(Stat.Ferocity, true);
         canCrit = crits;
     }
 
