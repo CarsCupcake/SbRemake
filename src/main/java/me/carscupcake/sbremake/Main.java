@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake;
 
-import me.carscupcake.sbremake.blocks.CauldronHandler;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.listeners.*;
@@ -13,7 +12,6 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.event.player.*;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
-import net.minestom.server.instance.block.Block;
 import org.reflections.Reflections;
 
 import java.io.BufferedReader;
@@ -21,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
@@ -40,7 +39,6 @@ public class Main {
         LOGGER = MinecraftServer.LOGGER;
         System.out.println("Server Initiated");
         System.out.println("Fetch Manager");
-        Block.CAULDRON.withHandler(new CauldronHandler());
         SkyblockWorld.Hub.get().init(MinecraftServer.getInstanceManager().createInstanceContainer());
         System.out.println("Create Instance");
         ISbItem.init();
@@ -57,7 +55,7 @@ public class Main {
         Reflections reflections = new Reflections("me.carscupcake.sbremake.command");
         for (Class<? extends Command> clazz : reflections.getSubTypesOf(Command.class)) {
             try {
-                if (clazz.isInterface()) continue;
+                if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) continue;
                 Constructor<? extends Command> constructor = clazz.getConstructor();
                 Command instance = constructor.newInstance();
                 commandManager.register(instance);
@@ -98,7 +96,7 @@ public class Main {
                 }
             }
         });
-        SkyblockPlayer.statsLoop();
+        SkyblockPlayer.tickLoop();
 
     }
 

@@ -40,8 +40,12 @@ import net.minestom.server.network.NetworkBuffer;
 import net.minestom.server.network.packet.client.play.*;
 import net.minestom.server.network.packet.server.ServerPacket;
 import net.minestom.server.network.packet.server.ServerPacketIdentifier;
-import net.minestom.server.network.packet.server.play.*;
+import net.minestom.server.network.packet.server.play.ActionBarPacket;
+import net.minestom.server.network.packet.server.play.ClearTitlesPacket;
+import net.minestom.server.network.packet.server.play.DamageEventPacket;
+import net.minestom.server.network.packet.server.play.UpdateHealthPacket;
 import net.minestom.server.network.player.PlayerConnection;
+import net.minestom.server.scoreboard.Sidebar;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +54,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 @Getter
@@ -266,6 +271,12 @@ public class SkyblockPlayer extends Player {
 
     private final Map<FullSetBonus, Integer> fullSetBonuses = new HashMap<>();
 
+    @Getter
+    @Setter
+    private Function<SkyblockPlayer, String[]>[] scoreboardDisplay = DefaultScoreboard.values();
+    @Getter
+    public final Sidebar sidebar = new Sidebar(Component.text("§6§lSKYBLOCK"));
+
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         sbHealth = getMaxSbHealth();
@@ -298,6 +309,7 @@ public class SkyblockPlayer extends Player {
         teleport(worldProvider.spawn());
         this.scheduler().buildTask(() -> setNoGravity(false)).delay(Duration.ofSeconds(2)).schedule();
         sendPacket(new ClearTitlesPacket(true));
+        if (!sidebar.isViewer(this)) sidebar.addViewer(this);
     }
 
     public float getMaxHealth() {
@@ -336,7 +348,7 @@ public class SkyblockPlayer extends Player {
         }).delay(TaskSchedule.millis((now - lastAttack < shortbowCd) ? shortbowCd - (now - lastAttack) : 0)).repeat(TaskSchedule.millis(shortbowCd)).schedule();
     }
 
-    public static void statsLoop() {
+    public static void tickLoop() {
         MinecraftServer.getGlobalEventHandler().addChild(PLAYER_NODE);
         regenTask = MinecraftServer.getSchedulerManager().buildTask(() -> Audiences.players().forEachAudience(audience -> {
             SkyblockPlayer player = (SkyblockPlayer) audience;
@@ -374,6 +386,27 @@ public class SkyblockPlayer extends Player {
                 if (player.notEnoughManaTicks == 0) player.notEnoughMana = false;
             }
             player.sendPacket(packet);
+            int lines = 0;
+            Set<Sidebar.ScoreboardLine> lineCopie = new HashSet<>(player.sidebar.getLines());
+            for (Function<SkyblockPlayer, String[]> display : player.scoreboardDisplay) {
+                String[] l = display.apply(player);
+                for (String s : l) {
+                    Component text = Component.text(s);
+                    String id = STR."\{15 - lines}";
+                    if (lines >= lineCopie.size())
+                        player.sidebar.createLine(new Sidebar.ScoreboardLine(id, text, 15 - lines));
+                    else {
+                        Sidebar.ScoreboardLine line = player.sidebar.getLine(id);
+                        assert line != null;
+                        if (!line.getContent().equals(text)) player.sidebar.updateLineContent(id, text);
+                    }
+                    lines++;
+                }
+            }
+            for (int i = lines; i < lineCopie.size(); i++) {
+                String id = STR."\{15 - lines}";
+                player.sidebar.removeLine(id);
+            }
         })).repeat(TaskSchedule.seconds(1)).schedule();
     }
 
@@ -584,7 +617,8 @@ public class SkyblockPlayer extends Player {
 
         }
 
-        @Override @Unmodifiable
+        @Override
+        @Unmodifiable
         public @NotNull Collection<Component> components() {
             final ArrayList<Component> list = new ArrayList<>();
             list.add(message);
@@ -599,13 +633,7 @@ public class SkyblockPlayer extends Player {
         }
 
         public enum ChatType {
-            Chat(7),
-            MsgIn(3),
-            MsgOut(4),
-            TeamMessageIn(6),
-            TeamMessageOut(5),
-            SayCommand(1),
-            Narration(0);
+            Chat(7), MsgIn(3), MsgOut(4), TeamMessageIn(6), TeamMessageOut(5), SayCommand(1), Narration(0);
             private final int id;
 
             ChatType(int id) {
@@ -613,6 +641,7 @@ public class SkyblockPlayer extends Player {
             }
         }
     }
+
     public record SystemMessagePackage(Component message, boolean actionbar) implements ServerPacket.Play {
         public SystemMessagePackage(String message, boolean actionbar) {
             this(Component.text(message), actionbar);
