@@ -17,7 +17,7 @@ public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
     Time {
         @Override
         public String[] apply(SkyblockPlayer player) {
-            return new String[]{"Season", "Time"};
+            return new String[]{"§fSeason", "§7Time"};
         }
     },
     Location {
@@ -29,7 +29,7 @@ public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
     Purse {
         @Override
         public String[] apply(SkyblockPlayer player) {
-            return new String[]{" ", "§6Purse -∞", "§bBits: ∞"};
+            return new String[]{" ", "§fPurse§6 -∞", "§fBits:§b ∞"};
         }
     },
     Footer {
