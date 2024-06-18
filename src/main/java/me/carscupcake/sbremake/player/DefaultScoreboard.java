@@ -35,7 +35,7 @@ public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
     Footer {
         @Override
         public String[] apply(SkyblockPlayer player) {
-            return new String[]{" ", "§ePowered by", "§eCarsCupcake Engeneering"};
+            return new String[]{" ", "§ePowered by", "§eCarsCupcake Engineering"};
         }
     }
 }
