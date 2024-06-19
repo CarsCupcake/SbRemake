@@ -1,11 +1,14 @@
 package me.carscupcake.sbremake.player;
 
+import com.google.gson.JsonObject;
 import kotlin.jvm.internal.Reflection;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.blocks.Mining;
+import me.carscupcake.sbremake.config.ConfigFile;
+import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.SkyblockEntityProjectile;
 import me.carscupcake.sbremake.event.*;
@@ -38,6 +41,7 @@ import net.minestom.server.event.entity.projectile.ProjectileCollideWithEntityEv
 import net.minestom.server.event.inventory.InventoryClickEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.item.PickupItemEvent;
+import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemStack;
@@ -240,6 +244,16 @@ public class SkyblockPlayer extends Player {
     }).addListener(InventoryClickEvent.class, event -> {
         if (event.getInventory() != null || (event.getSlot() < 41 || event.getSlot() > 44)) return;
         ((SkyblockPlayer) event.getPlayer()).recalculateArmor();
+    }).addListener(PlayerDisconnectEvent.class, event -> {
+        SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+        ConfigFile configFile = new ConfigFile("inventory", player);
+        configFile.setRawElement(new JsonObject());
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            SbItemStack item = SbItemStack.from(player.getInventory().getItemStack(i));
+            if (item == null) continue;
+            configFile.set(STR."\{i}", item, ConfigSection.ITEM);
+        }
+        configFile.save();
     });
 
     private static int getSlot(ItemType type) {
