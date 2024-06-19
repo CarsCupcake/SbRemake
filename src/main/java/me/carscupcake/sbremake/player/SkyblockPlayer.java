@@ -1,9 +1,11 @@
 package me.carscupcake.sbremake.player;
 
+import kotlin.jvm.internal.Reflection;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.blocks.Mining;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.SkyblockEntityProjectile;
 import me.carscupcake.sbremake.event.*;
@@ -14,7 +16,9 @@ import me.carscupcake.sbremake.item.ability.FullSetBonus;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
 import me.carscupcake.sbremake.item.impl.bow.BowItem;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
+import me.carscupcake.sbremake.player.protocol.SetEntityEffectPacket;
 import me.carscupcake.sbremake.util.SoundType;
+import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -25,8 +29,10 @@ import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
 import net.minestom.server.event.Event;
+import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.EntityAttackEvent;
+import net.minestom.server.event.entity.EntityPotionAddEvent;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithBlockEvent;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithEntityEvent;
 import net.minestom.server.event.inventory.InventoryClickEvent;
@@ -40,18 +46,20 @@ import net.minestom.server.network.NetworkBuffer;
 import net.minestom.server.network.packet.client.play.*;
 import net.minestom.server.network.packet.server.ServerPacket;
 import net.minestom.server.network.packet.server.ServerPacketIdentifier;
-import net.minestom.server.network.packet.server.play.ActionBarPacket;
-import net.minestom.server.network.packet.server.play.ClearTitlesPacket;
-import net.minestom.server.network.packet.server.play.DamageEventPacket;
-import net.minestom.server.network.packet.server.play.UpdateHealthPacket;
+import net.minestom.server.network.packet.server.play.*;
 import net.minestom.server.network.player.PlayerConnection;
+import net.minestom.server.potion.Potion;
+import net.minestom.server.potion.PotionEffect;
+import net.minestom.server.potion.TimedPotion;
 import net.minestom.server.scoreboard.Sidebar;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.reflections.Reflections;
 
+import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
@@ -72,6 +80,12 @@ public class SkyblockPlayer extends Player {
         }
     }).addListener(PlayerPacketEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+        if (event.getPacket() instanceof ClientTeleportConfirmPacket confirmPacket) {
+            if (player.spawnTeleportId == confirmPacket.teleportId()) {
+                player.scheduler().buildTask(() -> player.setNoGravity(false)).delay(TaskSchedule.tick(5)).schedule();
+                player.spawnTeleportId = -1;
+            }
+        }
         if (event.getPacket() instanceof ClientAnimationPacket packet) {
             if (packet.hand() == Hand.MAIN) {
                 long time = System.currentTimeMillis();
@@ -277,6 +291,10 @@ public class SkyblockPlayer extends Player {
     @Getter
     public final Sidebar sidebar = new Sidebar(Component.text("§6§lSKYBLOCK"));
 
+    @Getter
+    @Setter
+    public Mining blockBreakScheduler = null;
+
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         sbHealth = getMaxSbHealth();
@@ -303,12 +321,27 @@ public class SkyblockPlayer extends Player {
     /**
      * This is to set up stuff, when the player gets spawned (respawn or server join)
      */
+
+    private int spawnTeleportId = 0;
+
     public void spawn() {
         super.spawn();
         setHealth(getMaxHealth());
-        teleport(worldProvider.spawn());
-        this.scheduler().buildTask(() -> setNoGravity(false)).delay(Duration.ofSeconds(2)).schedule();
+        Pos spawn = worldProvider.spawn();
+        instance.loadChunk(spawn.chunkX(), spawn.chunkZ());
+        setNoGravity(true);
+        spawnTeleportId = getNextTeleportId();
+        PlayerPositionAndLookPacket packet = new PlayerPositionAndLookPacket(spawn, (byte) 0, spawnTeleportId);
+        sendPacket(packet);
         sendPacket(new ClearTitlesPacket(true));
+        clearEffects();
+        if (worldProvider.useCustomMining()) {
+            sendPacket(new SetEntityEffectPacket(getEntityId(), PotionEffect.MINING_FATIGUE.id(), 255, -1, (byte) 0));
+            sendPacket(new SetEntityEffectPacket(getEntityId(), PotionEffect.HASTE.id(), 0, -1, (byte) 0));
+        } else {
+            sendPacket(new RemoveEntityEffectPacket(getEntityId(), PotionEffect.MINING_FATIGUE));
+            sendPacket(new RemoveEntityEffectPacket(getEntityId(), PotionEffect.HASTE));
+        }
         if (!sidebar.isViewer(this)) sidebar.addViewer(this);
     }
 
@@ -318,6 +351,7 @@ public class SkyblockPlayer extends Player {
 
     public void setWorldProvider(SkyblockWorld.WorldProvider provider) {
         if (worldProvider != null && provider != worldProvider) {
+            this.worldProvider = provider;
             provider.addPlayer(this);
         }
         this.worldProvider = provider;
@@ -347,6 +381,7 @@ public class SkyblockPlayer extends Player {
             SkyblockPlayerArrow.shootBow(SkyblockPlayer.this, 1000L, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
         }).delay(TaskSchedule.millis((now - lastAttack < shortbowCd) ? shortbowCd - (now - lastAttack) : 0)).repeat(TaskSchedule.millis(shortbowCd)).schedule();
     }
+
 
     public static void tickLoop() {
         MinecraftServer.getGlobalEventHandler().addChild(PLAYER_NODE);

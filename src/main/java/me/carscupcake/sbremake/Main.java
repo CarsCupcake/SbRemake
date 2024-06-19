@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake;
 
+import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.listeners.*;
@@ -42,6 +43,7 @@ public class Main {
         SkyblockWorld.Hub.get().init(MinecraftServer.getInstanceManager().createInstanceContainer());
         System.out.println("Create Instance");
         ISbItem.init();
+        MiningBlock.init();
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockBreakEvent.class, new PlayerBlockBreakListener());
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, new AsyncPlayerConfigurationListener());

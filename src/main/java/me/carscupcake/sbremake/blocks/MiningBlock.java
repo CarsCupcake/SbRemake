@@ -1,0 +1,142 @@
+package me.carscupcake.sbremake.blocks;
+
+import lombok.Getter;
+import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.item.Listener;
+import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.TaskScheduler;
+import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
+import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.ItemEntity;
+import net.minestom.server.event.Event;
+import net.minestom.server.event.EventNode;
+import net.minestom.server.event.player.PlayerCancelDiggingEvent;
+import net.minestom.server.event.player.PlayerStartDiggingEvent;
+import net.minestom.server.instance.Instance;
+import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.block.BlockFace;
+import net.minestom.server.instance.block.BlockHandler;
+import net.minestom.server.network.packet.server.play.BlockBreakAnimationPacket;
+import net.minestom.server.utils.NamespaceID;
+import org.jetbrains.annotations.NotNull;
+import org.reflections.Reflections;
+
+import java.lang.reflect.Constructor;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+@Getter
+public abstract class MiningBlock {
+    private final Block block;
+
+    public MiningBlock(Block block) {
+        this.block = block;
+    }
+
+    public abstract int blockStrength();
+
+    public abstract int getInstaMineSpeed();
+
+    public abstract int getBreakingPower();
+
+    public abstract Set<SbItemStack> getDrops(SkyblockPlayer player);
+
+    //Ticks
+    public int regenTime() {
+        return 5 * 20;
+    }
+
+    public Block blockIfBroken() {
+        return Block.BEDROCK;
+    }
+
+    public Block resetType() {
+        return block;
+    }
+
+    public long getSoftCap() {
+        return Math.round((6d + 2d / 3d) * blockStrength());
+    }
+
+    public int getMiningTicks(SkyblockPlayer player) {
+        double mining_speed = player.getStat(Stat.MiningSpeed);
+        double SoftCap = getSoftCap();
+        if (SoftCap <= mining_speed)
+            mining_speed = SoftCap;
+
+        double MiningTime = (blockStrength() * 30) / mining_speed;
+        return (int) MiningTime;
+    }
+
+
+    public void breakBlock(Pos pos, SkyblockPlayer player, BlockFace face) {
+        Instance instance = player.getInstance();
+        instance.setBlock(pos, blockIfBroken());
+        new TaskScheduler() {
+            @Override
+            public void run() {
+                reset(instance, pos);
+            }
+        }.delayTask(regenTime());
+        dropItems(player, pos, face);
+    }
+
+    protected void dropItems(SkyblockPlayer player, Pos block, BlockFace face) {
+        for (SbItemStack item : getDrops(player))
+            if (item != null && item.item().amount() > 0) {
+                ItemEntity entity = new ItemEntity(item.item());
+                entity.setInstance(player.getInstance(), block.add(face.toDirection().normalX() + 0.5, face.toDirection().normalY(), face.toDirection().normalZ() + 0.5));
+                entity.addViewer(player);
+                entity.setVelocity(new Vec(0, 0.5, 0));
+                entity.scheduleRemove(Duration.ofSeconds(30));
+            }
+    }
+
+    public boolean isInstantBreak(long speed) {
+        return speed >= getInstaMineSpeed();
+    }
+
+    public void reset(Instance instance, Pos block) {
+        instance.setBlock(block, resetType());
+    }
+
+    public static final Map<Block, MiningBlock> BLOCKS = new HashMap<>();
+
+    public static final EventNode<Event> BREAK_NODE = EventNode.all("block.break").addListener(PlayerStartDiggingEvent.class, event -> {
+        SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+        if (!player.getWorldProvider().useCustomMining()) return;
+        if (player.getBlockBreakScheduler() != null) {
+            player.getBlockBreakScheduler().cancel();
+            player.setBlockBreakScheduler(null);
+        }
+        Mining.make(player, Pos.fromPoint(event.getBlockPosition()), event.getBlockFace());
+    }).addListener(PlayerCancelDiggingEvent.class, event -> {
+        SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+        if (!player.getWorldProvider().useCustomMining()) return;
+        if (player.getBlockBreakScheduler() != null) {
+            player.getBlockBreakScheduler().cancel();
+            player.setBlockBreakScheduler(null);
+        }
+    });
+
+    public static void init() {
+        MinecraftServer.getGlobalEventHandler().addChild(BREAK_NODE);
+        Reflections reflections = new Reflections("me.carscupcake.sbremake.blocks.impl");
+        for (Class<? extends MiningBlock> clazz : reflections.getSubTypesOf(MiningBlock.class)) {
+            try {
+                if (clazz.isInterface()) continue;
+                Constructor<? extends MiningBlock> constructor = clazz.getConstructor();
+                MiningBlock instance = constructor.newInstance();
+                BLOCKS.put(instance.block, instance);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
+    }
+}

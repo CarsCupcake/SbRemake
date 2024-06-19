@@ -1,14 +1,21 @@
 package me.carscupcake.sbremake.listeners;
 
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Metadata;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.attribute.Attribute;
+import net.minestom.server.entity.attribute.AttributeInstance;
 import net.minestom.server.event.player.PlayerPacketOutEvent;
 import net.minestom.server.item.Material;
+import net.minestom.server.network.packet.server.play.BlockBreakAnimationPacket;
+import net.minestom.server.network.packet.server.play.EntityAttributesPacket;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
+import net.minestom.server.network.packet.server.play.PlayerAbilitiesPacket;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -30,6 +37,21 @@ public class PacketOutListener implements Consumer<PlayerPacketOutEvent> {
             if (player.getBowStartPull() < 0 && player.getItemInHand(Player.Hand.MAIN).material() == Material.BOW)
                 event.setCancelled(true);
         }
+        if (event.getPacket() instanceof EntityAttributesPacket(int entityId, List<AttributeInstance> properties)) {
+            if (entityId != event.getPlayer().getEntityId()) return;
+            for (AttributeInstance attributeInstance : properties)
+                if (attributeInstance.getAttribute() == Attribute.GENERIC_ATTACK_SPEED && attributeInstance.getValue() != 4d) {
+                    attributeInstance.getModifiers().clear();
+                    attributeInstance.setBaseValue(4);
+                }
+        }
+        /*if (event.getPacket() instanceof PlayerAbilitiesPacket packet) {
+            if (packet.walkingSpeed() <= 0.2f) return;
+            event.setCancelled(true);
+            System.out.println("ARG UwU");
+            PlayerAbilitiesPacket playerAbilitiesPacket = new PlayerAbilitiesPacket(packet.flags(), packet.flyingSpeed(), 0.2f);
+            event.getPlayer().sendPacket(playerAbilitiesPacket);
+        }*/
     }
 
     private static float getHealth(double maxHealth) {

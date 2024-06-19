@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A Wrapper for an ItemStack to use some Sb features
@@ -105,6 +104,12 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
             lore.addAll(Objects.requireNonNull(sbItem.statsReplacement()).build(this, player));
             space = true;
         } else {
+            double breakingPower = getStat(Stat.BreakingPower);
+            if (breakingPower > 0) {
+                lore.add(STR."§8Breaking Power \{StringUtils.cleanDouble(breakingPower, 1)}");
+                lore.add("§8  ");
+            }
+
             for (Stat stat : redStats) {
                 double value = getStat(stat);
                 if (value == 0) continue;
