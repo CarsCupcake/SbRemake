@@ -32,6 +32,14 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         items.put(item.getId(), item);
     }
 
+    public static ISbItem raw(String id) {
+        return items.get(id);
+    }
+
+    public static SbItemStack from(Class<? extends ISbItem> itemClass) {
+        return ISbItem.get(itemClass).create();
+    }
+
     public static @Nullable SbItemStack from(String id) {
         ISbItem item = items.get(id);
         if (item == null) return null;
@@ -174,5 +182,10 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     public List<Ability> getAbilities() {
         //Later add stuff like hype ability
         return sbItem.getDefaultAbilities();
+    }
+
+    public SbItemStack withAmount(int i) {
+        if (i <= 0) return null;
+        return new SbItemStack(item.withAmount(i), sbItem);
     }
 }

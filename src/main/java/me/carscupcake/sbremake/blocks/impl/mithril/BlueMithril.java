@@ -1,12 +1,12 @@
-package me.carscupcake.sbremake.blocks.impl;
+package me.carscupcake.sbremake.blocks.impl.mithril;
 
 import me.carscupcake.sbremake.blocks.MiningBlock;
+import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.item.impl.other.mining.resources.Mithril;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.instance.block.Block;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 
 public class BlueMithril extends MiningBlock {
@@ -20,13 +20,15 @@ public class BlueMithril extends MiningBlock {
     public int blockStrength() {
         return 1500;
     }
+
     @Override
     public int getInstaMineSpeed() {
-        return 90000;
+        return 90001;
     }
+
     @Override
-    public int regenTime(){
-        return 8*20;
+    public int regenTime() {
+        return 8 * 20;
     }
 
     @Override
@@ -41,8 +43,10 @@ public class BlueMithril extends MiningBlock {
         return new ArrayList<>(List.of(
                 Main.itemUpdater(item, player)
         ));*/
-        return new HashSet<>();
+
+        return Set.of(withMiningFortune(ISbItem.get(Mithril.class), 5, player));
     }
+
     /*@Override
     public void breakBlock(Block b, SkyblockPlayer player){
         this.block = b;
@@ -58,7 +62,14 @@ public class BlueMithril extends MiningBlock {
         dropItems(player);
     }*/
     @Override
-    public Block resetType(){return beforeMat;}
+    public Block resetType() {
+        return beforeMat;
+    }
+
+    @Override
+    public double miningXp() {
+        return 45;
+    }
     /*@Override
     public void reset(){
         block.setType(beforeMat);

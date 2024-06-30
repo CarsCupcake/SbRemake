@@ -10,6 +10,7 @@ import me.carscupcake.sbremake.worlds.impl.DwarvenMines;
 import me.carscupcake.sbremake.worlds.impl.HubWorld;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Chunk;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
@@ -116,89 +117,106 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         }
 
         public void init(InstanceContainer container, @Nullable Runnable after) {
-            Thread.ofVirtual().factory().newThread(() -> {
-                try {
-                    this.container = container;
-                    File f = new File(STR."./worlds/\{type().getId()}");
-                    if (!f.exists()) {
-                        Main.LOGGER.info("Downloading world!");
-                        //Download the world from my SkyblockRemake Repo
-                        GitHub gitHub = GitHub.connectAnonymously();
-                        f.mkdirs();
-                        File dir = new File("./worlds");
-                        File tempFolder = new File("./temp");
-                        tempFolder.mkdirs();
-                        AtomicReference<File> file = new AtomicReference<>();
-                        try {
-                            file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent(STR."resources/worlds/\{type().getId()}.\{type().fileEnding.literal}").getDownloadUrl(), null, tempFolder));
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
-                            if (type().fileEnding == FileEnding.RAR) {
-                                for (InputStream stream : extract(file.get().getAbsolutePath()).keySet()) {
-                                    BufferedInputStream in = new BufferedInputStream(stream);
-                                    FileOutputStream fout = new FileOutputStream(f);
-                                    final byte[] data = new byte[1024];
-                                    int count;
-                                    while ((count = in.read(data, 0, 1024)) != -1) {
-                                        fout.write(data, 0, count);
-                                    }
+            init(container, after, true);
+        }
+
+        private void init0(InstanceContainer container, @Nullable Runnable after, boolean async) {
+            try {
+                File f = new File(STR."./worlds/\{type().getId()}");
+                if (!f.exists()) {
+                    Main.LOGGER.info("Downloading world!");
+                    //Download the world from my SkyblockRemake Repo
+                    GitHub gitHub = GitHub.connectAnonymously();
+                    f.mkdirs();
+                    File dir = new File("./worlds");
+                    File tempFolder = new File("./temp");
+                    tempFolder.mkdirs();
+                    AtomicReference<File> file = new AtomicReference<>();
+                    try {
+                        file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent(STR."resources/worlds/\{type().getId()}.\{type().fileEnding.literal}").getDownloadUrl(), null, tempFolder));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        if (type().fileEnding == FileEnding.RAR) {
+                            for (InputStream stream : extract(file.get().getAbsolutePath()).keySet()) {
+                                BufferedInputStream in = new BufferedInputStream(stream);
+                                FileOutputStream fout = new FileOutputStream(f);
+                                final byte[] data = new byte[1024];
+                                int count;
+                                while ((count = in.read(data, 0, 1024)) != -1) {
+                                    fout.write(data, 0, count);
                                 }
-                            } else {
-                                f.delete();
-                                getZipFiles(file.get().getAbsolutePath(), dir.getAbsolutePath());
-                                new File(dir, "world").renameTo(new File(dir, type().getId()));
                             }
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                        File wrongFile = new File("./worlds/Unidentified_Server");
-                        if (wrongFile.exists()) {
+                        } else {
                             f.delete();
-                            wrongFile.renameTo(new File(dir, type().getId()));
+                            getZipFiles(file.get().getAbsolutePath(), dir.getAbsolutePath());
+                            new File(dir, "world").renameTo(new File(dir, type().getId()));
                         }
-                        Arrays.stream(tempFolder.listFiles()).forEach(file1 -> {
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    File wrongFile = new File("./worlds/Unidentified_Server");
+                    if (wrongFile.exists()) {
+                        f.delete();
+                        wrongFile.renameTo(new File(dir, type().getId()));
+                    }
+                    Arrays.stream(tempFolder.listFiles()).forEach(file1 -> {
+                        try {
+                            file1.delete();
+                        } catch (Exception e) {
+                            e.printStackTrace(System.err);
+                        }
+                    });
+                    tempFolder.delete();
+                    File fakeFolder = new File(dir, "world");
+                    if (fakeFolder.exists()) {
+                        Arrays.stream(fakeFolder.listFiles()).forEach(file1 -> {
                             try {
                                 file1.delete();
                             } catch (Exception e) {
                                 e.printStackTrace(System.err);
                             }
                         });
-                        tempFolder.delete();
-                        File fakeFolder = new File(dir, "world");
-                        if (fakeFolder.exists()) {
-                            Arrays.stream(fakeFolder.listFiles()).forEach(file1 -> {
-                                try {
-                                    file1.delete();
-                                } catch (Exception e) {
-                                    e.printStackTrace(System.err);
-                                }
-                            });
-                        }
-                        fakeFolder.delete();
-                        f = new File(STR."./worlds/\{type().getId()}");
                     }
-                    container.setChunkLoader(new AnvilLoader(f.toPath()));
-                    var chunks = new ArrayList<CompletableFuture<Chunk>>();
-                    ChunkUtils.forChunksInRange(0, 0, 32, (x, z) -> chunks.add(container.loadChunk(x, z)));
-                    CompletableFuture.runAsync(() -> {
-                        CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
-                        System.out.println("load end");
-                        LightingChunk.relight(container, container.getChunks());
-                        System.out.println("light end");
-                        container.loadChunk(spawn().chunkX(), spawn().chunkZ());
-                        if (after != null) after.run();
-                    });
-                    addWorld(this);
-                    register();
-                    Main.LOGGER.info(STR."Loaded \{type().getId()} Instance");
-                } catch (Exception e) {
-                    Main.LOGGER.info("A world failed to load!");
-                    e.printStackTrace(System.err);
-                    Main.LOGGER.trace(STR."An Error occured while loading \{type().getId()}", e);
+                    fakeFolder.delete();
+                    f = new File(STR."./worlds/\{type().getId()}");
                 }
+                container.setChunkLoader(new AnvilLoader(f.toPath()));
+                var chunks = new ArrayList<CompletableFuture<Chunk>>();
+                ChunkUtils.forChunksInRange(0, 0, 32, (x, z) -> chunks.add(container.loadChunk(x, z)));
+                if (async) CompletableFuture.runAsync(() -> {
+                    CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
+                    System.out.println("load end");
+                    LightingChunk.relight(container, container.getChunks());
+                    System.out.println("light end");
+                    container.loadChunk(spawn().chunkX(), spawn().chunkZ());
+                    if (after != null) after.run();
+                });
+                else {
+                    CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
+                    System.out.println("load end");
+                    LightingChunk.relight(container, container.getChunks());
+                    System.out.println("light end");
+                    container.loadChunk(spawn().chunkX(), spawn().chunkZ());
+                    if (after != null) after.run();
+                }
+                addWorld(this);
+                register();
+                Main.LOGGER.info(STR."Loaded \{type().getId()} Instance");
+            } catch (Exception e) {
+                Main.LOGGER.info("A world failed to load!");
+                e.printStackTrace(System.err);
+                Main.LOGGER.trace(STR."An Error occured while loading \{type().getId()}", e);
+            }
+        }
+
+        public void init(InstanceContainer container, @Nullable Runnable after, boolean async) {
+            this.container = container;
+            if (async) Thread.ofVirtual().factory().newThread(() -> {
+                init0(container, after, true);
             }).start();
+            else init0(container, after, false);
         }
 
         protected void register() {

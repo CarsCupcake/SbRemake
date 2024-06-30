@@ -35,7 +35,6 @@ public class ConfigSection {
         return o;
     });
     public static final Data<SbItemStack> ITEM = new ClassicGetter<>(element1 -> {
-        System.out.println(element1);
         CompoundBinaryTag tag = computeTag(element1.getAsJsonObject().get("nbt").getAsJsonObject());
         int size = element1.getAsJsonObject().get("size").getAsInt();
         String id = tag.getString("id");

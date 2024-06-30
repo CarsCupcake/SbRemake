@@ -7,6 +7,7 @@ import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.command.ConsoleSender;
 import net.minestom.server.command.builder.Command;
@@ -52,6 +53,12 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addListener(PlayerChangeHeldSlotEvent.class, new SwapSlotListener());
         MinecraftServer.getGlobalEventHandler().addChild(Ability.ABILITY_NODE);
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
+        MinecraftServer.getSchedulerManager().buildShutdownTask(() -> {
+            Audiences.players().forEachAudience(audience -> {
+                SkyblockPlayer player = (SkyblockPlayer) audience;
+                player.kick("Server shutting down!");
+            });
+        });
 
         CommandManager commandManager = MinecraftServer.getCommandManager();
         Reflections reflections = new Reflections("me.carscupcake.sbremake.command");

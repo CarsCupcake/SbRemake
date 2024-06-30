@@ -3,14 +3,14 @@ package me.carscupcake.sbremake.blocks;
 import lombok.Getter;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
-import me.carscupcake.sbremake.item.Listener;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TaskScheduler;
+import net.kyori.adventure.sound.Sound;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
-import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -19,16 +19,13 @@ import net.minestom.server.event.player.PlayerStartDiggingEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.block.BlockFace;
-import net.minestom.server.instance.block.BlockHandler;
-import net.minestom.server.network.packet.server.play.BlockBreakAnimationPacket;
-import net.minestom.server.utils.NamespaceID;
-import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 @Getter
@@ -67,8 +64,7 @@ public abstract class MiningBlock {
     public int getMiningTicks(SkyblockPlayer player) {
         double mining_speed = player.getStat(Stat.MiningSpeed);
         double SoftCap = getSoftCap();
-        if (SoftCap <= mining_speed)
-            mining_speed = SoftCap;
+        if (SoftCap <= mining_speed) mining_speed = SoftCap;
 
         double MiningTime = (blockStrength() * 30) / mining_speed;
         return (int) MiningTime;
@@ -85,6 +81,7 @@ public abstract class MiningBlock {
             }
         }.delayTask(regenTime());
         dropItems(player, pos, face);
+        instance.playSound(breakingSound(), pos);
     }
 
     protected void dropItems(SkyblockPlayer player, Pos block, BlockFace face) {
@@ -102,8 +99,14 @@ public abstract class MiningBlock {
         return speed >= getInstaMineSpeed();
     }
 
+    public abstract double miningXp();
+
     public void reset(Instance instance, Pos block) {
         instance.setBlock(block, resetType());
+    }
+
+    public Sound breakingSound() {
+        return SoundType.BLOCK_STONE_BREAK.create(Sound.Source.BLOCK, 1.0f, 0.8f);
     }
 
     public static final Map<Block, MiningBlock> BLOCKS = new HashMap<>();
@@ -138,5 +141,13 @@ public abstract class MiningBlock {
                 e.printStackTrace(System.err);
             }
         }
+    }
+
+    public SbItemStack withMiningFortune(ISbItem sbItem, int base, SkyblockPlayer player) {
+        double miningFortune = player.getStat(Stat.MiningFortune) / 100d;
+        long baseMult = (long) miningFortune;
+        double chance = miningFortune - baseMult;
+        if (new Random().nextDouble() <= chance) baseMult++;
+        return sbItem.create().withAmount((int) (base * (1 + baseMult)));
     }
 }

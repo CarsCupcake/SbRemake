@@ -43,6 +43,7 @@ import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerPacketEvent;
+import net.minestom.server.event.player.PlayerRespawnEvent;
 import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
@@ -254,7 +255,11 @@ public class SkyblockPlayer extends Player {
             configFile.set(STR."\{i}", item, ConfigSection.ITEM);
         }
         configFile.save();
-    });
+        System.out.println(STR."Saved inventory from \{player.getName()}");
+        ConfigFile defaults = new ConfigFile("defaults", player);
+        defaults.set("world", player.getWorldProvider().type().getId(), ConfigSection.STRING);
+        defaults.save();
+    }).addListener(PlayerRespawnEvent.class, event -> event.setRespawnPosition(((SkyblockPlayer) event.getPlayer()).getWorldProvider().spawn()));
 
     private static int getSlot(ItemType type) {
         return switch (type) {

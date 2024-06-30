@@ -28,4 +28,8 @@ public abstract class TaskScheduler implements Runnable {
         task.cancel();
         task = null;
     }
+
+    public boolean isRunning() {
+        return task.isAlive();
+    }
 }

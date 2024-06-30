@@ -15,6 +15,7 @@ import net.minestom.server.item.Material;
 import net.minestom.server.item.component.AttributeList;
 import net.minestom.server.item.component.DyedItemColor;
 import net.minestom.server.item.component.HeadProfile;
+import net.minestom.server.item.component.ItemBlockState;
 import net.minestom.server.tag.Tag;
 import net.minestom.server.utils.Unit;
 import org.jetbrains.annotations.Nullable;
@@ -35,6 +36,14 @@ public interface ISbItem {
     ItemType getType();
 
     ItemRarity getRarity();
+
+    default ItemStack.Builder build(ItemStack.Builder builder) {
+        return builder;
+    }
+
+    default ItemStackModifiers modifierBuilder() {
+        return ItemStackModifiers.BASE_MODIFIERS;
+    }
 
     default @Nullable Lore statsReplacement() {
         return null;
@@ -75,7 +84,9 @@ public interface ISbItem {
         if (this instanceof ColoredLeather leather) {
             builder.set(ItemComponent.DYED_COLOR, new DyedItemColor(leather.color().asRGB(), false));
         }
-        ItemStack item = builder.set(ItemComponent.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE).set(Tag.NBT("ExtraAttributes"),  CompoundBinaryTag.builder().putString("id", getId()).build()).build();
+        ItemStack item = build(modifierBuilder().apply(builder.set(ItemComponent.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE)
+                .set(Tag.NBT("ExtraAttributes"), CompoundBinaryTag.builder().putString("id", getId()).build())))
+                .build();
         SbItemStack itemStack = SbItemStack.from(item);
         return itemStack.update();
     }
@@ -109,8 +120,11 @@ public interface ISbItem {
             }
         }
     }
-    EventNode<Event> ABILITY_NODE = EventNode.all("item.ability")
-            .addListener(PlayerInteractEvent.class, event -> {
-
-            });
+    static ISbItem get(Class<? extends ISbItem> itemClass) {
+        try {
+            return SbItemStack.raw((String) itemClass.getDeclaredMethod("getId").invoke(itemClass.getConstructor().newInstance()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
