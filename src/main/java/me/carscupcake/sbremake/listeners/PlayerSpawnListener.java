@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.listeners;
 
+import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -22,6 +23,8 @@ public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
                 if (file.has(STR."\{i}"))
                     player.getInventory().setItemStack(i, file.get(STR."\{i}", ConfigSection.ITEM).update(player).item());
             }
+        } else {
+            player.setSbHealth(player.getMaxSbHealth());
         }
     }
 }

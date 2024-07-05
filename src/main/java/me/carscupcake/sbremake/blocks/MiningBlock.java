@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import net.kyori.adventure.sound.Sound;
@@ -81,6 +82,7 @@ public abstract class MiningBlock {
             }
         }.delayTask(regenTime());
         dropItems(player, pos, face);
+        player.getSkill(Skill.Mining).addXp(miningXp());
         instance.playSound(breakingSound(), pos);
     }
 

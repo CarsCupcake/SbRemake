@@ -19,6 +19,7 @@ import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public class ConfigSection {
+    public static final Data<ConfigSection> SECTION = new ClassicGetter<>(ConfigSection::new, ConfigSection::getRawElement);
     public static final Data<String> STRING = new ClassicGetter<>(JsonElement::getAsString, JsonPrimitive::new);
     public static final Data<Integer> INTEGER = new ClassicGetter<>(JsonElement::getAsInt, JsonPrimitive::new);
     public static final Data<Long> LONG = new ClassicGetter<>(JsonElement::getAsLong, JsonPrimitive::new);
@@ -157,6 +158,12 @@ public class ConfigSection {
 
     public <T> T get(String key, ConfigFile.Data<T> data) {
         if (element == null) element = new JsonObject();
+        return data.get(element, key);
+    }
+
+    public <T> T get(String key, ConfigFile.Data<T> data, T def) {
+        if (element == null) element = new JsonObject();
+        if (!has(key)) return def;
         return data.get(element, key);
     }
 

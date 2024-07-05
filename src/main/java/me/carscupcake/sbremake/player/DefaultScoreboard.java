@@ -1,5 +1,7 @@
 package me.carscupcake.sbremake.player;
 
+import me.carscupcake.sbremake.util.StringUtils;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
@@ -29,7 +31,7 @@ public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
     Purse {
         @Override
         public String[] apply(SkyblockPlayer player) {
-            return new String[]{" ", "§fPurse§6 -∞", "§fBits:§b ∞"};
+            return new String[]{" ", STR."§fPurse§6 \{StringUtils.cleanDouble(player.getCoins())}", "§fBits:§b ∞"};
         }
     },
     Footer {

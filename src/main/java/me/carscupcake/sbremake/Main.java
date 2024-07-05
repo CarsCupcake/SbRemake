@@ -5,6 +5,11 @@ import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.skill.impl.CombatSkill;
+import me.carscupcake.sbremake.player.skill.impl.FarmingSkill;
+import me.carscupcake.sbremake.player.skill.impl.ForagingSkill;
+import me.carscupcake.sbremake.player.skill.impl.MiningSkill;
+import me.carscupcake.sbremake.util.Gui;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
@@ -52,10 +57,16 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addListener(PlayerSpawnEvent.class, new PlayerSpawnListener());
         MinecraftServer.getGlobalEventHandler().addListener(PlayerChangeHeldSlotEvent.class, new SwapSlotListener());
         MinecraftServer.getGlobalEventHandler().addChild(Ability.ABILITY_NODE);
+        MinecraftServer.getGlobalEventHandler().addChild(Gui.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(CombatSkill.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(FarmingSkill.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(ForagingSkill.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(MiningSkill.LISTENER);
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
         MinecraftServer.getSchedulerManager().buildShutdownTask(() -> {
             Audiences.players().forEachAudience(audience -> {
                 SkyblockPlayer player = (SkyblockPlayer) audience;
+                player.save();
                 player.kick("Server shutting down!");
             });
         });

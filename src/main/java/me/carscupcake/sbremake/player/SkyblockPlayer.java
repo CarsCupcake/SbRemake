@@ -1,7 +1,6 @@
 package me.carscupcake.sbremake.player;
 
 import com.google.gson.JsonObject;
-import kotlin.jvm.internal.Reflection;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Main;
@@ -20,8 +19,10 @@ import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
 import me.carscupcake.sbremake.item.impl.bow.BowItem;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.player.protocol.SetEntityEffectPacket;
+import me.carscupcake.sbremake.player.skill.ISkill;
+import me.carscupcake.sbremake.player.skill.Skill;
+import me.carscupcake.sbremake.util.Gui;
 import me.carscupcake.sbremake.util.SoundType;
-import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -32,10 +33,8 @@ import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
 import net.minestom.server.event.Event;
-import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.EntityAttackEvent;
-import net.minestom.server.event.entity.EntityPotionAddEvent;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithBlockEvent;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithEntityEvent;
 import net.minestom.server.event.inventory.InventoryClickEvent;
@@ -53,19 +52,14 @@ import net.minestom.server.network.packet.server.ServerPacket;
 import net.minestom.server.network.packet.server.ServerPacketIdentifier;
 import net.minestom.server.network.packet.server.play.*;
 import net.minestom.server.network.player.PlayerConnection;
-import net.minestom.server.potion.Potion;
 import net.minestom.server.potion.PotionEffect;
-import net.minestom.server.potion.TimedPotion;
 import net.minestom.server.scoreboard.Sidebar;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
-import org.reflections.Reflections;
 
-import java.lang.reflect.Field;
-import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -247,18 +241,7 @@ public class SkyblockPlayer extends Player {
         ((SkyblockPlayer) event.getPlayer()).recalculateArmor();
     }).addListener(PlayerDisconnectEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-        ConfigFile configFile = new ConfigFile("inventory", player);
-        configFile.setRawElement(new JsonObject());
-        for (int i = 0; i < player.getInventory().getSize(); i++) {
-            SbItemStack item = SbItemStack.from(player.getInventory().getItemStack(i));
-            if (item == null) continue;
-            configFile.set(STR."\{i}", item, ConfigSection.ITEM);
-        }
-        configFile.save();
-        System.out.println(STR."Saved inventory from \{player.getName()}");
-        ConfigFile defaults = new ConfigFile("defaults", player);
-        defaults.set("world", player.getWorldProvider().type().getId(), ConfigSection.STRING);
-        defaults.save();
+        player.save();
     }).addListener(PlayerRespawnEvent.class, event -> event.setRespawnPosition(((SkyblockPlayer) event.getPlayer()).getWorldProvider().spawn()));
 
     private static int getSlot(ItemType type) {
@@ -292,8 +275,8 @@ public class SkyblockPlayer extends Player {
     private Task shortbowTask = null;
 
     @Getter
-    private String lastAbility = null;
-    private int lastAbilityTicks = 0;
+    private String defenseString = null;
+    private int defenseStringTicks = 0;
     @Getter
     private boolean notEnoughMana = false;
     private int notEnoughManaTicks = 0;
@@ -314,15 +297,65 @@ public class SkyblockPlayer extends Player {
     @Setter
     public Mining blockBreakScheduler = null;
 
+    @Getter
+    @Setter
+    private double coins;
+
+
+    @Getter
+    private Gui gui = null;
+
+    private final Map<Skill, ISkill> skills = new HashMap<>();
+
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
+        ConfigFile file = new ConfigFile("defaults", this);
+        coins = file.get("coins", ConfigSection.DOUBLE, 0d);
+        for (Skill skill : Skill.values())
+            skills.put(skill, skill.instantiate(this));
         sbHealth = getMaxSbHealth();
         setNoGravity(true);
     }
 
-    public void setLastAbility(String s) {
-        lastAbility = s;
-        lastAbilityTicks = 2;
+    public void save() {
+        ConfigFile configFile = new ConfigFile("inventory", this);
+        configFile.setRawElement(new JsonObject());
+        for (int i = 0; i < this.getInventory().getSize(); i++) {
+            SbItemStack item = SbItemStack.from(this.getInventory().getItemStack(i));
+            if (item == null) continue;
+            configFile.set(STR."\{i}", item, ConfigSection.ITEM);
+        }
+        configFile.save();
+        System.out.println(STR."Saved inventory from \{this.getName()}");
+        ConfigFile defaults = new ConfigFile("defaults", this);
+        defaults.set("world", this.getWorldProvider().type().getId(), ConfigSection.STRING);
+        defaults.set("coins", this.coins, ConfigSection.DOUBLE);
+        defaults.save();
+        for (ISkill skill : this.skills.values()) skill.save();
+    }
+
+    public ISkill getSkill(Skill skill) {
+        return skills.get(skill);
+    }
+
+    public void closeGui() {
+        setGui(null);
+    }
+
+    public void setGui(Gui gui) {
+        if (gui == null) {
+            if (this.gui == null) return;
+            closeInventory();
+            this.gui = null;
+            return;
+        }
+        openInventory(gui.getInventory());
+        this.gui = gui;
+    }
+
+    public void setDefenseString(String s) {
+        defenseString = s;
+        defenseStringTicks = 2;
     }
 
     public void setNotEnoughMana() {
@@ -431,9 +464,9 @@ public class SkyblockPlayer extends Player {
             }
 
             ActionBarPacket packet = new ActionBarPacket(Component.text(player.actionBar.build()));
-            if (player.lastAbility != null) {
-                player.lastAbilityTicks--;
-                if (player.lastAbilityTicks == 0) player.lastAbility = null;
+            if (player.defenseString != null) {
+                player.defenseStringTicks--;
+                if (player.defenseStringTicks == 0) player.defenseString = null;
             }
             if (player.notEnoughMana) {
                 player.notEnoughManaTicks--;

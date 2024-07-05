@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity;
 
+import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
@@ -8,6 +9,7 @@ import me.carscupcake.sbremake.event.PlayerToEntityDamageEvent;
 import me.carscupcake.sbremake.event.PlayerToEntityMageDamage;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.SkyblockPlayerArrow;
+import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.StringUtils;
@@ -44,6 +46,9 @@ import java.util.function.Function;
 
 public abstract class SkyblockEntity extends EntityCreature {
     private float health = getMaxHealth();
+    @Getter
+    @Setter
+    private SkyblockPlayer lastDamager;
 
     public SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType, UUID.randomUUID());
@@ -120,9 +125,19 @@ public abstract class SkyblockEntity extends EntityCreature {
         damage = onDamage(damage);
         if (damage <= 0) return;
         spawnDamageTag(this, event.getDamageTag());
+        lastDamager = event.getPlayer();
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
         if (canTakeKnockback())
             this.takeKnockback(0.4f, Math.sin(event.damagerPos().yaw() * 0.017453292), -Math.cos(event.damagerPos().yaw() * 0.017453292));
+    }
+
+    @Override
+    public void kill() {
+        super.kill();
+        if (lastDamager != null) {
+            if (this instanceof SkillXpDropper dropper)
+                dropper.apply(lastDamager);
+        }
     }
 
     public void doFerocity(SkyblockPlayer player, double ferocity) {
@@ -164,6 +179,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     }
 
     public void damage(double amount) {
+        lastDamager = null;
         damage(DamageType.GENERIC, (float) amount);
     }
 
@@ -211,9 +227,10 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 20) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 5) // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player)));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 16), new ClosestEntityTarget(entity, 16, entity1 -> entity1 instanceof Player p && !p.isDead()
+        && entity1.hasLineOfSight(p))));
         return aiGroup;
     }
 
