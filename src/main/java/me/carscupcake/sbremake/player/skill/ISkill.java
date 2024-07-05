@@ -69,6 +69,10 @@ public abstract class ISkill {
 
     }
 
+    public boolean isCosmetic() {
+        return false;
+    }
+
     public abstract List<SkillReward> getRewards(int level);
 
     public List<String> rewardsLore(int level, SkyblockPlayer player) {

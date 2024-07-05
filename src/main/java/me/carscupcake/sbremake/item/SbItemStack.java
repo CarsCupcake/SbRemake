@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
+import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -141,6 +142,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         }
         if (sbItem.getLorePlacement() == ISbItem.LorePlace.AboveAbility && sbItem.getLore() != Lore.EMPTY) {
             lore.addAll(sbItem.getLore().build(this, player));
+            if (sbItem instanceof SkyblockMenu)
+                return lore;
             lore.add("  ");
         }
         for (Ability ability : getAbilities()) {

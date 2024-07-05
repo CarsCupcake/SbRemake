@@ -229,8 +229,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         EntityAIGroup aiGroup = new EntityAIGroup();
         aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 5) // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 16), new ClosestEntityTarget(entity, 16, entity1 -> entity1 instanceof Player p && !p.isDead()
-        && entity1.hasLineOfSight(p))));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead())));
         return aiGroup;
     }
 

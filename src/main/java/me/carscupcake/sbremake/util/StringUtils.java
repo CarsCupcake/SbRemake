@@ -108,7 +108,7 @@ public class StringUtils {
                     } else str = STR."\{NumberUtil.round(num / 1000000, 1)}M";
                 } else str = STR."\{(int) ((num / 1000))}k";
             } else str = STR."\{NumberUtil.round(num / 1000, 1)}k";
-        } else str = STR."\{toShortNumber(num)}";
+        } else str = STR."\{cleanDouble(num)}";
         return str;
     }
 }
