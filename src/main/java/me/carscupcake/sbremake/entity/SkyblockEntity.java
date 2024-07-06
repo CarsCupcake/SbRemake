@@ -13,6 +13,7 @@ import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.StringUtils;
+import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.collision.BoundingBox;
@@ -21,8 +22,10 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.ai.EntityAIGroup;
+import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.goal.MeleeAttackGoal;
 import net.minestom.server.entity.ai.goal.RandomStrollGoal;
 import net.minestom.server.entity.ai.goal.RangedAttackGoal;
@@ -39,6 +42,7 @@ import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -229,7 +233,17 @@ public abstract class SkyblockEntity extends EntityCreature {
         EntityAIGroup aiGroup = new EntityAIGroup();
         aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 5) // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead())));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL)));
+        return aiGroup;
+    }
+
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK),
+                new RandomStrollInRegion(entity, 10, region) // Walk around
+        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 16),
+                new ClosestEntityTarget(entity, 16, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p.getRegion() == region)));
         return aiGroup;
     }
 
@@ -301,6 +315,69 @@ public abstract class SkyblockEntity extends EntityCreature {
             }
             player.getInstance().playSound(SoundType.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR.create(0.1f, 2f), getPosition());
             if (ticks <= 0) selve.cancel();
+        }
+    }
+
+    @Getter
+    protected static class RandomStrollInRegion extends GoalSelector {
+        private static final long DELAY = 7000L;
+        private final int radius;
+        private final List<Vec> closePositions;
+        private final Random random = new Random();
+        private long lastStroll;
+        private final Region region;
+        private final long randomDelay = new Random().nextLong(5000);
+
+        public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, Region region) {
+            super(entityCreature);
+            this.region = region;
+            this.radius = radius;
+            this.closePositions = getNearbyBlocks(radius);
+        }
+
+        public boolean shouldStart() {
+            return System.currentTimeMillis() - this.lastStroll >= DELAY + randomDelay;
+        }
+
+        public void start() {
+            int remainingAttempt = this.closePositions.size();
+            while (remainingAttempt-- > 0) {
+                int index = this.random.nextInt(this.closePositions.size());
+                Vec position = this.closePositions.get(index);
+                Pos target = this.entityCreature.getPosition().add(position);
+                if (region.isInRegion(target)) {
+                    boolean result = this.entityCreature.getNavigator().setPathTo(target);
+                    if (result) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void tick(long time) {
+        }
+
+        public boolean shouldEnd() {
+            return true;
+        }
+
+        public void end() {
+            this.lastStroll = System.currentTimeMillis();
+        }
+
+        private @NotNull List<Vec> getNearbyBlocks(int radius) {
+            List<Vec> blocks = new ArrayList<>();
+
+            for (int x = -radius; x <= radius; ++x) {
+                for (int y = -radius; y <= radius; ++y) {
+                    for (int z = -radius; z <= radius; ++z) {
+                        Vec vec = new Vec(x, y, z);
+                        blocks.add(vec);
+                    }
+                }
+            }
+
+            return blocks;
         }
     }
 }

@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
+import me.carscupcake.sbremake.worlds.impl.HubWorld;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.attribute.Attribute;
 
@@ -12,8 +13,8 @@ import java.util.List;
 public class GraveyardZombie extends SkyblockEntity implements SkillXpDropper {
     public GraveyardZombie() {
         super(EntityType.ZOMBIE);
-        addAIGroup(zombieAiGroup(this));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.1f);
+        addAIGroup(zombieAiGroup(this, HubWorld.Region.Graveyard));
+        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
     }
 
     @Override

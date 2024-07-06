@@ -17,7 +17,7 @@ public class TeleportCommand extends Command {
 
         setDefaultExecutor((source, context) -> source.sendMessage(Component.text("Usage: /tp x y z")));
 
-        var posArg = ArgumentType.RelativeVec3("pos");
+        var posArg = ArgumentType.RelativeVec3("block");
         var playerArg = ArgumentType.Word("player");
 
         addSyntax(this::onPlayerTeleport, playerArg);
@@ -37,7 +37,7 @@ public class TeleportCommand extends Command {
     private void onPositionTeleport(CommandSender sender, CommandContext context) {
         final Player player = (Player) sender;
 
-        final RelativeVec relativeVec = context.get("pos");
+        final RelativeVec relativeVec = context.get("block");
         final Pos position = player.getPosition().withCoord(relativeVec.from(player));
         player.teleport(position);
         player.sendMessage(Component.text("You have been teleported to " + position));

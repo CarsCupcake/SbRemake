@@ -25,7 +25,7 @@ public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
     Location {
         @Override
         public String[] apply(SkyblockPlayer player) {
-            return new String[]{" §7⏣ None"};
+            return new String[]{STR." §7⏣ \{(player.getRegion() == null) ? "None" : player.getRegion()}"};
         }
     },
     Purse {

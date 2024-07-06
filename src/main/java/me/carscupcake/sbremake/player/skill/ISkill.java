@@ -66,7 +66,14 @@ public abstract class ISkill {
     }
 
     public void levelUp(int level) {
-
+        player.sendMessage(STR."§3▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+        player.sendMessage(STR."  §b§lSKILL LEVELED UP!§r §3\{getName()} §8\{StringUtils.toRoman(level - 1)}➜§3\{StringUtils.toRoman(level)}");
+        player.sendMessage("  ");
+        player.sendMessage("  §a§lREWARDS");
+        for (String s : rewardsLore(level, player)) {
+            player.sendMessage(STR."   \{s}");
+        }
+        player.sendMessage(STR."§3▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
     }
 
     public boolean isCosmetic() {

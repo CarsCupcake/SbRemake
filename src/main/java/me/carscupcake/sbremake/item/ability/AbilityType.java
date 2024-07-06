@@ -26,6 +26,11 @@ public interface AbilityType<T extends PlayerEvent> {
         }
 
         @Override
+        public boolean canExecute(PlayerInteractEvent o) {
+            return AbilityType.super.canExecute(o) && o.interaction() == PlayerInteractEvent.Interaction.Right;
+        }
+
+        @Override
         public String name() {
             return "Right Click";
         }
@@ -43,12 +48,54 @@ public interface AbilityType<T extends PlayerEvent> {
 
         @Override
         public boolean canExecute(PlayerInteractEvent o) {
-            return AbilityType.super.canExecute(o) && o.player().isSneaking();
+            return AbilityType.super.canExecute(o) && o.player().isSneaking() && o.interaction() == PlayerInteractEvent.Interaction.Right;
         }
 
         @Override
         public String name() {
             return "Sneak Right Click";
+        }
+    };
+    AbilityType<PlayerInteractEvent> LEFT_CLICK = new AbilityType<>() {
+        @Override
+        public Class<PlayerInteractEvent> type() {
+            return PlayerInteractEvent.class;
+        }
+
+        @Override
+        public boolean isSneak() {
+            return false;
+        }
+
+        @Override
+        public boolean canExecute(PlayerInteractEvent o) {
+            return AbilityType.super.canExecute(o) && o.interaction() == PlayerInteractEvent.Interaction.Left;
+        }
+
+        @Override
+        public String name() {
+            return "Left Click";
+        }
+    };
+    AbilityType<PlayerInteractEvent> SNEAK_LEFT_CLICK = new AbilityType<>() {
+        @Override
+        public Class<PlayerInteractEvent> type() {
+            return PlayerInteractEvent.class;
+        }
+
+        @Override
+        public boolean isSneak() {
+            return true;
+        }
+
+        @Override
+        public boolean canExecute(PlayerInteractEvent o) {
+            return AbilityType.super.canExecute(o) && o.player().isSneaking() && o.interaction() == PlayerInteractEvent.Interaction.Left;
+        }
+
+        @Override
+        public String name() {
+            return "Sneak Left Click";
         }
     };
 }

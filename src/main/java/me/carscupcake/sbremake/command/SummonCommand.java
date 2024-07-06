@@ -27,7 +27,7 @@ public class SummonCommand extends Command {
         setCondition(Conditions::playerOnly);
 
         entity = ArgumentType.Enum("entity type", EntityClass.class);
-        pos = ArgumentType.RelativeVec3("pos").setDefaultValue(() -> new RelativeVec(
+        pos = ArgumentType.RelativeVec3("block").setDefaultValue(() -> new RelativeVec(
                 new Vec(0, 0, 0),
                 RelativeVec.CoordinateType.RELATIVE,
                 true, true, true

@@ -11,6 +11,8 @@ import me.carscupcake.sbremake.player.skill.impl.ForagingSkill;
 import me.carscupcake.sbremake.player.skill.impl.MiningSkill;
 import me.carscupcake.sbremake.util.Gui;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.impl.HubWorld;
+import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandManager;
@@ -62,6 +64,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(FarmingSkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(ForagingSkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(MiningSkill.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(Region.LISTENER);
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
         MinecraftServer.getSchedulerManager().buildShutdownTask(() -> {
             Audiences.players().forEachAudience(audience -> {

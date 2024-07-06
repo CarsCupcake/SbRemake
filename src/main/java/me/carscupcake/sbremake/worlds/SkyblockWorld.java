@@ -8,6 +8,7 @@ import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
 import me.carscupcake.sbremake.worlds.impl.DwarvenMines;
 import me.carscupcake.sbremake.worlds.impl.HubWorld;
+import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.Instance;
@@ -161,7 +162,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                         f.delete();
                         wrongFile.renameTo(new File(dir, type().getId()));
                     }
-                    Arrays.stream(tempFolder.listFiles()).forEach(file1 -> {
+                    Arrays.stream(Objects.requireNonNull(tempFolder.listFiles())).forEach(file1 -> {
                         try {
                             file1.delete();
                         } catch (Exception e) {
@@ -171,7 +172,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                     tempFolder.delete();
                     File fakeFolder = new File(dir, "world");
                     if (fakeFolder.exists()) {
-                        Arrays.stream(fakeFolder.listFiles()).forEach(file1 -> {
+                        Arrays.stream(Objects.requireNonNull(fakeFolder.listFiles())).forEach(file1 -> {
                             try {
                                 file1.delete();
                             } catch (Exception e) {
@@ -250,6 +251,8 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         }
 
         public abstract Pos spawn();
+
+        public abstract Region[] regions();
     }
 
     private static Map<InputStream, String> extract(String filePath) throws IOException {

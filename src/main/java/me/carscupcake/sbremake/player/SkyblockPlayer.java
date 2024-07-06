@@ -25,6 +25,8 @@ import me.carscupcake.sbremake.player.skill.ISkill;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.*;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.region.Region;
+import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
@@ -92,9 +94,11 @@ public class SkyblockPlayer extends Player {
                     if (packet.hand() == Hand.MAIN) {
                         long time = System.currentTimeMillis();
                         long delta = time - player.lastAttack;
+                        Entity result = player.getLineOfSightEntity(player.getStat(Stat.SwingRange), entity -> entity.getEntityType() != EntityType.PLAYER && entity instanceof LivingEntity);
+                        SkyblockEntity entity = (result instanceof SkyblockEntity sb) ? sb : null;
+                        MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, entity, PlayerInteractEvent.Interaction.Left));
                         if (delta >= player.attackCooldown()) {
-                            Entity result = player.getLineOfSightEntity(player.getStat(Stat.SwingRange), entity -> entity.getEntityType() != EntityType.PLAYER && entity instanceof LivingEntity);
-                            if (result instanceof SkyblockEntity entity && entity.getEntityType() != EntityType.PLAYER) {
+                            if (entity != null && entity.getEntityType() != EntityType.PLAYER) {
                                 player.lastAttack = time;
                                 entity.damage(player);
                                 return;
@@ -129,6 +133,9 @@ public class SkyblockPlayer extends Player {
                         if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem)) return;
                         SkyblockPlayerArrow.shootBow(player, chargingTime, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
                     }
+                    if (packet.status() == ClientPlayerDiggingPacket.Status.STARTED_DIGGING) {
+                        MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, packet.blockPosition(), packet.blockFace(), PlayerInteractEvent.Interaction.Left));
+                    }
                     return;
                 }
                 if (event.getPacket() instanceof ClientUseItemPacket packet) {
@@ -150,7 +157,7 @@ public class SkyblockPlayer extends Player {
                     long now = System.currentTimeMillis();
                     if (now - player.lastInteractPacket < 100) return;
                     player.lastInteractPacket = now;
-                    MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player));
+                    MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, PlayerInteractEvent.Interaction.Right));
                     return;
                 }
 
@@ -159,7 +166,7 @@ public class SkyblockPlayer extends Player {
                     long now = System.currentTimeMillis();
                     if (now - player.lastInteractPacket < 100) return;
                     player.lastInteractPacket = now;
-                    MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, packet.blockPosition(), packet.blockFace()));
+                    MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, packet.blockPosition(), packet.blockFace(), PlayerInteractEvent.Interaction.Right));
                 }
 
                 if (event.getPacket() instanceof ClientInteractEntityPacket packet) {
@@ -167,7 +174,7 @@ public class SkyblockPlayer extends Player {
                     long now = System.currentTimeMillis();
                     if (now - player.lastInteractPacket < 100) return;
                     player.lastInteractPacket = now;
-                    MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, player.getInstance().getEntities().stream().filter(entity -> entity.getEntityId() == packet.targetId()).findFirst().orElse(null)));
+                    MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, player.getInstance().getEntities().stream().filter(entity -> entity.getEntityId() == packet.targetId()).findFirst().orElse(null), PlayerInteractEvent.Interaction.Right));
                 }
 
             }).addListener(ProjectileCollideWithBlockEvent.class, event -> {
@@ -278,49 +285,38 @@ public class SkyblockPlayer extends Player {
     @Getter
     public double mana = 100;
     private final ActionBar actionBar = new ActionBar(this);
-
     @Getter
     private double sbHealth;
-
     @Getter
     private long bowStartPull = -1;
-
     private long lastAttack = System.currentTimeMillis();
-
     private long lastShortbowKeepAlive = System.currentTimeMillis();
-
     private Task shortbowTask = null;
-
     @Getter
     private String defenseString = null;
     private int defenseStringTicks = 0;
     @Getter
     private boolean notEnoughMana = false;
     private int notEnoughManaTicks = 0;
-
     private boolean oftick = false;
-
     private long lastInteractPacket = 0;
-
     private final Map<FullSetBonus, Integer> fullSetBonuses = new HashMap<>();
-
     @Getter
     @Setter
     private Function<SkyblockPlayer, String[]>[] scoreboardDisplay = DefaultScoreboard.values();
     @Getter
     public final Sidebar sidebar = new Sidebar(Component.text("§6§lSKYBLOCK"));
-
     @Getter
     @Setter
     public Mining blockBreakScheduler = null;
-
     @Getter
     @Setter
     private double coins;
-
-
     @Getter
     private Gui gui = null;
+    @Getter
+    @Setter
+    public Region region = null;
 
     private final Map<Skill, ISkill> skills = new HashMap<>();
 
@@ -426,6 +422,12 @@ public class SkyblockPlayer extends Player {
     public void sendMessage(@NotNull String message) {
         SystemMessagePackage chatMessage = new SystemMessagePackage(message, false);
         sendPacket(chatMessage);
+    }
+
+    @Override
+    public void sendMessage(final @NotNull Component message) {
+        SystemMessagePackage messagePackage = new SystemMessagePackage(message, false);
+        sendPacket(messagePackage);
     }
 
     /**
