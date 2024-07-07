@@ -20,17 +20,18 @@ import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
 import me.carscupcake.sbremake.item.impl.bow.BowItem;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.player.protocol.SetEntityEffectPacket;
 import me.carscupcake.sbremake.player.skill.ISkill;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.*;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
+import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
@@ -44,13 +45,18 @@ import net.minestom.server.event.inventory.InventoryClickEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.PickupItemEvent;
+import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.event.player.PlayerRespawnEvent;
+import net.minestom.server.instance.LightingChunk;
+import net.minestom.server.instance.block.Block;
 import net.minestom.server.inventory.click.ClickType;
+import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.DyedItemColor;
+import net.minestom.server.item.component.Tool;
 import net.minestom.server.network.NetworkBuffer;
 import net.minestom.server.network.packet.client.play.*;
 import net.minestom.server.network.packet.server.ServerPacket;
@@ -64,7 +70,10 @@ import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.reflections.Reflections;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -84,6 +93,9 @@ public class SkyblockPlayer extends Player {
                 }
             }).addListener(PlayerPacketEvent.class, event -> {
                 SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+                //Packet Logger
+                /*if (!(event.getPacket() instanceof ClientChunkBatchReceivedPacket || event.getPacket() instanceof ClientPlayerPositionPacket || event.getPacket() instanceof ClientPlayerRotationPacket || event.getPacket() instanceof ClientPlayerPositionAndRotationPacket))
+                    System.out.println(event.getPacket());*/
                 if (event.getPacket() instanceof ClientTeleportConfirmPacket confirmPacket) {
                     if (player.spawnTeleportId == confirmPacket.teleportId()) {
                         player.scheduler().buildTask(() -> player.setNoGravity(false)).delay(TaskSchedule.tick(5)).schedule();
@@ -135,6 +147,37 @@ public class SkyblockPlayer extends Player {
                     }
                     if (packet.status() == ClientPlayerDiggingPacket.Status.STARTED_DIGGING) {
                         MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, packet.blockPosition(), packet.blockFace(), PlayerInteractEvent.Interaction.Left));
+                        if (!player.getWorldProvider().useCustomMining()) {
+                            Block block = player.getInstance().getBlock(packet.blockPosition());
+                            double hardness = block.registry().hardness();
+                            if (hardness > 0) {
+                                ItemStack item = player.getItemInHand(Hand.MAIN);
+                                Tool tool = item.get(ItemComponent.TOOL);
+                                if (tool != null) {
+                                    for (Tool.Rule rule : tool.rules()) {
+                                        if (rule.blocks().test(block)) {
+                                            if (rule.speed() == null) continue;
+                                            double mult = rule.speed();
+                                            SbItemStack sbItem = SbItemStack.from(item);
+                                            int lvl = sbItem.getEnchantmentLevel(NormalEnchantment.Efficiency);
+                                            if (lvl > 0)
+                                                mult += Math.pow(lvl, 2) + 1;
+                                            //TODO: add Haste
+                                            if (player.getInstance().getBlock(player.getPosition()).isLiquid())
+                                                mult /= 5;
+                                            if (!player.isOnGround())
+                                                mult /= 5;
+                                            double damage = mult / hardness;
+                                            damage /= 30;
+                                            if (damage > 1) {
+                                                event.setCancelled(player.getInstance().breakBlock(player, packet.blockPosition(), packet.blockFace(), true));
+                                            }
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                     return;
                 }
@@ -216,7 +259,7 @@ public class SkyblockPlayer extends Player {
                     // Cancel event if player does not have enough inventory space
                     final ItemStack itemStack = event.getItemEntity().getItemStack();
                     SbItemStack sbItemStack = SbItemStack.from(itemStack);
-                    event.setCancelled(!player.getInventory().addItemStack(sbItemStack.update(player).item()));
+                    event.setCancelled(!player.addItem(sbItemStack.update()));
                 }
             }).addListener(InventoryPreClickEvent.class, event -> {
                 if (event.getInventory() != null) return;
@@ -316,8 +359,9 @@ public class SkyblockPlayer extends Player {
     private Gui gui = null;
     @Getter
     @Setter
-    public Region region = null;
-
+    private Region region = null;
+    @Getter
+    private final List<me.carscupcake.sbremake.item.collections.Collection> collections = new LinkedList<>();
     private final Map<Skill, ISkill> skills = new HashMap<>();
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
@@ -328,6 +372,17 @@ public class SkyblockPlayer extends Player {
             skills.put(skill, skill.instantiate(this));
         sbHealth = getMaxSbHealth();
         setNoGravity(true);
+        Reflections reflections = new Reflections("me.carscupcake.sbremake.item.collections.impl");
+        for (Class<? extends me.carscupcake.sbremake.item.collections.Collection> clazz : reflections.getSubTypesOf(me.carscupcake.sbremake.item.collections.Collection.class)) {
+            try {
+                if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) continue;
+                Constructor<? extends me.carscupcake.sbremake.item.collections.Collection> constructor = clazz.getConstructor(SkyblockPlayer.class);
+                collections.add(constructor.newInstance(this));
+            } catch (Exception e) {
+                kick("§cError while loading");
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void openSkyblockMenu() {
@@ -386,6 +441,7 @@ public class SkyblockPlayer extends Player {
         defaults.set("coins", this.coins, ConfigSection.DOUBLE);
         defaults.save();
         for (ISkill skill : this.skills.values()) skill.save();
+        collections.forEach(me.carscupcake.sbremake.item.collections.Collection::save);
     }
 
     public ISkill getSkill(Skill skill) {
@@ -439,6 +495,7 @@ public class SkyblockPlayer extends Player {
     public void spawn() {
         super.spawn();
         setHealth(getMaxHealth());
+        setSbHealth(getMaxSbHealth());
         Pos spawn = worldProvider.spawn();
         instance.loadChunk(spawn.chunkX(), spawn.chunkZ());
         setNoGravity(true);
@@ -510,8 +567,10 @@ public class SkyblockPlayer extends Player {
                     player.addSbHealth((float) event.getRegenAmount());
                 }
                 double maxHealth = getMaxHearts(player.getMaxSbHealth());
-                if (maxHealth != player.getMaxHealth())
+                if (maxHealth != player.getMaxHealth()) {
                     player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue((float) maxHealth);
+                    player.updateHpBar();
+                }
             } else player.oftick = false;
 
             player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue((float) (0.1 * (player.getStat(Stat.Speed) / 100d)));
@@ -609,6 +668,28 @@ public class SkyblockPlayer extends Player {
         addSbHealth(health, false);
     }
 
+    public boolean addItem(ItemStack item) {
+        return addItem(SbItemStack.from(item), true);
+    }
+
+    public boolean addItem(SbItemStack item) {
+        return addItem(item, true);
+    }
+
+    public boolean addItem(SbItemStack item, boolean isCollection) {
+        if (!getInventory().addItemStack(item.item())) return false;
+        if (isCollection) {
+            for (me.carscupcake.sbremake.item.collections.Collection collection : collections) {
+                int amount = collection.progress(item.sbItem());
+                if (amount > 0) {
+                    collection.addProgress(amount * item.item().amount());
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+
     public void setSbHealth(double health) {
         double newHealth = Math.max(0, Math.min(health, getMaxSbHealth()));
         if (newHealth == getSbHealth()) return;
@@ -616,7 +697,7 @@ public class SkyblockPlayer extends Player {
         updateHpBar();
     }
 
-    private void updateHpBar() {
+    public void updateHpBar() {
         double health = getMaxHealth() * (sbHealth / getMaxSbHealth());
         if (health != getHealth()) setHealth((float) health);
     }

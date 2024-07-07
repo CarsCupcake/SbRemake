@@ -6,8 +6,8 @@ import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.ISkill;
 import me.carscupcake.sbremake.player.skill.Skill;
-import me.carscupcake.sbremake.player.skill.SkillReward;
-import me.carscupcake.sbremake.player.skill.rewards.SkyblockXpReward;
+import me.carscupcake.sbremake.rewards.Reward;
+import me.carscupcake.sbremake.rewards.impl.SkyblockXpReward;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -58,11 +58,11 @@ public class MiningSkill extends ISkill {
     }
 
     @Override
-    public List<SkillReward> getRewards(int level) {
+    public List<Reward> getRewards(int level) {
         return List.of(new SpelunkerReward(level), makeCoinReward(level), new SkyblockXpReward(xpFromLevel(level)));
     }
 
-    public record SpelunkerReward(int level) implements SkillReward {
+    public record SpelunkerReward(int level) implements Reward {
 
         @Override
         public void reward(SkyblockPlayer player) {

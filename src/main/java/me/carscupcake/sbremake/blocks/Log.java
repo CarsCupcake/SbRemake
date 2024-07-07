@@ -1,25 +1,38 @@
 package me.carscupcake.sbremake.blocks;
 
-import lombok.Getter;
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import net.minestom.server.coordinate.BlockVec;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.instance.block.predicate.BlockTypeFilter;
+import net.minestom.server.item.Material;
 
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
-public record Log(Block block, double xp) {
-    public static final Set<Log> logs = Set.of(new Log(Block.OAK_LOG, 6d), new Log(Block.OAK_WOOD, 6d));
+public record Log(Block block, ISbItem drop, double xp) {
+    public Log(Block block, double xp) {
+        this(block, ISbItem.get(Objects.requireNonNull(block.registry().material())), xp);
+    }
+
+    public static final Set<Log> logs = Set.of(new Log(Block.OAK_LOG, 6d), new Log(Block.OAK_WOOD, ISbItem.get(Material.OAK_LOG), 6d));
+
     public SbItemStack drops(SkyblockPlayer player) {
-        SbItemStack item = SbItemStack.base(Objects.requireNonNull(block.registry().material()));
+        SbItemStack item = drop.create();
         double miningFortune = player.getStat(Stat.ForagingFortune) / 100d;
         long baseMult = (long) miningFortune;
         double chance = miningFortune - baseMult;
         if (new Random().nextDouble() <= chance) baseMult++;
         return item.withAmount((int) (1 + baseMult));
+    }
+
+    public record LogInfo(Log log, Map<String, String> properties) {
+        public void regen(Instance instance, BlockVec pos) {
+            instance.setBlock(pos, log.block.withProperties(properties));
+        }
     }
 }

@@ -3,15 +3,17 @@ package me.carscupcake.sbremake;
 import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ability.Ability;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.impl.CombatSkill;
 import me.carscupcake.sbremake.player.skill.impl.FarmingSkill;
 import me.carscupcake.sbremake.player.skill.impl.ForagingSkill;
 import me.carscupcake.sbremake.player.skill.impl.MiningSkill;
+import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.Gui;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
-import me.carscupcake.sbremake.worlds.impl.HubWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
@@ -24,17 +26,9 @@ import net.minestom.server.extras.lan.OpenToLAN;
 import org.reflections.Reflections;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.util.Collections;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Main {
@@ -65,6 +59,9 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(ForagingSkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(MiningSkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(Region.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(EnchantmentUtils.LISTENER);
+        for (SkyblockEnchantment enchantment : NormalEnchantment.values())
+            SkyblockEnchantment.enchantments.put(enchantment.getId(), enchantment);
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
         MinecraftServer.getSchedulerManager().buildShutdownTask(() -> {
             Audiences.players().forEachAudience(audience -> {
@@ -120,23 +117,5 @@ public class Main {
             }
         });
         SkyblockPlayer.tickLoop();
-
-    }
-
-    public static File getFolderFromResource(String folder) throws URISyntaxException, IOException {
-
-        // get path of the current running JAR
-        String jarPath = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-
-        // file walks JAR
-        URI uri = URI.create(STR."jar:file:\{jarPath}");
-        try (FileSystem fs = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
-            File f = new File(fs.getPath(folder).toAbsolutePath().toString());
-            System.out.println(f.getAbsolutePath());
-            System.out.println(Objects.requireNonNull(f.listFiles()).length);
-            return f;
-        }
-
-
     }
 }

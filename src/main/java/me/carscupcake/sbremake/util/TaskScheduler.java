@@ -9,7 +9,10 @@ public abstract class TaskScheduler implements Runnable {
     private Task task;
 
     public void repeatTask(int delay, int repeatDelay) {
-        task = MinecraftServer.getSchedulerManager().buildTask(this).delay(TaskSchedule.tick(delay)).repeat(TaskSchedule.tick(repeatDelay)).schedule();
+        Task.Builder builder = MinecraftServer.getSchedulerManager().buildTask(this);
+        if (delay != 0)
+            builder.delay(TaskSchedule.tick(delay));
+        task = builder.repeat(TaskSchedule.tick(repeatDelay)).schedule();
     }
 
     public void repeatTask(int repeatDelay) {

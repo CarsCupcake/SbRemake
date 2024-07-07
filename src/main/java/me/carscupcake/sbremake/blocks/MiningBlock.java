@@ -8,6 +8,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TaskScheduler;
+import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.kyori.adventure.sound.Sound;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
@@ -32,9 +33,11 @@ import java.util.Set;
 @Getter
 public abstract class MiningBlock {
     private final Block block;
+    private final SkyblockWorld[] worlds;
 
-    public MiningBlock(Block block) {
+    public MiningBlock(Block block, SkyblockWorld... worlds) {
         this.block = block;
+        this.worlds = (worlds == null) ? new SkyblockWorld[0] : worlds;
     }
 
     public abstract int blockStrength();
@@ -60,6 +63,17 @@ public abstract class MiningBlock {
 
     public long getSoftCap() {
         return Math.round((6d + 2d / 3d) * blockStrength());
+    }
+
+    public SkyblockWorld[] allowedWorlds() {
+        return worlds;
+    }
+
+    public boolean allowed(SkyblockWorld world) {
+        if (allowedWorlds().length == 0) return true;
+        for (SkyblockWorld world1 : allowedWorlds())
+            if (world1 == world) return true;
+        return false;
     }
 
     public int getMiningTicks(SkyblockPlayer player) {

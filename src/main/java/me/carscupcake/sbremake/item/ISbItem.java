@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.item;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerInteractEvent;
 import me.carscupcake.sbremake.item.ability.Ability;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
@@ -123,6 +124,14 @@ public interface ISbItem {
     static ISbItem get(Class<? extends ISbItem> itemClass) {
         try {
             return SbItemStack.raw((String) itemClass.getDeclaredMethod("getId").invoke(itemClass.getConstructor().newInstance()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static ISbItem get(Material material) {
+        try {
+            return SbItemStack.raw(material.namespace().value().toUpperCase());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -6,7 +6,9 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
+import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
 import me.carscupcake.sbremake.worlds.impl.DwarvenMines;
+import me.carscupcake.sbremake.worlds.impl.GoldMines;
 import me.carscupcake.sbremake.worlds.impl.HubWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
@@ -40,7 +42,20 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         public WorldProvider get() {
             return new HubWorld();
         }
-    }, DwarvenMines("mines", FileEnding.ZIP) {
+    },
+    GoldMines("gold", FileEnding.ZIP) {
+        @Override
+        public WorldProvider get() {
+            return new GoldMines();
+        }
+    },
+    DeepCaverns("deep", FileEnding.ZIP) {
+        @Override
+        public WorldProvider get() {
+            return new DeepCaverns();
+        }
+    },
+    DwarvenMines("mines", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             return new DwarvenMines();
@@ -280,28 +295,29 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
     }
 
     private static void getZipFiles(String zipFile, String destFolder) throws IOException {
-        BufferedOutputStream dest = null;
+        BufferedOutputStream dest;
         ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)));
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
-            System.out.println("Extracting: " + entry.getName());
+            System.out.println(STR."Extracting: \{entry.getName()}");
             int count;
             byte[] data = new byte[1024];
 
             if (entry.isDirectory()) {
-                new File(destFolder + "/" + entry.getName()).mkdirs();
+                new File(STR."\{destFolder}/\{entry.getName()}").mkdirs();
                 continue;
             } else {
                 int di = entry.getName().lastIndexOf('/');
                 if (di != -1) {
-                    new File(destFolder + "/" + entry.getName().substring(0, di)).mkdirs();
+                    new File(STR."\{destFolder}/\{entry.getName().substring(0, di)}").mkdirs();
                 }
             }
-            FileOutputStream fos = new FileOutputStream(destFolder + "/" + entry.getName());
+            FileOutputStream fos = new FileOutputStream(STR."\{destFolder}/\{entry.getName()}");
             dest = new BufferedOutputStream(fos);
             while ((count = zis.read(data)) != -1) dest.write(data, 0, count);
             dest.flush();
             dest.close();
+            new File(zipFile).delete();
         }
     }
 

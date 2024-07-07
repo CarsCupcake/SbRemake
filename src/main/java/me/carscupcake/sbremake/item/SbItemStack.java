@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
+import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -137,7 +138,31 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         }
         //Todo Gemstones
         if (space) {
-            space = false;
+            lore.add(" ");
+        }
+        Map<SkyblockEnchantment, Integer> enchantmentIntegerMap = getEnchantments();
+        if (!enchantmentIntegerMap.isEmpty()) {
+            if (enchantmentIntegerMap.size() <= 6) {
+                enchantmentIntegerMap.forEach((skyblockEnchantment, integer) -> {
+                    lore.add(STR."§9\{skyblockEnchantment.getName()} \{StringUtils.toRoman(integer)}");
+                    lore.addAll(skyblockEnchantment.description().build(this, player));
+                });
+            } else {
+                StringBuilder builder = new StringBuilder("§9");
+                int i = 0;
+                for (Map.Entry<SkyblockEnchantment, Integer> entry : enchantmentIntegerMap.entrySet()) {
+                    builder.append(STR."\{entry.getKey().getName()} \{StringUtils.toRoman(entry.getValue())}");
+                    i++;
+                    if (i == 3) {
+                        i = 0;
+                        lore.add(builder.toString());
+                        builder = new StringBuilder("§9");
+                    } else
+                        builder.append(" ");
+                }
+                if (i != 0)
+                    lore.add(builder.toString());
+            }
             lore.add(" ");
         }
         if (sbItem.getLorePlacement() == ISbItem.LorePlace.AboveAbility && sbItem.getLore() != Lore.EMPTY) {
@@ -190,5 +215,22 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     public SbItemStack withAmount(int i) {
         if (i <= 0) return null;
         return new SbItemStack(item.withAmount(i), sbItem);
+    }
+
+    public int getEnchantmentLevel(SkyblockEnchantment enchantment) {
+        CompoundBinaryTag enchantments = ((CompoundBinaryTag) item.getTag(Tag.NBT("ExtraAttributes"))).getCompound("enchantments");
+        for (String key : enchantments.keySet()) {
+            if (key.equalsIgnoreCase(enchantment.getId()))
+                return enchantments.getInt(key);
+        }
+        return 0;
+    }
+    public Map<SkyblockEnchantment, Integer> getEnchantments() {
+        CompoundBinaryTag enchantments = ((CompoundBinaryTag) item.getTag(Tag.NBT("ExtraAttributes"))).getCompound("enchantments");
+        Map<SkyblockEnchantment, Integer> enchantmentMap = new HashMap<>();
+        for (String key : enchantments.keySet()) {
+           enchantmentMap.put(SkyblockEnchantment.enchantments.get(key), enchantments.getInt(key));
+        }
+        return enchantmentMap;
     }
 }

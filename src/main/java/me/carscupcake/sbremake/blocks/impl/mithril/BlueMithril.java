@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.other.mining.resources.Mithril;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.minestom.server.instance.block.Block;
 
 import java.util.Set;
@@ -13,7 +14,7 @@ public class BlueMithril extends MiningBlock {
     private static final Block beforeMat = Block.LIGHT_BLUE_WOOL;
 
     public BlueMithril() {
-        super(beforeMat);
+        super(beforeMat, SkyblockWorld.DwarvenMines);
     }
 
     @Override

@@ -6,7 +6,8 @@ import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.player.skill.rewards.CoinReward;
+import me.carscupcake.sbremake.rewards.impl.CoinReward;
+import me.carscupcake.sbremake.rewards.Reward;
 import me.carscupcake.sbremake.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -66,6 +67,9 @@ public abstract class ISkill {
     }
 
     public void levelUp(int level) {
+        List<Reward> rewards = getRewards(level);
+        for (Reward reward : rewards)
+            reward.reward(player);
         player.sendMessage(STR."§3▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         player.sendMessage(STR."  §b§lSKILL LEVELED UP!§r §3\{getName()} §8\{StringUtils.toRoman(level - 1)}➜§3\{StringUtils.toRoman(level)}");
         player.sendMessage("  ");
@@ -80,7 +84,7 @@ public abstract class ISkill {
         return false;
     }
 
-    public abstract List<SkillReward> getRewards(int level);
+    public abstract List<Reward> getRewards(int level);
 
     public List<String> rewardsLore(int level, SkyblockPlayer player) {
         List<String> lore = new ArrayList<>();
@@ -124,7 +128,7 @@ public abstract class ISkill {
                     .addAllLore(rewardsLore(level, player))
                     .addLoreIf(() -> this.level >= level, "§7  ", "§a§lUNLOCKED")
                     .addLoreIf(() -> this.level + 1 == level && level != 60, Component.text("§7  "), Component.text().append(StringUtils.makeProgressBar(10, xp, nextLevelXp[this.level], NamedTextColor.WHITE, NamedTextColor.GREEN,
-                            "§m-"), Component.text(STR."§r §e\{StringUtils.cleanDouble(xp)}§6/§e\{StringUtils.cleanDouble(nextLevelXp[this.level])}")).build())
+                            "§m "), Component.text(STR."§r §e\{StringUtils.cleanDouble(xp)}§6/§e\{StringUtils.cleanDouble(nextLevelXp[this.level])}")).build())
                     .build(), levelSlots[i]);
         }
         builder.setItem(0, new ItemBuilder(showItem)

@@ -1,0 +1,127 @@
+package me.carscupcake.sbremake.item.collections;
+
+import lombok.Getter;
+import me.carscupcake.sbremake.config.ConfigFile;
+import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.rewards.Reward;
+import me.carscupcake.sbremake.util.*;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.minestom.server.inventory.Inventory;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
+import org.junit.Assert;
+
+import javax.swing.text.TabExpander;
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+public abstract class Collection {
+    private final SkyblockPlayer player;
+    private long progress;
+    private final int[] levelProgress;
+    private final List<List<Reward>> rewards;
+    private final int maxLevel;
+    private int level;
+    public Collection(SkyblockPlayer player, int[] levels, List<List<Reward>> rewards) {
+        this.player = player;
+        this.levelProgress = levels;
+        this.rewards = rewards;
+        this.maxLevel = levels.length;
+        Assert.assertEquals(levels.length, rewards.size());
+        ConfigFile configFile = new ConfigFile("collections", player);
+        progress = configFile.get(getId(), ConfigSection.LONG, 0L);
+        level = 0;
+        while (level < getMaxLevel() && levelProgress[level] <= progress) {
+            level++;
+        }
+    }
+
+    public void addProgress(int i) {
+        if (i <= 0) return;
+        progress += i;
+        while (level < getMaxLevel() && levelProgress[level] <= progress) {
+            level++;
+            levelUp(level);
+        }
+    }
+
+    public abstract Material showItem();
+
+    private static final int[][] slots = {{22}, {21, 23}, {21, 22, 23}, {20, 21, 23, 24}, {20, 21, 22, 23, 24}, {19, 20, 21, 23, 24, 25}, {19, 20, 21, 22, 23, 24, 25}, {18, 19, 20, 21, 23, 24, 25, 26}};
+
+    public void showInventory() {
+        InventoryBuilder builder = new InventoryBuilder(6, STR."\{getName()} Collection")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .setItem(new ItemBuilder(showItem()).setName(STR."§e\{getName()} \{StringUtils.toRoman(level)}")
+                        .addAllLore(STR."§7View all your \{getName()} Collection", "§7progress and rewards!", "§7 ", STR."§7Total Collected: §e\{StringUtils.toFormatedNumber(progress)}")
+                        .build(), 4);
+        if (maxLevel < slots.length) {
+            for (int i = 0; i < maxLevel; i++) {
+                builder.setItem(getCollectionShowItem(i + 1), slots[maxLevel][i]);
+            }
+        } else {
+            for (int i = 0; i < maxLevel; i++) {
+                builder.setItem(getCollectionShowItem(i + 1), 18 + i);
+            }
+        }
+        Gui gui = new Gui(builder.setItem(new ItemBuilder(Material.BARRIER).setName("§cClose").build(), 49).build());
+        gui.setCancelled(true);
+        gui.showGui(player);
+    }
+
+    public ItemStack getCollectionShowItem(int level) {
+        String prefix = (level <= this.level) ? "§a" : (level == 1 + this.level) ? "§e" : "§c";
+        return new ItemBuilder((level <= this.level) ? Material.LIME_STAINED_GLASS_PANE : (level == 1 + this.level) ? Material.YELLOW_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE)
+                .setName(STR."\{prefix}\{getName()} \{StringUtils.toRoman(level)}")
+                .addAllLore("§a ", STR."§7Progress: \{prefix}\{StringUtils.cleanDouble(100 * Math.min(1d, (double) progress / levelProgress[level - 1]))}%")
+                .addLoreRow(StringUtils.makeProgressBar(10, progress, levelProgress[level - 1], NamedTextColor.WHITE, NamedTextColor.GREEN,
+                                "§m ").append(Component.text(STR." §e\{progress} §6/ §e\{StringUtils.toShortNumber(levelProgress[level - 1])}")))
+                .addLoreRow("§e ")
+                .addLoreRow("§aRewards:")
+                .addAllLore(rewardsLore(level))
+                .setAmount(level)
+                .build();
+    }
+
+    public void levelUp(int level) {
+        List<Reward> rewards = getRewards().get(level - 1);
+        for (Reward reward : rewards)
+            reward.reward(player);
+        player.sendMessage(STR."§e▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+        player.sendMessage(STR."  §6§lCOLLECTION LEVELED UP!§r §e\{getName()} §e\{StringUtils.toRoman(level)}");
+        player.sendMessage("  ");
+        player.sendMessage("  §a§lREWARDS");
+        for (String s : rewardsLore(level)) {
+            player.sendMessage(STR."   \{s}");
+        }
+        player.sendMessage(STR."§e▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+    }
+
+    public void save() {
+        ConfigFile configFile = new ConfigFile("collections", player);
+        configFile.set(getId(), progress, ConfigSection.LONG);
+        configFile.save();
+    }
+
+    public List<String> rewardsLore(int level) {
+        List<String> lore = new ArrayList<>();
+        getRewards().get(level - 1).forEach((reward) -> lore.addAll(reward.lore().build(null, player)));
+        return lore;
+    }
+
+    public abstract String getId();
+
+    public abstract String getName();
+
+    /**
+     * Progress for this collection
+     * @param item the item
+     * @return the amount of progress 0 = not in the collection
+     */
+    public abstract int progress(ISbItem item);
+}

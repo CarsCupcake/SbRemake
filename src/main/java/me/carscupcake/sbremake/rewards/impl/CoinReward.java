@@ -1,10 +1,10 @@
-package me.carscupcake.sbremake.player.skill.rewards;
+package me.carscupcake.sbremake.rewards.impl;
 
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.player.skill.SkillReward;
+import me.carscupcake.sbremake.rewards.Reward;
 
-public record CoinReward(int amount) implements SkillReward {
+public record CoinReward(int amount) implements Reward {
     @Override
     public void reward(SkyblockPlayer player) {
         player.setCoins(player.getCoins() + amount);

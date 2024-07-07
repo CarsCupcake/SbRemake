@@ -4,11 +4,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.internal.LazilyParsedNumber;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import net.kyori.adventure.nbt.*;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.component.EnchantmentList;
+import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.tag.Tag;
 import org.junit.Assert;
 
@@ -42,7 +48,16 @@ public class ConfigSection {
         SbItemStack stack = SbItemStack.from(id);
         assert stack != null;
         ItemStack item = stack.item().withTag(Tag.NBT("ExtraAttributes"), tag).withAmount(size);
-        return SbItemStack.from(item);
+        SbItemStack sbItemStack = SbItemStack.from(item);
+        Map<SkyblockEnchantment, Integer> enchantmentIntegerMap = sbItemStack.getEnchantments();
+        if (!enchantmentIntegerMap.isEmpty()) {
+            EnchantmentList enchantmentList = new EnchantmentList(Enchantment.PROTECTION, 1);
+            if (enchantmentIntegerMap.containsKey(NormalEnchantment.Efficiency))
+                enchantmentList = enchantmentList.with(Enchantment.EFFICIENCY, enchantmentIntegerMap.get(NormalEnchantment.Efficiency));
+            item = sbItemStack.item().with(ItemComponent.ENCHANTMENTS, enchantmentList.withTooltip(false));
+            sbItemStack = SbItemStack.from(item);
+        }
+        return sbItemStack;
     }, stack -> {
         JsonObject object = new JsonObject();
         int size = stack.item().amount();
@@ -125,7 +140,15 @@ public class ConfigSection {
                     case Byte d -> {
                         return ByteBinaryTag.byteBinaryTag(d);
                     }
-                    default -> throw new IllegalStateException(STR."Unexpected value: \{primitive.getAsNumber()}");
+
+                    case LazilyParsedNumber number -> {
+                        try {
+                            return IntBinaryTag.intBinaryTag(number.intValue());
+                        } catch (Exception ignored) {
+                            return DoubleBinaryTag.doubleBinaryTag(number.doubleValue());
+                        }
+                    }
+                    default -> throw new IllegalStateException(STR."Unexpected value: \{primitive.getAsNumber().getClass()}");
                 }
             } else if (primitive.isString()) return StringBinaryTag.stringBinaryTag(primitive.getAsString());
         }

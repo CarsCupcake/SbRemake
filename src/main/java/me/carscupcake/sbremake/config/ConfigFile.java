@@ -1,28 +1,23 @@
 package me.carscupcake.sbremake.config;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lombok.Getter;
-import me.carscupcake.sbremake.Main;
-import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import net.kyori.adventure.nbt.*;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.item.ItemStack;
-import net.minestom.server.tag.Tag;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.function.Function;
 
 @Getter
 public class ConfigFile extends ConfigSection {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
     private final File file;
     private static final File DATA_PATH = new File(Paths.get("").toAbsolutePath().toString(), "data");
+
     static {
         DATA_PATH.mkdirs();
     }

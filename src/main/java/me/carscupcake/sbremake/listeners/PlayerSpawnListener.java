@@ -26,8 +26,7 @@ public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
                     player.getInventory().setItemStack(i, file.get(STR."\{i}", ConfigSection.ITEM).update(player).item());
             }
             player.getInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create().item());
-        } else {
-            player.setSbHealth(player.getMaxSbHealth());
+            player.updateHpBar();
         }
     }
 }

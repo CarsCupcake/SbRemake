@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class HubWorld extends SkyblockWorld.WorldProvider {
-    public final HashMap<BlockVec, Log> brokenLogs = new HashMap<>();
+    public final HashMap<BlockVec, Log.LogInfo> brokenLogs = new HashMap<>();
     @Override
     public SkyblockWorld type() {
         return SkyblockWorld.Hub;
@@ -53,7 +53,7 @@ public class HubWorld extends SkyblockWorld.WorldProvider {
     private final TaskScheduler foragingReset = new TaskScheduler() {
         @Override
         public void run() {
-            brokenLogs.forEach((block, log) -> container.setBlock(block, log.block()));
+            brokenLogs.forEach((block, log) -> log.regen(container, block));
             brokenLogs.clear();
         }
     };
@@ -74,7 +74,8 @@ public class HubWorld extends SkyblockWorld.WorldProvider {
     public enum Region implements me.carscupcake.sbremake.worlds.region.Region {
         ArcheryRange("§9Archery Range", new Pair<>(new Pos(-12, 67, -130), new Pos(6, 65.22, 155))),
         Graveyard("§cGraveyard", new Pos(-99.0, 75.0, -62.0),new Pos(-92.0, 74.0, -68.0),new Pos(-88.0, 73.0, -81.0),new Pos(-82.0, 74.0, -98.0),new Pos(-77.0, 75.0, -120.0),new Pos(-52.0, 74.0, -136.0),new Pos(-40.0, 80.0, -173.0),new Pos(-41.0, 70.0, -228.0),new Pos(-107.0, 70.0, -217.0),new Pos(-147.0, 70.0, -196.0),new Pos(-178.0, 67.0, -153.0),new Pos(-214.0, 69.0, -96.0),new Pos(-207.0, 77.0, -81.0),new Pos(-173.0, 78.0, -76.0),new Pos(-145.0, 75.0, -77.0),new Pos(-130.0, 80.0, -61.0),new Pos(-108.0, 75.0, -53.0)),
-        Forest("§bForest", new Pos(-92.0, 70.0, -18.0), new Pos(-89.0, 70.0, -32.0), new Pos(-92.0, 70.0, -45.0), new Pos(-103.0, 70.0, -51.0), new Pos(-113.0, 75.0, -52.0), new Pos(-122.0, 76.0, -54.0), new Pos(-129.0, 78.0, -59.0), new Pos(-138.0, 80.0, -69.0), new Pos(-147.0, 74.0, -77.0), new Pos(-165.0, 77.0, -75.0), new Pos(-182.0, 77.0, -78.0), new Pos(-206.0, 77.0, -81.0), new Pos(-209.0, 71.0, -77.0), new Pos(-222.0, 65.0, -58.0), new Pos(-225.0, 72.0, -23.0), new Pos(-228.0, 73.0, -6.0), new Pos(-201.0, 74.0, 0.0), new Pos(-176.0, 72.0, 3.0), new Pos(-157.0, 69.0, 16.0), new Pos(-145.0, 70.0, 27.0), new Pos(-134.0, 70.0, 23.0), new Pos(-125.0, 70.0, 17.0), new Pos(-113.0, 70.0, -3.0), new Pos(-100.0, 70.0, -20.0));
+        Forest("§bForest", new Pos(-92.0, 70.0, -18.0), new Pos(-89.0, 70.0, -32.0), new Pos(-92.0, 70.0, -45.0), new Pos(-103.0, 70.0, -51.0), new Pos(-113.0, 75.0, -52.0), new Pos(-122.0, 76.0, -54.0), new Pos(-129.0, 78.0, -59.0), new Pos(-138.0, 80.0, -69.0), new Pos(-147.0, 74.0, -77.0), new Pos(-165.0, 77.0, -75.0), new Pos(-182.0, 77.0, -78.0), new Pos(-206.0, 77.0, -81.0), new Pos(-209.0, 71.0, -77.0), new Pos(-222.0, 65.0, -58.0), new Pos(-225.0, 72.0, -23.0), new Pos(-228.0, 73.0, -6.0), new Pos(-201.0, 74.0, 0.0), new Pos(-176.0, 72.0, 3.0), new Pos(-157.0, 69.0, 16.0), new Pos(-145.0, 70.0, 27.0), new Pos(-134.0, 70.0, 23.0), new Pos(-125.0, 70.0, 17.0), new Pos(-113.0, 70.0, -3.0), new Pos(-100.0, 70.0, -20.0)),
+        CoalMine("§bCoal Mine", new Pair<>(new Pos(-36, 0, -231), new Pos(5, 200, -156)));
         private final me.carscupcake.sbremake.worlds.region.Region wrapped;
 
         @SafeVarargs
