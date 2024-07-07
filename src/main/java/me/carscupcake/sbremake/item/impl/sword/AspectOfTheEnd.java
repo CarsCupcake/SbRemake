@@ -62,7 +62,7 @@ public class AspectOfTheEnd implements ISbItem, ISbItem.StatProvider {
     }
 
     @Override
-    public Map<Stat, Double> stats() {
+    public Map<Stat, Number> stats() {
         return Map.of(Stat.Damage, 100d, Stat.Strength, 100d);
     }
 

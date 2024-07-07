@@ -7,7 +7,7 @@ import net.minestom.server.coordinate.Pos;
 public class GoldMines extends SkyblockWorld.WorldProvider {
     @Override
     public SkyblockWorld type() {
-        return SkyblockWorld.DeepCaverns;
+        return SkyblockWorld.GoldMines;
     }
 
     @Override

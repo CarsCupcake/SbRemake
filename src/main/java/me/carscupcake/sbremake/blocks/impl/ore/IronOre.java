@@ -11,10 +11,10 @@ import net.minestom.server.item.Material;
 
 import java.util.Set;
 
-public class CoalOre extends MiningBlock {
+public class IronOre extends MiningBlock {
 
-    public CoalOre() {
-        super(Block.COAL_ORE);
+    public IronOre() {
+        super(Block.IRON_ORE);
     }
 
     @Override
@@ -29,13 +29,13 @@ public class CoalOre extends MiningBlock {
 
     @Override
     public int getBreakingPower() {
-        return 1;
+        return 2;
     }
 
     @Override
     public Set<SbItemStack> getDrops(SkyblockPlayer player) {
         SbItemStack item = SbItemStack.from(player.getItemInHand(Player.Hand.MAIN));
-        return Set.of(withMiningFortune(ISbItem.get((item != null && item.getEnchantmentLevel(NormalEnchantment.SilkTouch) > 0) ? Material.COAL_ORE : Material.COAL), 1, player));
+        return Set.of(withMiningFortune(ISbItem.get((item != null && item.getEnchantmentLevel(NormalEnchantment.SmeltingTouch) > 0) ? Material.IRON_INGOT : Material.IRON_ORE), 1, player));
     }
 
     @Override

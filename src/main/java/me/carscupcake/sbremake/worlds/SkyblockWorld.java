@@ -2,6 +2,11 @@ package me.carscupcake.sbremake.worlds;
 
 import lombok.Getter;
 import me.carscupcake.sbremake.Main;
+import me.carscupcake.sbremake.blocks.MiningBlock;
+import me.carscupcake.sbremake.blocks.impl.Cobblestone;
+import me.carscupcake.sbremake.blocks.impl.Stone;
+import me.carscupcake.sbremake.blocks.impl.mithril.*;
+import me.carscupcake.sbremake.blocks.impl.ore.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.MapList;
@@ -37,25 +42,26 @@ import java.util.zip.ZipInputStream;
 
 @Getter
 public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
-    Hub("hub", FileEnding.ZIP) {
+    Hub("hub", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
         public WorldProvider get() {
             return new HubWorld();
         }
     },
-    GoldMines("gold", FileEnding.ZIP) {
+    GoldMines("gold", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
         public WorldProvider get() {
             return new GoldMines();
         }
     },
-    DeepCaverns("deep", FileEnding.ZIP) {
+    DeepCaverns("deep", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
         public WorldProvider get() {
             return new DeepCaverns();
         }
     },
-    DwarvenMines("mines", FileEnding.ZIP) {
+    DwarvenMines("mines", FileEnding.ZIP, new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre(),
+            new BlueMithril(), new CyanTerracottaMithril(), new DarkPrismarineMithril(), new GrayWoolMithril(), new PrismarineBrickMithril(), new PrismarineMithril()) {
         @Override
         public WorldProvider get() {
             return new DwarvenMines();
@@ -65,10 +71,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
     private static final MapList<SkyblockWorld, WorldProvider> worlds = new MapList<>();
     private final String id;
     private final FileEnding fileEnding;
+    private final MiningBlock[] ores;
 
-    SkyblockWorld(String id, FileEnding fileEnding) {
+    SkyblockWorld(String id, FileEnding fileEnding, MiningBlock... ores) {
         this.id = id;
         this.fileEnding = fileEnding;
+        this.ores = (ores == null) ? new MiningBlock[0] : ores;
     }
 
     public static void addWorld(WorldProvider provider) {
@@ -113,6 +121,8 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
 
     @SuppressWarnings({"unused", "ignored", "preview", "UnusedReturnValue"})
     public static abstract class WorldProvider {
+        private static final MiningBlock[] VANILLA_ORES = {new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre()};
+
         private final Set<SkyblockPlayer> players = Collections.synchronizedSet(new HashSet<>());
 
         public abstract SkyblockWorld type();
@@ -123,6 +133,10 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
 
         @Getter
         public InstanceContainer container;
+
+        public MiningBlock[] ores(Pos pos) {
+            return type().getOres();
+        }
 
         public void init(InstanceContainer container) {
             init(container, null);

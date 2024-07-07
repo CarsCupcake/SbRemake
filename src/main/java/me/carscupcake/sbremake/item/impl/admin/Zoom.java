@@ -35,7 +35,7 @@ public class Zoom implements ISbItem, ISbItem.StatProvider {
     }
 
     @Override
-    public Map<Stat, Double> stats() {
+    public Map<Stat, Number> stats() {
         return Map.of(Stat.Damage, 99999999d, Stat.MiningSpeed, 99999999d, Stat.BreakingPower, 10d);
     }
 }

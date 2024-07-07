@@ -14,7 +14,7 @@ public class GrayWoolMithril extends MiningBlock {
     private static final Block beforeMat = Block.GRAY_WOOL;
 
     public GrayWoolMithril() {
-        super(beforeMat, SkyblockWorld.DwarvenMines);
+        super(beforeMat);
     }
 
     @Override

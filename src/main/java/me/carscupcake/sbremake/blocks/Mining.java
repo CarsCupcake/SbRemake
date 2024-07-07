@@ -4,10 +4,9 @@ import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.block.BlockFace;
 import net.minestom.server.network.packet.server.play.BlockBreakAnimationPacket;
-
-import static me.carscupcake.sbremake.blocks.MiningBlock.BLOCKS;
 
 public class Mining extends TaskScheduler {
     private final SkyblockPlayer player;
@@ -18,7 +17,13 @@ public class Mining extends TaskScheduler {
     private final BlockFace face;
 
     public static void make(SkyblockPlayer player, Pos pos, BlockFace face) {
-        MiningBlock miningBlock = BLOCKS.get(player.getInstance().getBlock(pos));
+        MiningBlock miningBlock = null;
+        Block block = player.getInstance().getBlock(pos);
+        for (MiningBlock m : player.getWorldProvider().ores(pos))
+            if (m.getBlock() == block) {
+                miningBlock = m;
+                break;
+            }
         if (miningBlock == null) return;
         int breakingPower = (int) player.getStat(Stat.BreakingPower);
         if (breakingPower < miningBlock.getBreakingPower()) return;

@@ -38,7 +38,7 @@ public class DarkClaymore implements ISbItem, ISbItem.StatProvider {
 
 
     @Override
-    public Map<Stat, Double> stats() {
+    public Map<Stat, Number> stats() {
         return Map.of(Stat.Damage, 500d, Stat.Strength, 100d, Stat.CritDamage, 30d, Stat.SwingRange, 2d);
     }
 

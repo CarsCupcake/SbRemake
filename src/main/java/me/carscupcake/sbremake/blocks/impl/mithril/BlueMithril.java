@@ -14,7 +14,7 @@ public class BlueMithril extends MiningBlock {
     private static final Block beforeMat = Block.LIGHT_BLUE_WOOL;
 
     public BlueMithril() {
-        super(beforeMat, SkyblockWorld.DwarvenMines);
+        super(beforeMat);
     }
 
     @Override

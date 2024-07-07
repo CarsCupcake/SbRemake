@@ -21,6 +21,7 @@ import net.minestom.server.event.player.PlayerStartDiggingEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.block.BlockFace;
+import org.psjava.formula.Min;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
@@ -33,11 +34,9 @@ import java.util.Set;
 @Getter
 public abstract class MiningBlock {
     private final Block block;
-    private final SkyblockWorld[] worlds;
 
-    public MiningBlock(Block block, SkyblockWorld... worlds) {
+    public MiningBlock(Block block) {
         this.block = block;
-        this.worlds = (worlds == null) ? new SkyblockWorld[0] : worlds;
     }
 
     public abstract int blockStrength();
@@ -65,14 +64,9 @@ public abstract class MiningBlock {
         return Math.round((6d + 2d / 3d) * blockStrength());
     }
 
-    public SkyblockWorld[] allowedWorlds() {
-        return worlds;
-    }
-
     public boolean allowed(SkyblockWorld world) {
-        if (allowedWorlds().length == 0) return true;
-        for (SkyblockWorld world1 : allowedWorlds())
-            if (world1 == world) return true;
+        for (MiningBlock b : world.getOres())
+            if (b == this) return true;
         return false;
     }
 
@@ -125,8 +119,6 @@ public abstract class MiningBlock {
         return SoundType.BLOCK_STONE_BREAK.create(Sound.Source.BLOCK, 1.0f, 0.8f);
     }
 
-    public static final Map<Block, MiningBlock> BLOCKS = new HashMap<>();
-
     public static final EventNode<Event> BREAK_NODE = EventNode.all("block.break").addListener(PlayerStartDiggingEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         if (!player.getWorldProvider().useCustomMining()) return;
@@ -146,17 +138,6 @@ public abstract class MiningBlock {
 
     public static void init() {
         MinecraftServer.getGlobalEventHandler().addChild(BREAK_NODE);
-        Reflections reflections = new Reflections("me.carscupcake.sbremake.blocks.impl");
-        for (Class<? extends MiningBlock> clazz : reflections.getSubTypesOf(MiningBlock.class)) {
-            try {
-                if (clazz.isInterface()) continue;
-                Constructor<? extends MiningBlock> constructor = clazz.getConstructor();
-                MiningBlock instance = constructor.newInstance();
-                BLOCKS.put(instance.block, instance);
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-            }
-        }
     }
 
     public SbItemStack withMiningFortune(ISbItem sbItem, int base, SkyblockPlayer player) {

@@ -1,4 +1,4 @@
-package me.carscupcake.sbremake.item.impl.admin;
+package me.carscupcake.sbremake.item.impl.pickaxe;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
@@ -8,34 +8,34 @@ import net.minestom.server.item.Material;
 
 import java.util.Map;
 
-public class TitansChestplate implements ISbItem, ISbItem.StatProvider {
+public class WoodPickaxe implements ISbItem, ISbItem.StatProvider {
     @Override
     public String getId() {
-        return "TITANS_CHESTPLATE";
+        return "WOODEN_PICKAXE";
     }
 
     @Override
     public String getName() {
-        return "Titan's Chestplate";
+        return "Wooden Pickaxe";
     }
 
     @Override
     public Material getMaterial() {
-        return Material.DIAMOND_CHESTPLATE;
+        return Material.WOODEN_PICKAXE;
     }
 
     @Override
     public ItemType getType() {
-        return ItemType.Chestplate;
+        return ItemType.Pickaxe;
     }
 
     @Override
     public ItemRarity getRarity() {
-        return ItemRarity.ADMIN;
+        return ItemRarity.COMMON;
     }
 
     @Override
     public Map<Stat, Number> stats() {
-        return Map.of(Stat.Health, 300d, Stat.Defense, 200d, Stat.Intelligence, 75d, Stat.Strength, 20d);
+        return Map.of(Stat.Damage, 15, Stat.MiningSpeed, 70, Stat.BreakingPower, 1);
     }
 }

@@ -11,35 +11,36 @@ import net.minestom.server.item.Material;
 
 import java.util.Set;
 
-public class CoalOre extends MiningBlock {
+public class DiamondBlock extends MiningBlock {
 
-    public CoalOre() {
-        super(Block.COAL_ORE);
+    public DiamondBlock() {
+        super(Block.DIAMOND_BLOCK);
     }
 
     @Override
     public int blockStrength() {
-        return 30;
+        return 50;
     }
 
     @Override
     public int getInstaMineSpeed() {
-        return 1_801;
+        return 3_001;
     }
 
     @Override
     public int getBreakingPower() {
-        return 1;
+        return 3;
     }
 
     @Override
     public Set<SbItemStack> getDrops(SkyblockPlayer player) {
         SbItemStack item = SbItemStack.from(player.getItemInHand(Player.Hand.MAIN));
-        return Set.of(withMiningFortune(ISbItem.get((item != null && item.getEnchantmentLevel(NormalEnchantment.SilkTouch) > 0) ? Material.COAL_ORE : Material.COAL), 1, player));
+        boolean b = item != null && item.getEnchantmentLevel(NormalEnchantment.SilkTouch) > 0;
+        return Set.of(withMiningFortune(ISbItem.get((b) ? Material.DIAMOND_BLOCK : Material.DIAMOND), b ? 1 : 9, player));
     }
 
     @Override
     public double miningXp() {
-        return 5;
+        return 15;
     }
 }

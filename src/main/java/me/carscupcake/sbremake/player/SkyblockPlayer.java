@@ -45,11 +45,9 @@ import net.minestom.server.event.inventory.InventoryClickEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.PickupItemEvent;
-import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.event.player.PlayerRespawnEvent;
-import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemComponent;
@@ -504,6 +502,9 @@ public class SkyblockPlayer extends Player {
         sendPacket(packet);
         sendPacket(new ClearTitlesPacket(true));
         getInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create().item());
+        SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
+        if (item != null)
+            setItemInHand(Hand.MAIN, item.update().item());
         clearEffects();
         if (worldProvider.useCustomMining()) {
             sendPacket(new SetEntityEffectPacket(getEntityId(), PotionEffect.MINING_FATIGUE.id(), 255, -1, (byte) 0));

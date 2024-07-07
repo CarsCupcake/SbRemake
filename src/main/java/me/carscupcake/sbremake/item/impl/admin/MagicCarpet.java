@@ -37,7 +37,7 @@ public class MagicCarpet implements ISbItem, ISbItem.StatProvider {
 
 
     @Override
-    public Map<Stat, Double> stats() {
+    public Map<Stat, Number> stats() {
         return Map.of(Stat.Vitality, 100_000d, Stat.Mending, 100_000d);
     }
 

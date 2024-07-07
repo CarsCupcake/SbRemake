@@ -35,7 +35,7 @@ public class FracturedMithrilPickaxe implements ISbItem, ISbItem.StatProvider {
     }
 
     @Override
-    public Map<Stat, Double> stats() {
+    public Map<Stat, Number> stats() {
         return Map.of(Stat.Damage, 30d, Stat.MiningSpeed, 225d, Stat.BreakingPower, 5d);
     }
 }

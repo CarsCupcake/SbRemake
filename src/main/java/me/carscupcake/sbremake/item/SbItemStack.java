@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
@@ -14,11 +15,15 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.item.component.EnchantmentList;
+import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+
+import static java.lang.Math.min;
 
 /**
  * A Wrapper for an ItemStack to use some Sb features
@@ -71,7 +76,15 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         List<Component> lore = new ArrayList<>();
         for (String s : buildLore(player))
             lore.add(Component.text(s));
-        return new SbItemStack(item.with(ItemComponent.LORE, lore).with(ItemComponent.CUSTOM_NAME, Component.text(getRarity().getPrefix() + displayName())), sbItem);
+        EnchantmentList list = new EnchantmentList(new HashMap<>());
+        Map<SkyblockEnchantment, Integer> enchantments = getEnchantments();
+        if (!enchantments.isEmpty()) {
+            list = list.with(Enchantment.PROTECTION, 1);
+            if (enchantments.containsKey(NormalEnchantment.Efficiency) && player != null && !player.getWorldProvider().useCustomMining()) {
+                list = list.with(Enchantment.EFFICIENCY, min(255, enchantments.get(NormalEnchantment.Efficiency)));
+            }
+        }
+        return new SbItemStack(item.with(ItemComponent.LORE, lore).with(ItemComponent.ENCHANTMENTS, list.withTooltip(false)).with(ItemComponent.CUSTOM_NAME, Component.text(getRarity().getPrefix() + displayName())), sbItem);
     }
 
     public String displayName() {

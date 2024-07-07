@@ -35,7 +35,7 @@ public class JujuShortbow implements ISbItem, Shortbow, ISbItem.StatProvider {
     }
 
     @Override
-    public Map<Stat, Double> stats() {
+    public Map<Stat, Number> stats() {
         return Map.of(Stat.Damage, 310d, Stat.Strength, 40d, Stat.CritChance, 10d, Stat.CritDamage, 110d);
     }
 }

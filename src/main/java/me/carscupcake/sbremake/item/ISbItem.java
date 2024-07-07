@@ -61,7 +61,7 @@ public interface ISbItem {
 
     default double getStat(Stat stat) {
         StatProvider provider = statProvider();
-        if (provider != null) return provider.stats().getOrDefault(stat, 0d);
+        if (provider != null) return provider.stats().getOrDefault(stat, 0d).doubleValue();
         return 0;
     }
 
@@ -97,7 +97,7 @@ public interface ISbItem {
     }
 
     interface StatProvider {
-        Map<Stat, Double> stats();
+        Map<Stat, Number> stats();
     }
 
     static void init() {

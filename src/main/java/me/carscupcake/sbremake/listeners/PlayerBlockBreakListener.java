@@ -37,7 +37,13 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                 }
             }
             if (player.getRegion() == HubWorld.Region.CoalMine) {
-                MiningBlock block = MiningBlock.BLOCKS.get(event.getBlock());
+                MiningBlock block = null;
+                for (MiningBlock miningBlock : player.getWorldProvider().ores(player.getPosition())) {
+                    if (miningBlock.getBlock() == event.getBlock()) {
+                        block = miningBlock;
+                        break;
+                    }
+                }
                 if (block != null && block.allowed(player.getWorldProvider().type())) {
                     block.breakBlock(Pos.fromPoint(event.getBlockPosition()), player, event.getBlockFace());
                     event.setCancelled(true);

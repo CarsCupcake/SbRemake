@@ -23,6 +23,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static java.lang.Math.min;
+
 @SuppressWarnings("unused")
 public class ConfigSection {
     public static final Data<ConfigSection> SECTION = new ClassicGetter<>(ConfigSection::new, ConfigSection::getRawElement);
@@ -52,8 +54,6 @@ public class ConfigSection {
         Map<SkyblockEnchantment, Integer> enchantmentIntegerMap = sbItemStack.getEnchantments();
         if (!enchantmentIntegerMap.isEmpty()) {
             EnchantmentList enchantmentList = new EnchantmentList(Enchantment.PROTECTION, 1);
-            if (enchantmentIntegerMap.containsKey(NormalEnchantment.Efficiency))
-                enchantmentList = enchantmentList.with(Enchantment.EFFICIENCY, enchantmentIntegerMap.get(NormalEnchantment.Efficiency));
             item = sbItemStack.item().with(ItemComponent.ENCHANTMENTS, enchantmentList.withTooltip(false));
             sbItemStack = SbItemStack.from(item);
         }

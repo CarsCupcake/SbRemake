@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.item.modifiers.enchantment;
 
+import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.util.EnchantmentUtils;
@@ -10,6 +11,7 @@ import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
 
 import java.util.Map;
+import java.util.Set;
 
 public enum NormalEnchantment implements SkyblockEnchantment {
     Sharpness("Sharpness", "sharpness", 7, ItemType.Sword, ItemType.Longsword) {
@@ -22,16 +24,50 @@ public enum NormalEnchantment implements SkyblockEnchantment {
     Efficiency("Efficiency", "efficiency", 10, ItemType.Pickaxe, ItemType.Drill) {
         @Override
         public Lore description() {
-            return new Lore("§7Grants §6+%a% Mining Speed", Map.of("%a%", (item, _) -> String.valueOf(10 + (item.getEnchantmentLevel(this) * 20))));
+            return new Lore(STR."§7Grants §6+%a% \{Stat.MiningSpeed}", Map.of("%a%", (item, _) -> String.valueOf(10 + (item.getEnchantmentLevel(this) * 20))));
         }
 
-        @Override
+       /* @Override
         public ItemStack apply(ItemStack item, int level) {
             item = super.apply(item, level);
             EnchantmentList list = item.get(ItemComponent.ENCHANTMENTS);
-            if (list == null) list = new EnchantmentList(Enchantment.EFFICIENCY, level);
-            else list = list.with(Enchantment.EFFICIENCY, level);
+            if (list == null) list = new EnchantmentList(Enchantment.EFFICIENCY, Math.min(255, level));
+            else list = list.with(Enchantment.EFFICIENCY, Math.min(255, level));
             return item.with(ItemComponent.ENCHANTMENTS, list.withTooltip(false));
+        }*/
+    },
+    Fortune("Fortune", "fortune", 4, ItemType.Pickaxe, ItemType.Drill) {
+        @Override
+        public Lore description() {
+            return new Lore(STR."§7Grants §6+%a% \{Stat.MiningFortune}", Map.of("%a%", (item, _) -> String.valueOf(EnchantmentUtils.getFortuneBonus(item.getEnchantmentLevel(this)))));
+        }
+    },
+    Pristine("Pristine", "pristine", 5, ItemType.Pickaxe, ItemType.Drill) {
+        @Override
+        public Lore description() {
+            return new Lore(STR."§7Grants §5+%a% \{Stat.Pristine}§7, which increases the chance to improve the quality of dropped §dGemstones§7.", Map.of("%a%", (item, _) -> String.valueOf(item.getEnchantmentLevel(this))));
+        }
+    },
+    SilkTouch("Silk Touch", "silk_touch", 1, ItemType.Pickaxe, ItemType.Drill) {
+        @Override
+        public Lore description() {
+            return new Lore("§7Allows you to collect normally unobtainable block drops.");
+        }
+
+        @Override
+        public Set<SkyblockEnchantment> conflicts() {
+            return Set.of(SmeltingTouch);
+        }
+    },
+    SmeltingTouch("Smelting Touch", "smelting_touch", 1, ItemType.Pickaxe, ItemType.Drill) {
+        @Override
+        public Lore description() {
+            return new Lore("§7Automatically smelts broken blocks into their smelted form.");
+        }
+
+        @Override
+        public Set<SkyblockEnchantment> conflicts() {
+            return Set.of(SilkTouch);
         }
     };
 

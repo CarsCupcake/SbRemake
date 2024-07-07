@@ -14,7 +14,7 @@ public class CyanTerracottaMithril extends MiningBlock {
     private static final Block beforeMat = Block.CYAN_TERRACOTTA;
 
     public CyanTerracottaMithril() {
-        super(beforeMat, SkyblockWorld.DwarvenMines);
+        super(beforeMat);
     }
 
     @Override

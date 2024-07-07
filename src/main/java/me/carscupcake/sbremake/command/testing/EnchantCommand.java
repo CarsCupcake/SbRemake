@@ -8,8 +8,6 @@ import net.minestom.server.command.builder.arguments.ArgumentEnum;
 import net.minestom.server.command.builder.arguments.number.ArgumentInteger;
 import net.minestom.server.command.builder.arguments.number.ArgumentNumber;
 import net.minestom.server.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class EnchantCommand extends Command {
     public EnchantCommand() {
@@ -26,5 +24,16 @@ public class EnchantCommand extends Command {
             }
             ((SkyblockPlayer) commandSender).setItemInHand(Player.Hand.MAIN, SbItemStack.from(enchantment.apply(item.item(), level)).update((SkyblockPlayer) commandSender).item());
         }, normalEnchantmentArgumentEnum, integerArgumentNumber);
+
+        addSyntax((commandSender, commandContext) -> {
+            NormalEnchantment enchantment = commandContext.get(normalEnchantmentArgumentEnum);
+            int level = enchantment.getMaxLevel();
+            SbItemStack item = SbItemStack.from(((SkyblockPlayer) commandSender).getItemInHand(Player.Hand.MAIN));
+            if (item == null) {
+                commandSender.sendMessage("§cNot a valid item!");
+                return;
+            }
+            ((SkyblockPlayer) commandSender).setItemInHand(Player.Hand.MAIN, SbItemStack.from(enchantment.apply(item.item(), level)).update((SkyblockPlayer) commandSender).item());
+        }, normalEnchantmentArgumentEnum);
     }
 }

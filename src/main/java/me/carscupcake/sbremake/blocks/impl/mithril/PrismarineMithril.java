@@ -14,7 +14,7 @@ public class PrismarineMithril extends MiningBlock {
     private static final Block beforeMat = Block.PRISMARINE;
 
     public PrismarineMithril() {
-        super(beforeMat, SkyblockWorld.DwarvenMines);
+        super(beforeMat);
     }
 
     @Override

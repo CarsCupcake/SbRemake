@@ -38,7 +38,7 @@ public class BowOfTheUniverse implements ISbItem, ISbItem.StatProvider, Shortbow
     }
 
     @Override
-    public Map<Stat, Double> stats() {
+    public Map<Stat, Number> stats() {
         return Map.of(Stat.Damage, 99999999d, Stat.AttackSpeed, 100d);
     }
 
