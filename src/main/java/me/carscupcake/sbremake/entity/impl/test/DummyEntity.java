@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.entity.impl.test;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.minestom.server.entity.EntityType;
 
@@ -24,7 +25,7 @@ public class DummyEntity extends SkyblockEntity {
     }
 
     @Override
-    protected float onDamage(float amount) {
+    protected float onDamage(SkyblockPlayer player, float amount) {
         damage = amount;
         return amount;
     }

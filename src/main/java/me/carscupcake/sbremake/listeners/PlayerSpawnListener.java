@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.listeners;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.entity.impl.deepCaverns.RedstonePigman;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -16,6 +17,7 @@ public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
         playerSpawnEvent.getPlayer().spawn();
         SkyblockPlayer player = (SkyblockPlayer) playerSpawnEvent.getPlayer();
         player.teleport(player.getWorldProvider().spawn());
+        RedstonePigman.attacked.remove(player);
         if (playerSpawnEvent.isFirstSpawn()) {
             ConfigFile file = new ConfigFile("inventory", player);
             if (file.getRawElement() == null) return;

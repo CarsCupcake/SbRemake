@@ -60,7 +60,7 @@ public class EntitySpawner {
         @Override
         public SkyblockEntity construct(Pos pos, Instance instance) {
             SkyblockEntity entity = entityReturnable.get();
-            entity.setInstance(instance, pos);
+            entity.setInstance(instance, pos.add(0, 1.5, 0));
             return entity;
         }
     }

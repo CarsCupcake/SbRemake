@@ -57,6 +57,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     public SkyblockEntity(@NotNull EntityType entityType) {
         super(entityType, UUID.randomUUID());
         setHealth(getMaxHealth());
+        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
     }
 
     public abstract float getMaxHealth();
@@ -110,7 +111,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         EventDispatcher.call(event);
         if (event.isCancelled()) return;
         float damage = (float) (event.calculateHit() * abilityDamageMultiplier());
-        damage = onDamage(damage);
+        damage = onDamage(event.getPlayer(), damage);
         if (damage <= 0) return;
         spawnDamageTag(this, event.getDamageTag());
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
@@ -126,7 +127,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         if (event.isCancelled()) return;
         float damage = (float) ((event.isCrit()) ? event.calculateCritHit() : event.calculateHit());
         damage = damage * (1 - (getDefense() / (getDefense() + 100)));
-        damage = onDamage(damage);
+        damage = onDamage(event.getPlayer(), damage);
         if (damage <= 0) return;
         spawnDamageTag(this, event.getDamageTag());
         lastDamager = event.getPlayer();
@@ -139,8 +140,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     public void kill() {
         super.kill();
         if (lastDamager != null) {
-            if (this instanceof SkillXpDropper dropper)
-                dropper.apply(lastDamager);
+            if (this instanceof SkillXpDropper dropper) dropper.apply(lastDamager);
         }
     }
 
@@ -212,7 +212,7 @@ public abstract class SkyblockEntity extends EntityCreature {
      * @param amount the calcualted damaege amount
      * @return the new damage amount
      */
-    protected float onDamage(float amount) {
+    protected float onDamage(SkyblockPlayer player, float amount) {
         return amount;
     }
 
@@ -229,21 +229,24 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     }
 
+    protected static EntityAIGroup regionTarget(SkyblockEntity entity, Region region, int range) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p.getRegion() == region && !entity.isDead)));
+        return aiGroup;
+    }
+
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity) {
         EntityAIGroup aiGroup = new EntityAIGroup();
         aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 5) // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL)));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && !entity.isDead)));
         return aiGroup;
     }
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region) {
-        EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK),
-                new RandomStrollInRegion(entity, 10, region) // Walk around
+        EntityAIGroup aiGroup = regionTarget(entity, region, 16);
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 10, region) // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 16),
-                new ClosestEntityTarget(entity, 16, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p.getRegion() == region)));
         return aiGroup;
     }
 
@@ -257,7 +260,14 @@ public abstract class SkyblockEntity extends EntityCreature {
         EntityAIGroup aiGroup = new EntityAIGroup();
         aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollGoal(entity, 5) // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player)));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player && !entity.isDead)));
+        return aiGroup;
+    }
+
+    protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity, Region region) {
+        EntityAIGroup aiGroup = regionTarget(entity, region, 20);
+        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollInRegion(entity, 10, region) // Walk around
+        ));
         return aiGroup;
     }
 

@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.command;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
+import me.carscupcake.sbremake.entity.impl.deepCaverns.SneakyCreeper;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
 import me.carscupcake.sbremake.entity.impl.spidersDen.GravelSkeleton;
 import net.minestom.server.command.CommandSender;
@@ -49,7 +50,8 @@ public class SummonCommand extends Command {
 
     enum EntityClass implements EntityFactory{
         GraveyardZombie(GraveyardZombie.class),
-        GravelSkeleton(GravelSkeleton.class);
+        GravelSkeleton(GravelSkeleton.class),
+        SneakyCreeper(me.carscupcake.sbremake.entity.impl.deepCaverns.SneakyCreeper.class);
         private final Class<? extends SkyblockEntity> entityClazz;
 
         EntityClass(Class<? extends SkyblockEntity> entityClazz) {
