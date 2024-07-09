@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 public class AsyncPlayerConfigurationListener implements Consumer<AsyncPlayerConfigurationEvent> {
     @Override
     public void accept(AsyncPlayerConfigurationEvent asyncPlayerConfigurationEvent) {
+        System.out.println("got connection");
         SkyblockPlayer player = (SkyblockPlayer) asyncPlayerConfigurationEvent.getPlayer();
         SkyblockWorld world = SkyblockWorld.Hub;
         ConfigFile defaults = new ConfigFile("defaults", player);

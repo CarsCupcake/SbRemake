@@ -40,10 +40,9 @@ public class Main {
         MinecraftServer server = MinecraftServer.init();
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
         LOGGER = MinecraftServer.LOGGER;
-        System.out.println("Server Initiated");
+        System.out.println("Server Initiated");/*
+        SkyblockWorld.Hub.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), null, true);*/
         System.out.println("Fetch Manager");
-        SkyblockWorld.Hub.get().init(MinecraftServer.getInstanceManager().createInstanceContainer());
-        System.out.println("Create Instance");
         ISbItem.init();
         MiningBlock.init();
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());

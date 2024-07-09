@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.internal.LazilyParsedNumber;
 import me.carscupcake.sbremake.item.SbItemStack;
-import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import net.kyori.adventure.nbt.*;
 import net.minestom.server.coordinate.Point;
@@ -23,8 +22,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static java.lang.Math.min;
-
 @SuppressWarnings("unused")
 public class ConfigSection {
     public static final Data<ConfigSection> SECTION = new ClassicGetter<>(ConfigSection::new, ConfigSection::getRawElement);
@@ -33,6 +30,22 @@ public class ConfigSection {
     public static final Data<Long> LONG = new ClassicGetter<>(JsonElement::getAsLong, JsonPrimitive::new);
     public static final Data<Float> FLOAT = new ClassicGetter<>(JsonElement::getAsFloat, JsonPrimitive::new);
     public static final Data<Double> DOUBLE = new ClassicGetter<>(JsonElement::getAsDouble, JsonPrimitive::new);
+    public static final Data<String[]> STRING_ARRAY = new ClassicGetter<>(element1 -> {
+        assert element1.isJsonArray();
+        JsonArray array = element1.getAsJsonArray();
+        String[] stringArray = new String[array.size()];
+        int i = 0;
+        for (JsonElement el : array) {
+            stringArray[i] = el.getAsString();
+            i++;
+        }
+        return stringArray;
+    }, strings -> {
+        JsonArray array = new JsonArray(strings.length);
+        for (String s : strings)
+            array.add(new JsonPrimitive(s));
+        return array;
+    });
     public static final Data<Point> POSITION = new ClassicGetter<>(element -> {
         JsonObject o = element.getAsJsonObject();
         return new Pos(o.get("x").getAsDouble(), o.get("y").getAsDouble(), o.get("z").getAsDouble());
@@ -148,7 +161,8 @@ public class ConfigSection {
                             return DoubleBinaryTag.doubleBinaryTag(number.doubleValue());
                         }
                     }
-                    default -> throw new IllegalStateException(STR."Unexpected value: \{primitive.getAsNumber().getClass()}");
+                    default ->
+                            throw new IllegalStateException(STR."Unexpected value: \{primitive.getAsNumber().getClass()}");
                 }
             } else if (primitive.isString()) return StringBinaryTag.stringBinaryTag(primitive.getAsString());
         }

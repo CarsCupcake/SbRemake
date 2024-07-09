@@ -110,6 +110,18 @@ public class StringUtils {
         return builder.build();
     }
 
+    public static String stripeColorCodes(String s){
+        StringBuilder name = new StringBuilder();
+        if (s.contains("§"))
+            for (String split : s.split("§")) {
+                if (split.isEmpty()) continue;
+                name.append(split.substring(1));
+            }
+        else
+            name.append(s);
+        return name.toString();
+    }
+
     @SuppressWarnings("preview")
     public static String toShortNumber(double num) {
         String str;

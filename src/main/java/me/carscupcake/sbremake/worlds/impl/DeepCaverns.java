@@ -2,14 +2,24 @@ package me.carscupcake.sbremake.worlds.impl;
 
 import kotlin.Pair;
 import me.carscupcake.sbremake.entity.impl.deepCaverns.*;
+import me.carscupcake.sbremake.event.PlayerInteractEvent;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.Gui;
+import me.carscupcake.sbremake.util.InventoryBuilder;
+import me.carscupcake.sbremake.util.ItemBuilder;
+import me.carscupcake.sbremake.util.TemplateItems;
+import me.carscupcake.sbremake.util.quest.Dialog;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
+import me.carscupcake.sbremake.worlds.Npc;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
 import me.carscupcake.sbremake.worlds.region.PolygonalRegion;
-import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.PlayerSkin;
+import net.minestom.server.inventory.Inventory;
+import net.minestom.server.item.Material;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -55,7 +65,13 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
                 200, new EntitySpawner.BasicConstructor(() -> new EmeraldSlime(5)), container));
         spawners.add(new EntitySpawner(new Pos[]{new Pos(37.0, 100.0, 24.0),new Pos(36.0, 99.0, 13.0),new Pos(34.0, 97.0, 2.0),new Pos(23.0, 100.0, 3.0),new Pos(10.0, 101.0, -2.0),new Pos(11.0, 100.0, -12.0),new Pos(22.0, 101.0, -27.0),new Pos(37.0, 99.0, -23.0),new Pos(39.0, 98.0, -8.0),new Pos(-6.0, 99.0, -1.0),new Pos(4.0, 100.0, 14.0),new Pos(12.0, 97.0, 19.0),new Pos(22.0, 96.0, 36.0),new Pos(18.0, 101.0, 50.0),new Pos(-14.0, 106.0, -2.0),new Pos(-8.0, 88.0, -20.0),new Pos(2.0, 95.0, -21.0)},
                 200, new EntitySpawner.BasicConstructor(RedstonePigman::new), container));
+        npcs = new Npc[]{buildLiftOperator(new Pos(45.5, 150, 15.5)), buildLiftOperator(new Pos(45.5, 121, 15.5)), buildLiftOperator(new Pos(45.5, 101, 17.5)), buildLiftOperator(new Pos(45.5, 66, 15.5)), buildLiftOperator(new Pos(45.5, 38, 15.5)), buildLiftOperator(new Pos(45.5, 13, 15.5))};
         super.register();
+    }
+
+    private Npc buildLiftOperator(Pos pos) {
+        return new Npc(pos, container, "§bLift Operator", new PlayerSkin("eyJ0aW1lc3RhbXAiOjE1NTQ1NzE2OTkxOTAsInByb2ZpbGVJZCI6IjNmYzdmZGY5Mzk2MzRjNDE5MTE5OWJhM2Y3Y2MzZmVkIiwicHJvZmlsZU5hbWUiOiJZZWxlaGEiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzg2NTJhMDZmN2I5OWU0ODIyYjQ5NWJhOWI2MDg5ZDRkNTE1MWU4M2JlZDk1NmE3Y2NjYjg0N2VhNDZhMjU3MjUifX19",
+                "W8e6ip++dGgqglbYiPyLxCEHUXpOMioWrf6bCJwMNPHmEFTJux+M0H4GZaDjs1+d7FcSHjg6rEbMWS1sZAL4TUh7Q9vCtEYlx0PfnkY42l1Qqo/tIpJvgY5J6RHZ1j1cvtfrgXfKU8AKpjZVDNNyAqc5iJWcgqAm1gj3SPH6SoVvfzZgx9avAKo3z440CRsIhLYwgwEtq8/sbkqi0y6cuwlCZ+reo7yy2Ohe5AwG0Sx7Tkkv0DIVC4wO2RYoP+4xw2MYi1SRWk9yv3ZKqjwhTP8ugB/xqK/R480vVrr7MLhCpLrbUzpuLiaAbfruF9/TmvBV2hXFSCrlqypo4EmLk1E3WSuJX5ls11+juht0M12MIUlmmYcsFjgnAux5tgJ+fQq3KWhrbYedEY4CG7swavIG71/ZZI/ugRCXz/KONOq7bXKn939CyIpPdfBBAo2RZhjk2QXG/bWODeTfJ6z5VlIivNzo65FCAdwJ54VQzmUcP86ID3/jrWQ5fE5fhPkGhpYtOlVn5S4xKdFtu6RfYYUX6cEPD6MRPcOzXB4ZvCzgD7QhKxIQDBc1S9XY35c6+ZDYHPokQa87iD053Yfft4PH/pZA21ovOcf7+Xa+AFu72wnsjbynkaZUqSrFz3mCdOl+TFynZe89SwgDX0t1mIPtGtJmtK5jbZpwFA4bqDE=")).withInteraction(new LiftOperator());
     }
 
     @Override
@@ -125,6 +141,113 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
         @Override
         public String toString() {
             return wrapped.name();
+        }
+    }
+
+    public record LiftOperator(Inventory inv) implements Npc.Interaction {
+        public LiftOperator() {
+            this(new InventoryBuilder(6, "Lift")
+                    .fill(TemplateItems.EmptySlot.getItem())
+                    .setItem(10, new ItemBuilder(Material.GOLD_INGOT).setName("§aGunpowder Mines")
+                            .addAllLore("§7Teleports you to the §bGunpowder", "§bMines§7!")
+                            .build()
+                    )
+                    .setItem(12, new ItemBuilder(Material.LAPIS_LAZULI).setName("§aLapis Quarry")
+                            .addAllLore("§7Teleports you to the §bLapis", "§bQuarry§7!")
+                            .build()
+                    )
+                    .setItem(14, new ItemBuilder(Material.REDSTONE).setName("§aPigmen's Den")
+                            .addAllLore("§7Teleports you to the §bPigmen's", "§bDen§7!")
+                            .build()
+                    )
+                    .setItem(16, new ItemBuilder(Material.EMERALD).setName("§aSlimehill")
+                            .addAllLore("§7Teleports you to the §bSlimehill")
+                            .build()
+                    )
+                    .setItem(28, new ItemBuilder(Material.DIAMOND).setName("§aDiamond Reserves")
+                            .addAllLore("§7Teleports you to the §bDiamond", "§bReserves§7!")
+                            .build()
+                    )
+                    .setItem(30, new ItemBuilder(Material.OBSIDIAN).setName("§aObsidian Sanctuary")
+                            .addAllLore("§7Teleports you to the §bObsidian", "§bSanctuary§7!")
+                            .build()
+                    )
+                    .setItem(32, new ItemBuilder(Material.PRISMARINE).setName("§aDwarven Mines")
+                            .addAllLore("§7Teleports you to the §2Dwarven", "§2Mines§7!")
+                            .build()
+                    )
+                    .build());
+
+        }
+        private static Dialog firstTimeDialog = new Dialog("§e[NPC] Lift Operator§f:", 20).addLine("Hey Feller!")
+                .addLine("I control this lift here behind me.")
+                .addLine("Once you've explored an area I can give you a safe ride back there.")
+                .addLine("Be careful not to fall down the shaft though, it's a long fall!")
+                .addLine("Good luck on your adventures.");
+
+        @Override
+        public void interact(SkyblockPlayer player, PlayerInteractEvent.Interaction interaction) {
+            if (!player.getTags().contains("Lift Operator")) {
+                firstTimeDialog.build(player);
+                player.getTags().add("Lift Operator");
+            } else {
+                Gui gui = new Gui(inv);
+                gui.setCancelled(true);
+                gui.getClickEvents().add(10, _ -> {
+                    if (player.getRegion() == Region.GunpowderMines)
+                        player.sendMessage("§cYou are already in this room");
+                    else
+                        player.teleport(new Pos(52.5, 150.5, 15.5, 90, 0));
+                    player.closeGui();
+                    return false;
+                });
+                gui.getClickEvents().add(12, _ -> {
+                    if (player.getRegion() == Region.LapisQuarry)
+                        player.sendMessage("§cYou are already in this room");
+                    else
+                        player.teleport(new Pos(52.5, 121.5, 15.5, 90, 0));
+                    player.closeGui();
+                    return false;
+                });
+                gui.getClickEvents().add(14, _ -> {
+                    if (player.getRegion() == Region.PigmensDen)
+                        player.sendMessage("§cYou are already in this room");
+                    else
+                        player.teleport(new Pos(52.5, 101.5, 15.5, 90, 0));
+                    player.closeGui();
+                    return false;
+                });
+                gui.getClickEvents().add(16, _ -> {
+                    if (player.getRegion() == Region.Slimehill)
+                        player.sendMessage("§cYou are already in this room");
+                    else
+                        player.teleport(new Pos(52.5, 66.5, 15.5, 90, 0));
+                    player.closeGui();
+                    return false;
+                });
+                gui.getClickEvents().add(28, _ -> {
+                    if (player.getRegion() == Region.DiamondReserve)
+                        player.sendMessage("§cYou are already in this room");
+                    else
+                        player.teleport(new Pos(52.5, 38.5, 15.5, 90, 0));
+                    player.closeGui();
+                    return false;
+                });
+                gui.getClickEvents().add(30, _ -> {
+                    if (player.getRegion() == Region.ObsidianSanctuary)
+                        player.sendMessage("§cYou are already in this room");
+                    else
+                        player.teleport(new Pos(52.5, 13.5, 15.5, 90, 0));
+                    player.closeGui();
+                    return false;
+                });
+                gui.getClickEvents().add(32, _ -> {
+                    SkyblockWorld.sendToBest(SkyblockWorld.DwarvenMines, player);
+                    player.closeGui();
+                    return false;
+                });
+                gui.showGui(player);
+            }
         }
     }
 }

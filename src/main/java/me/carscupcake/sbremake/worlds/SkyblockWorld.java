@@ -11,18 +11,21 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
+import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
 import me.carscupcake.sbremake.worlds.impl.DwarvenMines;
 import me.carscupcake.sbremake.worlds.impl.GoldMines;
 import me.carscupcake.sbremake.worlds.impl.HubWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.instance.Chunk;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.registry.DynamicRegistry;
+import net.minestom.server.timer.Task;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.world.DimensionType;
 import net.sf.sevenzipjbinding.ExtractOperationResult;
@@ -34,9 +37,11 @@ import org.jetbrains.annotations.Nullable;
 import org.kohsuke.github.GitHub;
 
 import java.io.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -47,21 +52,17 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         public WorldProvider get() {
             return new HubWorld();
         }
-    },
-    GoldMines("gold", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
+    }, GoldMines("gold", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
         public WorldProvider get() {
             return new GoldMines();
         }
-    },
-    DeepCaverns("deep", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
+    }, DeepCaverns("deep", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
         public WorldProvider get() {
             return new DeepCaverns();
         }
-    },
-    DwarvenMines("mines", FileEnding.ZIP, new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre(),
-            new BlueMithril(), new CyanTerracottaMithril(), new DarkPrismarineMithril(), new GrayWoolMithril(), new PrismarineBrickMithril(), new PrismarineMithril()) {
+    }, DwarvenMines("mines", FileEnding.ZIP, new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre(), new BlueMithril(), new CyanTerracottaMithril(), new DarkPrismarineMithril(), new GrayWoolMithril(), new PrismarineBrickMithril(), new PrismarineMithril()) {
         @Override
         public WorldProvider get() {
             return new DwarvenMines();
@@ -98,10 +99,42 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
     }
 
     public static WorldProvider getBestWorld(SkyblockWorld world) {
-        synchronized (_lock) {
-            if (worlds.get(world).isEmpty()) return null;
-            return worlds.get(world).getFirst();
+        if (worlds.get(world).isEmpty()) {
+            return null;
         }
+        return worlds.get(world).getFirst();
+    }
+
+    public static void getBestWorld(SkyblockWorld world, Consumer<WorldProvider> after) {
+        if (worlds.get(world).isEmpty()) {
+            WorldProvider provider = world.get();
+            world.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> after.accept(provider), true);
+        }
+        after.accept(worlds.get(world).getFirst());
+    }
+
+    public static void sendToBest(SkyblockWorld world, SkyblockPlayer player) {
+        player.sendMessage(STR."§7Sending to \{world.getId()}");
+        /*if (worlds.get(world).isEmpty()) {
+            WorldProvider provider = world.get();
+            world.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
+                System.out.println(":(");
+                MinecraftServer.getSchedulerManager().buildTask(() -> player.setWorldProvider(provider)).delay(TaskSchedule.tick(1)).schedule();
+            }, true);
+            return;
+        }
+        player.setWorldProvider(worlds.get(world).getFirst());*/
+        SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(world);
+        if (provider == null) {
+            provider = world.get();
+            player.sendMessage(STR."§7Starting \{world.id}");
+            SkyblockWorld.WorldProvider finalProvider = provider;
+            provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
+                synchronized (player) {
+                    player.setWorldProvider(finalProvider);
+                }
+            });
+        } else player.setWorldProvider(provider);
     }
 
     public static List<WorldProvider> getAllWorlds() {
@@ -120,10 +153,18 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
     }
 
     @SuppressWarnings({"unused", "ignored", "preview", "UnusedReturnValue"})
+    @Getter
     public static abstract class WorldProvider {
         private static final MiningBlock[] VANILLA_ORES = {new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre()};
 
         private final Set<SkyblockPlayer> players = Collections.synchronizedSet(new HashSet<>());
+        private final String id;
+        protected Npc[] npcs;
+
+        public WorldProvider(Npc... npcs) {
+            this.npcs = (npcs == null) ? new Npc[0] : npcs;
+            id = STR."\{type().id}\{getWorlds(type()).size()}";
+        }
 
         public abstract SkyblockWorld type();
 
@@ -221,7 +262,9 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                     LightingChunk.relight(container, container.getChunks());
                     System.out.println("light end");
                     container.loadChunk(spawn().chunkX(), spawn().chunkZ());
-                    if (after != null) after.run();
+                    if (after != null) synchronized (_lock) {
+                        after.run();
+                    }
                 });
                 else {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
@@ -229,10 +272,10 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                     LightingChunk.relight(container, container.getChunks());
                     System.out.println("light end");
                     container.loadChunk(spawn().chunkX(), spawn().chunkZ());
-                    if (after != null) after.run();
                 }
                 addWorld(this);
                 register();
+                if (after != null && !async) after.run();
                 Main.LOGGER.info(STR."Loaded \{type().getId()} Instance");
             } catch (Exception e) {
                 Main.LOGGER.info("A world failed to load!");
@@ -243,9 +286,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
 
         public void init(InstanceContainer container, @Nullable Runnable after, boolean async) {
             this.container = container;
-            if (async) Thread.ofVirtual().factory().newThread(() -> {
-                init0(container, after, true);
-            }).start();
+            if (async) Thread.ofVirtual().factory().newThread(() -> init0(container, after, true)).start();
             else init0(container, after, false);
         }
 
@@ -253,6 +294,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         }
 
         public final void remove() {
+            for (SkyblockPlayer player : players)
+                player.kick("§cInstance is shutting down!");
+            container.getEntities().forEach(Entity::remove);
+            for (Chunk c : container.getChunks())
+                container.getChunkLoader().unloadChunk(c);
+            MinecraftServer.getInstanceManager().unregisterInstance(container);
             removeWorld(this);
             unregister();
         }
@@ -267,11 +314,31 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
          */
         public final void addPlayer(SkyblockPlayer player) {
             if (onPlayerAdd(player)) {
-                player.setInstance(getContainer());
-                players.add(player);
-                player.spawn();
+                if (player.getInstance() != container) {
+                    if (shutdownTask != null) {
+                        shutdownTask.cancel();
+                        shutdownTask = null;
+                    }
+                    player.setInstance(getContainer()).thenRun(() -> {
+                        synchronized (_lock) {
+                            players.add(player);
+                            player.spawn();
+                            for (Npc npc : npcs)
+                                npc.spawn(player);
+                        }
+                    });
+                }
             } else {
                 player.sendMessage("§cYou are not allowed!");
+            }
+        }
+
+        private Task shutdownTask;
+
+        public final void removePlayer(SkyblockPlayer player) {
+            players.remove(player);
+            if (players.isEmpty()) {
+                shutdownTask = MinecraftServer.getSchedulerManager().buildTask(this::remove).delay(Duration.ofMinutes(5)).schedule();
             }
         }
 

@@ -13,7 +13,7 @@ public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
             LocalDateTime date = LocalDateTime.now();
             DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yy");
             String formattedDate = date.format(format);
-            return new String[]{STR."§7\{formattedDate}§8 mega69", "§7 "};
+            return new String[]{STR."§7\{formattedDate}§8 \{player.getWorldProvider().getId()}", "§7 "};
         }
     },
     Time {

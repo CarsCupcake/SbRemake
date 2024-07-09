@@ -24,12 +24,13 @@ public class WarpCommand extends Command {
             String id = commandContext.get(word);
             SkyblockWorld world = SkyblockWorld.from(id);
             assert world != null;
-            SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(world);
+           /* SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(world);
             if (provider == null) {
                 provider = world.get();
                 SkyblockWorld.WorldProvider finalProvider = provider;
                 provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> ((SkyblockPlayer) commandSender).setWorldProvider(finalProvider));
-            } else ((SkyblockPlayer) commandSender).setWorldProvider(provider);
+            } else ((SkyblockPlayer) commandSender).setWorldProvider(provider);*/
+            SkyblockWorld.sendToBest(world, ((SkyblockPlayer) commandSender));
         }, word);
     }
 }

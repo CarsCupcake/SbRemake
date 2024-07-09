@@ -25,13 +25,14 @@ import me.carscupcake.sbremake.player.protocol.SetEntityEffectPacket;
 import me.carscupcake.sbremake.player.skill.ISkill;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.*;
+import me.carscupcake.sbremake.util.quest.Dialog;
+import me.carscupcake.sbremake.worlds.Npc;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
-import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
@@ -211,11 +212,25 @@ public class SkyblockPlayer extends Player {
                 }
 
                 if (event.getPacket() instanceof ClientInteractEntityPacket packet) {
-                    if (packet.type() instanceof ClientInteractEntityPacket.Attack) return;
+                    if (packet.type() instanceof ClientInteractEntityPacket.Attack) {
+                        if (player.getDialog() != null) return;
+                        Npc npc = Npc.npcs.get(packet.targetId());
+                        if (npc != null) {
+                            if (npc.getInteraction() != null)
+                                npc.getInteraction().interact(player, PlayerInteractEvent.Interaction.Left);
+                        }
+                        return;
+                    }
                     long now = System.currentTimeMillis();
                     if (now - player.lastInteractPacket < 100) return;
                     player.lastInteractPacket = now;
-                    MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, player.getInstance().getEntities().stream().filter(entity -> entity.getEntityId() == packet.targetId()).findFirst().orElse(null), PlayerInteractEvent.Interaction.Right));
+                    Npc npc = Npc.npcs.get(packet.targetId());
+                    if (npc != null) {
+                        if (player.getDialog() != null) return;
+                        if (npc.getInteraction() != null)
+                            npc.getInteraction().interact(player, PlayerInteractEvent.Interaction.Right);
+                    } else
+                        MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, player.getInstance().getEntities().stream().filter(entity -> entity.getEntityId() == packet.targetId()).findFirst().orElse(null), PlayerInteractEvent.Interaction.Right));
                 }
 
             }).addListener(ProjectileCollideWithBlockEvent.class, event -> {
@@ -298,7 +313,11 @@ public class SkyblockPlayer extends Player {
             }).addListener(PlayerDisconnectEvent.class, event -> {
                 SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
                 player.save();
-            }).addListener(PlayerRespawnEvent.class, event -> event.setRespawnPosition(((SkyblockPlayer) event.getPlayer()).getWorldProvider().spawn()))
+            }).addListener(PlayerRespawnEvent.class, event -> {
+                SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+                event.setRespawnPosition(player.getWorldProvider().spawn());
+                player.setSbHealth(player.getMaxSbHealth());
+            })
             .addListener(ItemDropEvent.class, event -> {
                 SbItemStack stack = SbItemStack.from(event.getItemStack());
                 if (stack.sbItem() instanceof SkyblockMenu) {
@@ -361,11 +380,17 @@ public class SkyblockPlayer extends Player {
     @Getter
     private final List<me.carscupcake.sbremake.item.collections.Collection> collections = new LinkedList<>();
     private final Map<Skill, ISkill> skills = new HashMap<>();
+    @Getter
+    @Setter
+    private Dialog dialog = null;
+    @Getter
+    private final List<String> tags;
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         ConfigFile file = new ConfigFile("defaults", this);
         coins = file.get("coins", ConfigSection.DOUBLE, 0d);
+        tags = new ArrayList<>(List.of(file.get("tags", ConfigSection.STRING_ARRAY, new String[0])));
         for (Skill skill : Skill.values())
             skills.put(skill, skill.instantiate(this));
         sbHealth = getMaxSbHealth();
@@ -437,6 +462,7 @@ public class SkyblockPlayer extends Player {
         ConfigFile defaults = new ConfigFile("defaults", this);
         defaults.set("world", this.getWorldProvider().type().getId(), ConfigSection.STRING);
         defaults.set("coins", this.coins, ConfigSection.DOUBLE);
+        defaults.set("tags", tags.toArray(new String[0]), ConfigSection.STRING_ARRAY);
         defaults.save();
         for (ISkill skill : this.skills.values()) skill.save();
         collections.forEach(me.carscupcake.sbremake.item.collections.Collection::save);
@@ -522,6 +548,7 @@ public class SkyblockPlayer extends Player {
 
     public void setWorldProvider(SkyblockWorld.WorldProvider provider) {
         if (worldProvider != null && provider != worldProvider) {
+            worldProvider.removePlayer(this);
             this.worldProvider = provider;
             provider.addPlayer(this);
         }
