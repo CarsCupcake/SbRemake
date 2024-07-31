@@ -1,10 +1,8 @@
-package me.carscupcake.sbremake.util;
+package me.carscupcake.sbremake.util.item;
 
 import me.carscupcake.sbremake.item.ISbItem;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.InventoryType;
-import net.minestom.server.inventory.TransactionOption;
-import net.minestom.server.inventory.TransactionType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import org.jetbrains.annotations.Range;

@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.event;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.item.ItemBuilder;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.trait.PlayerEvent;
 import net.minestom.server.item.ItemStack;
@@ -17,9 +18,13 @@ public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> mo
     public @NotNull Player getPlayer() {
         return player;
     }
-    public record BasicModifier(String name, double value, Type type, Material showItem, StatsCategory category) implements PlayerStatModifier {
+    public record BasicModifier(String name, double value, Type type, ItemStack showItem, StatsCategory category) implements PlayerStatModifier {
         public BasicModifier(String name, double value, Type type, StatsCategory category) {
-            this(name, value, type, null, category);
+            this(name, value, type, category == null ? null : category.item, category);
+        }
+
+        public BasicModifier(String name, double value, Type type, Material showItem, StatsCategory category) {
+            this(name, value, type, ItemStack.of(showItem), category);
         }
     }
 
@@ -41,7 +46,7 @@ public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> mo
         Type type();
         double value();
         String name();
-        @Nullable Material showItem();
+        @Nullable ItemStack showItem();
         StatsCategory category();
     }
     public enum Type {
@@ -56,9 +61,16 @@ public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> mo
         Skills("Skills"),
         PetStats("Pet Stats"),
         Ability("Ability"),
+        Hotm("HOTM", new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZmMDZlYWEzMDA0YWVlZDA5YjNkNWI0NWQ5NzZkZTU4NGU2OTFjMGU5Y2FkZTEzMzYzNWRlOTNkMjNiOWVkYiJ9fX0=").build()),
         Uncategorized("Uncategorized");
+        private final String name;
+        private final ItemStack item;
         StatsCategory(String item) {
-
+            this(item, null);
+        }
+        StatsCategory(String name, ItemStack item) {
+            this.name = name;
+            this.item = item;
         }
     }
 }

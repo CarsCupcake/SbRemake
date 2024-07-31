@@ -1,10 +1,18 @@
 package me.carscupcake.sbremake.entity.impl.deepCaverns;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
+import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.item.impl.armor.lapisArmor.LapisBoots;
+import me.carscupcake.sbremake.item.impl.armor.lapisArmor.LapisChestplate;
+import me.carscupcake.sbremake.item.impl.armor.lapisArmor.LapisHelmet;
+import me.carscupcake.sbremake.item.impl.armor.lapisArmor.LapisLeggings;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
-import me.carscupcake.sbremake.util.ItemBuilder;
+import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.lootTable.ItemLoot;
+import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.EquipmentSlot;
@@ -12,11 +20,17 @@ import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.DyedItemColor;
-import org.jetbrains.annotations.NotNull;
 
 public class LapisZombies extends SkyblockEntity implements SkillXpDropper {
     public LapisZombies() {
-        super(EntityType.ZOMBIE);
+        super(EntityType.ZOMBIE, new LootTable<SbItemStack>()
+                .addLoot(new ItemLoot(ISbItem.get(Material.ROTTEN_FLESH), 1, 1d)).addLootTable(new LootTable<SbItemStack>()
+                                .addLoot(new ItemLoot(ISbItem.get(LapisBoots.class), 1, 0.01d))
+                                .addLoot(new ItemLoot(ISbItem.get(LapisLeggings.class), 1, 0.01d))
+                                .addLoot(new ItemLoot(ISbItem.get(LapisChestplate.class), 1, 0.01d))
+                                .addLoot(new ItemLoot(ISbItem.get(LapisHelmet.class), 1, 0.01d))
+                                .setSingleLoot()
+                        , 0.01));
         this.addAIGroup(zombieAiGroup(this, DeepCaverns.Region.LapisQuarry));
         setEquipment(EquipmentSlot.HELMET, ItemStack.of(Material.BLUE_STAINED_GLASS));
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new DyedItemColor(0x0000ff)).build());

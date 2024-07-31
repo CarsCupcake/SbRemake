@@ -206,6 +206,12 @@ public class ConfigSection {
 
     public <T> void set(String key, T value, ConfigFile.Data<T> type) {
         if (element == null) element = new JsonObject();
+        if (value == null) {
+            if (element instanceof JsonObject object)
+                if (object.has(key))
+                    object.remove(key);
+            return;
+        }
         type.set(element, key, value);
     }
 

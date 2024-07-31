@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.player.skill;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
+import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.item.Lore;
@@ -9,6 +10,9 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.rewards.impl.CoinReward;
 import me.carscupcake.sbremake.rewards.Reward;
 import me.carscupcake.sbremake.util.*;
+import me.carscupcake.sbremake.util.item.Gui;
+import me.carscupcake.sbremake.util.item.InventoryBuilder;
+import me.carscupcake.sbremake.util.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.item.Material;
@@ -53,7 +57,10 @@ public abstract class ISkill {
 
     public abstract String getName();
 
+    public abstract Stat getWisdomStat();
+
     public void addXp(double amount) {
+        amount *= 1 + (player.getStat(getWisdomStat()) / 100d);
         xp += amount;
         while (level < getMaxLevel() && nextLevelXp[level] <= xp) {
             xp -= nextLevelXp[level];
@@ -128,7 +135,7 @@ public abstract class ISkill {
                     .addAllLore(rewardsLore(level, player))
                     .addLoreIf(() -> this.level >= level, "§7  ", "§a§lUNLOCKED")
                     .addLoreIf(() -> this.level + 1 == level && level != 60, Component.text("§7  "), Component.text().append(StringUtils.makeProgressBar(10, xp, nextLevelXp[this.level], NamedTextColor.WHITE, NamedTextColor.GREEN,
-                            "§m "), Component.text(STR."§r §e\{StringUtils.cleanDouble(xp)}§6/§e\{StringUtils.cleanDouble(nextLevelXp[this.level])}")).build())
+                            "§m "), Component.text(STR."§r §e\{StringUtils.cleanDouble(xp)}§6/§e\{StringUtils.cleanDouble(nextLevelXp[level == nextLevelXp.length ? 0 : this.level])}")).build())
                     .build(), levelSlots[i]);
         }
         builder.setItem(0, new ItemBuilder(showItem)

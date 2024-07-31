@@ -41,6 +41,17 @@ public enum Stat {
     Vitality("Vitality", "♨", "§4", false, 100, -1),
     Mending("Mending", "☄", "§a", false, 100, -1),
     SwingRange("Swing Range", "Ⓢ", "§e", false, 3, 15),
+    CombatWisdom("Combat Wisdom", "☯", "§3", false, 0, -1),
+    MiningWisdom("Mining Wisdom", "☯", "§3", false, 0, -1),
+    FarmingWisdom("Farming Wisdom", "☯", "§3", false, 0, -1),
+    ForagingWisdom("Foraging Wisdom", "☯", "§3", false, 0, -1),
+    FishingWisdom("Fishing Wisdom", "☯", "§3", false, 0, -1),
+    EnchantingWisdom("Enchanting Wisdom", "☯", "§3", false, 0, -1),
+    AlchemyWisdom("Alchemy Wisdom", "☯", "§3", false, 0, -1),
+    CarpentryWisdom("Carpentry Wisdom", "☯", "§3", false, 0, -1),
+    RunecraftingWisdom("Runecrafting Wisdom", "☯", "§3", false, 0, -1),
+    SocialWisdom("Social Wisdom", "☯", "§3", false, 0, -1),
+    TamingWisdom("Taming Wisdom", "☯", "§3", false, 0, -1),
     Damage(true, "Damage", "", "§c");
     private final String name;
     private final String symbol;

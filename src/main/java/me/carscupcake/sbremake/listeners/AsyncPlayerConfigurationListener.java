@@ -24,7 +24,9 @@ public class AsyncPlayerConfigurationListener implements Consumer<AsyncPlayerCon
             assert world != null;
             provider = world.get();
             SkyblockWorld.WorldProvider finalProvider = provider;
-            provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> player.setWorldProvider(finalProvider), false);
+            provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
+                player.setWorldProvider(finalProvider);
+            }, false);
         } else player.setWorldProvider(provider);
         asyncPlayerConfigurationEvent.setSpawningInstance(provider.getContainer());
         asyncPlayerConfigurationEvent.getPlayer().setPermissionLevel(4);

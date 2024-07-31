@@ -1,5 +1,6 @@
-package me.carscupcake.sbremake.util;
+package me.carscupcake.sbremake.util.item;
 
+import me.carscupcake.sbremake.util.Returnable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -51,6 +52,13 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addLoreIf(Returnable<Boolean> predicate, String... lore) {
+        if (!predicate.get()) return this;
+        for(String l : lore)
+            addLoreRow(l);
+        return this;
+    }
+
+    public ItemBuilder addLoreIf(Returnable<Boolean> predicate, List<String> lore) {
         if (!predicate.get()) return this;
         for(String l : lore)
             addLoreRow(l);

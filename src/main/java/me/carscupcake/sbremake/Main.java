@@ -7,13 +7,13 @@ import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.skill.impl.CombatSkill;
 import me.carscupcake.sbremake.player.skill.impl.FarmingSkill;
 import me.carscupcake.sbremake.player.skill.impl.ForagingSkill;
 import me.carscupcake.sbremake.player.skill.impl.MiningSkill;
 import me.carscupcake.sbremake.util.EnchantmentUtils;
-import me.carscupcake.sbremake.util.Gui;
-import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
@@ -59,6 +59,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(MiningSkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(Region.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(EnchantmentUtils.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(HotmUpgrade.LISTENER);
         for (SkyblockEnchantment enchantment : NormalEnchantment.values())
             SkyblockEnchantment.enchantments.put(enchantment.getId(), enchantment);
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);

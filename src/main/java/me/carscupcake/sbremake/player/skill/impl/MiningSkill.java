@@ -58,6 +58,11 @@ public class MiningSkill extends ISkill {
     }
 
     @Override
+    public Stat getWisdomStat() {
+        return Stat.MiningWisdom;
+    }
+
+    @Override
     public List<Reward> getRewards(int level) {
         return List.of(new SpelunkerReward(level), makeCoinReward(level), new SkyblockXpReward(xpFromLevel(level)));
     }

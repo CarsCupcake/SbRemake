@@ -64,6 +64,11 @@ public class FarmingSkill extends ISkill {
     }
 
     @Override
+    public Stat getWisdomStat() {
+        return Stat.FarmingWisdom;
+    }
+
+    @Override
     public List<Reward> getRewards(int level) {
         return List.of(new FarmhandReward(level), makeCoinReward(level), new SkyblockXpReward(xpFromLevel(level)));
     }

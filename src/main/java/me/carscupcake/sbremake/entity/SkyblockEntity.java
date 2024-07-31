@@ -7,12 +7,14 @@ import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerProjectileDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerToEntityDamageEvent;
 import me.carscupcake.sbremake.event.PlayerToEntityMageDamage;
+import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.SkyblockPlayerArrow;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.StringUtils;
+import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -20,10 +22,7 @@ import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
-import net.minestom.server.entity.EntityCreature;
-import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.GameMode;
-import net.minestom.server.entity.Player;
+import net.minestom.server.entity.*;
 import net.minestom.server.entity.ai.EntityAIGroup;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.goal.MeleeAttackGoal;
@@ -42,20 +41,25 @@ import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
+@Getter
 public abstract class SkyblockEntity extends EntityCreature {
     private float health = getMaxHealth();
     @Getter
     @Setter
     private SkyblockPlayer lastDamager;
 
+    private final LootTable<SbItemStack> lootTable;
+
     public SkyblockEntity(@NotNull EntityType entityType) {
+        this(entityType, new LootTable<>());
+    }
+
+    public SkyblockEntity(@NotNull EntityType entityType, LootTable<SbItemStack> lootTable) {
         super(entityType, UUID.randomUUID());
+        this.lootTable = lootTable;
         setHealth(getMaxHealth());
         getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
     }
@@ -141,6 +145,14 @@ public abstract class SkyblockEntity extends EntityCreature {
         super.kill();
         if (lastDamager != null) {
             if (this instanceof SkillXpDropper dropper) dropper.apply(lastDamager);
+            Set<SbItemStack> items = lootTable.loot(lastDamager);
+            for (SbItemStack item : items) {
+                ItemEntity entity = new ItemEntity(item.item());
+                entity.setInstance(getInstance(), getPosition());
+                entity.addViewer(lastDamager);
+                entity.setVelocity(new Vec(new Random().nextDouble(), 2, new Random().nextDouble()));
+                entity.scheduleRemove(Duration.ofSeconds(30));
+            }
         }
     }
 
@@ -244,7 +256,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     }
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region) {
-        EntityAIGroup aiGroup = regionTarget(entity, region, 16);
+        EntityAIGroup aiGroup = regionTarget(entity, region, 8);
         aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 10, region) // Walk around
         ));
         return aiGroup;

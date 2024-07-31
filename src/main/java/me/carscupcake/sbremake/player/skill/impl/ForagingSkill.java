@@ -66,6 +66,11 @@ public class ForagingSkill extends ISkill {
     }
 
     @Override
+    public Stat getWisdomStat() {
+        return Stat.ForagingWisdom;
+    }
+
+    @Override
     public List<Reward> getRewards(int level) {
         return List.of(new LoggerReward(level), makeCoinReward(level), new SkyblockXpReward(xpFromLevel(level)));
     }

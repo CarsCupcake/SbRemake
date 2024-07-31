@@ -11,7 +11,6 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
-import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
 import me.carscupcake.sbremake.worlds.impl.DwarvenMines;
 import me.carscupcake.sbremake.worlds.impl.GoldMines;
@@ -26,6 +25,7 @@ import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.registry.DynamicRegistry;
 import net.minestom.server.timer.Task;
+import net.minestom.server.timer.TaskSchedule;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.world.DimensionType;
 import net.sf.sevenzipjbinding.ExtractOperationResult;
@@ -314,23 +314,28 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
          */
         public final void addPlayer(SkyblockPlayer player) {
             if (onPlayerAdd(player)) {
-                if (player.getInstance() != container) {
-                    if (shutdownTask != null) {
-                        shutdownTask.cancel();
-                        shutdownTask = null;
-                    }
-                    player.setInstance(getContainer()).thenRun(() -> {
-                        synchronized (_lock) {
-                            players.add(player);
-                            player.spawn();
-                            for (Npc npc : npcs)
-                                npc.spawn(player);
-                        }
-                    });
+                if (shutdownTask != null) {
+                    shutdownTask.cancel();
+                    shutdownTask = null;
                 }
+                if (player.getInstance() != container)
+                    player.setInstance(getContainer());
+                MinecraftServer.getSchedulerManager().buildTask(() -> {
+                    synchronized (_lock) {
+                        initPlayer(player);
+                    }
+                }).delay(TaskSchedule.tick(20)).schedule();
+
             } else {
                 player.sendMessage("§cYou are not allowed!");
             }
+        }
+
+        public void initPlayer(SkyblockPlayer player) {
+            players.add(player);
+            player.spawn();
+            for (Npc npc : npcs)
+                npc.spawn(player);
         }
 
         private Task shutdownTask;

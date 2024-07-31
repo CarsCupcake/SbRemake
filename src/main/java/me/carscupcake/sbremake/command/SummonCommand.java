@@ -34,6 +34,7 @@ public class SummonCommand extends Command {
                 true, true, true
         ));
         addSyntax(this::execute, entity, pos);
+        setCondition(Conditions::playerOnly);
         setDefaultExecutor((sender, _) -> sender.sendMessage("Usage: /summon <type> <x> <y> <z>"));
     }
 
@@ -56,9 +57,6 @@ public class SummonCommand extends Command {
 
         EntityClass(Class<? extends SkyblockEntity> entityClazz) {
             this.entityClazz = entityClazz;
-        }
-        EntityClass() {
-            this(null);
         }
 
         @Override

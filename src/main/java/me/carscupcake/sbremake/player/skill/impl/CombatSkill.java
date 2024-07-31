@@ -50,6 +50,11 @@ public class CombatSkill extends ISkill {
     }
 
     @Override
+    public Stat getWisdomStat() {
+        return Stat.CombatWisdom;
+    }
+
+    @Override
     public List<Reward> getRewards(int level) {
         return List.of(new WarriorReward(level), makeCoinReward(level), new SkyblockXpReward(xpFromLevel(level)));
     }

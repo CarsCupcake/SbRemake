@@ -31,7 +31,9 @@ public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
     Purse {
         @Override
         public String[] apply(SkyblockPlayer player) {
-            return new String[]{" ", STR."§fPurse§6 \{StringUtils.cleanDouble(player.getCoins())}", "§fBits:§b ∞"};
+            String s = (player.getPowderString() != null) ? player.getPowderString() : STR."§fPurse§6 \{StringUtils.cleanDouble(player.getCoins())}";
+            player.setPowderString(null);
+            return new String[]{" ", s, "§fBits:§b ∞"};
         }
     },
     Footer {
