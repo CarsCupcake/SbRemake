@@ -8,7 +8,7 @@ import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
 
 public class MiningSpeedBoost extends PickaxeAbility {
     public MiningSpeedBoost(SkyblockPlayer player) {
-        super(player, TitaniumInsanium.class);
+        super(player, TitaniumInsanium.class, LuckOfTheCave.class);
     }
 
     @Override

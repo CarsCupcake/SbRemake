@@ -1,31 +1,29 @@
 package me.carscupcake.sbremake.player.hotm.impl;
 
-import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
 
-import java.util.Map;
+public class StarPowder extends HotmUpgrade {
 
-public class MiningFortune extends HotmUpgrade {
-    public MiningFortune(SkyblockPlayer player) {
-        super(player, MiningSpeed.class, TitaniumInsanium.class, DailyPowder.class, QuickForge.class);
+    public StarPowder(SkyblockPlayer player) {
+        super(player, GreatExplorer.class, FrontLoaded.class);
     }
 
     @Override
     public String getName() {
-        return "Mining Fortune";
+        return "Star Powder";
     }
 
     @Override
     public int getMaxLevel() {
-        return 50;
+        return 1;
     }
 
     @Override
     public int nextLevelCost(int current) {
-        return (int) Math.pow(current + 2, 3.05d);
+        return 0;
     }
 
     @Override
@@ -35,20 +33,16 @@ public class MiningFortune extends HotmUpgrade {
 
     @Override
     public String getId() {
-        return "MINING_FORTUNE_1";
+        return "STAR_POWDER";
     }
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Grants §a+%a% \{Stat.MiningFortune}", Map.of("%a%", (_, _) -> String.valueOf(getBonus(level))));
-    }
-
-    public int getBonus(int level) {
-        return level * 5;
+        return new Lore("§7Mining Mithril Ore near §5Fallen Crystals §7given §ax3 §7Mithril Powder.");
     }
 
     @Override
     public int levelRequirement() {
-        return 1;
+        return 5;
     }
 }

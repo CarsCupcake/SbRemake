@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class Orbiter extends HotmUpgrade {
     public Orbiter(SkyblockPlayer player) {
-        super(player, MiningFortune.class);
+        super(player, EfficientMiner.class, FrontLoaded.class);
     }
 
     @Override

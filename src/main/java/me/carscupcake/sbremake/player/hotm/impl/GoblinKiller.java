@@ -6,26 +6,26 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
 
-import java.util.Map;
+import java.util.List;
 
-public class MiningFortune extends HotmUpgrade {
-    public MiningFortune(SkyblockPlayer player) {
-        super(player, MiningSpeed.class, TitaniumInsanium.class, DailyPowder.class, QuickForge.class);
+public class GoblinKiller extends HotmUpgrade {
+    public GoblinKiller(SkyblockPlayer player) {
+        super(player, MiningMadness.class, LonesomeMiner.class);
     }
 
     @Override
     public String getName() {
-        return "Mining Fortune";
+        return "Goblin Killer";
     }
 
     @Override
     public int getMaxLevel() {
-        return 50;
+        return 1;
     }
 
     @Override
     public int nextLevelCost(int current) {
-        return (int) Math.pow(current + 2, 3.05d);
+        return (int) Math.pow(current + 2, 3d);
     }
 
     @Override
@@ -35,20 +35,16 @@ public class MiningFortune extends HotmUpgrade {
 
     @Override
     public String getId() {
-        return "MINING_FORTUNE_1";
+        return "GOBLIN_KILLER";
     }
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Grants §a+%a% \{Stat.MiningFortune}", Map.of("%a%", (_, _) -> String.valueOf(getBonus(level))));
-    }
-
-    public int getBonus(int level) {
-        return level * 5;
+        return new Lore("§7Killing a §6Golden Goblin §7gives §2200 §7extra §2Mithril Powder§7, while killing other Goblins gives some based on their wits");
     }
 
     @Override
     public int levelRequirement() {
-        return 1;
+        return 5;
     }
 }

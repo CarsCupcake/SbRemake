@@ -20,7 +20,11 @@ public class HeartOfTheMountain {
     private static final int[] XP = {0, 3_000, 9_000, 25_000, 60_000, 100_000, 150_000, 210_000, 290_000, 400_000};
     private static final List<Class<? extends HotmUpgrade>> UPGRADES = List.of(MiningSpeed.class, MiningFortune.class,
             TitaniumInsanium.class, QuickForge.class, MiningSpeedBoost.class, Pickobulus.class
-            , LuckOfTheCave.class, DailyPowder.class, Crystallized.class, MiningMadness.class, EfficientMiner.class, FrontLoaded.class, SkyMall.class, SeasonedMineman.class, Orbiter.class, PrecisionMining.class);
+            , LuckOfTheCave.class, DailyPowder.class, Crystallized.class, MiningMadness.class, EfficientMiner.class,
+            FrontLoaded.class, SkyMall.class, SeasonedMineman.class, Orbiter.class, PrecisionMining.class
+    , GoblinKiller.class, PeakOfTheMountain.class, StarPowder.class, VeinSeekder.class, LonesomeMiner.class,
+            Professional.class, Mole.class, Fortunate.class, GreatExplorer.class, ManiacMiner.class,
+            MiningSpeed2.class, PowderBuff.class, MiningFortune2.class);
     private final SkyblockPlayer player;
     private final List<HotmUpgrade> upgrades = new ArrayList<>();
     private PickaxeAbility activeAbility = null;
@@ -43,10 +47,17 @@ public class HeartOfTheMountain {
             try {
                 HotmUpgrade upgrade = upgradeClass.getConstructor(SkyblockPlayer.class).newInstance(player);
                 upgrades.add(upgrade);
-                if (upgrade.level > 0) tokenOfTheMountain--;
+                if (upgrade.level > 0 && !(upgrade instanceof PeakOfTheMountain)) tokenOfTheMountain--;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+        if (level >= 5) {
+            PeakOfTheMountain peakOfTheMountain = getUpgrade(PeakOfTheMountain.class);
+            tokenOfTheMountain++;
+            if (peakOfTheMountain.level >= 5) tokenOfTheMountain++;
+            if (peakOfTheMountain.level >= 7) tokenOfTheMountain++;
+            if (peakOfTheMountain.level >= 10) tokenOfTheMountain += 2;
         }
         if (activeId != null) {
             for (HotmUpgrade upgrade : upgrades)
@@ -102,7 +113,7 @@ public class HeartOfTheMountain {
     //81 10
     //90 11
 
-    private static final int[] HotmUpgradeSlots = {85, 76, 75, 77, 74, 78, 65, 67, 69, 56, 58, 60, 55, 57, 59, 61};
+    private static final int[] HotmUpgradeSlots = {85, 76, 75, 77, 74, 78, 65, 67, 69, 56, 58, 60, 55, 57, 59, 61, 47, 49, 51, 37, 38, 39, 40, 41, 42, 43, 29, 31, 33, 19, 20, 21, 22, 23, 24, 25, 26, 11, 13, 15, 1, 2 ,3, 4, 5, 6, 7};
 
     public void openMenu() {
         List<ItemStack> item = new ArrayList<>();
@@ -164,7 +175,7 @@ public class HeartOfTheMountain {
                     } else if (upgrade.level >= upgrade.getMaxLevel()) {
                         player.sendMessage("§cYou have already purchased this upgrade!");
                     } else {
-                        boolean shift = event.getClickType() == ClickType.START_SHIFT_CLICK;
+                        boolean shift = event.getClickType() == ClickType.START_SHIFT_CLICK && !(upgrade instanceof PeakOfTheMountain);
                         int cost = 0;
                         if (shift) {
                             int levels = Math.min(upgrade.getMaxLevel() - upgrade.getLevel(), 10);

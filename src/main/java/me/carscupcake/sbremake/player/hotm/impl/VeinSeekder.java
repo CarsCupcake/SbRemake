@@ -5,14 +5,14 @@ import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
 
-public class Pickobulus extends PickaxeAbility {
-    public Pickobulus(SkyblockPlayer player) {
-        super(player, QuickForge.class, Crystallized.class);
+public class VeinSeekder extends PickaxeAbility {
+    public VeinSeekder(SkyblockPlayer player) {
+        super(player, LonesomeMiner.class);
     }
 
     @Override
     public int cooldown() {
-        return 120;
+        return 60;
     }
 
     @Override
@@ -22,21 +22,21 @@ public class Pickobulus extends PickaxeAbility {
 
     @Override
     public String getName() {
-        return "Pickobulus";
+        return "Vein Seeker";
     }
 
     @Override
     public String getId() {
-        return "PICKOBULUS_ABILITY";
+        return "VEIN_SEEKER_ABILITY";
     }
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Throw your pickaxe to create an explosion on impact, mining all ores within a 2 block radius.");
+        return new Lore("§7Points the direction of the nearest vein and grants §a+3 §6Mining Spread §7for §a14s§7.");
     }
 
     @Override
     public int levelRequirement() {
-        return 2;
+        return 6;
     }
 }

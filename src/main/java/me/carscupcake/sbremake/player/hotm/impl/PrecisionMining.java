@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class PrecisionMining extends HotmUpgrade {
     public PrecisionMining(SkyblockPlayer player) {
-        super(player, MiningSpeedBoost.class);
+        super(player, FrontLoaded.class);
     }
 
     @Override

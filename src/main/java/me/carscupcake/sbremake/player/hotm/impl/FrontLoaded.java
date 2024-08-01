@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class FrontLoaded extends HotmUpgrade {
     public FrontLoaded(SkyblockPlayer player) {
-        super(player, Crystallized.class);
+        super(player, Crystallized.class, Orbiter.class, StarPowder.class);
     }
 
     @Override

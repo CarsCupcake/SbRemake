@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class EfficientMiner extends HotmUpgrade {
     public EfficientMiner(SkyblockPlayer player) {
-        super(player, DailyPowder.class);
+        super(player, DailyPowder.class, SeasonedMineman.class, Orbiter.class);
     }
 
     @Override

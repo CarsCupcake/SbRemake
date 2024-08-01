@@ -8,14 +8,14 @@ import me.carscupcake.sbremake.player.hotm.Powder;
 
 import java.util.Map;
 
-public class MiningFortune extends HotmUpgrade {
-    public MiningFortune(SkyblockPlayer player) {
-        super(player, MiningSpeed.class, TitaniumInsanium.class, DailyPowder.class, QuickForge.class);
+public class MiningFortune2 extends HotmUpgrade {
+    public MiningFortune2(SkyblockPlayer player) {
+        super(player, GreatExplorer.class);
     }
 
     @Override
     public String getName() {
-        return "Mining Fortune";
+        return "Mining Fortune II";
     }
 
     @Override
@@ -25,17 +25,17 @@ public class MiningFortune extends HotmUpgrade {
 
     @Override
     public int nextLevelCost(int current) {
-        return (int) Math.pow(current + 2, 3.05d);
+        return (int) Math.pow(current + 2, 3.2d);
     }
 
     @Override
     public Powder upgradeType(int current) {
-        return Powder.MithrilPowder;
+        return Powder.GemstonePowder;
     }
 
     @Override
     public String getId() {
-        return "MINING_FORTUNE_1";
+        return "MINING_FORTUNE_2";
     }
 
     @Override
@@ -49,6 +49,6 @@ public class MiningFortune extends HotmUpgrade {
 
     @Override
     public int levelRequirement() {
-        return 1;
+        return 7;
     }
 }

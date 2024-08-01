@@ -5,14 +5,14 @@ import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
 
-public class Pickobulus extends PickaxeAbility {
-    public Pickobulus(SkyblockPlayer player) {
-        super(player, QuickForge.class, Crystallized.class);
+public class ManiacMiner extends PickaxeAbility {
+    public ManiacMiner(SkyblockPlayer player) {
+        super(player, GreatExplorer.class);
     }
 
     @Override
     public int cooldown() {
-        return 120;
+        return 59;
     }
 
     @Override
@@ -22,21 +22,21 @@ public class Pickobulus extends PickaxeAbility {
 
     @Override
     public String getName() {
-        return "Pickobulus";
+        return "Maniac Miner";
     }
 
     @Override
     public String getId() {
-        return "PICKOBULUS_ABILITY";
+        return "MANIAC_MINER_ABILITY";
     }
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Throw your pickaxe to create an explosion on impact, mining all ores within a 2 block radius.");
+        return new Lore(STR."§7Spends all of your Mana and grants §a+1 \{Stat.MiningSpeed} §7for every 10 Mana spent, for §a15s.");
     }
 
     @Override
     public int levelRequirement() {
-        return 2;
+        return 6;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class QuickForge extends HotmUpgrade {
     public QuickForge(SkyblockPlayer player) {
-        super(player, MiningFortune.class);
+        super(player, MiningFortune.class, Pickobulus.class);
     }
 
     @Override

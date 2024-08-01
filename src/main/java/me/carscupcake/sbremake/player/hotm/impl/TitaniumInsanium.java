@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class TitaniumInsanium extends HotmUpgrade {
     public TitaniumInsanium(SkyblockPlayer player) {
-        super(player, MiningFortune.class);
+        super(player, MiningFortune.class, MiningSpeedBoost.class);
     }
 
     @Override

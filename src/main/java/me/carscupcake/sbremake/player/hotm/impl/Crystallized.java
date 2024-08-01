@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class Crystallized extends HotmUpgrade {
     public Crystallized(SkyblockPlayer player) {
-        super(player, Pickobulus.class);
+        super(player, Pickobulus.class, FrontLoaded.class);
     }
 
     @Override

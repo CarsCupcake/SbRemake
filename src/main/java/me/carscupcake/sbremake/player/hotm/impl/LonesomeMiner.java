@@ -9,47 +9,50 @@ import me.carscupcake.sbremake.util.StringUtils;
 
 import java.util.Map;
 
-public class SeasonedMineman extends HotmUpgrade {
-    public SeasonedMineman(SkyblockPlayer player) {
-        super(player, MiningMadness.class, EfficientMiner.class);
+public class LonesomeMiner extends HotmUpgrade {
+
+    public LonesomeMiner(SkyblockPlayer player) {
+        super(player, GoblinKiller.class, MiningSpeed2.class, Professional.class);
     }
 
     @Override
     public String getName() {
-        return "Seasoned Mineman";
+        return "Lonesome Miner";
     }
 
     @Override
     public int getMaxLevel() {
-        return 100;
+        return 45;
     }
 
     @Override
     public int nextLevelCost(int current) {
-        return (int) Math.pow(current + 2, 2.3d);
+        return (int) Math.pow(current + 2, 3.07d);
     }
 
     @Override
     public Powder upgradeType(int current) {
-        return Powder.MithrilPowder;
+        return Powder.GemstonePowder;
     }
 
     @Override
     public String getId() {
-        return "SEASONED_MINEMAN";
+        return "LONESOME_MINER";
     }
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Grands §3+%a% \{Stat.MiningWisdom}", Map.of("%a%", (_, _) -> StringUtils.cleanDouble(bonus(level))));
+        return new Lore(STR."§7Increases \{Stat.Strength}§7, \{Stat.CritChance}§7, \{Stat.CritDamage}§7, \{Stat.Defense}§7 and \{Stat.Health} §7stats gain by §a%p%% §7while in the Crystal Hollows.", Map.of("%p%", (_, _) -> {
+            return StringUtils.cleanDouble(getBonus(level), 1);
+        }));
     }
 
-    public double bonus(int level) {
-        return 5 + (level * 0.1d);
+    public double getBonus(int level) {
+        return 5 + ((level - 1) * 0.5);
     }
 
     @Override
     public int levelRequirement() {
-        return 3;
+        return 6;
     }
 }

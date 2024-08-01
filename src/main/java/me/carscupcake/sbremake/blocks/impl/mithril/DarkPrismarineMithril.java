@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.other.mining.resources.Mithril;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.minestom.server.coordinate.Pos;
@@ -48,7 +49,8 @@ public class DarkPrismarineMithril extends MiningBlock {
     @Override
     public void breakBlock(Pos pos, SkyblockPlayer player, BlockFace face) {
         super.breakBlock(pos, player, face);
-        player.addPowder(Powder.MithrilPowder, 2);
+        HotmUpgrade peakOfTheMountain = player.getHotm().getUpgrades().get(18);
+        player.addPowder(Powder.MithrilPowder, peakOfTheMountain.getLevel() >= 4 ? 3 : 2);
     }
 
     @Override

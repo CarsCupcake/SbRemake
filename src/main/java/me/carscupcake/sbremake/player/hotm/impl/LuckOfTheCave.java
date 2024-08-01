@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class LuckOfTheCave extends HotmUpgrade {
     public LuckOfTheCave(SkyblockPlayer player) {
-        super(player, MiningSpeedBoost.class);
+        super(player, MiningSpeedBoost.class, MiningMadness.class);
     }
 
     @Override

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class MiningMadness extends HotmUpgrade {
     public MiningMadness(SkyblockPlayer player) {
-        super(player, MiningSpeedBoost.class);
+        super(player, LuckOfTheCave.class, GoblinKiller.class, SeasonedMineman.class);
     }
 
     @Override
