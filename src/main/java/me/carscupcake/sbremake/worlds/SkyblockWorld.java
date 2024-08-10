@@ -262,9 +262,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                 ChunkUtils.forChunksInRange(0, 0, 32, (x, z) -> chunks.add(container.loadChunk(x, z)));
                 if (async) CompletableFuture.runAsync(() -> {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
-                    System.out.println("load end");
                     LightingChunk.relight(container, container.getChunks());
-                    System.out.println("light end");
                     container.loadChunk(spawn().chunkX(), spawn().chunkZ());
                     if (after != null) synchronized (_lock) {
                         after.run();

@@ -29,7 +29,6 @@ public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
             }
             player.getInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create().item());
             player.updateHpBar();
-            System.out.println("UwU Dady");
             player.getWorldProvider().addPlayer(player);
         }
     }
