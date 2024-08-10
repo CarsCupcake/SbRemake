@@ -6,7 +6,7 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
-import me.carscupcake.sbremake.worlds.impl.HubWorld;
+import me.carscupcake.sbremake.worlds.impl.Hub;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
@@ -19,7 +19,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
     public void accept(PlayerBlockBreakEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         if (player.getWorldProvider().type() == SkyblockWorld.Hub) {
-            if (player.getRegion() == HubWorld.Region.Forest) {
+            if (player.getRegion() == Hub.Region.Forest) {
                 Log log = null;
                 for (Log l : Log.logs)
                     if (Objects.requireNonNull(l.block().registry().material()).equals(event.getBlock().registry().material())) {
@@ -27,7 +27,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                         break;
                     }
                 if (log != null) {
-                    ((HubWorld) player.getWorldProvider()).brokenLogs.put(event.getBlockPosition(), new Log.LogInfo(log, event.getBlock().properties()));
+                    ((Hub) player.getWorldProvider()).brokenLogs.put(event.getBlockPosition(), new Log.LogInfo(log, event.getBlock().properties()));
                     SbItemStack item = log.drops(player);
                     ItemEntity entity = new ItemEntity(item.item());
                     entity.setInstance(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
@@ -36,7 +36,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                     return;
                 }
             }
-            if (player.getRegion() == HubWorld.Region.CoalMine) {
+            if (player.getRegion() == Hub.Region.CoalMine) {
                 MiningBlock block = null;
                 for (MiningBlock miningBlock : player.getWorldProvider().ores(player.getPosition())) {
                     if (miningBlock.getBlock() == event.getBlock()) {

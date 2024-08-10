@@ -12,10 +12,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
-import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
-import me.carscupcake.sbremake.worlds.impl.DwarvenMines;
-import me.carscupcake.sbremake.worlds.impl.GoldMines;
-import me.carscupcake.sbremake.worlds.impl.HubWorld;
+import me.carscupcake.sbremake.worlds.impl.*;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
@@ -51,7 +48,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
     Hub("hub", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
         public WorldProvider get() {
-            return new HubWorld();
+            return new Hub();
         }
     }, GoldMines("gold", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
@@ -67,6 +64,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         @Override
         public WorldProvider get() {
             return new DwarvenMines();
+        }
+    },
+    Park("park", FileEnding.ZIP) {
+        @Override
+        public WorldProvider get() {
+            return new ThePark();
         }
     };
     private static final Object _lock = new Object();
