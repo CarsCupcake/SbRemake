@@ -47,6 +47,9 @@ public class PeakOfTheMountain extends HotmUpgrade {
     }
 
     @Override
+    public void refund() {}
+
+    @Override
     public Powder upgradeType(int current) {
         if (current >= 7) return Powder.GlacialPowder;
         if (current >= 5) return Powder.GemstonePowder;

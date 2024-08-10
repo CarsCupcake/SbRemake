@@ -5,49 +5,44 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
 
-import java.util.Map;
+public class KeenEye extends HotmUpgrade {
 
-public class QuickForge extends HotmUpgrade {
-    public QuickForge(SkyblockPlayer player) {
-        super(player, MiningFortune.class, Pickobulus.class);
+    public KeenEye(SkyblockPlayer player) {
+        super(player);
     }
 
     @Override
     public String getName() {
-        return "Quick Forge";
+        return "Keen Eye";
     }
 
     @Override
     public int getMaxLevel() {
-        return 20;
+        return 1;
     }
 
     @Override
     public int nextLevelCost(int current) {
-        return (int) Math.pow(current + 2, 4d);
+        return 0;
     }
 
     @Override
     public Powder upgradeType(int current) {
-        return Powder.MithrilPowder;
+        return Powder.GlacialPowder;
     }
 
     @Override
     public String getId() {
-        return "QUICK_FORGE";
+        return "KEEN_EYE";
     }
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Decreases the time it takes to forge by §a%ch%%§7.", Map.of("%ch%", (item, player) -> String.valueOf(reward(level))));
-    }
-
-    public double reward(int level) {
-        return Math.min(30d, 10 + (level * 0.5) + Math.floor(level / 20d) * 20);
+        return new Lore("§7Whenever you enter a §bGlacite Mineshaft §7one highlighted Hard Stone block will contain §a+250 §bGlacite Powder§7.");
     }
 
     @Override
     public int levelRequirement() {
-        return 2;
+        return 8;
     }
 }

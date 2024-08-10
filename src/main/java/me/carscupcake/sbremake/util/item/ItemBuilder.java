@@ -102,7 +102,7 @@ public class ItemBuilder {
         item.set(ItemComponent.LORE, lore);
         item.set(ItemComponent.ATTRIBUTE_MODIFIERS, AttributeList.EMPTY.withTooltip(false));
         EnchantmentList enchantmentList = new EnchantmentList(enchants);
-        if(glint && enchants.isEmpty())
+        if(glint && enchantmentList.enchantments().isEmpty())
             enchantmentList.with(Enchantment.PROTECTION, 1).withTooltip(false);
         item.set(ItemComponent.ENCHANTMENTS, enchantmentList);
         if(leatherColor != null){

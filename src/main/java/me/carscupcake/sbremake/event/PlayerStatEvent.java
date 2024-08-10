@@ -42,7 +42,7 @@ public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> mo
         return value * addativeMult * multiplicativeMult;
     }
 
-    interface PlayerStatModifier {
+    public interface PlayerStatModifier {
         Type type();
         double value();
         String name();

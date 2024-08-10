@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.player;
 
 import com.google.gson.JsonObject;
+import kotlin.Pair;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Main;
@@ -36,6 +37,7 @@ import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.Pos;
@@ -414,6 +416,14 @@ public class SkyblockPlayer extends Player {
     private String powderString = null;
     @Getter
     private final HeartOfTheMountain hotm;
+    @Getter
+    private final MapList<Stat, Pair<PlayerStatEvent.PlayerStatModifier, TaskSchedule>> temporaryModifiers = new MapList<>() {
+        @Override
+        public void add(Stat key, Pair<PlayerStatEvent.PlayerStatModifier, TaskSchedule> value) {
+            super.add(key, value);
+            MinecraftServer.getSchedulerManager().buildTask(() -> removeFromList(key, value)).delay(value.getSecond()).schedule();
+        }
+    };
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
@@ -441,6 +451,7 @@ public class SkyblockPlayer extends Player {
         }
         this.hotm = new HeartOfTheMountain(this);
     }
+
     public void openSkyblockMenu() {
         InventoryBuilder inventoryBuilder = new InventoryBuilder(6, "Skyblock Menu").fill(TemplateItems.EmptySlot.getItem());
         ItemBuilder profileItem = new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture(Objects.requireNonNull(getSkin()).textures()).setName("§aYour Skyblock Profile").addAllLore("§7View your equipment, stats,").addAllLore("§7and more!").addAllLore("§7 ");
@@ -472,7 +483,7 @@ public class SkyblockPlayer extends Player {
             configFile.set(STR."\{i}", item, ConfigSection.ITEM);
         }
         configFile.save();
-        System.out.println(STR."Saved inventory from \{this.getName()}");
+        Main.LOGGER.info(STR."Saved profile from \{((TextComponent) this.getName()).content()}");
         ConfigFile defaults = new ConfigFile("defaults", this);
         defaults.set("world", this.getWorldProvider().type().getId(), ConfigSection.STRING);
         defaults.set("coins", this.coins, ConfigSection.DOUBLE);
@@ -506,7 +517,7 @@ public class SkyblockPlayer extends Player {
         powderString = STR."\{type.getColor()}᠅ §f\{type.getName()}: \{type.getColor()}\{StringUtils.toFormatedNumber(newAmount)}";
     }
 
-    public void setPowder(Powder type,@Range(from = 0, to = Integer.MAX_VALUE) int amount) {
+    public void setPowder(Powder type, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
         powder.put(type, amount);
     }
 
@@ -698,6 +709,8 @@ public class SkyblockPlayer extends Player {
             if (value == 0) continue;
             event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
         }
+        for (Pair<PlayerStatEvent.PlayerStatModifier, ?> pair : temporaryModifiers.get(stat))
+            event.modifiers().add(pair.getFirst());
         SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
         if (item != null && (item.sbItem().getType().isStatsInMainhand() || (isBow && item.sbItem() instanceof BowItem))) {
             event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", item.getStat(stat), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
@@ -824,7 +837,7 @@ public class SkyblockPlayer extends Player {
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
             SbItemStack stack = SbItemStack.from(getInventory().getItemStack(slot.armorSlot()));
             if (stack == null) continue;
-            for (Ability ability : stack.getAbilities())
+            for (Ability ability : stack.getAbilities(this))
                 if (ability instanceof FullSetBonus fullSetBonus)
                     fullSetBonuses.put(fullSetBonus, fullSetBonuses.getOrDefault(fullSetBonus, 0) + 1);
         }

@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.player.hotm.impl;
 
-import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
@@ -9,48 +8,44 @@ import me.carscupcake.sbremake.util.StringUtils;
 
 import java.util.Map;
 
-public class GreatExplorer extends HotmUpgrade {
+public class FrozenSolid extends HotmUpgrade {
 
-    public GreatExplorer(SkyblockPlayer player) {
-        super(player, MiningFortune2.class, Fortunate.class, StarPowder.class);
+    public FrozenSolid(SkyblockPlayer player) {
+        super(player, GiftsFromTheDeparted.class, DeadMansChest.class);
     }
 
     @Override
     public String getName() {
-        return "Great Explorer";
+        return "Frozen Solid";
     }
 
     @Override
     public int getMaxLevel() {
-        return 20;
+        return 1;
     }
 
     @Override
     public int nextLevelCost(int current) {
-        return (int) Math.pow(current + 2, 4d);
+        return (int) Math.pow(level + 1, 2.45);
     }
 
     @Override
     public Powder upgradeType(int current) {
-        return Powder.GemstonePowder;
+        return Powder.GlacialPowder;
     }
 
     @Override
     public String getId() {
-        return "GREAT_EXPLORER";
+        return "FROZEN_SOLID";
     }
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Grants §a+%p% §7chance to find treasure", Map.of("%p%", (_, _) -> String.valueOf(getBonus(level))));
-    }
-
-    public int getBonus(int level) {
-        return 20 + (4 * (level - 1));
+        return new Lore("§7Gain §a2x §bGlacite Powder §7from killing mobs in the §bGlacite Tunnels §7and §bGlacite Mineshafts§7.");
     }
 
     @Override
     public int levelRequirement() {
-        return 6;
+        return 10;
     }
 }

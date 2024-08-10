@@ -15,7 +15,7 @@ import net.minestom.server.instance.block.BlockFace;
 
 import java.util.Set;
 
-public class BlueMithril extends MiningBlock {
+public class BlueMithril extends me.carscupcake.sbremake.blocks.impl.mithril.Mithril {
     private static final Block beforeMat = Block.LIGHT_BLUE_WOOL;
 
     public BlueMithril() {
@@ -25,11 +25,6 @@ public class BlueMithril extends MiningBlock {
     @Override
     public int blockStrength() {
         return 1500;
-    }
-
-    @Override
-    public int getInstaMineSpeed() {
-        return 90001;
     }
 
     @Override
@@ -80,7 +75,7 @@ public class BlueMithril extends MiningBlock {
     }
 
     @Override
-    public double miningXp() {
+    public double getXp() {
         return 45;
     }
     /*@Override

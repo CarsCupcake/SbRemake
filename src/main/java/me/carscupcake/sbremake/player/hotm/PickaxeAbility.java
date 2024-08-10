@@ -1,15 +1,33 @@
 package me.carscupcake.sbremake.player.hotm;
 
+import lombok.Getter;
+import me.carscupcake.sbremake.event.PlayerInteractEvent;
+import me.carscupcake.sbremake.item.ability.AbilityType;
+import me.carscupcake.sbremake.item.ability.CooldownRequirement;
+import me.carscupcake.sbremake.item.ability.ItemAbility;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.Requirement;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.timer.TaskSchedule;
 
+import javax.annotation.processing.Generated;
 import java.util.List;
 
+@Getter
 public abstract class PickaxeAbility extends HotmUpgrade {
+    private final ItemAbility<PlayerInteractEvent> ability;
+
+    @SafeVarargs
     public PickaxeAbility(SkyblockPlayer player, Class<? extends HotmUpgrade>... priorUpgrades) {
         super(player, priorUpgrades);
+        ability = new ItemAbility<>(getName(), AbilityType.RIGHT_CLICK, _ -> {
+            player.sendMessage(STR."§aYou used your §6\{getName()} §aPickaxe Ability!");
+            MinecraftServer.getSchedulerManager().buildTask(() -> player.sendMessage(STR."§6\{getName()} §ais now ready!")).delay(TaskSchedule.seconds(cooldown())).schedule();
+            onInteract();
+        }, lore(1), new CooldownRequirement<>(cooldown()));
     }
 
     @Override

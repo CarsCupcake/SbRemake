@@ -41,7 +41,7 @@ public class Mole extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7When mining hard stone, you have a §a%c% §7chance to mine §a%b% §7adjacent hart stone blocks.", Map.of("%b%", (_, _) -> String.valueOf(getBlocks(level)),
+        return new Lore("§7When mining hard stone, you have a §a%c%% §7chance to mine §a%b% §7adjacent hart stone blocks.", Map.of("%b%", (_, _) -> String.valueOf(getBlocks(level)),
                 "%c%", (_, _) -> String.valueOf(getChance(level))));
     }
 

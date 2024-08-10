@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.blocks.impl.Cobblestone;
 import me.carscupcake.sbremake.blocks.impl.Stone;
+import me.carscupcake.sbremake.blocks.impl.Titanium;
 import me.carscupcake.sbremake.blocks.impl.mithril.*;
 import me.carscupcake.sbremake.blocks.impl.ore.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -62,7 +63,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         public WorldProvider get() {
             return new DeepCaverns();
         }
-    }, DwarvenMines("mines", FileEnding.ZIP, new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre(), new BlueMithril(), new CyanTerracottaMithril(), new DarkPrismarineMithril(), new GrayWoolMithril(), new PrismarineBrickMithril(), new PrismarineMithril()) {
+    }, DwarvenMines("mines", FileEnding.ZIP, new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre(), new BlueMithril(), new CyanTerracottaMithril(), new DarkPrismarineMithril(), new GrayWoolMithril(), new PrismarineBrickMithril(), new PrismarineMithril(), new Titanium()) {
         @Override
         public WorldProvider get() {
             return new DwarvenMines();

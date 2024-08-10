@@ -24,7 +24,7 @@ public class PowderBuff extends HotmUpgrade {
 
     @Override
     public int nextLevelCost(int current) {
-        return (int) Math.pow(level + 2, 3.2d);
+        return (int) Math.pow(level + 1, 3.2d);
     }
 
     @Override

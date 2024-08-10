@@ -22,7 +22,7 @@ public class Stone extends MiningBlock {
 
     @Override
     public int getInstaMineSpeed() {
-        return 450;
+        return blockStrength() * 30;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class Stone extends MiningBlock {
     }
 
     @Override
-    public double miningXp() {
+    public double getXp() {
         return 1;
     }
 

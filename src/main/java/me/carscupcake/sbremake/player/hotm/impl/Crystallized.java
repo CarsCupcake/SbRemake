@@ -35,7 +35,7 @@ public class Crystallized extends HotmUpgrade {
 
     @Override
     public String getId() {
-        return "DAILY_POWDER";
+        return "CRYSTALLIZED";
     }
 
     @Override

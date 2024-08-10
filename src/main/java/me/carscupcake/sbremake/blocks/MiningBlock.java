@@ -21,13 +21,8 @@ import net.minestom.server.event.player.PlayerStartDiggingEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.block.BlockFace;
-import org.psjava.formula.Min;
-import org.reflections.Reflections;
 
-import java.lang.reflect.Constructor;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -41,7 +36,9 @@ public abstract class MiningBlock {
 
     public abstract int blockStrength();
 
-    public abstract int getInstaMineSpeed();
+    public int getInstaMineSpeed() {
+        return (blockStrength() * 60) + 1;
+    }
 
     public abstract int getBreakingPower();
 
@@ -90,7 +87,7 @@ public abstract class MiningBlock {
             }
         }.delayTask(regenTime());
         dropItems(player, pos, face);
-        player.getSkill(Skill.Mining).addXp(miningXp());
+        player.getSkill(getSkill()).addXp(getXp());
         instance.playSound(breakingSound(), pos);
     }
 
@@ -109,7 +106,11 @@ public abstract class MiningBlock {
         return speed >= getInstaMineSpeed();
     }
 
-    public abstract double miningXp();
+    public Skill getSkill() {
+        return Skill.Mining;
+    }
+
+    public abstract double getXp();
 
     public void reset(Instance instance, Pos block) {
         instance.setBlock(block, resetType());

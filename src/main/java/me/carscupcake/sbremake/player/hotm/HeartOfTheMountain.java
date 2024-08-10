@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.impl.*;
+import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TemplateItems;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.item.OversizedGui;
@@ -22,9 +23,12 @@ public class HeartOfTheMountain {
             TitaniumInsanium.class, QuickForge.class, MiningSpeedBoost.class, Pickobulus.class
             , LuckOfTheCave.class, DailyPowder.class, Crystallized.class, MiningMadness.class, EfficientMiner.class,
             FrontLoaded.class, SkyMall.class, SeasonedMineman.class, Orbiter.class, PrecisionMining.class
-    , GoblinKiller.class, PeakOfTheMountain.class, StarPowder.class, VeinSeekder.class, LonesomeMiner.class,
+            , GoblinKiller.class, PeakOfTheMountain.class, StarPowder.class, VeinSeekder.class, LonesomeMiner.class,
             Professional.class, Mole.class, Fortunate.class, GreatExplorer.class, ManiacMiner.class,
-            MiningSpeed2.class, PowderBuff.class, MiningFortune2.class);
+            MiningSpeed2.class, PowderBuff.class, MiningFortune2.class, KeenEye.class,
+            WarmHearted.class, DustCollector.class, DailyGrind.class, StrongArm.class, NoStoneUnturned.class,
+            MineshaftMayhem.class, Surveyor.class, SubzeroMining.class, EagerAdventurer.class, GemstoneInfusion.class,
+            GiftsFromTheDeparted.class, FrozenSolid.class, DeadMansChest.class, Excavator.class, RagsToRiches.class, HazardousMiner.class);
     private final SkyblockPlayer player;
     private final List<HotmUpgrade> upgrades = new ArrayList<>();
     private PickaxeAbility activeAbility = null;
@@ -68,13 +72,17 @@ public class HeartOfTheMountain {
     }
 
     public void save() {
-        for (HotmUpgrade upgrade : upgrades)
-            upgrade.save();
         ConfigFile file = new ConfigFile("hotm", player);
+        for (HotmUpgrade upgrade : upgrades)
+            upgrade.save(file);
         file.set("active_ability", (activeAbility == null) ? null : activeAbility.getId(), ConfigSection.STRING);
         file.set("level", level, ConfigSection.INTEGER);
         file.set("xp", xp, ConfigSection.INTEGER);
         file.save();
+    }
+
+    public void addTokenOfTheMountain() {
+        tokenOfTheMountain++;
     }
 
     public <T extends HotmUpgrade> T getUpgrade(Class<T> upgrade) {
@@ -113,7 +121,7 @@ public class HeartOfTheMountain {
     //81 10
     //90 11
 
-    private static final int[] HotmUpgradeSlots = {85, 76, 75, 77, 74, 78, 65, 67, 69, 56, 58, 60, 55, 57, 59, 61, 47, 49, 51, 37, 38, 39, 40, 41, 42, 43, 29, 31, 33, 19, 20, 21, 22, 23, 24, 25, 26, 11, 13, 15, 1, 2 ,3, 4, 5, 6, 7};
+    private static final int[] HotmUpgradeSlots = {85, 76, 75, 77, 74, 78, 65, 67, 69, 56, 58, 60, 55, 57, 59, 61, 47, 49, 51, 37, 38, 39, 40, 41, 42, 43, 29, 31, 33, 19, 20, 21, 22, 23, 24, 25, 11, 13, 15, 1, 2, 3, 4, 5, 6, 7};
 
     public void openMenu() {
         List<ItemStack> item = new ArrayList<>();
@@ -129,7 +137,7 @@ public class HeartOfTheMountain {
 
         for (int i = 0; i < 10; i++) {
             int level = 10 - i;
-            item.set(i * 9, new ItemBuilder(level == this.level + 1 ? Material.YELLOW_STAINED_GLASS_PANE : (level > this.level) ? Material.RED_STAINED_GLASS_PANE : Material.GREEN_STAINED_GLASS_PANE)
+            item.set(i * 9, new ItemBuilder(level == this.level + 1 ? Material.YELLOW_STAINED_GLASS_PANE : (level > this.level) ? Material.RED_STAINED_GLASS_PANE : Material.LIME_STAINED_GLASS_PANE)
                     .addLoreIf(() -> level > this.level, lockedLore)
                     .addLoreIf(() -> level <= this.level, unlockedLore)
                     .setName(STR."\{level <= this.level ? "§a" : (level == this.level + 1 ? "§e" : "§c")}Tier \{level}")
@@ -172,22 +180,46 @@ public class HeartOfTheMountain {
                                 player.sendMessage("§cYou do not have the prior upgrades");
                             }
                         }
-                    } else if (upgrade.level >= upgrade.getMaxLevel()) {
-                        player.sendMessage("§cYou have already purchased this upgrade!");
                     } else {
-                        boolean shift = event.getClickType() == ClickType.START_SHIFT_CLICK && !(upgrade instanceof PeakOfTheMountain);
-                        int cost = 0;
-                        if (shift) {
-                            int levels = Math.min(upgrade.getMaxLevel() - upgrade.getLevel(), 10);
-                            for (int l = upgrade.level ; l < upgrade.level + levels; l++)
-                                cost += upgrade.nextLevelCost(l);
-                        } else cost =  upgrade.nextLevelCost(upgrade.getLevel());
-                        if (player.getPowder(upgrade.upgradeType(upgrade.level)) >= cost) {
-                            player.removePowder(upgrade.upgradeType(upgrade.level), cost);
-                            upgrade.level += shift ? Math.min(upgrade.getMaxLevel() - upgrade.getLevel(), 10) : 1;
+                        if (event.getClickType() == ClickType.RIGHT_CLICK && !(upgrade instanceof PickaxeAbility) && !(upgrade instanceof PeakOfTheMountain)) {
+                            if (upgrade.isEnabled()) {
+                                player.sendMessage(STR."§cDisabled \{upgrade.getName()}");
+                                upgrade.setEnabled(false);
+                            } else {
+                                player.sendMessage(STR."§aEnabled \{upgrade.getName()}");
+                                upgrade.setEnabled(true);
+                            }
+                            player.playSound(SoundType.BLOCK_NOTE_BLOCK_PLING.create(1, 2));
                             updateAfterUpgrade(upgrade, slot, gui);
+                            return true;
+                        }
+
+                        if (upgrade.level >= upgrade.getMaxLevel()) {
+                            if (upgrade instanceof PickaxeAbility ability) {
+                                if (this.activeAbility == ability)
+                                    player.sendMessage("§cYou have selected this as your pickaxe ability!");
+                                else {
+                                    this.activeAbility = ability;
+                                    player.sendMessage(STR."§aYou have selected §e\{ability.getName()} §aas your Pickaxe Ability. This ability will apply to all of your pickaxes!");
+                                    updateAfterUpgrade(upgrade, slot, gui);
+                                }
+                            } else
+                                player.sendMessage("§cYou have already purchased this upgrade!");
                         } else {
-                            player.sendMessage(STR."§cYou dont have enough \{upgrade.upgradeType(upgrade.level).getName()} Powder!");
+                            boolean shift = event.getClickType() == ClickType.START_SHIFT_CLICK && !(upgrade instanceof PeakOfTheMountain);
+                            int cost = 0;
+                            if (shift) {
+                                int levels = Math.min(upgrade.getMaxLevel() - upgrade.getLevel(), 10);
+                                for (int l = upgrade.level; l < upgrade.level + levels; l++)
+                                    cost += upgrade.nextLevelCost(l);
+                            } else cost = upgrade.nextLevelCost(upgrade.getLevel());
+                            if (player.getPowder(upgrade.upgradeType(upgrade.level)) >= cost) {
+                                player.removePowder(upgrade.upgradeType(upgrade.level), cost);
+                                upgrade.level += shift ? Math.min(upgrade.getMaxLevel() - upgrade.getLevel(), 10) : 1;
+                                updateAfterUpgrade(upgrade, slot, gui);
+                            } else {
+                                player.sendMessage(STR."§cYou dont have enough \{upgrade.upgradeType(upgrade.level).getName()} Powder!");
+                            }
                         }
                     }
                     return true;

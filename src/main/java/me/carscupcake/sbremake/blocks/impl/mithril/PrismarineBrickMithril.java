@@ -14,7 +14,7 @@ import net.minestom.server.instance.block.BlockFace;
 
 import java.util.Set;
 
-public class PrismarineBrickMithril extends MiningBlock {
+public class PrismarineBrickMithril extends me.carscupcake.sbremake.blocks.impl.mithril.Mithril {
     private static final Block beforeMat = Block.PRISMARINE_BRICKS;
 
     public PrismarineBrickMithril() {
@@ -24,11 +24,6 @@ public class PrismarineBrickMithril extends MiningBlock {
     @Override
     public int blockStrength() {
         return 800;
-    }
-
-    @Override
-    public int getInstaMineSpeed() {
-        return 48_001;
     }
 
     @Override
@@ -59,7 +54,7 @@ public class PrismarineBrickMithril extends MiningBlock {
     }
 
     @Override
-    public double miningXp() {
+    public double getXp() {
         return 45;
     }
 }

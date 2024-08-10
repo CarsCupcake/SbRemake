@@ -23,11 +23,6 @@ public class IronOre extends MiningBlock {
     }
 
     @Override
-    public int getInstaMineSpeed() {
-        return 1_801;
-    }
-
-    @Override
     public int getBreakingPower() {
         return 2;
     }
@@ -39,7 +34,7 @@ public class IronOre extends MiningBlock {
     }
 
     @Override
-    public double miningXp() {
+    public double getXp() {
         return 5;
     }
 }

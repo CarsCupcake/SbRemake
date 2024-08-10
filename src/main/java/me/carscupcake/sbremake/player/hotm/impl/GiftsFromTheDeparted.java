@@ -9,48 +9,48 @@ import me.carscupcake.sbremake.util.StringUtils;
 
 import java.util.Map;
 
-public class GreatExplorer extends HotmUpgrade {
+public class GiftsFromTheDeparted extends HotmUpgrade {
 
-    public GreatExplorer(SkyblockPlayer player) {
-        super(player, MiningFortune2.class, Fortunate.class, StarPowder.class);
+    public GiftsFromTheDeparted(SkyblockPlayer player) {
+        super(player, Surveyor.class, FrozenSolid.class);
     }
 
     @Override
     public String getName() {
-        return "Great Explorer";
+        return "Gifts from the Departed";
     }
 
     @Override
     public int getMaxLevel() {
-        return 20;
+        return 100;
     }
 
     @Override
     public int nextLevelCost(int current) {
-        return (int) Math.pow(current + 2, 4d);
+        return (int) Math.pow(level + 1, 2.45);
     }
 
     @Override
     public Powder upgradeType(int current) {
-        return Powder.GemstonePowder;
+        return Powder.GlacialPowder;
     }
 
     @Override
     public String getId() {
-        return "GREAT_EXPLORER";
+        return "GIFTS_FROM_THE_DEPARTED";
     }
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Grants §a+%p% §7chance to find treasure", Map.of("%p%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore("§7Gain a §a%b%% §7chance to get an extra item when looting a §bFrozen Corpse", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
     }
 
-    public int getBonus(int level) {
-        return 20 + (4 * (level - 1));
+    public double getBonus(int level) {
+        return level * 0.2d;
     }
 
     @Override
     public int levelRequirement() {
-        return 6;
+        return 10;
     }
 }

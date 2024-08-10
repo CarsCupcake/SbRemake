@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.player.hotm.impl;
 
+import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;

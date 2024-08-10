@@ -1,5 +1,7 @@
 package me.carscupcake.sbremake;
 
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
 import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ability.Ability;
@@ -34,6 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Main {
     public static final Object _lock = new Object();
     public static volatile AtomicBoolean running = new AtomicBoolean(true);
+    public static Thread CONSOLE_THREAD;
     public static volatile org.slf4j.Logger LOGGER;
 
     public static void main(String[] args) {
@@ -90,16 +93,17 @@ public class Main {
         int port = 25565;
         try {
             port = Integer.parseInt(args[0]);
-        } catch (Exception ignore) {
+        } catch (Exception _) {
         }
         server.start("127.0.0.1", port);
         System.out.println(STR."Started Server on port \{port}");
-        java.lang.Thread.ofPlatform().daemon(true).name("Console").start(() -> {
+        CONSOLE_THREAD = java.lang.Thread.ofPlatform().name("Console").start(() -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             ConsoleSender console = new ConsoleSender();
             while (running.get()) {
                 try {
                     String in = reader.readLine();
+                    if (!running.get()) return;
                     LOGGER.debug(in);
                     if (MinecraftServer.getCommandManager().commandExists(in.split(" ")[0])) {
                         LOGGER.info(STR."Executing \{in}");

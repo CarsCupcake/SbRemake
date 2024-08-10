@@ -39,6 +39,12 @@ public class StringUtils {
         return builder.toString();
     }
 
+    public static String toFormatedNumber(double number) {
+        long asLong = (long) number;
+        String s = toFormatedNumber(asLong);
+        return s + ((number % 1 == 0) ? "" : String.valueOf(number - asLong).substring(2));
+    }
+
     public static String toFormatedNumber(int number) {
         String str = String.valueOf(number);
         StringBuilder sb = new StringBuilder(str);

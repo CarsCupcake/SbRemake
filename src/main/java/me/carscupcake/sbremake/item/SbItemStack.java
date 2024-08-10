@@ -8,6 +8,7 @@ import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
@@ -170,21 +171,18 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
                         i = 0;
                         lore.add(builder.toString());
                         builder = new StringBuilder("§9");
-                    } else
-                        builder.append(" ");
+                    } else builder.append(" ");
                 }
-                if (i != 0)
-                    lore.add(builder.toString());
+                if (i != 0) lore.add(builder.toString());
             }
             lore.add(" ");
         }
         if (sbItem.getLorePlacement() == ISbItem.LorePlace.AboveAbility && sbItem.getLore() != Lore.EMPTY) {
             lore.addAll(sbItem.getLore().build(this, player));
-            if (sbItem instanceof SkyblockMenu)
-                return lore;
+            if (sbItem instanceof SkyblockMenu) return lore;
             lore.add("  ");
         }
-        for (Ability ability : getAbilities()) {
+        for (Ability ability : getAbilities(player)) {
             if (ability.showInLore()) {
                 lore.addAll(ability.buildLore(this, player));
                 lore.add("§a  ");
@@ -220,9 +218,16 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         return items.keySet();
     }
 
-    public List<Ability> getAbilities() {
+    public List<Ability> getAbilities(SkyblockPlayer player) {
         //Later add stuff like hype ability
-        return sbItem.getDefaultAbilities();
+        List<Ability> abilities = sbItem.getDefaultAbilities();
+        if (sbItem.getType() == ItemType.Pickaxe || sbItem.getType() == ItemType.Drill)
+            if (player != null) {
+                PickaxeAbility ability = player.getHotm().getActiveAbility();
+                if (ability != null) abilities.add(ability.getAbility());
+            }
+
+        return abilities;
     }
 
     public SbItemStack withAmount(int i) {
@@ -233,16 +238,16 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     public int getEnchantmentLevel(SkyblockEnchantment enchantment) {
         CompoundBinaryTag enchantments = ((CompoundBinaryTag) item.getTag(Tag.NBT("ExtraAttributes"))).getCompound("enchantments");
         for (String key : enchantments.keySet()) {
-            if (key.equalsIgnoreCase(enchantment.getId()))
-                return enchantments.getInt(key);
+            if (key.equalsIgnoreCase(enchantment.getId())) return enchantments.getInt(key);
         }
         return 0;
     }
+
     public Map<SkyblockEnchantment, Integer> getEnchantments() {
         CompoundBinaryTag enchantments = ((CompoundBinaryTag) item.getTag(Tag.NBT("ExtraAttributes"))).getCompound("enchantments");
         Map<SkyblockEnchantment, Integer> enchantmentMap = new HashMap<>();
         for (String key : enchantments.keySet()) {
-           enchantmentMap.put(SkyblockEnchantment.enchantments.get(key), enchantments.getInt(key));
+            enchantmentMap.put(SkyblockEnchantment.enchantments.get(key), enchantments.getInt(key));
         }
         return enchantmentMap;
     }

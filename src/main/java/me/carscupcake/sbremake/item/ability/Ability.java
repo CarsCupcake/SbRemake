@@ -49,7 +49,7 @@ public sealed interface Ability permits ItemAbility, FullSetBonus {
         if (item == null) return;
         List<ItemAbility<?>> abilities = new ArrayList<>();
         boolean hasSneak = false;
-        for (Ability a : item.getAbilities()) {
+        for (Ability a : item.getAbilities((SkyblockPlayer) event.getPlayer())) {
             if (a instanceof ItemAbility<?> itemAbility && itemAbility.abilityType().type() == event.getClass()) {
                 abilities.add(itemAbility);
                 if (itemAbility.abilityType().isSneak()) hasSneak = true;

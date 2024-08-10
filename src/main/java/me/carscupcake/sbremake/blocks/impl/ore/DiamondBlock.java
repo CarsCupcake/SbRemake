@@ -23,11 +23,6 @@ public class DiamondBlock extends MiningBlock {
     }
 
     @Override
-    public int getInstaMineSpeed() {
-        return 3_001;
-    }
-
-    @Override
     public int getBreakingPower() {
         return 3;
     }
@@ -40,7 +35,7 @@ public class DiamondBlock extends MiningBlock {
     }
 
     @Override
-    public double miningXp() {
+    public double getXp() {
         return 15;
     }
 }

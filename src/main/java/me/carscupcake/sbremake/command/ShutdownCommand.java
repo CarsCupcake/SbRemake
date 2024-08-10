@@ -26,5 +26,6 @@ public class ShutdownCommand extends Command {
     private void execute(@NotNull CommandSender commandSender, @NotNull CommandContext commandContext) {
         Main.running.set(false);
         MinecraftServer.stopCleanly();
+        System.exit(0);
     }
 }

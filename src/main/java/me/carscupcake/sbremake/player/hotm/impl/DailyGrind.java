@@ -1,56 +1,56 @@
 package me.carscupcake.sbremake.player.hotm.impl;
 
-import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
-import me.carscupcake.sbremake.util.StringUtils;
 
+import java.util.List;
 import java.util.Map;
 
-public class GreatExplorer extends HotmUpgrade {
+public class DailyGrind extends HotmUpgrade {
 
-    public GreatExplorer(SkyblockPlayer player) {
-        super(player, MiningFortune2.class, Fortunate.class, StarPowder.class);
+    public DailyGrind(SkyblockPlayer player) {
+        super(player);
     }
 
     @Override
     public String getName() {
-        return "Great Explorer";
+        return "Daily Grind";
     }
 
     @Override
     public int getMaxLevel() {
-        return 20;
+        return 100;
     }
 
     @Override
     public int nextLevelCost(int current) {
-        return (int) Math.pow(current + 2, 4d);
+        return (int) 200 + ((level  - 1) * 18);
     }
 
     @Override
     public Powder upgradeType(int current) {
-        return Powder.GemstonePowder;
+        return Powder.GlacialPowder;
     }
 
     @Override
     public String getId() {
-        return "GREAT_EXPLORER";
+        return "DAILY_GRIND";
     }
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Grants §a+%p% §7chance to find treasure", Map.of("%p%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore(List.of("§7Your first daily commission in each", "§7Mining Zone grants bonus powder:", " ",
+                "§2Dwarven Mines§7: §a+%b% §2Mithril Powder", "§5Crystal Hollows§7: §a+%b% §bGemstone Powder", "§bGlacite Tunnels§7: §a+%b% §bGlacite Powder"), Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
     }
 
     public int getBonus(int level) {
-        return 20 + (4 * (level - 1));
+        return level * 50;
     }
 
     @Override
     public int levelRequirement() {
-        return 6;
+        return 8;
     }
 }
