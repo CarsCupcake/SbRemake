@@ -273,9 +273,9 @@
             <version>1.7.2</version>
         </dependency>
         <dependency>
-            <groupId>com.github.Minestom</groupId>
-            <artifactId>Minestom</artifactId>
-            <version>d1624c290a</version>
+            <groupId>net.minestom</groupId>
+            <artifactId>minestom-snapshots</artifactId>
+            <version>461c56e749</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.jboss.shrinkwrap.resolver</groupId>

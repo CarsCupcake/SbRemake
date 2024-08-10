@@ -1,23 +1,23 @@
 package me.carscupcake.sbremake.listeners;
 
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Metadata;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
-import net.minestom.server.entity.attribute.AttributeInstance;
+import net.minestom.server.entity.attribute.AttributeModifier;
+import net.minestom.server.entity.attribute.AttributeOperation;
 import net.minestom.server.event.player.PlayerPacketOutEvent;
 import net.minestom.server.item.Material;
-import net.minestom.server.network.packet.server.play.BlockBreakAnimationPacket;
 import net.minestom.server.network.packet.server.play.EntityAttributesPacket;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
-import net.minestom.server.network.packet.server.play.PlayerAbilitiesPacket;
+import net.minestom.server.utils.NamespaceID;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
 
 public class PacketOutListener implements Consumer<PlayerPacketOutEvent> {
     @Override
@@ -37,48 +37,16 @@ public class PacketOutListener implements Consumer<PlayerPacketOutEvent> {
             if (player.getBowStartPull() < 0 && player.getItemInHand(Player.Hand.MAIN).material() == Material.BOW)
                 event.setCancelled(true);
         }
-        if (event.getPacket() instanceof EntityAttributesPacket(int entityId, List<AttributeInstance> properties)) {
+        if (event.getPacket() instanceof EntityAttributesPacket(
+                int entityId, List<EntityAttributesPacket.Property> properties
+        )) {
             if (entityId != event.getPlayer().getEntityId()) return;
-            for (AttributeInstance attributeInstance : properties)
-                if (attributeInstance.getAttribute() == Attribute.GENERIC_ATTACK_SPEED && attributeInstance.getValue() != 4d) {
-                    attributeInstance.getModifiers().clear();
-                    attributeInstance.setBaseValue(4);
+            for (EntityAttributesPacket.Property attributeInstance : properties)
+                if (attributeInstance.attribute() == Attribute.GENERIC_ATTACK_SPEED && attributeInstance.value() != 4d) {
+                    attributeInstance.modifiers().clear();
+                    attributeInstance.modifiers().add(new AttributeModifier(NamespaceID.from("base"), 4, AttributeOperation.ADD_VALUE));
                 }
         }
-        /*if (event.getPacket() instanceof PlayerAbilitiesPacket packet) {
-            if (packet.walkingSpeed() <= 0.2f) return;
-            event.setCancelled(true);
-            System.out.println("ARG UwU");
-            PlayerAbilitiesPacket playerAbilitiesPacket = new PlayerAbilitiesPacket(packet.flags(), packet.flyingSpeed(), 0.2f);
-            event.getPlayer().sendPacket(playerAbilitiesPacket);
-        }*/
     }
 
-    private static float getHealth(double maxHealth) {
-        float health = 0;
-        if (maxHealth < 125) {
-            health = 20;
-        } else if (maxHealth < 165) {
-            health = 22;
-        } else if (maxHealth < 230) {
-            health = 24;
-        } else if (maxHealth < 300) {
-            health = 26;
-        } else if (maxHealth < 400) {
-            health = 28;
-        } else if (maxHealth < 500) {
-            health = 30;
-        } else if (maxHealth < 650) {
-            health = 32;
-        } else if (maxHealth < 800) {
-            health = 34;
-        } else if (maxHealth < 1000) {
-            health = 36;
-        } else if (maxHealth < 1250) {
-            health = 38;
-        } else if (maxHealth >= 1250) {
-            health = 40;
-        }
-        return health;
-    }
 }

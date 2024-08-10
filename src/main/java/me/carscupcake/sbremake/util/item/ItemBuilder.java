@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.util.item;
 
 import me.carscupcake.sbremake.util.Returnable;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -10,10 +11,12 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.*;
 import net.minestom.server.item.enchant.Enchantment;
+import net.minestom.server.registry.DynamicRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class ItemBuilder {
@@ -25,7 +28,7 @@ public class ItemBuilder {
     private String headTexture;
     private DyedItemColor leatherColor;
     private ArrayList<BannerPatterns.Layer> bannerPatterns;
-    private final HashMap<Enchantment, Integer> enchants = new HashMap<>();
+    private final HashMap<DynamicRegistry.Key<Enchantment>, Integer> enchants = new HashMap<>();
     private boolean glint = false;
     public ItemBuilder(Material material){
         this.material = material;
@@ -132,8 +135,8 @@ public class ItemBuilder {
         glint = b;
         return this;
     }
-    public ItemBuilder addEnchant(Enchantment enchantment, int level){
-        enchants.put(enchantment, level);
+    public ItemBuilder addEnchant(Enchantment enchantment, int level) {
+        enchants.put(DynamicRegistry.Key.of(Objects.requireNonNull(enchantment.registry()).namespace()), level);
         return this;
     }
 }
