@@ -15,7 +15,8 @@ public enum ItemType {
     Bow(true, false, "Bow"),
     Pickaxe(true, true, "Pickaxe"),
     Drill(true, true, "Drill"),
-    Shovel(true, true, "Shovel");
+    Shovel(true, true, "Shovel"),
+    Axe(true, true, "Axe");
     private final boolean reforgable;
     private final boolean statsInMainhand;
     private final String display;

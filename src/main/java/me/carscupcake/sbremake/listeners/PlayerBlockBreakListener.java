@@ -2,15 +2,20 @@ package me.carscupcake.sbremake.listeners;
 
 import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.blocks.MiningBlock;
+import me.carscupcake.sbremake.event.LogBreakEvent;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.impl.Hub;
+import me.carscupcake.sbremake.worlds.impl.Park;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -29,9 +34,13 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                 if (log != null) {
                     ((Hub) player.getWorldProvider()).brokenLogs.put(event.getBlockPosition(), new Log.LogInfo(log, event.getBlock().properties()));
                     SbItemStack item = log.drops(player);
-                    ItemEntity entity = new ItemEntity(item.item());
-                    entity.setInstance(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
-                    entity.addViewer(player);
+                    LogBreakEvent logBreakEvent = new LogBreakEvent(player, event.getBlockPosition(), log, new ArrayList<>(List.of(item)));
+                    MinecraftServer.getGlobalEventHandler().call(logBreakEvent);
+                    for (SbItemStack i : logBreakEvent.drops()) {
+                        ItemEntity entity = new ItemEntity(i.item());
+                        entity.setInstance(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
+                        entity.addViewer(player);
+                    }
                     player.getSkill(Skill.Foraging).addXp(log.xp());
                     return;
                 }
@@ -49,6 +58,26 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                     event.setCancelled(true);
                     return;
                 }
+            }
+        } else if (player.getWorldProvider().type() == SkyblockWorld.Park) {
+            Log log = null;
+            for (Log l : Log.logs)
+                if (Objects.requireNonNull(l.block().registry().material()).equals(event.getBlock().registry().material())) {
+                    log = l;
+                    break;
+                }
+            if (log != null) {
+                ((Park) player.getWorldProvider()).brokenLogs.put(event.getBlockPosition(), new Log.LogInfo(log, event.getBlock().properties()));
+                SbItemStack item = log.drops(player);
+                LogBreakEvent logBreakEvent = new LogBreakEvent(player, event.getBlockPosition(), log, new ArrayList<>(List.of(item)));
+                MinecraftServer.getGlobalEventHandler().call(logBreakEvent);
+                for (SbItemStack i : logBreakEvent.drops()) {
+                    ItemEntity entity = new ItemEntity(i.item());
+                    entity.setInstance(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
+                    entity.addViewer(player);
+                }
+                player.getSkill(Skill.Foraging).addXp(log.xp());
+                return;
             }
         }
         event.setCancelled(true);

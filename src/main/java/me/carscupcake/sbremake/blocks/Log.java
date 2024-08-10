@@ -19,7 +19,11 @@ public record Log(Block block, ISbItem drop, double xp) {
         this(block, ISbItem.get(Objects.requireNonNull(block.registry().material())), xp);
     }
 
-    public static final Set<Log> logs = Set.of(new Log(Block.OAK_LOG, 6d), new Log(Block.OAK_WOOD, ISbItem.get(Material.OAK_LOG), 6d));
+    public static final Set<Log> logs = Set.of(new Log(Block.OAK_LOG, 6d), new Log(Block.OAK_WOOD, ISbItem.get(Material.OAK_LOG), 6d),
+            new Log(Block.BIRCH_LOG, 6d), new Log(Block.BIRCH_WOOD, ISbItem.get(Material.BIRCH_LOG), 6d),
+            new Log(Block.DARK_OAK_LOG, 6d), new Log(Block.DARK_OAK_WOOD, ISbItem.get(Material.DARK_OAK_LOG), 6d),
+            new Log(Block.ACACIA_LOG, 6d), new Log(Block.ACACIA_WOOD, ISbItem.get(Material.ACACIA_LOG), 6d),
+            new Log(Block.JUNGLE_LOG, 6d), new Log(Block.JUNGLE_WOOD, ISbItem.get(Material.JUNGLE_LOG), 6d));
 
     public SbItemStack drops(SkyblockPlayer player) {
         SbItemStack item = drop.create();

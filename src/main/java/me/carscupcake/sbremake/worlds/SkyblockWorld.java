@@ -69,7 +69,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
     Park("park", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
-            return new ThePark();
+            return new Park();
         }
     };
     private static final Object _lock = new Object();
