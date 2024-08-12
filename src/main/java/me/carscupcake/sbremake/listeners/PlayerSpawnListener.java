@@ -16,7 +16,7 @@ public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
     public void accept(PlayerSpawnEvent playerSpawnEvent) {
         playerSpawnEvent.getPlayer().spawn();
         SkyblockPlayer player = (SkyblockPlayer) playerSpawnEvent.getPlayer();
-        player.teleport(player.getWorldProvider().spawn());
+        player.teleport(player.getWorldProvider().getCustomEntry().getOrDefault(player.getPrevious(), player.getWorldProvider().spawn()));
         RedstonePigman.attacked.remove(player);
         if (playerSpawnEvent.isFirstSpawn()) {
             ConfigFile file = new ConfigFile("inventory", player);

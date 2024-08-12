@@ -164,10 +164,19 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         private final Set<SkyblockPlayer> players = Collections.synchronizedSet(new HashSet<>());
         private final String id;
         protected Npc[] npcs;
+        private final List<Launchpad> launchpads;
+        private boolean loaded = false;
+        public List<Runnable> onStart = new ArrayList<>();
+        protected HashMap<SkyblockWorld, Pos> customEntry = new HashMap<>();
 
-        public WorldProvider(Npc... npcs) {
+        public WorldProvider(List<Launchpad> launchpads, Npc... npcs) {
             this.npcs = (npcs == null) ? new Npc[0] : npcs;
             id = STR."\{type().id}\{getWorlds(type()).size()}";
+            this.launchpads = launchpads;
+        }
+
+        public WorldProvider(Npc... npcs) {
+            this(new ArrayList<>());
         }
 
         public abstract SkyblockWorld type();
@@ -183,6 +192,10 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
             return type().getOres();
         }
 
+        public void init() {
+            init(MinecraftServer.getInstanceManager().createInstanceContainer());
+        }
+
         public void init(InstanceContainer container) {
             init(container, null);
         }
@@ -196,6 +209,8 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         }
 
         private void init0(InstanceContainer container, @Nullable Runnable after, boolean async) {
+            if (after != null)
+                onStart.add(after);
             try {
                 File f = new File(STR."./worlds/\{type().getId()}");
                 if (!f.exists()) {
@@ -264,21 +279,21 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
                     LightingChunk.relight(container, container.getChunks());
                     container.loadChunk(spawn().chunkX(), spawn().chunkZ());
-                    if (after != null) synchronized (_lock) {
-                        after.run();
+                    synchronized (_lock) {
+                        loaded = true;
+                        for (Runnable runnable : onStart) runnable.run();
                     }
                 });
                 else {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
-                    System.out.println("load end");
                     LightingChunk.relight(container, container.getChunks());
-                    System.out.println("light end");
                     container.loadChunk(spawn().chunkX(), spawn().chunkZ());
                 }
                 addWorld(this);
                 register();
-                if (after != null && !async) after.run();
+                for (Runnable runnable : onStart) runnable.run();
                 Main.LOGGER.info(STR."Loaded \{type().getId()} Instance");
+                loaded = true;
             } catch (Exception e) {
                 Main.LOGGER.info("A world failed to load!");
                 e.printStackTrace(System.err);
@@ -287,6 +302,10 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         }
 
         public void init(InstanceContainer container, @Nullable Runnable after, boolean async) {
+            if (loaded) {
+                Main.LOGGER.error("Tried to load an already loaded instance!");
+                return;
+            }
             this.container = container;
             if (async) Thread.ofVirtual().factory().newThread(() -> init0(container, after, true)).start();
             else init0(container, after, false);
@@ -315,19 +334,23 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
          * @param player the player
          */
         public final void addPlayer(SkyblockPlayer player) {
+            addPlayer(player, null);
+        }
+
+        public final void addPlayer(SkyblockPlayer player, SkyblockWorld previous) {
             if (onPlayerAdd(player)) {
                 if (shutdownTask != null) {
                     shutdownTask.cancel();
                     shutdownTask = null;
                 }
-                if (player.getInstance() != container)
-                    player.setInstance(getContainer());
+                if (player.getInstance() != container) {
+                    player.setInstance(getContainer(), customEntry.getOrDefault(previous, spawn()));
+                }
                 MinecraftServer.getSchedulerManager().buildTask(() -> {
                     synchronized (_lock) {
                         initPlayer(player);
                     }
                 }).delay(TaskSchedule.tick(20)).schedule();
-
             } else {
                 player.sendMessage("§cYou are not allowed!");
             }

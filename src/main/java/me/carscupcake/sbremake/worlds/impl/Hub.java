@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
+import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
 import me.carscupcake.sbremake.worlds.region.PolygonalRegion;
@@ -13,13 +14,18 @@ import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Hub extends SkyblockWorld.WorldProvider {
     public final HashMap<BlockVec, Log.LogInfo> brokenLogs = new HashMap<>();
+
+    public Hub() {
+        super(List.of(new Launchpad(-11, -232, -9, -231, 63, SkyblockWorld.GoldMines, new Pos(-4.5, 77, -272)),
+                new Launchpad(-226, -15, -224, -17, 72, SkyblockWorld.Park, new Pos(-275.5, 82, -13.5))));
+        customEntry.put(SkyblockWorld.GoldMines, new Pos(-9.5, 64, -228.5, 0, 0));
+        customEntry.put(SkyblockWorld.Park, new Pos(-221.5, 73, -16.5, 0, 0));
+    }
+
     @Override
     public SkyblockWorld type() {
         return SkyblockWorld.Hub;

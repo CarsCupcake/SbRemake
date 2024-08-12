@@ -28,6 +28,10 @@ public class WarpCommand extends Command {
             SkyblockWorld world = SkyblockWorld.from(id);
             assert world != null;
             SkyblockPlayer player = (SkyblockPlayer) commandSender;
+            if (player.isOnLaunchpad()) {
+                player.sendMessage("§cYOu cant do this on Launchpad!");
+                return;
+            }
             if (world == player.getWorldProvider().type()) {
                 player.teleport(world.get().spawn());
                 player.playSound(SoundType.ENTITY_ENDERMAN_TELEPORT.create(1, 1));

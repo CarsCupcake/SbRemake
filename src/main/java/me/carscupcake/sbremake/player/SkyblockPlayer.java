@@ -32,6 +32,7 @@ import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.util.item.InventoryBuilder;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.quest.Dialog;
+import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.Npc;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
@@ -57,6 +58,7 @@ import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
+import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.event.player.PlayerRespawnEvent;
 import net.minestom.server.instance.block.Block;
@@ -351,6 +353,12 @@ public class SkyblockPlayer extends Player {
             return;
         }
         //Todo make item drop
+    }).addListener(PlayerMoveEvent.class, event -> {
+        SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+        for (Launchpad launchpad : player.getWorldProvider().getLaunchpads())
+            if (launchpad.inBox(player))
+                launchpad.launch(player);
+
     });
 
     private static int getSlot(ItemType type) {
@@ -424,6 +432,12 @@ public class SkyblockPlayer extends Player {
             MinecraftServer.getSchedulerManager().buildTask(() -> removeFromList(key, value)).delay(value.getSecond()).schedule();
         }
     };
+    @Getter
+    @Setter
+    private boolean onLaunchpad = false;
+    @Getter
+    @Setter
+    private SkyblockWorld previous = null;
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
@@ -571,7 +585,7 @@ public class SkyblockPlayer extends Player {
         super.spawn();
         setHealth(getMaxHealth());
         setSbHealth(getMaxSbHealth());
-        Pos spawn = worldProvider.spawn();
+        Pos spawn = (previous == null) ? worldProvider.spawn() : worldProvider.getCustomEntry().getOrDefault(previous, worldProvider.spawn());
         instance.loadChunk(spawn.chunkX(), spawn.chunkZ());
         setNoGravity(true);
         spawnTeleportId = getNextTeleportId();
@@ -599,10 +613,12 @@ public class SkyblockPlayer extends Player {
     public void setWorldProvider(SkyblockWorld.WorldProvider provider) {
         if (worldProvider != null && provider != worldProvider) {
             worldProvider.removePlayer(this);
+            previous = worldProvider.type();
             this.worldProvider = provider;
-            provider.addPlayer(this);
+            provider.addPlayer(this, previous);
         }
         this.worldProvider = provider;
+        onLaunchpad = false;
     }
 
     private void makeShortbowTask(long shortbowCd, SbItemStack item) {

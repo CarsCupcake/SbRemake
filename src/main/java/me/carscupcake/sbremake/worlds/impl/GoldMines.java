@@ -1,10 +1,17 @@
 package me.carscupcake.sbremake.worlds.impl;
 
+import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
 
+import java.util.List;
+
 public class GoldMines extends SkyblockWorld.WorldProvider {
+    public GoldMines() {
+        super(List.of(new Launchpad(-4, -269, -6, -270, 73, SkyblockWorld.Hub, new Pos(-9.5, 65, -228))));
+    }
+
     @Override
     public SkyblockWorld type() {
         return SkyblockWorld.GoldMines;
