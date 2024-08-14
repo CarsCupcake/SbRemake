@@ -35,6 +35,7 @@ import me.carscupcake.sbremake.util.quest.Dialog;
 import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.Npc;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WarpLocation;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -624,6 +625,17 @@ public class SkyblockPlayer extends Player {
             previous = worldProvider.type();
             this.worldProvider = provider;
             provider.addPlayer(this, previous);
+        }
+        this.worldProvider = provider;
+        onLaunchpad = false;
+    }
+
+    public void setWorldProvider(SkyblockWorld.WorldProvider provider, WarpLocation location) {
+        if (worldProvider != null && provider != worldProvider) {
+            worldProvider.removePlayer(this);
+            previous = location.getWorld();
+            this.worldProvider = provider;
+            provider.addPlayer(this, location.getSpawn());
         }
         this.worldProvider = provider;
         onLaunchpad = false;

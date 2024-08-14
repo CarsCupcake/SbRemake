@@ -15,8 +15,10 @@ import me.carscupcake.sbremake.player.skill.impl.FarmingSkill;
 import me.carscupcake.sbremake.player.skill.impl.ForagingSkill;
 import me.carscupcake.sbremake.player.skill.impl.MiningSkill;
 import me.carscupcake.sbremake.util.EnchantmentUtils;
+import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
 import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.worlds.region.Region;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandManager;
@@ -25,11 +27,14 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.event.player.*;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
+import org.apache.log4j.Logger;
 import org.reflections.Reflections;
+import org.slf4j.event.Level;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -37,15 +42,16 @@ public class Main {
     public static final Object _lock = new Object();
     public static volatile AtomicBoolean running = new AtomicBoolean(true);
     public static Thread CONSOLE_THREAD;
-    public static volatile org.slf4j.Logger LOGGER;
+    public static volatile SkyblockSimpleLogger LOGGER;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         MinecraftServer server = MinecraftServer.init();
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
-        LOGGER = MinecraftServer.LOGGER;
-        System.out.println("Server Initiated");/*
-        SkyblockWorld.Hub.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), null, true);*/
-        System.out.println("Fetch Manager");
+        LOGGER = new SkyblockSimpleLogger();
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            System.out.println(STR."Error occured on thread \{t.getName()}");
+            LOGGER.trace("", e);
+        });
         ISbItem.init();
         MiningBlock.init();
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());
@@ -118,6 +124,10 @@ public class Main {
                     LOGGER.trace("An Error occured while executing a command", e);
 
                 }
+            }
+        });
+        Thread.ofPlatform().name("Error").start(() -> {
+            while (running.get()) {
             }
         });
         SkyblockPlayer.tickLoop();

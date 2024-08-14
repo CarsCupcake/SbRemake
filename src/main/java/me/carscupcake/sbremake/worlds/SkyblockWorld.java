@@ -14,6 +14,7 @@ import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
 import me.carscupcake.sbremake.worlds.impl.*;
 import me.carscupcake.sbremake.worlds.region.Region;
+import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
@@ -31,6 +32,7 @@ import net.sf.sevenzipjbinding.IInArchive;
 import net.sf.sevenzipjbinding.SevenZip;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kohsuke.github.GitHub;
 
@@ -124,7 +126,28 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
     }
 
     public static void sendToBest(WarpLocation warpLocation, SkyblockPlayer player) {
-        getBestWorld(warpLocation.getWorld(), worldProvider -> worldProvider.addPlayer(player, warpLocation.getSpawn()));
+        SkyblockWorld world = warpLocation.getWorld();
+        player.sendMessage(STR."§7Sending to \{world.getId()}");
+        /*if (worlds.get(world).isEmpty()) {
+            WorldProvider provider = world.get();
+            world.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
+                System.out.println(":(");
+                MinecraftServer.getSchedulerManager().buildTask(() -> player.setWorldProvider(provider)).delay(TaskSchedule.tick(1)).schedule();
+            }, true);
+            return;
+        }
+        player.setWorldProvider(worlds.get(world).getFirst());*/
+        SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(world);
+        if (provider == null) {
+            provider = world.get();
+            player.sendMessage(STR."§7Starting \{world.id}");
+            SkyblockWorld.WorldProvider finalProvider = provider;
+            provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
+                synchronized (player) {
+                    player.setWorldProvider(finalProvider, warpLocation);
+                }
+            });
+        } else player.setWorldProvider(provider, warpLocation);
     }
 
     public static void sendToBest(SkyblockWorld world, SkyblockPlayer player) {
@@ -178,6 +201,8 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         private boolean loaded = false;
         public List<Runnable> onStart = new ArrayList<>();
         protected HashMap<SkyblockWorld, Pos> customEntry = new HashMap<>();
+        @Getter
+        public volatile InstanceContainer container;
 
         public WorldProvider(List<Launchpad> launchpads, Npc... npcs) {
             this.npcs = (npcs == null) ? new Npc[0] : npcs;
@@ -195,8 +220,6 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
             return DimensionType.OVERWORLD;
         }
 
-        @Getter
-        public InstanceContainer container;
 
         public MiningBlock[] ores(Pos pos) {
             return type().getOres();
@@ -301,7 +324,10 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                 }
                 addWorld(this);
                 register();
-                for (Runnable runnable : onStart) runnable.run();
+                if (!async)
+                    synchronized (_lock) {
+                        for (Runnable runnable : onStart) runnable.run();
+                    }
                 Main.LOGGER.info(STR."Loaded \{type().getId()} Instance");
                 loaded = true;
             } catch (Exception e) {
@@ -311,7 +337,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
             }
         }
 
-        public void init(InstanceContainer container, @Nullable Runnable after, boolean async) {
+        public void init(@NotNull InstanceContainer container, @Nullable Runnable after, boolean async) {
             if (loaded) {
                 Main.LOGGER.error("Tried to load an already loaded instance!");
                 return;
@@ -353,13 +379,17 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
 
         public final void addPlayer(SkyblockPlayer player, Pos spawn) {
             if (onPlayerAdd(player)) {
+                Main.LOGGER.info(STR."Adding \{((TextComponent) player.getName()).content()} to \{type().name()}");
                 if (shutdownTask != null) {
                     shutdownTask.cancel();
                     shutdownTask = null;
                 }
                 player.setWarping(true);
                 if (player.getInstance() != container) {
-                    player.setInstance(getContainer(), spawn);
+                    player.setInstance(getContainer(), spawn).thenRun(() -> {
+                        player.spawn(spawn);
+
+                    });
                 }
                 MinecraftServer.getSchedulerManager().buildTask(() -> {
                     synchronized (_lock) {
@@ -373,7 +403,6 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
 
         public void initPlayer(SkyblockPlayer player, Pos spawn) {
             players.add(player);
-            player.spawn(spawn);
             for (Npc npc : npcs)
                 npc.spawn(player);
         }
