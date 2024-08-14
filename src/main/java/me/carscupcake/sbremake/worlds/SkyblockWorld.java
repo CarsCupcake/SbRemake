@@ -119,14 +119,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         if (worlds.get(world).isEmpty()) {
             WorldProvider provider = world.get();
             world.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> after.accept(provider), true);
-        }
-        after.accept(worlds.get(world).getFirst());
+        } else
+            after.accept(worlds.get(world).getFirst());
     }
 
     public static void sendToBest(WarpLocation warpLocation, SkyblockPlayer player) {
-        getBestWorld(warpLocation.getWorld(), worldProvider -> {
-
-        });
+        getBestWorld(warpLocation.getWorld(), worldProvider -> worldProvider.addPlayer(player, warpLocation.getSpawn()));
     }
 
     public static void sendToBest(SkyblockWorld world, SkyblockPlayer player) {
