@@ -14,8 +14,9 @@ import java.util.function.Consumer;
 public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
     @Override
     public void accept(PlayerSpawnEvent playerSpawnEvent) {
-        playerSpawnEvent.getPlayer().spawn();
         SkyblockPlayer player = (SkyblockPlayer) playerSpawnEvent.getPlayer();
+        if (player.isWarping()) return;
+        playerSpawnEvent.getPlayer().spawn();
         player.teleport(player.getWorldProvider().getCustomEntry().getOrDefault(player.getPrevious(), player.getWorldProvider().spawn()));
         RedstonePigman.attacked.remove(player);
         if (playerSpawnEvent.isFirstSpawn()) {

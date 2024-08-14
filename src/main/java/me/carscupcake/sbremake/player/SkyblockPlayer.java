@@ -438,6 +438,9 @@ public class SkyblockPlayer extends Player {
     @Getter
     @Setter
     private SkyblockWorld previous = null;
+    @Getter
+    @Setter
+    private boolean warping;
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
@@ -582,10 +585,13 @@ public class SkyblockPlayer extends Player {
     private int spawnTeleportId = 0;
 
     public void spawn() {
+        spawn((previous == null) ? worldProvider.spawn() : worldProvider.getCustomEntry().getOrDefault(previous, worldProvider.spawn()));
+    }
+
+    public void spawn(Pos spawn) {
         super.spawn();
         setHealth(getMaxHealth());
         setSbHealth(getMaxSbHealth());
-        Pos spawn = (previous == null) ? worldProvider.spawn() : worldProvider.getCustomEntry().getOrDefault(previous, worldProvider.spawn());
         instance.loadChunk(spawn.chunkX(), spawn.chunkZ());
         setNoGravity(true);
         spawnTeleportId = getNextTeleportId();
@@ -594,6 +600,7 @@ public class SkyblockPlayer extends Player {
         sendPacket(new ClearTitlesPacket(true));
         getInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create().item());
         SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
+        warping = false;
         if (item != null) setItemInHand(Hand.MAIN, item.update().item());
         clearEffects();
         if (worldProvider.useCustomMining()) {
@@ -604,6 +611,7 @@ public class SkyblockPlayer extends Player {
             sendPacket(new RemoveEntityEffectPacket(getEntityId(), PotionEffect.HASTE));
         }
         if (!sidebar.isViewer(this)) sidebar.addViewer(this);
+
     }
 
     public float getMaxHealth() {

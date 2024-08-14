@@ -71,6 +71,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         public WorldProvider get() {
             return new Park();
         }
+    },
+    FarmingIsles("farming_isles", FileEnding.ZIP) {
+        @Override
+        public WorldProvider get() {
+            return new FarmingIsles();
+        }
     };
     private static final Object _lock = new Object();
     private static final MapList<SkyblockWorld, WorldProvider> worlds = new MapList<>();
@@ -115,6 +121,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
             world.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> after.accept(provider), true);
         }
         after.accept(worlds.get(world).getFirst());
+    }
+
+    public static void sendToBest(WarpLocation warpLocation, SkyblockPlayer player) {
+        getBestWorld(warpLocation.getWorld(), worldProvider -> {
+
+        });
     }
 
     public static void sendToBest(SkyblockWorld world, SkyblockPlayer player) {
@@ -334,31 +346,36 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
          * @param player the player
          */
         public final void addPlayer(SkyblockPlayer player) {
-            addPlayer(player, null);
+            addPlayer(player, spawn());
         }
 
         public final void addPlayer(SkyblockPlayer player, SkyblockWorld previous) {
+            addPlayer(player, customEntry.getOrDefault(previous, spawn()));
+        }
+
+        public final void addPlayer(SkyblockPlayer player, Pos spawn) {
             if (onPlayerAdd(player)) {
                 if (shutdownTask != null) {
                     shutdownTask.cancel();
                     shutdownTask = null;
                 }
+                player.setWarping(true);
                 if (player.getInstance() != container) {
-                    player.setInstance(getContainer(), customEntry.getOrDefault(previous, spawn()));
+                    player.setInstance(getContainer(), spawn);
                 }
                 MinecraftServer.getSchedulerManager().buildTask(() -> {
                     synchronized (_lock) {
-                        initPlayer(player);
+                        initPlayer(player, spawn);
                     }
-                }).delay(TaskSchedule.tick(20)).schedule();
+                }).delay(TaskSchedule.tick(5)).schedule();
             } else {
                 player.sendMessage("§cYou are not allowed!");
             }
         }
 
-        public void initPlayer(SkyblockPlayer player) {
+        public void initPlayer(SkyblockPlayer player, Pos spawn) {
             players.add(player);
-            player.spawn();
+            player.spawn(spawn);
             for (Npc npc : npcs)
                 npc.spawn(player);
         }
