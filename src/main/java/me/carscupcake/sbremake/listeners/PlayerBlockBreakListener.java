@@ -1,5 +1,8 @@
 package me.carscupcake.sbremake.listeners;
 
+import me.carscupcake.sbremake.Main;
+import me.carscupcake.sbremake.blocks.Crop;
+import me.carscupcake.sbremake.blocks.FarmingCrystal;
 import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.event.LogBreakEvent;
@@ -10,9 +13,11 @@ import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.impl.Hub;
 import me.carscupcake.sbremake.worlds.impl.Park;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
+import net.minestom.server.timer.TaskSchedule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +61,29 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                 if (block != null && block.allowed(player.getWorldProvider().type())) {
                     block.breakBlock(Pos.fromPoint(event.getBlockPosition()), player, event.getBlockFace());
                     event.setCancelled(true);
+                    return;
+                }
+            }
+            for (Crop c : Crop.crops) {
+                if (c.block().registry().id() == event.getBlock().registry().id()) {
+                    for (SbItemStack item : c.drops(player)) {
+                        item.drop(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
+                    }
+                    FarmingCrystal closest = null;
+                    double distance = Double.MAX_VALUE;
+                    for (FarmingCrystal farmingCrystal : ((Hub) player.getWorldProvider()).getCrystals()) {
+                        double d = farmingCrystal.location().distanceSquared(event.getBlockPosition());
+                        if (d < distance) {
+                            closest = farmingCrystal;
+                            distance = d;
+                        }
+                    }
+                    if (closest != null && distance < 30 * 30) {
+                        closest.blocks().put(event.getBlockPosition(), event.getBlock());
+                    } else {
+                        MinecraftServer.getSchedulerManager().buildTask(() -> event.getInstance().setBlock(event.getBlockPosition(), event.getBlock())).delay(TaskSchedule.seconds(30)).schedule();
+                        Main.LOGGER.info("Crop not in range!");
+                    }
                     return;
                 }
             }

@@ -1,6 +1,8 @@
 package me.carscupcake.sbremake.worlds.impl;
 
 import kotlin.Pair;
+import lombok.Getter;
+import me.carscupcake.sbremake.blocks.FarmingCrystal;
 import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
 import me.carscupcake.sbremake.util.TaskScheduler;
@@ -16,8 +18,11 @@ import net.minestom.server.coordinate.Pos;
 
 import java.util.*;
 
+@Getter
 public class Hub extends SkyblockWorld.WorldProvider {
+    public static final String FARMING_CRYSTAL_SKIN = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI2NWY5NmY1NGI3ODg4NWM0NmU3ZDJmODZiMWMxZGJmZTY0M2M2MDYwZmM3ZmNjOTgzNGMzZTNmZDU5NTEzNSJ9fX0=";
     public final HashMap<BlockVec, Log.LogInfo> brokenLogs = new HashMap<>();
+    private List<FarmingCrystal> crystals = new ArrayList<>();
 
     public Hub() {
         super(List.of(new Launchpad(-11, -232, -9, -231, 63, SkyblockWorld.GoldMines, new Pos(-4.5, 77, -272)),
@@ -60,12 +65,19 @@ public class Hub extends SkyblockWorld.WorldProvider {
         foragingReset.repeatTask(20 * 30);
         spawners.add(new EntitySpawner(new Pos[]{new Pos(-105.5, 71.0, -61.5), new Pos(-112.5, 71.0, -61.5), new Pos(-114.5, 71.0, -66.5), new Pos(-117.5, 71.0, -73.5), new Pos(-124.5, 71.0, -75.5), new Pos(-121.5, 71.0, -82.5), new Pos(-117.5, 71.0, -89.5), new Pos(-110.5, 72.0, -103.5), new Pos(-101.5, 72.0, -111.5), new Pos(-99.5, 72.0, -127.5), new Pos(-93.5, 72.0, -145.5), new Pos(-119.5, 72.0, -141.5), new Pos(-145.5, 72.0, -122.5), new Pos(-158.5, 72.0, -93.5), new Pos(-173.5, 74.0, -86.5), new Pos(-163.5, 72.0, -136.5), new Pos(-68.5, 79.0, -184.5), new Pos(-43.5, 80.0, -173.5)}, 200,
                 new EntitySpawner.BasicConstructor(GraveyardZombie::new), container));
+        crystals = List.of(new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(44.5, 75, -122.5), container),
+                new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(29.5, 75, -147.5), container),
+                new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(24.5, 75, -178.5), container),
+                new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(59.5, 75, -182.5), container),
+                new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(73.5, 75, -160.5), container),
+                new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(63.5, 75, -133.5), container));
     }
 
     @Override
     protected void unregister() {
         foragingReset.cancel();
         spawners.forEach(EntitySpawner::stop);
+        crystals.forEach(farmingCrystal -> farmingCrystal.task().cancel());
     }
 
     public enum Region implements me.carscupcake.sbremake.worlds.region.Region {

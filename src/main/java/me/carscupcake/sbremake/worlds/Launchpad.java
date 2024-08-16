@@ -8,6 +8,7 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.instance.InstanceManager;
+import net.minestom.server.instance.block.Block;
 
 import java.util.HashMap;
 
@@ -17,8 +18,8 @@ public record Launchpad(int x1, int z1, int x2, int z2, int y, SkyblockWorld tar
         entity.setInvisible(true);
         entity.setInstance(player.getInstance(), player.getPosition());
         entity.addPassenger(player);
-        Vec direction = targetPos.asVec().sub(entity.getPosition().asVec()).normalize().mul(0.75);
-        int iterations = (int) (entity.getPosition().distance(targetPos) * 1.5);
+        Vec direction = targetPos.asVec().sub(entity.getPosition().asVec()).normalize().mul(1);
+        int iterations = (int) (entity.getPosition().distance(targetPos) * 1) - 2;
         player.setOnLaunchpad(true);
         SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(targetWorld);
         if (provider == null) {
@@ -55,10 +56,13 @@ public record Launchpad(int x1, int z1, int x2, int z2, int y, SkyblockWorld tar
         int minZ = Math.min(z1, z2);
         int maxZ = Math.max(z1, z2);
         Pos pos = player.getPosition();
-        return pos.blockX() >= minX && pos.blockX() <= maxX && pos.blockY() == y + 1 && pos.blockZ() >= minZ && pos.blockZ() <= maxZ && player.isOnGround() && !player.isOnLaunchpad();
+        if (pos.blockX() >= minX && pos.blockX() <= maxX && pos.blockY() == y + 1 && pos.blockZ() >= minZ && pos.blockZ() <= maxZ && player.isOnGround() && !player.isOnLaunchpad()) {
+            return player.getInstance().getBlock(player.getPosition().sub(0, 1 ,0)) == Block.SLIME_BLOCK;
+        }
+        return false;
     }
 
     private double sinus(double percentage) {
-        return 15 * Math.sin(Math.PI * percentage);
+        return 20 * Math.sin(Math.PI * percentage);
     }
 }

@@ -386,10 +386,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                 }
                 player.setWarping(true);
                 if (player.getInstance() != container) {
-                    player.setInstance(getContainer(), spawn).thenRun(() -> {
-                        player.spawn(spawn);
-
-                    });
+                    player.setInstance(getContainer(), spawn).thenRun(() -> player.spawn(spawn));
                 }
                 MinecraftServer.getSchedulerManager().buildTask(() -> {
                     synchronized (_lock) {

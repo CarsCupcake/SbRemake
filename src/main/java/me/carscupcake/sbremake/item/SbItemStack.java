@@ -13,6 +13,10 @@ import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.Point;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.ItemEntity;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
@@ -250,5 +254,10 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
             enchantmentMap.put(SkyblockEnchantment.enchantments.get(key), enchantments.getInt(key));
         }
         return enchantmentMap;
+    }
+
+    public void drop(Instance instance, Point pos) {
+        ItemEntity entity = new ItemEntity(item());
+        entity.setInstance(instance, pos);
     }
 }

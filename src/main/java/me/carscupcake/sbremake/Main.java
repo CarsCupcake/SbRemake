@@ -15,6 +15,7 @@ import me.carscupcake.sbremake.player.skill.impl.FarmingSkill;
 import me.carscupcake.sbremake.player.skill.impl.ForagingSkill;
 import me.carscupcake.sbremake.player.skill.impl.MiningSkill;
 import me.carscupcake.sbremake.util.EnchantmentUtils;
+import me.carscupcake.sbremake.util.PlayerBrodcastOutputStream;
 import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
 import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.worlds.region.Region;
@@ -31,8 +32,7 @@ import org.apache.log4j.Logger;
 import org.reflections.Reflections;
 import org.slf4j.event.Level;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -126,10 +126,10 @@ public class Main {
                 }
             }
         });
-        Thread.ofPlatform().name("Error").start(() -> {
-            while (running.get()) {
-            }
-        });
+        System.setErr(new PrintStream(new PlayerBrodcastOutputStream(System.err)));
+        /*Thread.ofPlatform().name("Error").start(() -> {
+            ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+        });*/
         SkyblockPlayer.tickLoop();
     }
 }
