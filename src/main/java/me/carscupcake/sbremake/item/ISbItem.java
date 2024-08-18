@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.item;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ability.Ability;
+import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
@@ -80,8 +81,9 @@ public interface ISbItem {
         if (this instanceof ColoredLeather leather) {
             builder.set(ItemComponent.DYED_COLOR, new DyedItemColor(leather.color().asRGB(), false));
         }
-        ItemStack item = build(modifierBuilder().apply(builder.set(ItemComponent.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE).set(Tag.NBT("ExtraAttributes"), CompoundBinaryTag.builder().putString("id", getId()).build()))).build();
-        SbItemStack itemStack = SbItemStack.from(item);
+        ItemStackModifiers modifiers = modifierBuilder();
+        ItemStack item = build(modifiers.apply(builder.set(ItemComponent.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE).set(Tag.NBT("ExtraAttributes"), CompoundBinaryTag.builder().putString("id", getId()).build()))).build();
+        SbItemStack itemStack = SbItemStack.from(modifiers.apply(item));
         return itemStack.update();
     }
 
