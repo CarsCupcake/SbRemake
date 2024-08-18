@@ -1,7 +1,5 @@
 package me.carscupcake.sbremake;
 
-import com.sun.tools.attach.VirtualMachine;
-import com.sun.tools.attach.VirtualMachineDescriptor;
 import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ability.Ability;
@@ -19,7 +17,6 @@ import me.carscupcake.sbremake.util.PlayerBrodcastOutputStream;
 import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
 import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.worlds.region.Region;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandManager;
@@ -28,13 +25,12 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.event.player.*;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
-import org.apache.log4j.Logger;
 import org.reflections.Reflections;
-import org.slf4j.event.Level;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -92,9 +88,14 @@ public class Main {
                 e.printStackTrace(System.err);
             }
         }
-
         OpenToLAN.open();
-        MojangAuth.init();
+        boolean cracked = false;
+        try {
+            cracked = Boolean.parseBoolean(args[1]);
+        } catch (Exception _) {
+        }
+        if (!cracked)
+            MojangAuth.init();
         System.out.println("Starting...");
         int port = 25565;
         try {

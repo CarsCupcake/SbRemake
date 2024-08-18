@@ -10,10 +10,10 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.impl.FarmingIsles;
 import me.carscupcake.sbremake.worlds.impl.Hub;
 import me.carscupcake.sbremake.worlds.impl.Park;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
@@ -69,6 +69,8 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                     for (SbItemStack item : c.drops(player)) {
                         item.drop(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
                     }
+                    if (c.xp() > 0)
+                        player.getSkill(Skill.Farming).addXp(c.xp());
                     FarmingCrystal closest = null;
                     double distance = Double.MAX_VALUE;
                     for (FarmingCrystal farmingCrystal : ((Hub) player.getWorldProvider()).getCrystals()) {
@@ -106,6 +108,32 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                 }
                 player.getSkill(Skill.Foraging).addXp(log.xp());
                 return;
+            }
+        } else if (player.getWorldProvider().type() == SkyblockWorld.FarmingIsles) {
+            for (Crop c : Crop.crops) {
+                if (c.block().registry().id() == event.getBlock().registry().id()) {
+                    for (SbItemStack item : c.drops(player)) {
+                        item.drop(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
+                    }
+                    if (c.xp() > 0)
+                        player.getSkill(Skill.Farming).addXp(c.xp());
+                    FarmingCrystal closest = null;
+                    double distance = Double.MAX_VALUE;
+                    for (FarmingCrystal farmingCrystal : ((FarmingIsles) player.getWorldProvider()).getCrystals()) {
+                        double d = farmingCrystal.location().distanceSquared(event.getBlockPosition());
+                        if (d < distance) {
+                            closest = farmingCrystal;
+                            distance = d;
+                        }
+                    }
+                    if (closest != null && distance < 30 * 30) {
+                        closest.blocks().put(event.getBlockPosition(), event.getBlock());
+                    } else {
+                        MinecraftServer.getSchedulerManager().buildTask(() -> event.getInstance().setBlock(event.getBlockPosition(), event.getBlock())).delay(TaskSchedule.seconds(30)).schedule();
+                        Main.LOGGER.info("Crop not in range!");
+                    }
+                    return;
+                }
             }
         }
         event.setCancelled(true);

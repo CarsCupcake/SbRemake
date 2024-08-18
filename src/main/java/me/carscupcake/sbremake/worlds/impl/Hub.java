@@ -21,12 +21,12 @@ import java.util.*;
 @Getter
 public class Hub extends SkyblockWorld.WorldProvider {
     public static final String FARMING_CRYSTAL_SKIN = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI2NWY5NmY1NGI3ODg4NWM0NmU3ZDJmODZiMWMxZGJmZTY0M2M2MDYwZmM3ZmNjOTgzNGMzZTNmZDU5NTEzNSJ9fX0=";
-    public final HashMap<BlockVec, Log.LogInfo> brokenLogs = new HashMap<>();
     private List<FarmingCrystal> crystals = new ArrayList<>();
+    public final HashMap<BlockVec, Log.LogInfo> brokenLogs = new HashMap<>();
 
     public Hub() {
         super(List.of(new Launchpad(-11, -232, -9, -231, 63, SkyblockWorld.GoldMines, new Pos(-4.5, 77, -272)),
-                new Launchpad(-226, -15, -224, -17, 72, SkyblockWorld.Park, new Pos(-275.5, 82, -13.5))));
+                new Launchpad(-226, -15, -224, -17, 72, SkyblockWorld.Park, new Pos(-275.5, 82, -13.5)), new Launchpad(77, -183, 80, -186, 71, SkyblockWorld.FarmingIsles, new Pos(114.5, 71, -207))));
         customEntry.put(SkyblockWorld.GoldMines, new Pos(-9.5, 64, -228.5, 0, 0));
         customEntry.put(SkyblockWorld.Park, new Pos(-221.5, 73, -16.5, 0, 0));
     }
