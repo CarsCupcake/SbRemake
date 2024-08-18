@@ -14,9 +14,11 @@ import me.carscupcake.sbremake.worlds.impl.FarmingIsles;
 import me.carscupcake.sbremake.worlds.impl.Hub;
 import me.carscupcake.sbremake.worlds.impl.Park;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
+import net.minestom.server.instance.block.Block;
 import net.minestom.server.timer.TaskSchedule;
 
 import java.util.ArrayList;
@@ -117,6 +119,26 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                     }
                     if (c.xp() > 0)
                         player.getSkill(Skill.Farming).addXp(c.xp());
+                    if (c.block() == Block.SUGAR_CANE) {
+                        BlockVec block = event.getBlockPosition();
+                        while (player.getInstance().getBlock(block).id() == Block.SUGAR_CANE.id()) {
+                            ((FarmingIsles) player.getWorldProvider()).getSugarCane().add(block.blockY(), block);
+                            if (block != event.getBlockPosition()) {
+                                player.getInstance().setBlock(block, Block.AIR);
+                                for (SbItemStack item : c.drops(player)) {
+                                    item.drop(player.getInstance(), block.add(0.5, 0, 0.5));
+                                }
+                                if (c.xp() > 0)
+                                    player.getSkill(Skill.Farming).addXp(c.xp());
+                            }
+                            block = block.add(0, 1, 0);
+                        }
+                        return;
+                    }
+                    if (c.block() == Block.COCOA) {
+                        MinecraftServer.getSchedulerManager().buildTask(() -> event.getInstance().setBlock(event.getBlockPosition(), event.getBlock())).delay(TaskSchedule.seconds(10)).schedule();
+                        return;
+                    }
                     FarmingCrystal closest = null;
                     double distance = Double.MAX_VALUE;
                     for (FarmingCrystal farmingCrystal : ((FarmingIsles) player.getWorldProvider()).getCrystals()) {
@@ -129,8 +151,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                     if (closest != null && distance < 30 * 30) {
                         closest.blocks().put(event.getBlockPosition(), event.getBlock());
                     } else {
-                        MinecraftServer.getSchedulerManager().buildTask(() -> event.getInstance().setBlock(event.getBlockPosition(), event.getBlock())).delay(TaskSchedule.seconds(30)).schedule();
-                        Main.LOGGER.info("Crop not in range!");
+                        MinecraftServer.getSchedulerManager().buildTask(() -> event.getInstance().setBlock(event.getBlockPosition(), event.getBlock())).delay(TaskSchedule.seconds(5)).schedule();
                     }
                     return;
                 }
