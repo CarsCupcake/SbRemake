@@ -5,8 +5,6 @@ import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import net.minestom.server.entity.EquipmentSlot;
-import net.minestom.server.entity.Player;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
 
