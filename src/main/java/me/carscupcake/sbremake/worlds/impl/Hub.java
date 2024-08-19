@@ -26,9 +26,11 @@ public class Hub extends SkyblockWorld.WorldProvider {
 
     public Hub() {
         super(List.of(new Launchpad(-11, -232, -9, -231, 63, SkyblockWorld.GoldMines, new Pos(-4.5, 77, -272)),
-                new Launchpad(-226, -15, -224, -17, 72, SkyblockWorld.Park, new Pos(-275.5, 82, -13.5)), new Launchpad(77, -183, 80, -186, 71, SkyblockWorld.FarmingIsles, new Pos(114.5, 71, -207))));
+                new Launchpad(-226, -15, -224, -17, 72, SkyblockWorld.Park, new Pos(-275.5, 82, -13.5)), new Launchpad(77, -183, 80, -186, 71, SkyblockWorld.FarmingIsles, new Pos(114.5, 71, -207))
+                , new Launchpad(-162, -161, -165, -164, 72, SkyblockWorld.SpidersDen, new Pos(-200.5, 83, -231.5, 135, 0))));
         customEntry.put(SkyblockWorld.GoldMines, new Pos(-9.5, 64, -228.5, 0, 0));
         customEntry.put(SkyblockWorld.Park, new Pos(-221.5, 73, -16.5, 0, 0));
+        customEntry.put(SkyblockWorld.SpidersDen, new Pos(-159.5, 73, -158.5, -45, 0));
     }
 
     @Override
