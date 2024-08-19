@@ -25,6 +25,7 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.ai.EntityAIGroup;
 import net.minestom.server.entity.ai.GoalSelector;
+import net.minestom.server.entity.ai.goal.DoNothingGoal;
 import net.minestom.server.entity.ai.goal.MeleeAttackGoal;
 import net.minestom.server.entity.ai.goal.RandomStrollGoal;
 import net.minestom.server.entity.ai.goal.RangedAttackGoal;
@@ -51,15 +52,16 @@ public abstract class SkyblockEntity extends EntityCreature {
     @Setter
     private SkyblockPlayer lastDamager;
 
+    @Getter
     private final LootTable<SbItemStack> lootTable;
 
     public SkyblockEntity(@NotNull EntityType entityType) {
-        this(entityType, new LootTable<>());
+        this(entityType, null);
     }
 
     public SkyblockEntity(@NotNull EntityType entityType, LootTable<SbItemStack> lootTable) {
         super(entityType, UUID.randomUUID());
-        this.lootTable = lootTable;
+        this.lootTable = lootTable == null ? getLootTable() : lootTable;
         setHealth(getMaxHealth());
         getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
     }
@@ -239,6 +241,19 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     public static void init() {
 
+    }
+
+    protected static EntityAIGroup randomStroll(SkyblockEntity entity, int range) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().add(new RandomStrollGoal(entity, range));
+        aiGroup.getGoalSelectors().add(new DoNothingGoal(entity, 3000, 0.5f));
+        return aiGroup;
+    }
+
+    protected static EntityAIGroup randomStroll(SkyblockEntity entity, Region region, int range) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().add(new RandomStrollInRegion(entity, range, region));
+        return aiGroup;
     }
 
     protected static EntityAIGroup regionTarget(SkyblockEntity entity, Region region, int range) {

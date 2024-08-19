@@ -36,11 +36,15 @@ public record Launchpad(int x1, int z1, int x2, int z2, int y, SkyblockWorld tar
                     if (i == iterations) {
                         cancel();
                         entity.removePassenger(player);
+                        player.setOnLaunchpad(false);
+                        if (player.getWorldProvider().type() == targetWorld) {
+                            player.teleport(targetPos.withView(player.getPosition()));
+                            return;
+                        }
                         if (!finalProvider.isLoaded())
                             finalProvider.getOnStart().add(() -> player.setWorldProvider(finalProvider));
                         else player.setWorldProvider(finalProvider);
                         entity.remove();
-                        player.setOnLaunchpad(false);
                         return;
                     }
                     p = p.add(direction);
