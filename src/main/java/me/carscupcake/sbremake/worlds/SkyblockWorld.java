@@ -22,6 +22,7 @@ import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.network.packet.server.play.DestroyEntitiesPacket;
 import net.minestom.server.registry.DynamicRegistry;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
@@ -46,6 +47,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Getter
+@SuppressWarnings("preview")
 public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
     Hub("hub", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
@@ -414,6 +416,9 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
 
         public final void removePlayer(SkyblockPlayer player) {
             players.remove(player);
+            List<Integer> ids = new ArrayList<>();
+            for (Npc npc : npcs) ids.add(npc.getEntityId());
+            player.sendPacket(new DestroyEntitiesPacket(ids));
             if (players.isEmpty()) {
                 shutdownTask = MinecraftServer.getSchedulerManager().buildTask(this::remove).delay(Duration.ofMinutes(5)).schedule();
             }

@@ -14,7 +14,6 @@ import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemComponent;
@@ -36,6 +35,7 @@ import static java.lang.Math.min;
  * @param item   the item that gets wrapped
  * @param sbItem the Sb item
  */
+@SuppressWarnings("preview")
 public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
 
     private static final Map<String, ISbItem> items = new HashMap<>();
@@ -67,6 +67,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         return new SbItemStack(stack, iSbItem);
     }
 
+    @NotNull
     public static SbItemStack base(Material material) {
         ISbItem item = items.get(material.namespace().value().toUpperCase());
         return item.create();
@@ -203,6 +204,9 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         if (sbItem.getType().isReforgable()) /* Todo add reforge check*/ {
             lore.add("§8This item can be reforged!");
         }
+        for (Requirement requirement : sbItem.requirements())
+            if (!requirement.canUse(player, item))
+                lore.add(requirement.display());
         lore.add(STR."\{rarity.getPrefix()}§l\{rarity.getDisplay().toUpperCase()} \{sbItem.getType().getDisplay().toUpperCase()}");
         return lore;
     }
@@ -233,6 +237,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
 
         return abilities;
     }
+
 
     public SbItemStack withAmount(int i) {
         if (i <= 0) return null;

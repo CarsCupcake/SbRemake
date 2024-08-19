@@ -14,6 +14,7 @@ import me.carscupcake.sbremake.entity.SkyblockEntityProjectile;
 import me.carscupcake.sbremake.event.*;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemType;
+import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.FullSetBonus;
@@ -43,10 +44,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.EquipmentSlot;
-import net.minestom.server.entity.Player;
+import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
 import net.minestom.server.event.Event;
@@ -150,6 +148,11 @@ public class SkyblockPlayer extends Player {
                 SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
                 if (item == null) return;
                 if (item.sbItem() instanceof Shortbow shortbow && player.shortbowTask == null) {
+                    for (Requirement requirement : item.sbItem().requirements())
+                        if(!requirement.canUse(player, item.item())) {
+                            player.sendMessage("§cYou cannot use this item!");
+                            return;
+                        }
                     if (delta < shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) return;
                     player.lastAttack = time;
                     SkyblockPlayerArrow.shootBow(player, 1000L, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
@@ -174,6 +177,11 @@ public class SkyblockPlayer extends Player {
                 player.bowStartPull = -1;
                 SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
                 if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem)) return;
+                for (Requirement requirement : item.sbItem().requirements())
+                    if(!requirement.canUse(player, item.item())) {
+                        player.sendMessage("§cYou cannot use this item!");
+                        return;
+                    }
                 SkyblockPlayerArrow.shootBow(player, chargingTime, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
             }
             if (packet.status() == ClientPlayerDiggingPacket.Status.STARTED_DIGGING) {
@@ -214,6 +222,11 @@ public class SkyblockPlayer extends Player {
             if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
                 SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
                 if (item.sbItem() instanceof Shortbow shortbow) {
+                    for (Requirement requirement : item.sbItem().requirements())
+                        if(!requirement.canUse(player, item.item())) {
+                            player.sendMessage("§cYou cannot use this item!");
+                            return;
+                        }
                     long shootCd = shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true));
                     player.lastShortbowKeepAlive = System.currentTimeMillis();
                     if (player.shortbowTask != null) {
@@ -351,7 +364,6 @@ public class SkyblockPlayer extends Player {
         if (stack.sbItem() instanceof SkyblockMenu) {
             event.setCancelled(true);
             ((SkyblockPlayer) event.getPlayer()).openSkyblockMenu();
-            return;
         }
         //Todo make item drop
     }).addListener(PlayerMoveEvent.class, event -> {
@@ -405,6 +417,7 @@ public class SkyblockPlayer extends Player {
     public Mining blockBreakScheduler = null;
     @Getter
     @Setter
+    @Range(from = 0, to = Long.MAX_VALUE)
     private double coins;
     @Getter
     private Gui gui = null;
@@ -442,6 +455,15 @@ public class SkyblockPlayer extends Player {
     @Getter
     @Setter
     private boolean warping;
+    @Getter
+    private final Deque<Pair<SbItemStack, Integer>> sellHistory = new ArrayDeque<>() {
+        @Override
+        public void push(@NotNull Pair<SbItemStack, Integer> sbItemStackIntegerPair) {
+            super.push(sbItemStackIntegerPair);
+            //We track up to 15 items
+            if (size() > 15) removeLast();
+        }
+    };
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
@@ -472,7 +494,11 @@ public class SkyblockPlayer extends Player {
 
     public void openSkyblockMenu() {
         InventoryBuilder inventoryBuilder = new InventoryBuilder(6, "Skyblock Menu").fill(TemplateItems.EmptySlot.getItem());
-        ItemBuilder profileItem = new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture(Objects.requireNonNull(getSkin()).textures()).setName("§aYour Skyblock Profile").addAllLore("§7View your equipment, stats,").addAllLore("§7and more!").addAllLore("§7 ");
+        PlayerSkin s = getSkin();
+        ItemBuilder profileItem = new ItemBuilder(Material.PLAYER_HEAD);
+        if (s != null)
+            profileItem.setHeadTexture(s.textures());
+        profileItem.setName("§aYour Skyblock Profile").addAllLore("§7View your equipment, stats,").addAllLore("§7and more!").addAllLore("§7 ");
         for (Stat stat : Stat.values())
             profileItem.addLoreRow(STR."\{stat} §f\{getStat(stat)}\{stat.isPercentValue() ? "%" : ""}");
         inventoryBuilder.setItem(profileItem.addAllLore("§7  ").addLoreRow("§eClick to view!").build(), 13).setItem(new ItemBuilder(Material.DIAMOND_SWORD).setName("§aYour Skills").addAllLore("§7View your skills progression", "§7and rewards.", "§7 ", STR."§6\{StringUtils.cleanDouble(skillsAverage())} Skill Avearage", "§e ", "§eClick to view!").build(), 19).setItem(new ItemBuilder(Material.PAINTING).setName("§aCollections §c§lWIP").build(), 20).setItem(new ItemBuilder(Material.BOOK).setName("§aRecipe Book §c§lWIP").build(), 21).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0=").setName("§aSkyblock Leveling §c§lWIP").build(), 22).setItem(new ItemBuilder(Material.WRITABLE_BOOK).setName("§aQuest Log §c§lWIP").build(), 23).setItem(new ItemBuilder(Material.CLOCK).setName("§aCalendar and Events §c§lWIP").build(), 24).setItem(new ItemBuilder(Material.CHEST).setName("§aStorage §c§lWIP").build(), 25).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0=").setName("§aYour Bags §c§lWIP").build(), 29).setItem(new ItemBuilder(Material.BONE).setName("§aPets §c§lWIP").build(), 30).setItem(new ItemBuilder(Material.CRAFTING_TABLE).setName("§aCrafting Table §c§lWIP").build(), 31).setItem(new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new DyedItemColor(0x3e05af)).setName("§aWardrobe §c§lWIP").build(), 32).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA5Mjk5YTExN2JlZTg4ZDMyNjJmNmFiOTgyMTFmYmEzNDRlY2FlMzliNDdlYzg0ODEyOTcwNmRlZGM4MWU0ZiJ9fX0=").setName("§aPersonal Bank §c§lWIP").build(), 33).setItem(new ItemBuilder(Material.BARRIER).setName("§cClose").build(), 49);
@@ -641,6 +667,15 @@ public class SkyblockPlayer extends Player {
         onLaunchpad = false;
     }
 
+    public void addCoins(int i) {
+        coins += i;
+    }
+
+    public void removeCoins(int i) {
+        if (coins - i < 0) throw new IllegalStateException("Coins are not allowed to be negative");
+        coins -= i;
+    }
+
     private void makeShortbowTask(long shortbowCd, SbItemStack item) {
         long now = System.currentTimeMillis();
         Shortbow sb = (Shortbow) item.sbItem();
@@ -743,13 +778,27 @@ public class SkyblockPlayer extends Player {
             if (item == null) continue;
             double value = item.getStat(stat);
             if (value == 0) continue;
-            event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
+            boolean canUse = true;
+            for (Requirement requirement : item.sbItem().requirements())
+                if (!requirement.canUse(this, item.item())) {
+                    canUse = false;
+                    break;
+                }
+            if (canUse)
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
         }
         for (Pair<PlayerStatEvent.PlayerStatModifier, ?> pair : temporaryModifiers.get(stat))
             event.modifiers().add(pair.getFirst());
         SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
         if (item != null && (item.sbItem().getType().isStatsInMainhand() || (isBow && item.sbItem() instanceof BowItem))) {
-            event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", item.getStat(stat), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
+            boolean canUse = true;
+            for (Requirement requirement : item.sbItem().requirements())
+                if (!requirement.canUse(this, item.item())) {
+                    canUse = false;
+                    break;
+                }
+            if (canUse)
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", item.getStat(stat), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
         }
         MinecraftServer.getGlobalEventHandler().call(event);
         double value = event.calculate();

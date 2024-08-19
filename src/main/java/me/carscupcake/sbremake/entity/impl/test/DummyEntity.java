@@ -7,11 +7,16 @@ import net.minestom.server.entity.EntityType;
 
 import java.util.function.Function;
 
+@SuppressWarnings("preview")
 public class DummyEntity extends SkyblockEntity {
     private float damage = 0f;
 
     public DummyEntity() {
         super(EntityType.ZOMBIE);
+    }
+
+    public DummyEntity(EntityType entityType) {
+        super(entityType);
     }
 
     @Override

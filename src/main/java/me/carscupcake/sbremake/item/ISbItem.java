@@ -2,7 +2,6 @@ package me.carscupcake.sbremake.item;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ability.Ability;
-import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
@@ -70,6 +69,10 @@ public interface ISbItem {
     }
 
     default List<Ability> getDefaultAbilities() {
+        return new ArrayList<>();
+    }
+
+    default List<Requirement> requirements() {
         return new ArrayList<>();
     }
 

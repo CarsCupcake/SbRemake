@@ -46,6 +46,7 @@ import java.util.*;
 import java.util.function.Function;
 
 @Getter
+@SuppressWarnings("preview")
 public abstract class SkyblockEntity extends EntityCreature {
     private float health = getMaxHealth();
     @Getter
@@ -61,7 +62,7 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     public SkyblockEntity(@NotNull EntityType entityType, LootTable<SbItemStack> lootTable) {
         super(entityType, UUID.randomUUID());
-        this.lootTable = lootTable == null ? getLootTable() : lootTable;
+        this.lootTable = lootTable == null ? new LootTable<>() : lootTable;
         setHealth(getMaxHealth());
         getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
     }

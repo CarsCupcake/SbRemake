@@ -1,12 +1,14 @@
 package me.carscupcake.sbremake.item.impl.bow;
 
 import me.carscupcake.sbremake.Stat;
-import me.carscupcake.sbremake.item.ISbItem;
-import me.carscupcake.sbremake.item.ItemRarity;
-import me.carscupcake.sbremake.item.ItemType;
+import me.carscupcake.sbremake.item.*;
+import me.carscupcake.sbremake.item.requirements.SkillRequirement;
+import me.carscupcake.sbremake.player.skill.Skill;
 import net.minestom.server.item.Material;
 
-public class ArtisanalShortbow implements ISbItem, Shortbow {
+import java.util.List;
+
+public class ArtisanalShortbow implements ISbItem, Shortbow, NpcSellable {
     @Override
     public String getId() {
         return "ARTISANAL_SHORTBOW";
@@ -36,5 +38,15 @@ public class ArtisanalShortbow implements ISbItem, Shortbow {
     public double getStat(Stat stat) {
         if (stat == Stat.Damage) return 40;
         return ISbItem.super.getStat(stat);
+    }
+
+    @Override
+    public int sellPrice() {
+        return 200;
+    }
+
+    @Override
+    public List<Requirement> requirements() {
+        return List.of(new SkillRequirement(Skill.Combat, 4));
     }
 }

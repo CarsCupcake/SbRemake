@@ -68,6 +68,9 @@ public abstract class PlayerToEntityDamageEvent implements PlayerEvent, Cancella
     public void addMultiplicativeMultiplier(double d) {
         multiplicativeMultiplier *= d;
     }
+    public void addAdditiveMultiplier(double d) {
+        additiveMultiplier += d;
+    }
 
     public double calculateCritHit() {
         return (5 + weaponDamage) * (1 + (strength / 100)) * (1 + (critDamage / 100)) * additiveMultiplier * multiplicativeMultiplier + bonusModifier;
@@ -93,10 +96,10 @@ public abstract class PlayerToEntityDamageEvent implements PlayerEvent, Cancella
             str = sb.toString();
             StringBuilder newString = new StringBuilder();
             int digitRunner = 0;
-            for (int i = 0; i < str.toCharArray().length; i++) {
+            for (int i = 0; i < str.length(); i++) {
                 newString.append(str.toCharArray()[i]);
                 digitRunner++;
-                if (digitRunner == 3 && (i + 1) != str.toCharArray().length) {
+                if (digitRunner == 3 && (i + 1) != str.length()) {
                     digitRunner = 0;
                     newString.append(",");
                 }

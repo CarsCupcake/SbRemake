@@ -5,16 +5,31 @@ import lombok.Getter;
 import me.carscupcake.sbremake.blocks.FarmingCrystal;
 import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
+import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.item.impl.arrows.FlintArrow;
+import me.carscupcake.sbremake.item.impl.bow.ArtisanalShortbow;
+import me.carscupcake.sbremake.item.impl.bow.Bow;
+import me.carscupcake.sbremake.item.impl.bow.WitherBow;
+import me.carscupcake.sbremake.item.impl.pickaxe.GoldenPickaxe;
+import me.carscupcake.sbremake.item.impl.pickaxe.PromisingPickaxe;
+import me.carscupcake.sbremake.item.impl.pickaxe.RookiePickaxe;
+import me.carscupcake.sbremake.item.impl.sword.DiamondSword;
+import me.carscupcake.sbremake.item.impl.sword.EndSword;
+import me.carscupcake.sbremake.item.impl.sword.SpiderSword;
+import me.carscupcake.sbremake.item.impl.sword.UndeadSword;
+import me.carscupcake.sbremake.util.CoinsCost;
+import me.carscupcake.sbremake.util.ItemCost;
 import me.carscupcake.sbremake.util.TaskScheduler;
-import me.carscupcake.sbremake.worlds.EntitySpawner;
-import me.carscupcake.sbremake.worlds.Launchpad;
-import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.*;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
 import me.carscupcake.sbremake.worlds.region.PolygonalRegion;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.PlayerSkin;
+import net.minestom.server.item.Material;
 
 import java.util.*;
 
@@ -73,6 +88,17 @@ public class Hub extends SkyblockWorld.WorldProvider {
                 new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(59.5, 75, -182.5), container),
                 new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(73.5, 75, -160.5), container),
                 new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(63.5, 75, -133.5), container));
+        npcs = new Npc[]{new MerchantNpc(new Pos(-9, 68, -125), container, "Mine Merchant", new PlayerSkin("eyJ0aW1lc3RhbXAiOjE1NTA2Nzg1NjA4ODUsInByb2ZpbGVJZCI6ImEyZjgzNDU5NWM4OTRhMjdhZGQzMDQ5NzE2Y2E5MTBjIiwicHJvZmlsZU5hbWUiOiJiUHVuY2giLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzYwODk5MDY1NjQ5MmQ3MjJhOGVhODk2YjgxNmQwMTkxMTM2OGIzODdhMmFjNGJjNzRmNzBhMGFlZGQ3ZWI3ZjgifX19", "M1H74ucEXCmd/ws7LGJSVaek4/4qsXn1Cj5HkuOg0Z7atseANP3NSQGoQF/vjuAOu8pMt/hE6oXfxX2XjsTysVpFxKWho+fVAObgCrkep9xaEZL7BvJ+zfFA+Gb3CAWPl4DtvjC0Jr7iWUo+sdlyWYb4HbipImwSUMVqPE0H0NC/aIlwiC19TlRNhS8WSP9IrlYQ1F50/rRRIgE3VfCyXQ85L7nk/ZjkKnNOmB/ekENSx9PqCbPSJV7nDjYpZAC9aT/f+kU2EuTuSptjomcWAcEgkBee2QZfnHkT79e41ezvEp4ZYfWqjJn2cQOTFNKbvk9Pl3jRUvXeTiDUkL15pWmJWhnhtW9sBzoP3JW7JXvUSQCeqVtNW9eQjeWhm0q2xV28KqTMYmwB3ZPh0lihJv79ae7u2Zretr8GrC2fScD/GJFjpz3JGIIWpiRogp/KY08y2KT07AzatrGjTJVlgTQCyJqIEIy1EmUoMq50i8EYyPR8FA7JvHKiiRheb/97vj0CwqRfA4nFMC5iLpMRJEjNXoeg7t/pau6Y6GA4lXJQcxourKsiTrbq+Mww3yery0Q3HNCDcgvbCOWCMdoLdL9FdC3POI9C+t7Nqh271lxY39NhT8LQ1ZQ+V57dqUq7EBwz/fq8VHpR8xb4JBdhPL+Ksb6IiAt6xmZ1inOJCJs="),
+                List.of(new Pair<>(Objects.requireNonNull(SbItemStack.base(Material.COAL).withAmount(2)), new CoinsCost(8)), new Pair<>(Objects.requireNonNull(SbItemStack.base(Material.IRON_INGOT).withAmount(4)), new CoinsCost(22))
+                        , new Pair<>(Objects.requireNonNull(SbItemStack.base(Material.GOLD_INGOT).withAmount(2)), new CoinsCost(12)),
+                        new Pair<>(ISbItem.get(RookiePickaxe.class).create(), new CoinsCost(12)), new Pair<>(ISbItem.get(PromisingPickaxe.class).create(), new CoinsCost(35)), new Pair<>(ISbItem.get(GoldenPickaxe.class).create(), new ItemCost(ISbItem.get(Material.GOLD_INGOT), 3)),
+                        new Pair<>(ISbItem.get(Material.TORCH).create().withAmount(32), new CoinsCost(16)), new Pair<>(ISbItem.get(Material.GRAVEL).create().withAmount(2), new CoinsCost(12)), new Pair<>(ISbItem.get(Material.COBBLESTONE).create(), new CoinsCost(3)),
+                        new Pair<>(ISbItem.get(Material.STONE).create().withAmount(2), new CoinsCost(4)))),
+        new MerchantNpc(new Pos(-10, 68, -130), container, "Weaponsmith", new PlayerSkin("eyJ0aW1lc3RhbXAiOjE1NTA2Nzg0NTQ3MTYsInByb2ZpbGVJZCI6ImEyZjgzNDU5NWM4OTRhMjdhZGQzMDQ5NzE2Y2E5MTBjIiwicHJvZmlsZU5hbWUiOiJiUHVuY2giLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2FmM2Y3YTY5YzlhN2FkOTVlOTBmMjEyZGEzMDQ5OTBjOGJlMzZlOTMxOTdkYjg3NGMyYjBmZTA4MTA2ZTMyM2IifX19", "Sw5WHUwuYX2OxF/U1BHPpFdAJzwzzyzZ78bxQkdCQL1Jyd9RsIiQWKJSeTHsnhScpHxXEBtWKQ71YOci6HzwLiYZOh/M6KJ3kY+RtlRdh8EUEVj1BCoo8xvwAt28Piiqke3uDs9dWEvVBzs1PR9qxvMaarw3DT8sTgxIBU/xMmt41uDiCOgn6M/rL3waFsnPdN+v2tTHsl1aNz+hMLn4NuIbBprE90X0tsT/qlQzCBPHuwUV8elGb9xAfjJ0eRSlH1jxcfEJdb+YsPKwfqQ6btwkCOK2hdfm9/S6/Fd2KJsaDhH5twfykFyD1PEn4sCAlAisibKiOADQcg6lYN7d2eE95RVYhlqHTsb6g0aBUSk8Gj8OOABbBB0sEhGPmzTKJOAoyu9ZWgfzAty/ipGooyL/gWlGByTmWnmXf0ek6TUtkPpmLNd3Ik364+GDI+C8H14Dltc7axQXh0GsFmepUL2t/fz0fDtZlqfhwz3ei7q7fJ8S20l2O4y/GKDCItqMTkY80rOEQuysln13pV32z/8oZwl7a1rGSvSjLQwC+cpbhA8tATTVu/ovUd5Aev+PUb5vqrh4DmF4Br5cRxLCDHj6Q2CG5glXVTULhbmMLQE0YLVFvnik2xGNnlKIJ9GEdsat+PBHR7ToHasGr4JiS7n2uQykxTntgpqB9QNS4fI="),
+                List.of(new Pair<>(ISbItem.get(UndeadSword.class).create(), new CoinsCost(100)), new Pair<>(ISbItem.get(EndSword.class).create(), new CoinsCost(150)),
+                        new Pair<>(ISbItem.get(SpiderSword.class).create(), new CoinsCost(100)), new Pair<>(ISbItem.get(DiamondSword.class).create(), new CoinsCost(60)),
+                        new Pair<>(ISbItem.get(Bow.class).create(), new CoinsCost(25)), new Pair<>(ISbItem.get(FlintArrow.class).create().withAmount(12), new CoinsCost(40)),
+                        new Pair<>(ISbItem.get(WitherBow.class).create(), new CoinsCost(250)), new Pair<>(ISbItem.get(ArtisanalShortbow.class).create(), new CoinsCost(600))))};
     }
 
     @Override

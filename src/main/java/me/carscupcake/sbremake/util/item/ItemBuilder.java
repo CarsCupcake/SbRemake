@@ -1,7 +1,7 @@
 package me.carscupcake.sbremake.util.item;
 
+import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.util.Returnable;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -13,10 +13,7 @@ import net.minestom.server.item.component.*;
 import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.registry.DynamicRegistry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class ItemBuilder {
@@ -30,6 +27,24 @@ public class ItemBuilder {
     private ArrayList<BannerPatterns.Layer> bannerPatterns;
     private final HashMap<DynamicRegistry.Key<Enchantment>, Integer> enchants = new HashMap<>();
     private boolean glint = false;
+    public ItemBuilder(ItemStack itemStack) {
+        this.material = itemStack.material();
+        this.name = ((TextComponent) Objects.requireNonNull(itemStack.get(ItemComponent.CUSTOM_NAME))).content();
+        lore.addAll(itemStack.get(ItemComponent.LORE));
+        count = itemStack.amount();
+        isHead = material == Material.PLAYER_HEAD && itemStack.get(ItemComponent.PROFILE) != null;
+        if (isHead) headTexture = Objects.requireNonNull(Objects.requireNonNull(itemStack.get(ItemComponent.PROFILE)).skin()).textures();
+        leatherColor = itemStack.get(ItemComponent.DYED_COLOR);
+        BannerPatterns patterns = itemStack.get(ItemComponent.BANNER_PATTERNS);
+        if (patterns != null) {
+            bannerPatterns = new ArrayList<>();
+            bannerPatterns.addAll(patterns.layers());
+        }
+        EnchantmentList list = itemStack.get(ItemComponent.ENCHANTMENTS);
+        if (list != null) {
+            enchants.putAll(list.enchantments());
+        }
+    }
     public ItemBuilder(Material material){
         this.material = material;
     }
@@ -89,6 +104,11 @@ public class ItemBuilder {
     public ItemBuilder addAllLore(TextColor base, String... lore){
         for(String l : lore)
             addLoreRow(Component.text(l, base));
+        return this;
+    }
+
+    public ItemBuilder addLore(String s) {
+        addAllLore(Lore.refactorLore(s));
         return this;
     }
     public ItemBuilder setAmount(int i){
