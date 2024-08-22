@@ -28,7 +28,8 @@ public class EntityUtils {
             for (int z = minZ; z <= maxZ; z++) {
                 Chunk chunk = instance.getChunk(x, z);
                 for (Entity e : instance.getChunkEntities(chunk)) {
-                    for (Vec v : line.getCollidePoints(e.getBoundingBox().withOffset(e.getPosition()), true)) {
+                    BoundingBox aabb = e.getBoundingBox();
+                    for (Vec v : line.getCollidePoints(aabb.withOffset(e.getPosition().sub(aabb.width() / 2, 0, aabb.depth() / 2)), true)) {
                         if (first.distance(v) <= dis) {
                             entities.add(e);
                             break;
