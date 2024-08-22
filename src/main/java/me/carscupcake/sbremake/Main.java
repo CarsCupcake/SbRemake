@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
+import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
@@ -67,6 +68,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(HotmUpgrade.LISTENER);
         for (SkyblockEnchantment enchantment : NormalEnchantment.values())
             SkyblockEnchantment.enchantments.put(enchantment.getId(), enchantment);
+        Reforge.init();
         MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
         MinecraftServer.getSchedulerManager().buildShutdownTask(() -> {
             Audiences.players().forEachAudience(audience -> {
@@ -122,7 +124,7 @@ public class Main {
                     }
                 } catch (Exception e) {
                     if (!running.get()) return;
-                    LOGGER.trace("An Error occured while executing a command", e);
+                    LOGGER.trace("An Error occurred while executing a command", e);
 
                 }
             }

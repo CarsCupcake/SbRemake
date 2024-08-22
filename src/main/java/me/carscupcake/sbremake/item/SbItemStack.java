@@ -5,8 +5,10 @@ import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
+import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
+import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
 import me.carscupcake.sbremake.util.StringUtils;
@@ -36,7 +38,10 @@ import static java.lang.Math.min;
  * @param sbItem the Sb item
  */
 @SuppressWarnings("preview")
-public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
+public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @NotNull HashMap<Modifier<?>, Object> modifierCache) {
+    public SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
+        this(item, sbItem, new HashMap<>());
+    }
 
     private static final Map<String, ISbItem> items = new HashMap<>();
 
@@ -94,8 +99,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     }
 
     public String displayName() {
-        //TODO Implement Modifiers
-        return sbItem.getName();
+        Reforge reforge = getModifier(Modifier.REFORGE);
+        return STR."\{reforge != null ? STR."\{reforge.getName()} " : ""}\{sbItem.getName()}";
     }
 
     /*
@@ -142,13 +147,13 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
             for (Stat stat : redStats) {
                 double value = getStat(stat);
                 if (value == 0) continue;
-                lore.add(STR."§7\{stat.getName()} §c\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}");
+                lore.add(STR."§7\{stat.getName()} §c\{statLine(stat, value)}");
                 space = true;
             }
             for (Stat stat : greenStats) {
                 double value = getStat(stat);
                 if (value == 0) continue;
-                lore.add(STR."§7\{stat.getName()} §a\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}");
+                lore.add(STR."§7\{stat.getName()} §a\{statLine(stat, value)}");
                 space = true;
             }
             if (sbItem instanceof Shortbow shortbow) {
@@ -197,6 +202,12 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
             lore.addAll(sbItem.getLore().build(this, player));
             lore.add("  ");
         }
+        Reforge reforge = getModifier(Modifier.REFORGE);
+        if (reforge != null && reforge.getLore() != Lore.EMPTY) {
+            lore.add(STR."§9\{reforge.getName()} Bonus");
+            lore.addAll(reforge.getLore().build(this, player));
+            lore.add(" ");
+        }
         if (sbItem instanceof Shortbow) {
             lore.add(STR."\{rarity.getPrefix()}Shortbow: Instatntly shoots!");
             lore.add("  ");
@@ -211,13 +222,20 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
         return lore;
     }
 
+    private String statLine(Stat stat, double value) {
+        Reforge reforge = getModifier(Modifier.REFORGE);
+        double reforgeValue = reforge == null ? 0 : reforge.getStat(stat, getRarity());
+        return STR."\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}\{reforgeValue != 0 ? STR." §9(\{value < 0 ? "" : "+"}\{StringUtils.cleanDouble(reforgeValue, 1)}\{stat.isPercentValue() ? "%" : ""})" : ""}";
+    }
+
     public ItemRarity getRarity() {
         //TODO add custom rarity getter
         return sbItem.getRarity();
     }
 
     public double getStat(Stat stat) {
-        GetItemStatEvent event = new GetItemStatEvent(this, stat, sbItem.getStat(stat));
+        Reforge reforge = getModifier(Modifier.REFORGE);
+        GetItemStatEvent event = new GetItemStatEvent(this, stat, sbItem.getStat(stat) + (reforge != null ? reforge.getStat(stat, getRarity()) : 0));
         MinecraftServer.getGlobalEventHandler().call(event);
         return event.getValue() * event.getMultiplier();
     }
@@ -245,24 +263,23 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
     }
 
     public int getEnchantmentLevel(SkyblockEnchantment enchantment) {
-        CompoundBinaryTag enchantments = ((CompoundBinaryTag) item.getTag(Tag.NBT("ExtraAttributes"))).getCompound("enchantments");
-        for (String key : enchantments.keySet()) {
-            if (key.equalsIgnoreCase(enchantment.getId())) return enchantments.getInt(key);
-        }
-        return 0;
+        return getEnchantments().getOrDefault(enchantment, 0);
     }
 
     public Map<SkyblockEnchantment, Integer> getEnchantments() {
-        CompoundBinaryTag enchantments = ((CompoundBinaryTag) item.getTag(Tag.NBT("ExtraAttributes"))).getCompound("enchantments");
-        Map<SkyblockEnchantment, Integer> enchantmentMap = new HashMap<>();
-        for (String key : enchantments.keySet()) {
-            enchantmentMap.put(SkyblockEnchantment.enchantments.get(key), enchantments.getInt(key));
-        }
-        return enchantmentMap;
+        return getModifier(Modifier.ENCHANTMENTS);
     }
 
     public void drop(Instance instance, Point pos) {
         ItemEntity entity = new ItemEntity(item());
         entity.setInstance(instance, pos);
+    }
+
+    public <T> T getModifier(Modifier<T> modifier) {
+        return modifier.get(this);
+    }
+
+    public <T> SbItemStack applyModifier(Modifier<T> modifier, T value) {
+        return modifier.toNbt(value, this);
     }
 }

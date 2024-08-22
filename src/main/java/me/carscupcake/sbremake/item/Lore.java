@@ -21,7 +21,7 @@ public record Lore(List<String> base, Map<String, IPlaceHolder> placeHolderHashM
         this(refactorLore(lore), placeHolderHashMap);
     }
 
-    public static final Lore EMPTY = new Lore(new ArrayList<>(), new HashMap<>());
+    public static final Lore EMPTY = new Lore(new ArrayList<>(0), new HashMap<>(0));
 
     public List<String> build(SbItemStack item, @Nullable SkyblockPlayer player) {
         List<String> lore = new ArrayList<>();
