@@ -776,7 +776,7 @@ public class SkyblockPlayer extends Player {
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
             SbItemStack item = SbItemStack.from(getEquipment(slot));
             if (item == null) continue;
-            double value = item.getStat(stat);
+            double value = item.getStat(stat, this);
             if (value == 0) continue;
             boolean canUse = true;
             for (Requirement requirement : item.sbItem().requirements())
@@ -798,7 +798,7 @@ public class SkyblockPlayer extends Player {
                     break;
                 }
             if (canUse)
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", item.getStat(stat), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", item.getStat(stat, this), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
         }
         MinecraftServer.getGlobalEventHandler().call(event);
         double value = event.calculate();

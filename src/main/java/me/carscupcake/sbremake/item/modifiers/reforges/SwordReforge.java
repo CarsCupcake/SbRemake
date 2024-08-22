@@ -5,8 +5,12 @@ import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.Requirement;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.skill.Skill;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -97,7 +101,20 @@ public enum SwordReforge implements Reforge {
         }
     },
     Fabled(Map.of(Stat.Strength, new ReforgeStat(30, 35, 40, 50, 60, 75),
-            Stat.CritDamage, new ReforgeStat(15, 20, 25, 32, 40, 50)), new Lore("§7Critical hits have a chance to deal up to §a+15%§7 extra damage."));
+            Stat.CritDamage, new ReforgeStat(15, 20, 25, 32, 40, 50)), new Lore("§7Critical hits have a chance to deal up to §a+15%§7 extra damage.")),
+    Withered(new HashMap<>(), new Lore(STR."§7Grants §a+1 \{Stat.Strength} §7per §cCatacombs §7level.")) {
+        private final ReforgeStat strength = new ReforgeStat(60, 75, 90, 110, 135, 170);
+
+        @Override
+        public double getStat(Stat stat, ItemRarity rarity, @Nullable SkyblockPlayer player) {
+            if (stat == Stat.Strength) {
+                if (player != null)
+                    return strength.fromRarity(rarity) + player.getSkill(Skill.Dungeneering).getLevel();
+                else return strength.fromRarity(rarity);
+            }
+            return super.getStat(stat, rarity, player);
+        }
+    };
 
 
     private static final ItemType[] SWORDS = {ItemType.Sword, ItemType.Longsword};
@@ -107,10 +124,12 @@ public enum SwordReforge implements Reforge {
     private final List<Requirement> requirements;
     private final Lore lore;
     private final Map<Stat, ReforgeStat> stats;
+
     SwordReforge(Map<Stat, ReforgeStat> stats, Requirement... requirement) {
         this(stats, Lore.EMPTY, requirement);
 
     }
+
     SwordReforge(Map<Stat, ReforgeStat> stats, Lore lore, Requirement... requirement) {
         this.name = name();
         this.id = name().toUpperCase().replace(' ', '_');
@@ -118,6 +137,7 @@ public enum SwordReforge implements Reforge {
         this.lore = lore;
         this.stats = stats;
     }
+
     SwordReforge(String name, String id, Map<Stat, ReforgeStat> stats, Lore lore, Requirement... requirement) {
         this.name = name;
         this.id = id;
@@ -125,8 +145,9 @@ public enum SwordReforge implements Reforge {
         this.lore = lore;
         this.stats = stats;
     }
+
     SwordReforge(String name, String id, Map<Stat, ReforgeStat> stats, Requirement... requirement) {
-       this(name, id, stats, Lore.EMPTY, requirement);
+        this(name, id, stats, Lore.EMPTY, requirement);
     }
 
     @Override
@@ -155,7 +176,7 @@ public enum SwordReforge implements Reforge {
     }
 
     @Override
-    public double getStat(Stat stat, ItemRarity rarity) {
+    public double getStat(Stat stat, ItemRarity rarity, @Nullable SkyblockPlayer player) {
         ReforgeStat reforgeStat = stats.get(stat);
         return reforgeStat == null ? 0 : reforgeStat.fromRarity(rarity);
     }

@@ -1,0 +1,222 @@
+package me.carscupcake.sbremake.item.crafting;
+
+import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.item.Recipe;
+import me.carscupcake.sbremake.item.Requirement;
+import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.util.Returnable;
+import net.minestom.server.inventory.Inventory;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+
+public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result, int amount, int prioritySlot,
+                           Grid grid, Requirement... requirements) implements Recipe {
+    public ShapedRecipe(ISbItem result, int amount, int prioritySlot, Map<Character, CraftingIngredient> ingredientMap, String... items) {
+        this(result, amount, prioritySlot, new Requirement[0], ingredientMap, items);
+    }
+
+    public ShapedRecipe(ISbItem result, int amount, Map<Character, CraftingIngredient> ingredientMap, String... items) {
+        this(result, amount, -1, new Requirement[0], ingredientMap, items);
+    }
+
+    public ShapedRecipe(ISbItem result, int amount, int prioritySlot, Requirement[] requirement, Map<Character, CraftingIngredient> ingredientMap, String... items) {
+        assert items.length < 4 && items.length > 0;
+        int length = items[0].length();
+        int with = length;
+        List<CraftingIngredient> itemsList = new ArrayList<>();
+        for (String s : items)
+            assert length == s.length();
+        for (String i : items)
+            for (char j : i.toCharArray()) {
+                if (j == ' ') itemsList.add(null);
+                else {
+                    assert ingredientMap.containsKey(j);
+                    itemsList.add(ingredientMap.get(j));
+                }
+            }
+        int height = items.length;
+        this(itemsList, result, amount, prioritySlot, switch (with) {
+            case 1 -> {
+                switch (height) {
+                    case 2 -> {
+                        yield Grid.Grid1x2;
+                    }
+                    case 3 -> {
+                        yield Grid.Grid1x3;
+                    }
+                    default -> throw new IllegalStateException("Not possible");
+                }
+            }
+            case 2 -> {
+                switch (height) {
+                    case 1 -> {
+                        yield Grid.Grid2x1;
+                    }
+                    case 2 -> {
+                        yield Grid.Grid2x2;
+                    }
+                    case 3 -> {
+                        yield Grid.Grid2x3;
+                    }
+                    default -> throw new IllegalStateException("Not possible");
+                }
+            }
+            case 3 -> {
+                switch (height) {
+                    case 1 -> {
+                        yield Grid.Grid3x1;
+                    }
+                    case 2 -> {
+                        yield Grid.Grid3x2;
+                    }
+                    case 3 -> {
+                        yield Grid.Grid3x3;
+                    }
+                    default -> throw new IllegalStateException("Not possible");
+                }
+            }
+            default -> throw new IllegalStateException("Not possible");
+        }, requirement);
+    }
+
+    @Override
+    public SbItemStack getResult(@Nullable List<SbItemStack> items) {
+        //TODO copy the modifiers
+        return result.create().withAmount(amount);
+    }
+
+    @Override
+    public boolean creatable(List<SbItemStack> items) {
+        for (List<SbItemStack> current : toSegments(items)) {
+            boolean b = true;
+            int i = 0;
+            for (SbItemStack itemStack : current) {
+                CraftingIngredient ingredient = this.ingredients.get(i);
+                if ((ingredient == null && itemStack == null)) {
+                    i++;
+                    continue;
+                }
+                if (ingredient == null) {
+                    b = false;
+                    break;
+                }
+                if (ingredient.items().length == 0 && itemStack == null) {
+                    i++;
+                    continue;
+                }
+                if (itemStack == null) {
+                    b = false;
+                    break;
+                }
+                if (!ingredient.check(itemStack)) {
+                    b = false;
+                    break;
+                }
+                i++;
+            }
+            if (b) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Inventory recipePreview() {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public void consume(List<SbItemStack> items) {
+        List<Integer> segments = null;
+        for (List<Integer> combi : grid.gridCombinations) {
+            List<Integer> b = new ArrayList<>();
+            boolean bol = true;
+            for (int i = 0; i < 9; i++) {
+                if (combi.contains(i)) b.add(i);
+                else if (items.get(i) != null) {
+                    bol = false;
+                    break;
+                }
+            }
+            if (bol) {
+                segments = b;
+                break;
+            }
+        }
+        if (segments == null) return;
+        int i = 0;
+        for (Integer slot : segments) {
+            SbItemStack item = items.get(slot);
+            if (item != null)
+                items.set(slot, item.withAmount(item.item().amount() - this.ingredients.get(i).amount()));
+            i++;
+        }
+    }
+
+    private List<List<SbItemStack>> toSegments(List<SbItemStack> items) {
+        LinkedList<LinkedList<Integer>> slotCombination = grid.gridCombinations;
+        List<List<SbItemStack>> lists = new LinkedList<>();
+        for (List<Integer> combi : slotCombination) {
+            List<SbItemStack> b = new LinkedList<>();
+            boolean bol = true;
+            for (int i = 0; i < 9; i++) {
+                if (combi.contains(i)) b.add(items.get(i));
+                else if (items.get(i) != null) {
+                    bol = false;
+                    break;
+                }
+            }
+            if (bol) lists.add(b);
+        }
+        return lists;
+
+
+    }
+
+    public enum Grid {
+        Grid2x2(linkedListOf(0, 1, 3, 4), linkedListOf(1, 2, 4, 5), linkedListOf(3, 4, 6, 7), linkedListOf(4, 5, 7, 8)), Grid2x3(() -> {
+            LinkedList<LinkedList<Integer>> list = new LinkedList<>();
+            for (int i = 0; i + 7 < 9; i++) {
+                if ((i + 1) % 3 == 0) continue;
+                list.add(linkedListOf(i, i + 1, i + 3, i + 4, i + 6, i + 7));
+            }
+            return list;
+        }), Grid3x2(() -> {
+            LinkedList<LinkedList<Integer>> list = new LinkedList<>();
+            for (int i = 0; i + 5 < 9; i += 3) {
+                if ((i + 1) % 3 == 0) continue;
+                list.add(linkedListOf(i, i + 1, i + 2, i + 3, i + 4, i + 5));
+            }
+            return list;
+        }), Grid1x3(linkedListOf(0, 3, 6), linkedListOf(1, 4, 7), linkedListOf(2, 5, 8)), Grid3x1(linkedListOf(0, 1, 2), linkedListOf(3, 4, 5), linkedListOf(6, 7, 8)), Grid1x2(() -> {
+            LinkedList<LinkedList<Integer>> list = new LinkedList<>();
+            for (int i = 0; i + 3 < 9; i++) {
+                list.add(linkedListOf(i, i + 3));
+            }
+            return list;
+        }), Grid2x1(() -> {
+            LinkedList<LinkedList<Integer>> list = new LinkedList<>();
+            for (int i = 0; i + 1 < 9; i++) {
+                if ((i + 1) % 3 == 0) continue;
+                list.add(linkedListOf(i, i + 1));
+            }
+            return list;
+        }), Grid3x3(linkedListOf(0, 1, 2, 3, 4, 5, 6, 7, 8));
+        private final LinkedList<LinkedList<Integer>> gridCombinations;
+
+        @SafeVarargs
+        Grid(LinkedList<Integer>... grids) {
+            gridCombinations = new LinkedList<>(List.of(grids));
+        }
+
+        Grid(Returnable<LinkedList<LinkedList<Integer>>> returnable) {
+            gridCombinations = returnable.get();
+        }
+
+        @SafeVarargs
+        private static <T> LinkedList<T> linkedListOf(T... t) {
+            return new LinkedList<>(Arrays.asList(t));
+        }
+    }
+}

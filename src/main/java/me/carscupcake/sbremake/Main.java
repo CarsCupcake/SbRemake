@@ -2,6 +2,7 @@ package me.carscupcake.sbremake;
 
 import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.item.Recipe;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
@@ -9,10 +10,7 @@ import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
-import me.carscupcake.sbremake.player.skill.impl.CombatSkill;
-import me.carscupcake.sbremake.player.skill.impl.FarmingSkill;
-import me.carscupcake.sbremake.player.skill.impl.ForagingSkill;
-import me.carscupcake.sbremake.player.skill.impl.MiningSkill;
+import me.carscupcake.sbremake.player.skill.impl.*;
 import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.PlayerBrodcastOutputStream;
 import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
@@ -50,6 +48,10 @@ public class Main {
             LOGGER.trace("", e);
         });
         ISbItem.init();
+        LOGGER.info("Loading Recipes");
+        long time = System.currentTimeMillis();
+        Recipe.init();
+        LOGGER.info(STR."Loaded \{Recipe.craftingRecipes.size()} Crafting Recipes in \{System.currentTimeMillis() - time}ms");
         MiningBlock.init();
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockBreakEvent.class, new PlayerBlockBreakListener());
@@ -63,6 +65,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(FarmingSkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(ForagingSkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(MiningSkill.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(Dungeoneering.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(Region.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(EnchantmentUtils.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(HotmUpgrade.LISTENER);

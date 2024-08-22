@@ -138,26 +138,26 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
             lore.addAll(Objects.requireNonNull(sbItem.statsReplacement()).build(this, player));
             space = true;
         } else {
-            double breakingPower = getStat(Stat.BreakingPower);
+            double breakingPower = getStat(Stat.BreakingPower, player);
             if (breakingPower > 0) {
                 lore.add(STR."§8Breaking Power \{StringUtils.cleanDouble(breakingPower, 1)}");
                 lore.add("§8  ");
             }
 
             for (Stat stat : redStats) {
-                double value = getStat(stat);
+                double value = getStat(stat, player);
                 if (value == 0) continue;
-                lore.add(STR."§7\{stat.getName()} §c\{statLine(stat, value)}");
+                lore.add(STR."§7\{stat.getName()} §c\{statLine(stat, value, player)}");
                 space = true;
             }
             for (Stat stat : greenStats) {
-                double value = getStat(stat);
+                double value = getStat(stat, player);
                 if (value == 0) continue;
-                lore.add(STR."§7\{stat.getName()} §a\{statLine(stat, value)}");
+                lore.add(STR."§7\{stat.getName()} §a\{statLine(stat, value, player)}");
                 space = true;
             }
             if (sbItem instanceof Shortbow shortbow) {
-                lore.add(STR."§7Shot Cooldown: §a\{StringUtils.cleanDouble(((player == null) ? shortbow.getShortbowCooldown(getStat(Stat.AttackSpeed)) : shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) / 1000d)}s");
+                lore.add(STR."§7Shot Cooldown: §a\{StringUtils.cleanDouble(((player == null) ? shortbow.getShortbowCooldown(getStat(Stat.AttackSpeed, player)) : shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) / 1000d)}s");
             }
         }
         //Todo Gemstones
@@ -222,9 +222,9 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
         return lore;
     }
 
-    private String statLine(Stat stat, double value) {
+    private String statLine(Stat stat, double value, SkyblockPlayer player) {
         Reforge reforge = getModifier(Modifier.REFORGE);
-        double reforgeValue = reforge == null ? 0 : reforge.getStat(stat, getRarity());
+        double reforgeValue = reforge == null ? 0 : reforge.getStat(stat, getRarity(),player);
         return STR."\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}\{reforgeValue != 0 ? STR." §9(\{value < 0 ? "" : "+"}\{StringUtils.cleanDouble(reforgeValue, 1)}\{stat.isPercentValue() ? "%" : ""})" : ""}";
     }
 
@@ -233,9 +233,9 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
         return sbItem.getRarity();
     }
 
-    public double getStat(Stat stat) {
+    public double getStat(Stat stat, SkyblockPlayer player) {
         Reforge reforge = getModifier(Modifier.REFORGE);
-        GetItemStatEvent event = new GetItemStatEvent(this, stat, sbItem.getStat(stat) + (reforge != null ? reforge.getStat(stat, getRarity()) : 0));
+        GetItemStatEvent event = new GetItemStatEvent(this, stat, sbItem.getStat(stat) + (reforge != null ? reforge.getStat(stat, getRarity(), player) : 0));
         MinecraftServer.getGlobalEventHandler().call(event);
         return event.getValue() * event.getMultiplier();
     }

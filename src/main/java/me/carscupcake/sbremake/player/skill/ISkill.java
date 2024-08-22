@@ -60,7 +60,7 @@ public abstract class ISkill {
     public abstract Stat getWisdomStat();
 
     public void addXp(double amount) {
-        amount *= 1 + (player.getStat(getWisdomStat()) / 100d);
+        amount *= 1 + (getWisdomStat() != null ? (player.getStat(getWisdomStat()) / 100d) : 0);
         xp += amount;
         while (level < getMaxLevel() && nextLevelXp[level] <= xp) {
             xp -= nextLevelXp[level];
