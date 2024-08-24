@@ -35,8 +35,8 @@ public class EnchantedDiamond implements ISbItem, EnchantedRecipe {
     }
 
     @Override
-    public Class<? extends ISbItem> base() {
-        return ISbItem.get(Material.DIAMOND).getClass();
+    public ISbItem base() {
+        return ISbItem.get(Material.DIAMOND);
     }
 
     @Override

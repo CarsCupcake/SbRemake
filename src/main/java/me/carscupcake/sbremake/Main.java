@@ -45,7 +45,7 @@ public class Main {
         LOGGER = new SkyblockSimpleLogger();
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             System.out.println(STR."Error occured on thread \{t.getName()}");
-            LOGGER.trace("", e);
+            LOGGER.error("", e);
         });
         ISbItem.init();
         LOGGER.info("Loading Recipes");

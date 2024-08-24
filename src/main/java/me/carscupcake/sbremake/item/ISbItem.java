@@ -125,7 +125,7 @@ public interface ISbItem {
             }
         }
         for (Map.Entry<ISbItem, EnchantedRecipe> recipe : recipes.entrySet()) {
-            Map<Character, CraftingIngredient> items = Map.of('#', new CraftingIngredient(32, ISbItem.get(recipe.getValue().base())));
+            Map<Character, CraftingIngredient> items = Map.of('#', new CraftingIngredient(32, recipe.getValue().base()));
             Requirement[] requirements = new Requirement[]{new CollectionRequirement(recipe.getValue().collection(), recipe.getValue().level())};
             Recipe.craftingRecipes.add(new ShapedRecipe(recipe.getKey(), 1, -1, requirements, items, "###", "## "));
             Recipe.craftingRecipes.add(new ShapedRecipe(recipe.getKey(), 1, -1, requirements, items, " # ", "###", " # "));
@@ -133,6 +133,7 @@ public interface ISbItem {
     }
 
     static ISbItem get(Class<? extends ISbItem> itemClass) {
+        if (itemClass == BaseSbItem.class) throw new IllegalStateException("Not possible for base items!");
         try {
             return SbItemStack.raw((String) itemClass.getDeclaredMethod("getId").invoke(itemClass.getConstructor().newInstance()));
         } catch (Exception e) {

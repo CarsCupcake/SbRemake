@@ -35,8 +35,8 @@ public class EnchantedMithril implements ISbItem, EnchantedRecipe {
     }
 
     @Override
-    public Class<? extends ISbItem> base() {
-        return Mithril.class;
+    public ISbItem base() {
+        return ISbItem.get(Mithril.class);
     }
 
     @Override
