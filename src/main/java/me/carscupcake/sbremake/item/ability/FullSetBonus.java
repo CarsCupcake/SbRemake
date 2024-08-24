@@ -17,8 +17,7 @@ public non-sealed abstract class FullSetBonus implements Ability {
         this.name = name;
     }
     public abstract void start(SkyblockPlayer player);
-    public abstract void stop(SkyblockPlayer player);
-    public abstract FullSetBonus instance();
+    public abstract void stop(SkyblockPlayer player);;
 
     @Override
     public String headline(SbItemStack item, SkyblockPlayer player) {

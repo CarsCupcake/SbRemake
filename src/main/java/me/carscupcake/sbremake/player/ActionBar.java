@@ -52,7 +52,7 @@ public class ActionBar {
 
         @Override
         public String get(SkyblockPlayer player) {
-            return (player.getDefenseString() != null) ? player.getDefenseString() : STR."\{Stat.Defense.getPrefix()}\{StringUtils.cleanDouble(player.getStat(Stat.Defense))} \{Stat.Defense.getSymbol()}";
+            return (player.getDefenseString() != null) ? player.getDefenseString() : STR."\{Stat.Defense.getPrefix()}\{StringUtils.cleanDouble(player.getStat(Stat.Defense))} \{Stat.Defense.getSymbol()} Defense";
         }
     }
 
@@ -67,7 +67,7 @@ public class ActionBar {
         public String get(SkyblockPlayer player) {
             if (player.isNotEnoughMana())
                 return "§c§lNOT ENOUGH MANA";
-            return STR."\{Stat.Intelligence.getPrefix()}\{StringUtils.cleanDouble(player.getMana(), 1)}/\{StringUtils.cleanDouble(player.getManaPool(), 1)} \{Stat.Intelligence.getSymbol()}";
+            return STR."\{Stat.Intelligence.getPrefix()}\{StringUtils.cleanDouble(player.getMana(), 1)}/\{StringUtils.cleanDouble(player.getManaPool(), 1)} \{Stat.Intelligence.getSymbol()} Mana";
         }
     }
 }

@@ -28,11 +28,6 @@ public class HealthFullSetBonus extends FullSetBonus {
     }
 
     @Override
-    public FullSetBonus instance() {
-        return INSTANCE;
-    }
-
-    @Override
     public Lore lore() {
         return new Lore(STR."§7Increase the wearesr's maximum \{Stat.Health.toString()}§7 by §a60");
     }

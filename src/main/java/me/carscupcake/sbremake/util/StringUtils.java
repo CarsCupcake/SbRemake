@@ -2,11 +2,8 @@ package me.carscupcake.sbremake.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -62,6 +59,7 @@ public class StringUtils {
         }
         return newString.reverse().toString();
     }
+
     public static String toFormatedNumber(long number) {
         String str = String.valueOf(number);
         StringBuilder sb = new StringBuilder(str);
@@ -106,17 +104,12 @@ public class StringUtils {
         int done = (int) (bars * pers);
         TextComponent.Builder builder = Component.text();
         String repeat = String.valueOf(piece).repeat(Math.max(0, done));
-        if (done != 0) {
-            builder.append(Component.text(repeat, finishedProgress));
-        }
-        if (bars - done != 0) {
-            builder.append(Component.text(repeat, finishedProgress));
-            builder.append(Component.text(String.valueOf(piece).repeat(Math.max(0, (bars - done))), notFinishedProgress));
-        }
+        builder.append(Component.text(repeat, finishedProgress));
+        builder.append(Component.text(String.valueOf(piece).repeat(Math.max(0, (bars - done))), notFinishedProgress));
         return builder.build();
     }
 
-    public static String stripeColorCodes(String s){
+    public static String stripeColorCodes(String s) {
         StringBuilder name = new StringBuilder();
         if (s.contains("§"))
             for (String split : s.split("§")) {

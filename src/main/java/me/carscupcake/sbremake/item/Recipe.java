@@ -49,7 +49,7 @@ public interface Recipe {
     void consume(List<SbItemStack> items);
 
     HashMap<String, CraftingIngredient> tags = new HashMap<>();
-    LinkedList<Recipe> craftingRecipes = new LinkedList<>();
+    LinkedHashMap<String, Recipe> craftingRecipes = new LinkedHashMap<>();
     Map<String, JsonArray> later = new HashMap<>();
 
     static void loadTags(File[] files) throws FileNotFoundException {
@@ -73,13 +73,13 @@ public interface Recipe {
         }
     }
 
-    static void loadEnchantments(File[] files) throws FileNotFoundException {
+    static void loadRecipes(File[] files) throws FileNotFoundException {
         for (File f : files) {
             JsonObject o = JsonParser.parseReader(new FileReader(f)).getAsJsonObject();
             String type = o.get("type").getAsString();
             for (RecipeType recipeType : RecipeType.values()) {
                 if (recipeType.id.equals(type)) {
-                    craftingRecipes.add(recipeType.apply(o));
+                    craftingRecipes.put(f.getName().split("\\.")[0], recipeType.apply(o));
                     break;
                 }
             }
@@ -104,9 +104,9 @@ public interface Recipe {
                 tags.put(entry.getKey(), new CraftingIngredient(1, items.toArray(new ISbItem[0])));
             }
             folder = new File(Objects.requireNonNull(Main.class.getClassLoader().getResource("assets/crafting/native")).getFile());
-            loadEnchantments(Objects.requireNonNull(folder.listFiles()));
+            loadRecipes(Objects.requireNonNull(folder.listFiles()));
             folder = new File(Objects.requireNonNull(Main.class.getClassLoader().getResource("assets/crafting/custom")).getFile());
-            loadEnchantments(Objects.requireNonNull(folder.listFiles()));
+            loadRecipes(Objects.requireNonNull(folder.listFiles()));
         } catch (Exception e) {
             Main.LOGGER.error("An error occurred", e);
         }
@@ -272,22 +272,26 @@ public interface Recipe {
                             }
                         }
                     } else {
+                        if (!cacheRecipe.get().canCraft(player)) {
+                            Main.LOGGER.warn("Cached recipe was not craftable!");
+                            return true;
+                        }
                         if (event.getCursorItem() == ItemStack.AIR || (!cacheItem.get().sbItem().isUnstackable() && cacheItem.get().sbItem() == SbItemStack.from(event.getCursorItem()).sbItem() && event.getCursorItem().amount() + cacheItem.get().item().amount() <= event.getCursorItem().material().maxStackSize()))
                             cacheRecipe.get().consume(itemStacks);
                         else return true;
-                    }
-                    for (int i = 0; i < 9; i++) {
-                        SbItemStack item = itemStacks.get(i);
-                        gui.getInventory().setItemStack(craftingGrid.get(i), (item == null) ? ItemStack.AIR : item.item());
                     }
                     if (event.getClickType() != ClickType.START_SHIFT_CLICK) {
                         if (event.getCursorItem() != ItemStack.AIR)
                             player.getInventory().setCursorItem(Objects.requireNonNull(cacheItem.get().withAmount(event.getCursorItem().amount() + cacheItem.get().item().amount())).item());
                         else player.getInventory().setCursorItem(cacheItem.get().item());
                     }
-                    if (!cacheRecipe.get().creatable(itemStacks)) {
+                    for (int i = 0; i < 9; i++) {
+                        SbItemStack item = itemStacks.get(i);
+                        gui.getInventory().setItemStack(craftingGrid.get(i), (item == null) ? ItemStack.AIR : item.item());
+                    }
+                    /*if (!cacheRecipe.get().creatable(itemStacks)) {
                         Recipe recipe = null;
-                        for (Recipe r : craftingRecipes) {
+                        for (Recipe r : craftingRecipes.values()) {
                             if (r.creatable(itemStacks)) {
                                 if (r.canCraft(player)) {
                                     recipe = r;
@@ -304,19 +308,19 @@ public interface Recipe {
                             cacheRecipe.set(recipe);
                             gui.getInventory().setItemStack(23, result.item());
                         }
-                    }
+                    }*/
                 }
                 return true;
             }
             return false;
         });
-        gui.setPostClickEvent(event -> {
-            if (event.getInventory() != null && craftingGrid.contains(event.getSlot())) {
+        gui.setItemChangeEvent(event -> {
+            if (craftingGrid.contains(event.getSlot())){
                 Recipe recipe = null;
                 List<SbItemStack> itemStacks = new ArrayList<>();
                 for (int i : craftingGrid)
-                    itemStacks.add(SbItemStack.from(gui.getInventory().getItemStack(i)));
-                for (Recipe r : craftingRecipes)
+                    itemStacks.add(SbItemStack.from(Objects.requireNonNull(event.getInventory()).getItemStack(i)));
+                for (Recipe r : craftingRecipes.values())
                     if (r.creatable(itemStacks)) {
                         if (r.canCraft(player)) {
                             recipe = r;

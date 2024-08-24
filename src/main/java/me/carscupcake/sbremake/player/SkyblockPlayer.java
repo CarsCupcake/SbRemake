@@ -12,10 +12,8 @@ import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.SkyblockEntityProjectile;
 import me.carscupcake.sbremake.event.*;
-import me.carscupcake.sbremake.item.ISbItem;
-import me.carscupcake.sbremake.item.ItemType;
+import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.Requirement;
-import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.FullSetBonus;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
@@ -504,6 +502,10 @@ public class SkyblockPlayer extends Player {
         inventoryBuilder.setItem(profileItem.addAllLore("§7  ").addLoreRow("§eClick to view!").build(), 13).setItem(new ItemBuilder(Material.DIAMOND_SWORD).setName("§aYour Skills").addAllLore("§7View your skills progression", "§7and rewards.", "§7 ", STR."§6\{StringUtils.cleanDouble(skillsAverage())} Skill Avearage", "§e ", "§eClick to view!").build(), 19).setItem(new ItemBuilder(Material.PAINTING).setName("§aCollections §c§lWIP").build(), 20).setItem(new ItemBuilder(Material.BOOK).setName("§aRecipe Book §c§lWIP").build(), 21).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0=").setName("§aSkyblock Leveling §c§lWIP").build(), 22).setItem(new ItemBuilder(Material.WRITABLE_BOOK).setName("§aQuest Log §c§lWIP").build(), 23).setItem(new ItemBuilder(Material.CLOCK).setName("§aCalendar and Events §c§lWIP").build(), 24).setItem(new ItemBuilder(Material.CHEST).setName("§aStorage §c§lWIP").build(), 25).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0=").setName("§aYour Bags §c§lWIP").build(), 29).setItem(new ItemBuilder(Material.BONE).setName("§aPets §c§lWIP").build(), 30).setItem(new ItemBuilder(Material.CRAFTING_TABLE).setName("§aCrafting Table §c§lWIP").build(), 31).setItem(new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new DyedItemColor(0x3e05af)).setName("§aWardrobe §c§lWIP").build(), 32).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA5Mjk5YTExN2JlZTg4ZDMyNjJmNmFiOTgyMTFmYmEzNDRlY2FlMzliNDdlYzg0ODEyOTcwNmRlZGM4MWU0ZiJ9fX0=").setName("§aPersonal Bank §c§lWIP").build(), 33).setItem(new ItemBuilder(Material.BARRIER).setName("§cClose").build(), 49);
         Gui gui = new Gui(inventoryBuilder.build());
         gui.setCancelled(true);
+        gui.getClickEvents().add(31, clickType -> {
+            Recipe.openCraftingGui(SkyblockPlayer.this);
+            return true;
+        });
         gui.showGui(this);
     }
 

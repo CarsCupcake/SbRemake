@@ -11,6 +11,7 @@ import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.util.item.InventoryBuilder;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
@@ -75,11 +76,11 @@ public abstract class Collection {
     }
 
     public ItemStack getCollectionShowItem(int level) {
-        String prefix = (level <= this.level) ? "§a" : (level == 1 + this.level) ? "§e" : "§c";
+        String prefix = (level <= this.level) ? "§a" : "§e";
         return new ItemBuilder((level <= this.level) ? Material.LIME_STAINED_GLASS_PANE : (level == 1 + this.level) ? Material.YELLOW_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE)
                 .setName(STR."\{prefix}\{getName()} \{StringUtils.toRoman(level)}")
                 .addAllLore("§a ", STR."§7Progress: \{prefix}\{StringUtils.cleanDouble(100 * Math.min(1d, (double) progress / levelProgress[level - 1]))}%")
-                .addLoreRow(StringUtils.makeProgressBar(10, progress, levelProgress[level - 1], NamedTextColor.WHITE, NamedTextColor.GREEN,
+                .addLoreRow(StringUtils.makeProgressBar(20, progress, levelProgress[level - 1], NamedTextColor.WHITE, NamedTextColor.GREEN,
                                 "§m ").append(Component.text(STR." §e\{progress} §6/ §e\{StringUtils.toShortNumber(levelProgress[level - 1])}")))
                 .addLoreRow("§e ")
                 .addLoreRow("§aRewards:")
@@ -93,7 +94,7 @@ public abstract class Collection {
         for (Reward reward : rewards)
             reward.reward(player);
         player.sendMessage(STR."§e▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-        player.sendMessage(STR."  §6§lCOLLECTION LEVELED UP!§r §e\{getName()} §e\{StringUtils.toRoman(level)}");
+        player.sendMessage(Component.text(STR."  §6§lCOLLECTION LEVELED UP!§r §e\{getName()} §e\{StringUtils.toRoman(level)}").clickEvent(ClickEvent.runCommand(STR."/collectionmenu \{getId()}") ).hoverEvent(Component.text("§eClick to open")));
         player.sendMessage("  ");
         player.sendMessage("  §a§lREWARDS");
         for (String s : rewardsLore(level)) {

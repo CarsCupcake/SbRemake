@@ -1,4 +1,4 @@
-package me.carscupcake.sbremake.item.collections.impl;
+package me.carscupcake.sbremake.item.collections.impl.foraging;
 
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.collections.Collection;

@@ -5,10 +5,12 @@ import lombok.Setter;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
+import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.inventory.InventoryClickEvent;
 import net.minestom.server.event.inventory.InventoryCloseEvent;
+import net.minestom.server.event.inventory.InventoryItemChangeEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.click.ClickType;
@@ -41,9 +43,19 @@ public class Gui {
         if (player.getGui() == null) return;
         Gui gui = player.getGui();
         gui.getPostClickEvent().accept(event);
+    }).addListener(InventoryItemChangeEvent.class, event -> {
+        if (event.getInventory() == null) return;
+        for (Player viewer : event.getInventory().getViewers()) {
+            SkyblockPlayer player = (SkyblockPlayer) viewer;
+            if (player.getGui() == null) return;
+            Gui gui = player.getGui();
+            gui.getItemChangeEvent().accept(event);
+
+        }
     });
     private Function<InventoryPreClickEvent, Boolean> generalClickEvent = _ -> false;
     private Consumer<InventoryClickEvent> postClickEvent = (_) -> {};
+    private Consumer<InventoryItemChangeEvent> itemChangeEvent = (_) -> {};
     private Returnable<Boolean> closeEvent = () -> false;
     private final MapList<Integer, Function<ClickType, Boolean>> clickEvents = new MapList<>();
     private final Inventory inventory;

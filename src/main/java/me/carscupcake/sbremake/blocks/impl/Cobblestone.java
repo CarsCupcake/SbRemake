@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.blocks.impl;
 
 import me.carscupcake.sbremake.blocks.MiningBlock;
+import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.instance.block.Block;
@@ -40,6 +41,6 @@ public class Cobblestone extends MiningBlock {
 
     @Override
     public Set<SbItemStack> getDrops(SkyblockPlayer player) {
-        return Set.of(SbItemStack.base(Material.COBBLESTONE));
+        return Set.of(withMiningFortune(ISbItem.get(Material.COBBLESTONE), 1, player));
     }
 }

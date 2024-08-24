@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "/": {
+      "item": "minecraft:coal",
+      "count": 32
+    },
+    "#": {
+      "item": "minecraft:oak_log",
+      "count": 32
+    }
+  },
+  "pattern": [
+    " / ",
+    "/#/",
+    " / "
+  ],
+  "result": {
+    "item": "skyblock:enchanted_charcoal"
+  },
+  "requirement": {
+    "type": "collection",
+    "id": "COAL",
+    "level": 5
+  }
+}

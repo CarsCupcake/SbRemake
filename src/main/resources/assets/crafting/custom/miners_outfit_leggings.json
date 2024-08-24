@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:enchanted_cobblestone"
+    }
+  },
+  "pattern": [
+    "###",
+    "# #",
+    "# #"
+  ],
+  "result": {
+    "item": "skyblock:miner_outfit_leggings"
+  },
+  "requirement": {
+    "type": "collection",
+    "id": "COBBLESTONE",
+    "level": 7
+  }
+}
