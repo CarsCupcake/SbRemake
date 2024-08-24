@@ -18,6 +18,12 @@ public class InventoryBuilder {
         private final List<ItemStack> itemStacks;
         private final String name;
 
+        private InventoryBuilder(int rows, List<ItemStack> itemStacks, String name) {
+            this.rows = rows;
+            this.itemStacks = itemStacks;
+            this.name = name;
+        }
+
         public InventoryBuilder(@Range(from = 1, to = 6) int rows, String name) {
             this.rows = rows;
             itemStacks = new LinkedList<>();
@@ -115,5 +121,9 @@ public class InventoryBuilder {
             for (int i = start; i < (rows * 9) + start; i += 9)
                 setItem(stack, i);
             return this;
+        }
+
+        public InventoryBuilder copy() {
+            return new InventoryBuilder(rows, new ArrayList<>(itemStacks), name);
         }
 }

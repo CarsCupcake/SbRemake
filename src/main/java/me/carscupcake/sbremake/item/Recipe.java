@@ -9,12 +9,22 @@ import me.carscupcake.sbremake.item.crafting.CraftingIngredient;
 import me.carscupcake.sbremake.item.crafting.ShapedRecipe;
 import me.carscupcake.sbremake.item.crafting.ShapelessRecipe;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.TemplateItems;
+import me.carscupcake.sbremake.util.item.Gui;
+import me.carscupcake.sbremake.util.item.InventoryBuilder;
+import me.carscupcake.sbremake.util.item.ItemBuilder;
+import net.minestom.server.MinecraftServer;
+import net.minestom.server.command.builder.Command;
 import net.minestom.server.inventory.Inventory;
+import net.minestom.server.inventory.click.ClickType;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public interface Recipe {
@@ -86,6 +96,9 @@ public interface Recipe {
         } catch (Exception e) {
             Main.LOGGER.error("An error occurred", e);
         }
+        Command command = new Command("craft");
+        command.setDefaultExecutor((commandSender, _) -> openCraftingGui((SkyblockPlayer) commandSender));
+        MinecraftServer.getCommandManager().register(command);
     }
 
     enum RecipeType implements Function<JsonObject, Recipe> {
@@ -133,8 +146,7 @@ public interface Recipe {
                     throw new RuntimeException(e);
                 }
             }
-        },
-        CraftingShapeless("minecraft:crafting_shapeless") {
+        }, CraftingShapeless("minecraft:crafting_shapeless") {
             @Override
             public Recipe apply(JsonObject jsonObject) {
                 try {
@@ -171,5 +183,104 @@ public interface Recipe {
         RecipeType(String id) {
             this.id = id;
         }
+    }
+
+    //Result: Slot 22
+    ItemStack noRecipeFound = new ItemBuilder(Material.BARRIER).setName("§cReciepe Required").addLore("§7Add the items for a valid recipe in the crafting grid to the left!").build();
+    InventoryBuilder craftingTable = new InventoryBuilder(6, "Crafting Table").fill(TemplateItems.EmptySlot.getItem()).fill(ItemStack.AIR, 10, 12).fill(ItemStack.AIR, 19, 21).fill(ItemStack.AIR, 28, 30).setItem(noRecipeFound, 23);
+    List<Integer> craftingGrid = List.of(10, 11, 12, 19, 20, 21, 28, 29, 30);
+
+    static void openCraftingGui(SkyblockPlayer player) {
+        Gui gui = new Gui(craftingTable.build());
+        AtomicReference<Recipe> cacheRecipe = new AtomicReference<>();
+        AtomicReference<SbItemStack> cacheItem = new AtomicReference<>();
+        gui.setGeneralClickEvent(event -> {
+            if (event.getInventory() != null && !craftingGrid.contains(event.getSlot())) {
+                if (event.getSlot() == 23 && cacheItem.get() != null) {
+                    List<SbItemStack> itemStacks = new ArrayList<>();
+                    for (int i : craftingGrid)
+                        itemStacks.add(SbItemStack.from(gui.getInventory().getItemStack(i)));
+                    if (event.getClickType() == ClickType.START_SHIFT_CLICK) {
+                        SbItemStack item = cacheItem.get();
+                        if (item.sbItem().isUnstackable()) {
+                            if (!player.addItem(item, false)) return true;
+                            cacheRecipe.get().consume(itemStacks);
+                        } else {
+                            Recipe recipe = cacheRecipe.get();
+                            while (recipe.creatable(itemStacks)) {
+                                if (!player.addItem(item, false)) break;
+                                recipe.consume(itemStacks);
+                            }
+                        }
+                    } else {
+                        if (event.getCursorItem() == ItemStack.AIR || (!cacheItem.get().sbItem().isUnstackable() &&
+                                cacheItem.get().sbItem() == SbItemStack.from(event.getCursorItem()).sbItem() && event.getCursorItem().amount() + cacheItem.get().item().amount() <= event.getCursorItem().material().maxStackSize()))
+                            cacheRecipe.get().consume(itemStacks);
+                        else return true;
+                    }
+                    for (int i = 0; i < 9; i++) {
+                        SbItemStack item = itemStacks.get(i);
+                        gui.getInventory().setItemStack(craftingGrid.get(i), (item == null) ? ItemStack.AIR : item.item());
+                    }
+                    if (event.getClickType() != ClickType.START_SHIFT_CLICK) {
+                        if (event.getCursorItem() != ItemStack.AIR)
+                            player.getInventory().setCursorItem(Objects.requireNonNull(cacheItem.get().withAmount(event.getCursorItem().amount() + cacheItem.get().item().amount())).item());
+                        else
+                            player.getInventory().setCursorItem(cacheItem.get().item());
+                    }
+                    if (!cacheRecipe.get().creatable(itemStacks)) {
+                        Recipe recipe = null;
+                        for (Recipe r : craftingRecipes)
+                            if (r.creatable(itemStacks)) {
+                                recipe = r;
+                                break;
+                            }
+                        if (recipe == null) {
+                            cacheItem.set(null);
+                            gui.getInventory().setItemStack(23, noRecipeFound);
+                        } else {
+                            SbItemStack result = recipe.getResult(itemStacks);
+                            cacheItem.set(result);
+                            cacheRecipe.set(recipe);
+                            gui.getInventory().setItemStack(23, result.item());
+                        }
+                    }
+                }
+                return true;
+            }
+            return false;
+        });
+        gui.setPostClickEvent(event -> {
+            if (event.getInventory() != null && craftingGrid.contains(event.getSlot())) {
+                Recipe recipe = null;
+                List<SbItemStack> itemStacks = new ArrayList<>();
+                for (int i : craftingGrid)
+                    itemStacks.add(SbItemStack.from(gui.getInventory().getItemStack(i)));
+                for (Recipe r : craftingRecipes)
+                    if (r.creatable(itemStacks)) {
+                        recipe = r;
+                        break;
+                    }
+                if (recipe == null) {
+                    cacheItem.set(null);
+                    gui.getInventory().setItemStack(23, noRecipeFound);
+                } else {
+                    SbItemStack result = recipe.getResult(itemStacks);
+                    cacheItem.set(result);
+                    cacheRecipe.set(recipe);
+                    gui.getInventory().setItemStack(23, result.item());
+                }
+            }
+        });
+        gui.setCloseEvent(() -> {
+            for (int i : craftingGrid) {
+                SbItemStack item = SbItemStack.from(gui.getInventory().getItemStack(i));
+                if (item != null) {
+                    if (!player.addItem(item, false)) item.drop(player.getInstance(), player.getPosition());
+                }
+            }
+            return false;
+        });
+        gui.showGui(player);
     }
 }

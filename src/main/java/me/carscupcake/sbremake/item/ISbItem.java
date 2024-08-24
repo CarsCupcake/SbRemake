@@ -76,6 +76,10 @@ public interface ISbItem {
         return new ArrayList<>();
     }
 
+    default boolean isUnstackable() {
+        return getMaterial().maxStackSize() == 1;
+    }
+
     default SbItemStack create() {
         ItemStack.Builder builder = ItemStack.builder(getMaterial()).set(ItemComponent.ATTRIBUTE_MODIFIERS, new AttributeList(List.of(), false));
         if (getMaterial() == Material.PLAYER_HEAD && this instanceof HeadWithValue value) {

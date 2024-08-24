@@ -15,6 +15,7 @@ import net.minestom.server.inventory.click.ClickType;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Getter
@@ -35,8 +36,14 @@ public class Gui {
         Gui gui = player.getGui();
         if (gui.closeEvent.get()) event.setNewInventory(gui.inventory);
         else player.setGui(null);
+    }).addListener(InventoryClickEvent.class, event -> {
+        SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+        if (player.getGui() == null) return;
+        Gui gui = player.getGui();
+        gui.getPostClickEvent().accept(event);
     });
     private Function<InventoryPreClickEvent, Boolean> generalClickEvent = _ -> false;
+    private Consumer<InventoryClickEvent> postClickEvent = (_) -> {};
     private Returnable<Boolean> closeEvent = () -> false;
     private final MapList<Integer, Function<ClickType, Boolean>> clickEvents = new MapList<>();
     private final Inventory inventory;
