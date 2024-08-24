@@ -66,7 +66,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
     public static SbItemStack from(ItemStack stack) {
         if (stack == null || stack.material() == Material.AIR) return null;
         CompoundBinaryTag compound = (CompoundBinaryTag) stack.getTag(Tag.NBT("ExtraAttributes"));
-        if (!compound.keySet().contains("id")) return base(stack.material());
+        if (compound == null || !compound.keySet().contains("id")) return base(stack.material()).withAmount(stack.amount());
         ISbItem iSbItem = items.get(compound.getString("id"));
         if (iSbItem == null) return base(stack.material());
         return new SbItemStack(stack, iSbItem);
@@ -94,6 +94,10 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
             if (enchantments.containsKey(NormalEnchantment.Efficiency) && player != null && !player.getWorldProvider().useCustomMining()) {
                 list = list.with(Enchantment.EFFICIENCY, min(255, enchantments.get(NormalEnchantment.Efficiency)));
             }
+        } else {
+            if (sbItem.modifierBuilder().isGlint())
+                list = list.with(Enchantment.PROTECTION, 1);
+
         }
         return new SbItemStack(item.with(ItemComponent.LORE, lore).with(ItemComponent.ENCHANTMENTS, list.withTooltip(false)).with(ItemComponent.CUSTOM_NAME, Component.text(getRarity().getPrefix() + displayName())), sbItem);
     }
@@ -259,6 +263,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
 
     public SbItemStack withAmount(int i) {
         if (i <= 0) return null;
+        if (i == item.amount()) return this;
         return new SbItemStack(item.withAmount(i), sbItem);
     }
 

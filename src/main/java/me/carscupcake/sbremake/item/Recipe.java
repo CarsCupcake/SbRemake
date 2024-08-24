@@ -4,10 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.RequiredArgsConstructor;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.item.crafting.CraftingIngredient;
 import me.carscupcake.sbremake.item.crafting.ShapedRecipe;
 import me.carscupcake.sbremake.item.crafting.ShapelessRecipe;
+import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
+import me.carscupcake.sbremake.item.requirements.SkillRequirement;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.TemplateItems;
 import me.carscupcake.sbremake.util.item.Gui;
@@ -22,6 +25,7 @@ import net.minestom.server.item.Material;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -46,29 +50,46 @@ public interface Recipe {
 
     HashMap<String, CraftingIngredient> tags = new HashMap<>();
     LinkedList<Recipe> craftingRecipes = new LinkedList<>();
+    Map<String, JsonArray> later = new HashMap<>();
+
+    static void loadTags(File[] files) throws FileNotFoundException {
+        for (File f : files) {
+            JsonArray array = JsonParser.parseReader(new FileReader(f)).getAsJsonObject().getAsJsonArray("values");
+            ISbItem[] items = new ISbItem[array.size()];
+            int i = 0;
+            boolean doLater = false;
+            for (JsonElement e : array) {
+                String member = e.getAsString();
+                if (member.startsWith("#")) {
+                    doLater = true;
+                    later.put(f.getName().split("\\.")[0], array);
+                    break;
+                }
+                items[i] = Objects.requireNonNull(SbItemStack.from(member.split(":", 2)[1].toUpperCase())).sbItem();
+                i++;
+            }
+            if (doLater) continue;
+            tags.put(f.getName().split("\\.")[0], new CraftingIngredient(1, items));
+        }
+    }
+
+    static void loadEnchantments(File[] files) throws FileNotFoundException {
+        for (File f : files) {
+            JsonObject o = JsonParser.parseReader(new FileReader(f)).getAsJsonObject();
+            String type = o.get("type").getAsString();
+            for (RecipeType recipeType : RecipeType.values()) {
+                if (recipeType.id.equals(type)) {
+                    craftingRecipes.add(recipeType.apply(o));
+                    break;
+                }
+            }
+        }
+    }
 
     static void init() {
         try {
             File folder = new File(Objects.requireNonNull(Main.class.getClassLoader().getResource("assets/tags/items")).getFile());
-            Map<String, JsonArray> later = new HashMap<>();
-            for (File f : Objects.requireNonNull(folder.listFiles())) {
-                JsonArray array = JsonParser.parseReader(new FileReader(f)).getAsJsonObject().getAsJsonArray("values");
-                ISbItem[] items = new ISbItem[array.size()];
-                int i = 0;
-                boolean doLater = false;
-                for (JsonElement e : array) {
-                    String member = e.getAsString();
-                    if (member.startsWith("#")) {
-                        doLater = true;
-                        later.put(f.getName().split("\\.")[0], array);
-                        break;
-                    }
-                    items[i] = Objects.requireNonNull(SbItemStack.from(member.split(":", 2)[1].toUpperCase())).sbItem();
-                    i++;
-                }
-                if (doLater) continue;
-                tags.put(f.getName().split("\\.")[0], new CraftingIngredient(1, items));
-            }
+            loadTags(Objects.requireNonNull(folder.listFiles()));
             for (Map.Entry<String, JsonArray> entry : later.entrySet()) {
                 JsonArray array = entry.getValue();
                 List<ISbItem> items = new ArrayList<>();
@@ -82,17 +103,10 @@ public interface Recipe {
                 }
                 tags.put(entry.getKey(), new CraftingIngredient(1, items.toArray(new ISbItem[0])));
             }
-            folder = new File(Objects.requireNonNull(Main.class.getClassLoader().getResource("assets/crafting")).getFile());
-            for (File f : Objects.requireNonNull(folder.listFiles())) {
-                JsonObject o = JsonParser.parseReader(new FileReader(f)).getAsJsonObject();
-                String type = o.get("type").getAsString();
-                for (RecipeType recipeType : RecipeType.values()) {
-                    if (recipeType.id.equals(type)) {
-                        craftingRecipes.add(recipeType.apply(o));
-                        break;
-                    }
-                }
-            }
+            folder = new File(Objects.requireNonNull(Main.class.getClassLoader().getResource("assets/crafting/native")).getFile());
+            loadEnchantments(Objects.requireNonNull(folder.listFiles()));
+            folder = new File(Objects.requireNonNull(Main.class.getClassLoader().getResource("assets/crafting/custom")).getFile());
+            loadEnchantments(Objects.requireNonNull(folder.listFiles()));
         } catch (Exception e) {
             Main.LOGGER.error("An error occurred", e);
         }
@@ -128,19 +142,24 @@ public interface Recipe {
                         } else {
                             JsonObject o = element.getValue().getAsJsonObject();
                             if (o.has("tag")) {
-                                ingredientHashMap.put(c, tags.get(o.get("tag").getAsString().split(":", 2)[1]));
+                                if (!o.has("count"))
+                                    ingredientHashMap.put(c, tags.get(o.get("tag").getAsString().split(":", 2)[1]));
+                                else {
+                                    ingredientHashMap.put(c, new CraftingIngredient(o.get("count").getAsInt(), tags.get(o.get("tag").getAsString().split(":", 2)[1]).items()));
+                                }
                             } else {
 
-                                ingredientHashMap.put(c, new CraftingIngredient(1, Objects.requireNonNull(SbItemStack.from(o.get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem()));
+                                ingredientHashMap.put(c, new CraftingIngredient(o.has("count") ? o.get("count").getAsInt() : 1, Objects.requireNonNull(SbItemStack.from(o.get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem()));
                             }
 
 
                         }
                     }
+                    Requirement[] requirements = readRequirements(jsonObject);
                     JsonObject resultObject = jsonObject.get("result").getAsJsonObject();
                     ISbItem result = Objects.requireNonNull(SbItemStack.from(resultObject.get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem();
                     int count = resultObject.has("count") ? resultObject.get("count").getAsInt() : 1;
-                    return new ShapedRecipe(result, count, ingredientHashMap, lines);
+                    return new ShapedRecipe(result, count, resultObject.has("priority") ? resultObject.get("priority").getAsInt() : -1, requirements, ingredientHashMap, lines);
                 } catch (Exception e) {
                     System.out.println(jsonObject.toString());
                     throw new RuntimeException(e);
@@ -164,14 +183,15 @@ public interface Recipe {
                             ingredients[i] = new CraftingIngredient(1, items);
                         } else {
                             JsonObject o = e.getAsJsonObject();
-                            ingredients[i] = (o.has("tag")) ? tags.get(o.get("tag").getAsString().split(":", 2)[1]) : new CraftingIngredient(1, Objects.requireNonNull(SbItemStack.from(o.get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem());
+                            ingredients[i] = (o.has("tag")) ? tags.get(o.get("tag").getAsString().split(":", 2)[1]) : new CraftingIngredient((o.has("count") ? o.get("count").getAsInt() : 1), Objects.requireNonNull(SbItemStack.from(o.get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem());
                         }
                         i++;
                     }
+                    Requirement[] requirements = readRequirements(jsonObject);
                     JsonObject resultObject = jsonObject.get("result").getAsJsonObject();
                     ISbItem result = Objects.requireNonNull(SbItemStack.from(resultObject.get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem();
                     int count = resultObject.has("count") ? resultObject.get("count").getAsInt() : 1;
-                    return new ShapelessRecipe(result, count, ingredients);
+                    return new ShapelessRecipe(result, count, requirements, ingredients);
                 } catch (Exception e) {
                     System.out.println(jsonObject.toString());
                     throw new RuntimeException(e);
@@ -183,10 +203,49 @@ public interface Recipe {
         RecipeType(String id) {
             this.id = id;
         }
+
+        private static Requirement[] readRequirements(JsonObject jsonObject) {
+            Requirement[] requirements = new Requirement[0];
+            if (jsonObject.has("requirements")) {
+                JsonArray requirementsArray = jsonObject.getAsJsonArray("requirements");
+                requirements = new Requirement[requirementsArray.size()];
+                int index = 0;
+                for (JsonElement req : requirementsArray) {
+                    String type = req.getAsJsonObject().get("type").getAsString();
+                    CraftingRequirement requirement = null;
+                    for (CraftingRequirement r : CraftingRequirement.values()) {
+                        if (r.id.equals(type)) {
+                            requirement = r;
+                            break;
+                        }
+                    }
+                    assert requirement != null;
+                    requirements[index] = requirement.apply(req.getAsJsonObject());
+                    index++;
+                }
+            }
+            return requirements;
+        }
+    }
+
+    @RequiredArgsConstructor
+    enum CraftingRequirement implements Function<JsonObject, Requirement> {
+        Collection("collection") {
+            @Override
+            public Requirement apply(JsonObject jsonObject) {
+                return new CollectionRequirement(jsonObject.get("id").getAsString(), jsonObject.get("level").getAsInt());
+            }
+        }, Skill("skill") {
+            @Override
+            public Requirement apply(JsonObject jsonObject) {
+                return new SkillRequirement(me.carscupcake.sbremake.player.skill.Skill.valueOf(jsonObject.get("name").getAsString()), jsonObject.get("level").getAsInt());
+            }
+        };
+        private final String id;
     }
 
     //Result: Slot 22
-    ItemStack noRecipeFound = new ItemBuilder(Material.BARRIER).setName("§cReciepe Required").addLore("§7Add the items for a valid recipe in the crafting grid to the left!").build();
+    ItemStack noRecipeFound = new ItemBuilder(Material.BARRIER).setName("§cRecipe Required").addLore("§7Add the items for a valid recipe in the crafting grid to the left!").build();
     InventoryBuilder craftingTable = new InventoryBuilder(6, "Crafting Table").fill(TemplateItems.EmptySlot.getItem()).fill(ItemStack.AIR, 10, 12).fill(ItemStack.AIR, 19, 21).fill(ItemStack.AIR, 28, 30).setItem(noRecipeFound, 23);
     List<Integer> craftingGrid = List.of(10, 11, 12, 19, 20, 21, 28, 29, 30);
 
@@ -213,8 +272,7 @@ public interface Recipe {
                             }
                         }
                     } else {
-                        if (event.getCursorItem() == ItemStack.AIR || (!cacheItem.get().sbItem().isUnstackable() &&
-                                cacheItem.get().sbItem() == SbItemStack.from(event.getCursorItem()).sbItem() && event.getCursorItem().amount() + cacheItem.get().item().amount() <= event.getCursorItem().material().maxStackSize()))
+                        if (event.getCursorItem() == ItemStack.AIR || (!cacheItem.get().sbItem().isUnstackable() && cacheItem.get().sbItem() == SbItemStack.from(event.getCursorItem()).sbItem() && event.getCursorItem().amount() + cacheItem.get().item().amount() <= event.getCursorItem().material().maxStackSize()))
                             cacheRecipe.get().consume(itemStacks);
                         else return true;
                     }
@@ -225,16 +283,18 @@ public interface Recipe {
                     if (event.getClickType() != ClickType.START_SHIFT_CLICK) {
                         if (event.getCursorItem() != ItemStack.AIR)
                             player.getInventory().setCursorItem(Objects.requireNonNull(cacheItem.get().withAmount(event.getCursorItem().amount() + cacheItem.get().item().amount())).item());
-                        else
-                            player.getInventory().setCursorItem(cacheItem.get().item());
+                        else player.getInventory().setCursorItem(cacheItem.get().item());
                     }
                     if (!cacheRecipe.get().creatable(itemStacks)) {
                         Recipe recipe = null;
-                        for (Recipe r : craftingRecipes)
+                        for (Recipe r : craftingRecipes) {
                             if (r.creatable(itemStacks)) {
-                                recipe = r;
+                                if (r.canCraft(player)) {
+                                    recipe = r;
+                                }
                                 break;
                             }
+                        }
                         if (recipe == null) {
                             cacheItem.set(null);
                             gui.getInventory().setItemStack(23, noRecipeFound);
@@ -258,7 +318,9 @@ public interface Recipe {
                     itemStacks.add(SbItemStack.from(gui.getInventory().getItemStack(i)));
                 for (Recipe r : craftingRecipes)
                     if (r.creatable(itemStacks)) {
-                        recipe = r;
+                        if (r.canCraft(player)) {
+                            recipe = r;
+                        }
                         break;
                     }
                 if (recipe == null) {

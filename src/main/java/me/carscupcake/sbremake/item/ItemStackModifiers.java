@@ -42,8 +42,7 @@ public class ItemStackModifiers {
         CompoundBinaryTag tag = (CompoundBinaryTag) item.getTag(Tag.NBT("ExtraAttributes"));
         CompoundBinaryTag enchantments = tag.getCompound("enchantments");
         for (Map.Entry<SkyblockEnchantment, Integer> entry : this.enchantments.entrySet())
-            enchantments.putInt(entry.getKey().getId(), (entry.getValue()));
-        tag.put("enchantments", enchantments);
-        return item.withTag(Tag.NBT("ExtraAttributes"), tag);
+            enchantments= enchantments.putInt(entry.getKey().getId(), (entry.getValue()));
+        return item.withTag(Tag.NBT("ExtraAttributes"), tag.put("enchantments", enchantments));
     }
 }

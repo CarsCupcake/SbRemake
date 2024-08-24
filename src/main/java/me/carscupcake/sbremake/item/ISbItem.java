@@ -2,6 +2,9 @@ package me.carscupcake.sbremake.item;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ability.Ability;
+import me.carscupcake.sbremake.item.crafting.CraftingIngredient;
+import me.carscupcake.sbremake.item.crafting.ShapedRecipe;
+import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
@@ -18,9 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface ISbItem {
     String getId();
@@ -107,7 +108,7 @@ public interface ISbItem {
             String name = StringUtils.connect(material.namespace().value().split("_"), true);
             SbItemStack.initSbItem(new BaseSbItem(material, name));
         }
-
+        HashMap<ISbItem, EnchantedRecipe> recipes = new HashMap<>();
         Reflections reflections = new Reflections("me.carscupcake.sbremake.item.impl");
         for (Class<? extends ISbItem> clazz : reflections.getSubTypesOf(ISbItem.class)) {
             try {
@@ -118,9 +119,16 @@ public interface ISbItem {
                 if (instance instanceof Listener listener) {
                     MinecraftServer.getGlobalEventHandler().addChild(listener.node());
                 }
+                if (instance instanceof EnchantedRecipe r) recipes.put(instance, r);
             } catch (Exception e) {
                 e.printStackTrace(System.err);
             }
+        }
+        for (Map.Entry<ISbItem, EnchantedRecipe> recipe : recipes.entrySet()) {
+            Map<Character, CraftingIngredient> items = Map.of('#', new CraftingIngredient(32, ISbItem.get(recipe.getValue().base())));
+            Requirement[] requirements = new Requirement[]{new CollectionRequirement(recipe.getValue().collection(), recipe.getValue().level())};
+            Recipe.craftingRecipes.add(new ShapedRecipe(recipe.getKey(), 1, -1, requirements, items, "###", "## "));
+            Recipe.craftingRecipes.add(new ShapedRecipe(recipe.getKey(), 1, -1, requirements, items, " # ", "###", " # "));
         }
     }
 

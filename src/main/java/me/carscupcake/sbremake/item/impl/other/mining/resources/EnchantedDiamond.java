@@ -3,20 +3,20 @@ package me.carscupcake.sbremake.item.impl.other.mining.resources;
 import me.carscupcake.sbremake.item.*;
 import net.minestom.server.item.Material;
 
-public class EnchantedMithril implements ISbItem, EnchantedRecipe {
+public class EnchantedDiamond implements ISbItem, EnchantedRecipe {
     @Override
     public String getId() {
-        return "ENCHANTED_MITHRIL";
+        return "ENCHANTED_DIAMOND";
     }
 
     @Override
     public String getName() {
-        return "Enchanted Mithril";
+        return "Enchanted Diamond";
     }
 
     @Override
     public Material getMaterial() {
-        return Material.PRISMARINE_CRYSTALS;
+        return Material.DIAMOND;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class EnchantedMithril implements ISbItem, EnchantedRecipe {
 
     @Override
     public ItemRarity getRarity() {
-        return ItemRarity.RARE;
+        return ItemRarity.UNCOMMON;
     }
 
     @Override
@@ -36,16 +36,16 @@ public class EnchantedMithril implements ISbItem, EnchantedRecipe {
 
     @Override
     public Class<? extends ISbItem> base() {
-        return Mithril.class;
+        return ISbItem.get(Material.DIAMOND).getClass();
     }
 
     @Override
     public String collection() {
-        return "MITHRIL";
+        return "DIAMOND";
     }
 
     @Override
     public int level() {
-        return 3;
+        return 4;
     }
 }
