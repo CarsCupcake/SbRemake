@@ -239,7 +239,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
 
     public double getStat(Stat stat, SkyblockPlayer player) {
         Reforge reforge = getModifier(Modifier.REFORGE);
-        GetItemStatEvent event = new GetItemStatEvent(this, stat, sbItem.getStat(stat) + (reforge != null ? reforge.getStat(stat, getRarity(), player) : 0));
+        GetItemStatEvent event = new GetItemStatEvent(this, stat, sbItem.getStat(stat) + (reforge != null ? reforge.getStat(stat, getRarity(), player) : 0), player);
         MinecraftServer.getGlobalEventHandler().call(event);
         return event.getValue() * event.getMultiplier();
     }

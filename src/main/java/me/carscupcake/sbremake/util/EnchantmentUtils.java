@@ -10,17 +10,17 @@ public class EnchantmentUtils {
     public static final EventNode<Event> LISTENER = EventNode.all("enchantments.listener")
             .addListener(GetItemStatEvent.class, event -> {
                 if (event.getStat() == Stat.MiningSpeed) {
-                    int level = event.getStack().getEnchantmentLevel(NormalEnchantment.Efficiency);
+                    int level = event.getItemStack().getEnchantmentLevel(NormalEnchantment.Efficiency);
                     if (level > 0)
                         event.setValue(event.getValue() + 10 + 20 * level);
                 }
                 if (event.getStat() == Stat.MiningFortune) {
-                    int level = event.getStack().getEnchantmentLevel(NormalEnchantment.Fortune);
+                    int level = event.getItemStack().getEnchantmentLevel(NormalEnchantment.Fortune);
                     if (level > 0)
                         event.setValue(event.getValue() + getFortuneBonus(level));
                 }
                 if (event.getStat() == Stat.Pristine) {
-                    int level = event.getStack().getEnchantmentLevel(NormalEnchantment.Pristine);
+                    int level = event.getItemStack().getEnchantmentLevel(NormalEnchantment.Pristine);
                     if (level > 0)
                         event.setValue(event.getValue() + level);
                 }

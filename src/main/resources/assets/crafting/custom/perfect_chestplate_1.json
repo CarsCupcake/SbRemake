@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:enchanted_diamond_block"
+    }
+  },
+  "pattern": [
+    "# #",
+    "###",
+    "###"
+  ],
+  "result": {
+    "item": "skyblock:perfect_chestplate_1"
+  },
+  "requirement": {
+    "type": "collection",
+    "id": "DIAMOND",
+    "level": 9
+  }
+}

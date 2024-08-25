@@ -1,14 +1,19 @@
 package me.carscupcake.sbremake.item.modifiers.reforges;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
+import me.carscupcake.sbremake.event.PlayerToEntityMageDamage;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.skill.Skill;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
+import net.minestom.server.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -55,11 +60,22 @@ public interface Reforge {
         if (SwordReforge.Fabled.hasThisReforge(item)) {
             if (new Random().nextDouble() <= 0.075) event.addAdditiveMultiplier(0.15);
         }
+    }).addListener(PlayerToEntityMageDamage.class, event -> {
+        for (EquipmentSlot equipmentSlot : EquipmentSlot.armors()) {
+            ItemStack item = event.getPlayer().getEquipment(equipmentSlot);
+            SbItemStack itemStack = SbItemStack.from(item);
+            if (itemStack != null && itemStack.getModifier(Modifier.REFORGE) == ArmorReforge.Loving)
+                event.addAdditiveMultiplier(0.05);
+        }
     });
 
     static void init() {
         for (Reforge reforge : SwordReforge.values())
             reforges.put(reforge.getId(), reforge);
+        for (Reforge reforge : ArmorReforge.values())
+            reforges.put(reforge.getId(), reforge);
         MinecraftServer.getGlobalEventHandler().addChild(LISTENER);
     }
+    ReforgeStat LINEAR_ONE = new ReforgeStat(1, 2, 3, 4, 5, 6);
+    ReforgeStat LINEAR_TWO = new ReforgeStat(2, 4, 6, 8, 10, 12);
 }

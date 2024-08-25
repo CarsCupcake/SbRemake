@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.crafting.CraftingIngredient;
 import me.carscupcake.sbremake.item.crafting.ShapedRecipe;
+import me.carscupcake.sbremake.item.impl.armor.PerfectArmor;
 import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -113,6 +114,7 @@ public interface ISbItem {
         for (Class<? extends ISbItem> clazz : reflections.getSubTypesOf(ISbItem.class)) {
             try {
                 if (clazz.isInterface()) continue;
+                if (clazz.isRecord()) continue;
                 Constructor<? extends ISbItem> constructor = clazz.getConstructor();
                 ISbItem instance = constructor.newInstance();
                 SbItemStack.initSbItem(instance);
@@ -124,6 +126,7 @@ public interface ISbItem {
                 e.printStackTrace(System.err);
             }
         }
+        PerfectArmor.init();
         for (Map.Entry<ISbItem, EnchantedRecipe> recipe : recipes.entrySet()) {
             Map<Character, CraftingIngredient> items = Map.of('#', new CraftingIngredient(32, recipe.getValue().base()));
             Requirement[] requirements = new Requirement[]{new CollectionRequirement(recipe.getValue().collection(), recipe.getValue().level())};

@@ -9,6 +9,7 @@ import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.item.crafting.CraftingIngredient;
 import me.carscupcake.sbremake.item.crafting.ShapedRecipe;
 import me.carscupcake.sbremake.item.crafting.ShapelessRecipe;
+import me.carscupcake.sbremake.item.impl.other.mining.resources.EnchantedDiamondBlock;
 import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
 import me.carscupcake.sbremake.item.requirements.SkillRequirement;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -113,6 +114,18 @@ public interface Recipe {
         Command command = new Command("craft");
         command.setDefaultExecutor((commandSender, _) -> openCraftingGui((SkyblockPlayer) commandSender));
         MinecraftServer.getCommandManager().register(command);
+        CraftingIngredient ENCHANTED_DIAMOND_BLOCK = new CraftingIngredient(1, ISbItem.get(EnchantedDiamondBlock.class));
+        for (int i = 2; i < 13; i++) {
+            String[] recipeShape = {" # ", "#!#", " # "};
+            String id = STR."perfect_boots_\{i}";
+            craftingRecipes.put(id, new ShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw(STR."PERFECT_BOOTS_\{i - 1}"))), recipeShape));
+            id = STR."perfect_leggings_\{i}";
+            craftingRecipes.put(id, new ShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw(STR."PERFECT_LEGGINGS_\{i - 1}"))), recipeShape));
+            id = STR."perfect_chestplate_\{i}";
+            craftingRecipes.put(id, new ShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw(STR."PERFECT_CHESTPLATE_\{i - 1}"))), recipeShape));
+            id = STR."perfect_helmet_\{i}";
+            craftingRecipes.put(id, new ShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw(STR."PERFECT_HELMET_\{i - 1}"))), recipeShape));
+        }
     }
 
     enum RecipeType implements Function<JsonObject, Recipe> {
@@ -289,26 +302,6 @@ public interface Recipe {
                         SbItemStack item = itemStacks.get(i);
                         gui.getInventory().setItemStack(craftingGrid.get(i), (item == null) ? ItemStack.AIR : item.item());
                     }
-                    /*if (!cacheRecipe.get().creatable(itemStacks)) {
-                        Recipe recipe = null;
-                        for (Recipe r : craftingRecipes.values()) {
-                            if (r.creatable(itemStacks)) {
-                                if (r.canCraft(player)) {
-                                    recipe = r;
-                                }
-                                break;
-                            }
-                        }
-                        if (recipe == null) {
-                            cacheItem.set(null);
-                            gui.getInventory().setItemStack(23, noRecipeFound);
-                        } else {
-                            SbItemStack result = recipe.getResult(itemStacks);
-                            cacheItem.set(result);
-                            cacheRecipe.set(recipe);
-                            gui.getInventory().setItemStack(23, result.item());
-                        }
-                    }*/
                 }
                 return true;
             }

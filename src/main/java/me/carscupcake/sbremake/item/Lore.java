@@ -54,12 +54,19 @@ public record Lore(List<String> base, Map<String, IPlaceHolder> placeHolderHashM
     private static final Set<Character> chars = Set.of('o', 'r', 'k', 'm', 'l', 'n');
 
     public static List<String> refactorLore(String string) {
-        String[] split = string.split(" ");
         List<String> lore = new ArrayList<>();
         StringBuilder worker = new StringBuilder();
         String lastColorCode = "";
         String lastFormat = "";
-        /*for (char c : string.toCharArray()) {
+        boolean color = false;
+        int i = 0;
+        for (char c : string.toCharArray()) {
+            if (c == '\n' || (i++ > 30 && c == ' ')) {
+                lore.add(worker.toString());
+                worker = new StringBuilder(lastColorCode).append(lastFormat);
+                i = 0;
+                continue;
+            }
             if (color) {
                 color = false;
                 if (chars.contains(c)) {
@@ -70,41 +77,12 @@ public record Lore(List<String> base, Map<String, IPlaceHolder> placeHolderHashM
                     lastFormat = "";
                 }
             } else if (c == '§') {
+                i -= 2;
                 color = true;
             }
-
-            if (worker.chars().count() > 35 && c == ' ') {
-                lore.add(worker.toString());
-                worker = new StringBuilder(lastColorCode).append(lastFormat);
-            } else worker.append(c);
-        }*/
-        int i = 0;
-        for (String s : split) {
-            if (i >= 35) {
-                i = 0;
-                lore.add(worker.toString());
-                worker = new StringBuilder(lastColorCode).append(lastFormat);
-            }
-            i += s.length() + 1;
-            worker.append(s).append(" ");
-            boolean color = false;
-            for (char c : s.toCharArray()) {
-                if (color) {
-                    color = false;
-                    if (chars.contains(c)) {
-                        if (c == 'r') lastFormat = "";
-                        else lastFormat += STR."§\{c}";
-                    } else {
-                        lastColorCode = STR."§\{c}";
-                        lastFormat = "";
-                    }
-                } else if (c == '§') {
-                    i -= 2;
-                    color = true;
-                }
-            }
+            worker.append(c);
         }
-        if (worker.chars().count() != 0) lore.add(worker.toString());
+        if (!worker.isEmpty()) lore.add(worker.toString());
         return lore;
     }
 }

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:enchanted_diamond"
+    }
+  },
+  "pattern": [
+    "###",
+    "# #",
+    "# #"
+  ],
+  "result": {
+    "item": "skyblock:hardened_diamond_leggings"
+  },
+  "requirement": {
+    "type": "collection",
+    "id": "DIAMOND",
+    "level": 7
+  }
+}

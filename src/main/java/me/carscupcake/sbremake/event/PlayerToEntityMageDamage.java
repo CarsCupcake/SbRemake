@@ -54,6 +54,10 @@ public class PlayerToEntityMageDamage implements PlayerEvent, CancellableEvent {
         multiplicativeMultiplier *= d;
     }
 
+    public void addAdditiveMultiplier(double d) {
+        additiveMultiplier += d;
+    }
+
     public double calculateHit() {
         return baseAbilityDamage * (1 + (intelligence / 100) * abilityScaling) * additiveMultiplier * multiplicativeMultiplier + bonusModifier;
     }

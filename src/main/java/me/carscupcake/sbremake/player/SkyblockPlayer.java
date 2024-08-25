@@ -619,6 +619,7 @@ public class SkyblockPlayer extends Player {
 
     public void spawn(Pos spawn) {
         super.spawn();
+        recalculateArmor();
         setHealth(getMaxHealth());
         setSbHealth(getMaxSbHealth());
         instance.loadChunk(spawn.chunkX(), spawn.chunkZ());
@@ -773,8 +774,15 @@ public class SkyblockPlayer extends Player {
     }
 
     public double getStat(Stat stat, boolean isBow) {
+        double value = getStatModifiers(stat, isBow).calculate();
+        if (stat.getMaxValue() > 0 && stat.getMaxValue() < value) value = stat.getMaxValue();
+        if (value < 0) value = 0;
+        return value;
+    }
+
+    public PlayerStatEvent getStatModifiers(Stat stat, boolean isBow) {
         PlayerStatEvent event = new PlayerStatEvent(this, new ArrayList<>(), stat);
-        event.modifiers().add(new PlayerStatEvent.BasicModifier("§aBase Value", stat.getBaseValue(), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Innate));
+        event.modifiers().add(new PlayerStatEvent.BasicModifier("Base Value", stat.getBaseValue(), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Innate));
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
             SbItemStack item = SbItemStack.from(getEquipment(slot));
             if (item == null) continue;
@@ -787,7 +795,7 @@ public class SkyblockPlayer extends Player {
                     break;
                 }
             if (canUse)
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{item.displayName()}", value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
         }
         for (Pair<PlayerStatEvent.PlayerStatModifier, ?> pair : temporaryModifiers.get(stat))
             event.modifiers().add(pair.getFirst());
@@ -800,13 +808,10 @@ public class SkyblockPlayer extends Player {
                     break;
                 }
             if (canUse)
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{stat.getPrefix()}\{stat.getSymbol()} \{item.displayName()}", item.getStat(stat, this), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{item.displayName()}", item.getStat(stat, this), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
         }
         MinecraftServer.getGlobalEventHandler().call(event);
-        double value = event.calculate();
-        if (stat.getMaxValue() > 0 && stat.getMaxValue() < value) value = stat.getMaxValue();
-        if (value < 0) value = 0;
-        return value;
+        return event;
     }
 
     public int getFullSetBonusPieceAmount(FullSetBonus bonus) {
