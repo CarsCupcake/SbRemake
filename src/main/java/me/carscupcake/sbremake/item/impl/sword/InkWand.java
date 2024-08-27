@@ -89,4 +89,9 @@ public class InkWand implements ISbItem {
             default -> 0;
         };
     }
+
+    @Override
+    public boolean isUnstackable() {
+        return true;
+    }
 }

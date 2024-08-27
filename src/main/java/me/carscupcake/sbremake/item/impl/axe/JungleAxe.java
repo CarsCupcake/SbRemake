@@ -3,8 +3,14 @@ package me.carscupcake.sbremake.item.impl.axe;
 import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.event.LogBreakEvent;
 import me.carscupcake.sbremake.item.*;
+import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
+import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlotType;
+import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlots;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
+import me.carscupcake.sbremake.util.CoinsCost;
+import me.carscupcake.sbremake.util.Cost;
+import me.carscupcake.sbremake.util.ItemCost;
 import me.carscupcake.sbremake.worlds.impl.Hub;
 import me.carscupcake.sbremake.worlds.impl.Park;
 import net.minestom.server.coordinate.BlockVec;
@@ -18,7 +24,7 @@ import net.minestom.server.item.Material;
 
 import java.util.*;
 
-public class JungleAxe implements ISbItem, Listener {
+public class JungleAxe implements ISbItem, Listener, GemstoneSlots {
 
     @Override
     public String getId() {
@@ -119,5 +125,20 @@ public class JungleAxe implements ISbItem, Listener {
             }
 
         });
+    }
+
+    @Override
+    public GemstoneSlotType[] getGemstoneSlots() {
+        return new GemstoneSlotType[]{GemstoneSlotType.Citrine};
+    }
+
+    @Override
+    public boolean[] getUnlocked() {
+        return new boolean[]{false};
+    }
+
+    @Override
+    public Cost[][] getLockedSlotCost() {
+        return new Cost[][]{{new CoinsCost(50_000), new ItemCost(Gemstone.gemstones.get(Gemstone.Type.Citrine).get(Gemstone.Quality.Fine).asItem(), 20)}};
     }
 }

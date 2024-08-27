@@ -5,6 +5,8 @@ import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.crafting.CraftingIngredient;
 import me.carscupcake.sbremake.item.crafting.ShapedRecipe;
 import me.carscupcake.sbremake.item.impl.armor.PerfectArmor;
+import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
+import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneItem;
 import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -91,7 +93,9 @@ public interface ISbItem {
             builder.set(ItemComponent.DYED_COLOR, new DyedItemColor(leather.color().asRGB(), false));
         }
         ItemStackModifiers modifiers = modifierBuilder();
-        ItemStack item = build(modifiers.apply(builder.set(ItemComponent.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE).set(Tag.NBT("ExtraAttributes"), CompoundBinaryTag.builder().putString("id", getId()).build()))).build();
+        CompoundBinaryTag.Builder b =  CompoundBinaryTag.builder().putString("id", getId());
+        if (isUnstackable()) b = b.putString("uuid", UUID.randomUUID().toString());
+        ItemStack item = build(modifiers.apply(builder.set(ItemComponent.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE).set(Tag.NBT("ExtraAttributes"), b.build()))).build();
         SbItemStack itemStack = SbItemStack.from(modifiers.apply(item));
         return itemStack.update();
     }
@@ -110,6 +114,7 @@ public interface ISbItem {
             SbItemStack.initSbItem(new BaseSbItem(material, name));
         }
         HashMap<ISbItem, EnchantedRecipe> recipes = new HashMap<>();
+        GemstoneItem.init();
         Reflections reflections = new Reflections("me.carscupcake.sbremake.item.impl");
         for (Class<? extends ISbItem> clazz : reflections.getSubTypesOf(ISbItem.class)) {
             try {

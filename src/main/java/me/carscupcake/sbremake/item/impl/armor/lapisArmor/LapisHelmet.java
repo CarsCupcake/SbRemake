@@ -54,4 +54,9 @@ public class LapisHelmet implements ISbItem, Listener {
             event.modifiers().add(new PlayerStatEvent.BasicModifier("Health", 60d, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Ability));
         });
     }
+
+    @Override
+    public boolean isUnstackable() {
+        return true;
+    }
 }

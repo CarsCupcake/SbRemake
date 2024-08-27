@@ -8,6 +8,8 @@ import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
+import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlot;
+import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlots;
 import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
@@ -130,6 +132,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
     private static final Stat[] greenStats = {Stat.SwingRange, Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck, Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed, Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune, Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed, Stat.Vitality, Stat.Mending};
 
     public List<String> buildLore(@Nullable SkyblockPlayer player) {
+        GemstoneSlot[] gemstoneSlots = getModifier(Modifier.GEMSTONE_SLOTS);
         boolean space = false;
         ItemRarity rarity = getRarity();
         List<String> lore = new ArrayList<>();
@@ -164,7 +167,16 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
                 lore.add(STR."§7Shot Cooldown: §a\{StringUtils.cleanDouble(((player == null) ? shortbow.getShortbowCooldown(getStat(Stat.AttackSpeed, player)) : shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) / 1000d)}s");
             }
         }
-        //Todo Gemstones
+        if (gemstoneSlots.length > 0) {
+            space = true;
+            StringBuilder builder = new StringBuilder();
+            for (GemstoneSlot s : gemstoneSlots) {
+                String bracketColor = s.unlocked() ? (s.gemstone() != null ? s.gemstone().quality().getRarity().getPrefix() : "§7") : "§8";
+                builder.append(bracketColor).append("[").append(s.gemstone() != null ? s.gemstone().type().getPrefix() : "§8").append(s.type().getSymbol())
+                        .append(bracketColor).append("] ");
+            }
+            lore.add(builder.toString());
+        }
         if (space) {
             lore.add(" ");
         }
@@ -229,7 +241,18 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
     private String statLine(Stat stat, double value, SkyblockPlayer player) {
         Reforge reforge = getModifier(Modifier.REFORGE);
         double reforgeValue = reforge == null ? 0 : reforge.getStat(stat, getRarity(),player);
-        return STR."\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}\{reforgeValue != 0 ? STR." §9(\{value < 0 ? "" : "+"}\{StringUtils.cleanDouble(reforgeValue, 1)}\{stat.isPercentValue() ? "%" : ""})" : ""}";
+        GemstoneSlot[] gemstoneSlots = getModifier(Modifier.GEMSTONE_SLOTS);
+        double gemstoneValue = 0;
+        if (gemstoneSlots != null) {
+            for (GemstoneSlot slot : gemstoneSlots) {
+                if (!slot.unlocked()) continue;
+                if (slot.gemstone() == null) continue;
+                if (slot.gemstone().type().getStat() == stat) {
+                    gemstoneValue += slot.gemstone().value(this);
+                }
+            }
+        }
+        return STR."\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}\{reforgeValue != 0 ? STR." §9(\{value < 0 ? "" : "+"}\{StringUtils.cleanDouble(reforgeValue, 1)}\{stat.isPercentValue() ? "%" : ""})" : ""}\{gemstoneValue != 0 ? STR." §d(+\{StringUtils.cleanDouble(gemstoneValue, 1)})" : ""}";
     }
 
     public ItemRarity getRarity() {
@@ -238,8 +261,20 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
     }
 
     public double getStat(Stat stat, SkyblockPlayer player) {
+        double baseStat = sbItem.getStat(stat);
         Reforge reforge = getModifier(Modifier.REFORGE);
-        GetItemStatEvent event = new GetItemStatEvent(this, stat, sbItem.getStat(stat) + (reforge != null ? reforge.getStat(stat, getRarity(), player) : 0), player);
+        if (reforge != null) baseStat += reforge.getStat(stat, getRarity(), player);
+        GemstoneSlot[] gemstoneSlots = getModifier(Modifier.GEMSTONE_SLOTS);
+        if (gemstoneSlots != null) {
+            for (GemstoneSlot slot : gemstoneSlots) {
+                if (!slot.unlocked()) continue;
+                if (slot.gemstone() == null) continue;
+                if (slot.gemstone().type().getStat() == stat) {
+                    baseStat += slot.gemstone().value(this);
+                }
+            }
+        }
+        GetItemStatEvent event = new GetItemStatEvent(this, stat, baseStat, player);
         MinecraftServer.getGlobalEventHandler().call(event);
         return event.getValue() * event.getMultiplier();
     }
@@ -284,7 +319,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem, @Not
         return modifier.get(this);
     }
 
-    public <T> SbItemStack applyModifier(Modifier<T> modifier, T value) {
+    public <T> SbItemStack withModifier(Modifier<T> modifier, T value) {
         return modifier.toNbt(value, this);
     }
 }

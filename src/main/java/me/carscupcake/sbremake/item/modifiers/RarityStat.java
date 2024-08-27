@@ -1,28 +1,27 @@
-package me.carscupcake.sbremake.item.modifiers.reforges;
+package me.carscupcake.sbremake.item.modifiers;
 
-import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ItemRarity;
 
-public record ReforgeStat(double common, double uncommon, double rare, double epic, double legendary, double mythic, double divine) {
-    public ReforgeStat(double common, double uncommon, double rare, double epic, double legendary, double mythic) {
+public record RarityStat(double common, double uncommon, double rare, double epic, double legendary, double mythic, double divine) {
+    public RarityStat(double common, double uncommon, double rare, double epic, double legendary, double mythic) {
         this(common, uncommon, rare, epic, legendary, mythic, mythic);
     }
-    public ReforgeStat(double common, double uncommon, double rare, double epic, double legendary) {
+    public RarityStat(double common, double uncommon, double rare, double epic, double legendary) {
         this(common, uncommon, rare,epic, legendary, legendary);
     }
-    public ReforgeStat(double common, double uncommon, double rare, double epic) {
+    public RarityStat(double common, double uncommon, double rare, double epic) {
         this(common, uncommon, rare, epic, epic);
     }
 
-    public ReforgeStat(double common, double uncommon, double rare) {
+    public RarityStat(double common, double uncommon, double rare) {
         this(common, uncommon, rare, rare);
     }
 
-    public ReforgeStat(double common, double uncommon) {
+    public RarityStat(double common, double uncommon) {
         this(common, uncommon, uncommon);
     }
 
-    public ReforgeStat(double value) {
+    public RarityStat(double value) {
         this(value, value);
     }
 

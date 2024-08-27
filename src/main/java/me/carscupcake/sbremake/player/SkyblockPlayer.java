@@ -316,6 +316,7 @@ public class SkyblockPlayer extends Player {
         }
     }).addListener(InventoryPreClickEvent.class, event -> {
         if (event.getInventory() != null) return;
+        if (((SkyblockPlayer) event.getPlayer()).getGui() != null) return;
         if (event.getSlot() == 8) {
             event.setCancelled(true);
             ((SkyblockPlayer) event.getPlayer()).openSkyblockMenu();

@@ -9,6 +9,9 @@ import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.AbilityType;
 import me.carscupcake.sbremake.item.ability.ItemAbility;
 import me.carscupcake.sbremake.item.ability.ManaRequirement;
+import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlotType;
+import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlots;
+import me.carscupcake.sbremake.util.Cost;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.minestom.server.coordinate.Pos;
@@ -20,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class AspectOfTheEnd implements ISbItem, ISbItem.StatProvider {
+public class AspectOfTheEnd implements ISbItem, ISbItem.StatProvider, GemstoneSlots {
     private final List<Ability> abilities = List.of(new ItemAbility<>("Transmission", AbilityType.RIGHT_CLICK, playerInteractEvent -> {
         Pos pos = playerInteractEvent.getPlayer().getPosition().add(0, playerInteractEvent.player().getEyeHeight(), 0);
         Vec dir = pos.direction().normalize().mul(0.5);
@@ -69,5 +72,20 @@ public class AspectOfTheEnd implements ISbItem, ISbItem.StatProvider {
     @Override
     public List<Ability> getDefaultAbilities() {
         return abilities;
+    }
+
+    @Override
+    public GemstoneSlotType[] getGemstoneSlots() {
+        return new GemstoneSlotType[]{GemstoneSlotType.Sapphire};
+    }
+
+    @Override
+    public boolean[] getUnlocked() {
+        return new boolean[]{true};
+    }
+
+    @Override
+    public Cost[][] getLockedSlotCost() {
+        return new Cost[0][];
     }
 }

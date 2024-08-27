@@ -45,7 +45,8 @@ public class EmeraldBlade implements ISbItem, NpcSellable, Listener {
 
     @Override
     public Lore getLore() {
-        return new Lore("§7A powerful blade made from pure §2Emeralds§7. This blade becomes stronger as you carry more §6coins §7in your purse§8 (Capped at 2B coins)\n§7\nRecieve §4Curse of Greed §7when striking, §cCANCELLING §7any effect modifying your §6coins §7loss on §4death§7!\n§8 \n§7Current Damage Bonus: §a%b%", Map.of("%b%", (_, player) -> StringUtils.cleanDouble(player == null ? 0 : bonus(player))));
+        return new Lore("§7A powerful blade made from pure §2Emeralds§7. This blade becomes stronger as you carry more §6coins §7in your purse§8 (Capped at 2B coins)\n§7\nRecieve §4Curse of Greed §7when striking, §cCANCELLING §7any effect modifying your §6coins §7loss on §4death§7!\n§8 \n§7Current Damage Bonus: §a%b%",
+                Map.of("%b%", (_, player) -> StringUtils.cleanDouble(player == null ? 0 : bonus(player))));
 
     }
 
@@ -57,6 +58,11 @@ public class EmeraldBlade implements ISbItem, NpcSellable, Listener {
 
     public double bonus(SkyblockPlayer player) {
         return Math.pow(Math.min(player.getCoins(), 2_000_000_000), 0.25) * 2.5;
+    }
+
+    @Override
+    public boolean isUnstackable() {
+        return true;
     }
 
     @Override

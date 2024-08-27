@@ -5,9 +5,15 @@ import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
+import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
+import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlotType;
+import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlots;
 import me.carscupcake.sbremake.item.modifiers.reforges.ArmorReforge;
 import me.carscupcake.sbremake.item.requirements.SkillRequirement;
 import me.carscupcake.sbremake.player.skill.Skill;
+import me.carscupcake.sbremake.util.CoinsCost;
+import me.carscupcake.sbremake.util.Cost;
+import me.carscupcake.sbremake.util.ItemCost;
 import net.minestom.server.color.Color;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.event.Event;
@@ -19,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SuperiorDragonBoots implements ISbItem, ISbItem.StatProvider, NpcSellable, ColoredLeather, Listener {
+public class SuperiorDragonBoots implements ISbItem, ISbItem.StatProvider, NpcSellable, ColoredLeather, Listener, GemstoneSlots {
     @Override
     public String getId() {
         return "SUPERIOR_DRAGON_BOOTS";
@@ -86,5 +92,23 @@ public class SuperiorDragonBoots implements ISbItem, ISbItem.StatProvider, NpcSe
 
             }
         });
+    }
+
+    @Override
+    public GemstoneSlotType[] getGemstoneSlots() {
+        return new GemstoneSlotType[]{GemstoneSlotType.Combat};
+    }
+
+    @Override
+    public boolean[] getUnlocked() {
+        return new boolean[]{false};
+    }
+
+    @Override
+    public Cost[][] getLockedSlotCost() {
+        return new Cost[][]{{new CoinsCost(50_000), new ItemCost(Gemstone.gemstones.get(Gemstone.Type.Jasper).get(Gemstone.Quality.Fine).asItem(), 5),
+                new ItemCost(Gemstone.gemstones.get(Gemstone.Type.Sapphire).get(Gemstone.Quality.Fine).asItem(), 5),
+                new ItemCost(Gemstone.gemstones.get(Gemstone.Type.Ruby).get(Gemstone.Quality.Fine).asItem(), 5),
+                new ItemCost(Gemstone.gemstones.get(Gemstone.Type.Amethyst).get(Gemstone.Quality.Fine).asItem(), 5)}};
     }
 }

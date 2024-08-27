@@ -51,6 +51,7 @@ public class EndSword implements ISbItem, Listener, NpcSellable {
         return EventNode.all("end_sword").addListener(PlayerMeleeDamageEntityEvent.class, event -> {
             if (!(event.getTarget().getEntityType() == EntityType.ENDERMITE || event.getTarget().getEntityType() == EntityType.ENDERMAN || event.getTarget().getEntityType() == EntityType.ENDER_DRAGON)) return;
             SbItemStack stack = SbItemStack.from(event.getPlayer().getItemInHand(Player.Hand.MAIN));
+            if (stack == null) return;
             if (!(stack.sbItem() instanceof EndSword)) return;
             event.addAdditiveMultiplier(1);
         });

@@ -1,13 +1,12 @@
 package me.carscupcake.sbremake.item.modifiers.reforges;
 
 import me.carscupcake.sbremake.Stat;
-import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerToEntityMageDamage;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
+import me.carscupcake.sbremake.item.modifiers.RarityStat;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.player.skill.Skill;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.Player;
@@ -49,7 +48,7 @@ public interface Reforge {
     }
 
     default SbItemStack apply(SbItemStack itemStack) {
-        return itemStack.applyModifier(Modifier.REFORGE, this);
+        return itemStack.withModifier(Modifier.REFORGE, this);
     }
 
     Map<String, Reforge> reforges = new HashMap<>();
@@ -76,6 +75,6 @@ public interface Reforge {
             reforges.put(reforge.getId(), reforge);
         MinecraftServer.getGlobalEventHandler().addChild(LISTENER);
     }
-    ReforgeStat LINEAR_ONE = new ReforgeStat(1, 2, 3, 4, 5, 6);
-    ReforgeStat LINEAR_TWO = new ReforgeStat(2, 4, 6, 8, 10, 12);
+    RarityStat LINEAR_ONE = new RarityStat(1, 2, 3, 4, 5, 6);
+    RarityStat LINEAR_TWO = new RarityStat(2, 4, 6, 8, 10, 12);
 }
