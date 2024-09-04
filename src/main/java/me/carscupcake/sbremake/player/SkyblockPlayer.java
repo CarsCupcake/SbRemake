@@ -554,12 +554,14 @@ public class SkyblockPlayer extends Player {
         pets.sort(PET_COMPARATOR);
         int i = 10;
         for (StoredPet pet : pets) {
-            builder.setItem(i, pet.toItem().update(this).item());
+            builder.setItem(i,new ItemBuilder(pet.toItem().update(this).item()).addLoreIf(() -> pet == SkyblockPlayer.this.pet, "§3 ", "§cClick to despawn.")
+                    .addLoreIf(() -> pet != SkyblockPlayer.this.pet, "§3 ", "§aClick to spawn.").build());
             i++;
         }
         Gui gui = new Gui(builder.build());
         gui.setCancelled(true);
         gui.setGeneralClickEvent(event -> {
+            if (event.getInventory() == null) return true;
             int row = (int) (event.getSlot() / 9d);
             if (row < 1 || row > 5) return true;
             int slotFromRow = event.getSlot() - (row * 9);
@@ -567,10 +569,21 @@ public class SkyblockPlayer extends Player {
             int index = ((row - 1) * 7) - 1 + slotFromRow;
             if (index >= pets.size()) return true;
             StoredPet clickedPet = pets.get(index);
+            if (event.getClickType() == ClickType.RIGHT_CLICK) {
+                if (clickedPet == SkyblockPlayer.this.pet) {
+                    SkyblockPlayer.this.pet.getPet().despawnPet(SkyblockPlayer.this, pet);
+                    pet = null;
+                }
+                SkyblockPlayer.this.pets.remove(clickedPet);
+                addItem(clickedPet.toItem().update(this), false);
+                closeGui();
+                return true;
+            }
             if (SkyblockPlayer.this.pet == clickedPet) {
                 SkyblockPlayer.this.pet = null;
                 clickedPet.getPet().despawnPet(SkyblockPlayer.this, clickedPet);
                 sendMessage(STR."§cYou despawned your \{clickedPet.getPet().getName()}");
+                closeGui();
                 return true;
             }
             if (SkyblockPlayer.this.pet != null) {
@@ -579,6 +592,7 @@ public class SkyblockPlayer extends Player {
             SkyblockPlayer.this.pet = clickedPet;
             clickedPet.getPet().spawnPet(SkyblockPlayer.this, clickedPet);
             sendMessage(STR."§aYou spawned your \{clickedPet.getPet().getName()}");
+            closeGui();
             return true;
         });
         gui.showGui(this);
