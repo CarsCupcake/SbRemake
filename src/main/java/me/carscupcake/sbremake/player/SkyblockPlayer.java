@@ -1,5 +1,7 @@
 package me.carscupcake.sbremake.player;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import kotlin.Pair;
 import lombok.Getter;
@@ -12,14 +14,16 @@ import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.SkyblockEntityProjectile;
 import me.carscupcake.sbremake.event.*;
-import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.Requirement;
+import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.FullSetBonus;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
 import me.carscupcake.sbremake.item.impl.bow.BowItem;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.item.impl.other.*;
+import me.carscupcake.sbremake.item.impl.pets.IPet;
+import me.carscupcake.sbremake.item.impl.pets.PetItem;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.player.hotm.HeartOfTheMountain;
 import me.carscupcake.sbremake.player.hotm.Powder;
@@ -147,7 +151,7 @@ public class SkyblockPlayer extends Player {
                 if (item == null) return;
                 if (item.sbItem() instanceof Shortbow shortbow && player.shortbowTask == null) {
                     for (Requirement requirement : item.sbItem().requirements())
-                        if(!requirement.canUse(player, item.item())) {
+                        if (!requirement.canUse(player, item.item())) {
                             player.sendMessage("§cYou cannot use this item!");
                             return;
                         }
@@ -176,7 +180,7 @@ public class SkyblockPlayer extends Player {
                 SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
                 if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem)) return;
                 for (Requirement requirement : item.sbItem().requirements())
-                    if(!requirement.canUse(player, item.item())) {
+                    if (!requirement.canUse(player, item.item())) {
                         player.sendMessage("§cYou cannot use this item!");
                         return;
                     }
@@ -221,7 +225,7 @@ public class SkyblockPlayer extends Player {
                 SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
                 if (item.sbItem() instanceof Shortbow shortbow) {
                     for (Requirement requirement : item.sbItem().requirements())
-                        if(!requirement.canUse(player, item.item())) {
+                        if (!requirement.canUse(player, item.item())) {
                             player.sendMessage("§cYou cannot use this item!");
                             return;
                         }
@@ -354,6 +358,7 @@ public class SkyblockPlayer extends Player {
     }).addListener(PlayerDisconnectEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         player.save();
+        if (player.getPet() != null) player.getPet().getPet().despawnPet(player, player.getPet());
     }).addListener(PlayerRespawnEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         event.setRespawnPosition(player.getWorldProvider().spawn());
@@ -382,6 +387,42 @@ public class SkyblockPlayer extends Player {
             default -> -1;
         };
     }
+
+    public static final Comparator<StoredPet> PET_COMPARATOR = (o1, o2) -> {
+        int rarity = o2.getRarity().ordinal() - o1.getRarity().ordinal();
+        if (rarity != 0) return rarity;
+        int level = o2.getLevel() - o1.getLevel();
+        if (level != 0) return level;
+        return (int) (o2.getXp() - o1.getXp());
+    };
+
+    public static final ConfigSection.Data<StoredPet> STORED_PET_DATA = new ConfigSection.ClassicGetter<>(jsonElement -> {
+        JsonObject o = jsonElement.getAsJsonObject();
+        return new StoredPet(IPet.pets.get(o.get("type").getAsString()), o.get("xp").getAsDouble(), ItemRarity.valueOf(o.get("rarity").getAsString()),
+                o.has("petItem") ? ((PetItem) SbItemStack.raw(o.get("petItem").getAsString())) : null, o.get("petCandy").getAsInt(), UUID.fromString(o.get("uuid").getAsString()));
+    }, storedPet -> {
+        JsonObject o = new JsonObject();
+        o.addProperty("type", storedPet.getPet().getId());
+        o.addProperty("xp", storedPet.getXp());
+        o.addProperty("rarity", storedPet.getRarity().name());
+        if (storedPet.getPetItem() != null)
+            o.addProperty("petItem", storedPet.getPetItem().getId());
+        o.addProperty("petCandy", storedPet.getPetCandyUsed());
+        o.addProperty("uuid", storedPet.getUuid().toString());
+        return o;
+    });
+    public static final ConfigSection.Data<List<StoredPet>> STORED_PET_LIST_DATA = new ConfigSection.ClassicGetter<>(jsonElement -> {
+        List<StoredPet> storedPets = new ArrayList<>();
+        for (JsonElement e : jsonElement.getAsJsonArray())
+            storedPets.add(STORED_PET_DATA.get(e, null));
+        return storedPets;
+
+    }, storedPet -> {
+        JsonArray array = new JsonArray();
+        for (StoredPet pets : storedPet)
+            STORED_PET_DATA.set(array, null, pets);
+        return array;
+    });
 
     public static Task regenTask;
     private SkyblockWorld.WorldProvider worldProvider = null;
@@ -464,6 +505,16 @@ public class SkyblockPlayer extends Player {
         }
     };
 
+    @Getter
+    @Setter
+    private TaskScheduler petTask = null;
+    @Getter
+    private final ArrayList<StoredPet> pets = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private StoredPet pet;
+
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         ConfigFile file = new ConfigFile("defaults", this);
@@ -489,6 +540,48 @@ public class SkyblockPlayer extends Player {
             }
         }
         this.hotm = new HeartOfTheMountain(this);
+        ConfigFile f = new ConfigFile("pets", this);
+        pets.addAll(f.get("stored", STORED_PET_LIST_DATA, new ArrayList<>()));
+        if (f.get("equipped", ConfigSection.INTEGER, -1) >= 0) {
+            pet = pets.get(f.get("equipped", ConfigSection.INTEGER));
+        }
+    }
+
+    public void openPetsMenu() {
+        InventoryBuilder builder = new InventoryBuilder(6, "Pets").fill(TemplateItems.EmptySlot.getItem(), 0, 9).verticalFill(0, 5, TemplateItems.EmptySlot.getItem())
+                .fill(TemplateItems.EmptySlot.getItem(), 45, 53).verticalFill(8, 5, TemplateItems.EmptySlot.getItem());
+        ArrayList<StoredPet> pets = new ArrayList<>(this.pets);
+        pets.sort(PET_COMPARATOR);
+        int i = 10;
+        for (StoredPet pet : pets) {
+            builder.setItem(i, pet.toItem().update(this).item());
+            i++;
+        }
+        Gui gui = new Gui(builder.build());
+        gui.setCancelled(true);
+        gui.setGeneralClickEvent(event -> {
+            int row = (int) (event.getSlot() / 9d);
+            if (row < 1 || row > 5) return true;
+            int slotFromRow = event.getSlot() - (row * 9);
+            if (slotFromRow == 0 || slotFromRow == 8) return true;
+            int index = ((row - 1) * 7) - 1 + slotFromRow;
+            if (index >= pets.size()) return true;
+            StoredPet clickedPet = pets.get(index);
+            if (SkyblockPlayer.this.pet == clickedPet) {
+                SkyblockPlayer.this.pet = null;
+                clickedPet.getPet().despawnPet(SkyblockPlayer.this, clickedPet);
+                sendMessage(STR."§cYou despawned your \{clickedPet.getPet().getName()}");
+                return true;
+            }
+            if (SkyblockPlayer.this.pet != null) {
+                SkyblockPlayer.this.pet.getPet().despawnPet(SkyblockPlayer.this, SkyblockPlayer.this.pet);
+            }
+            SkyblockPlayer.this.pet = clickedPet;
+            clickedPet.getPet().spawnPet(SkyblockPlayer.this, clickedPet);
+            sendMessage(STR."§aYou spawned your \{clickedPet.getPet().getName()}");
+            return true;
+        });
+        gui.showGui(this);
     }
 
     public void openSkyblockMenu() {
@@ -544,6 +637,10 @@ public class SkyblockPlayer extends Player {
         for (ISkill skill : this.skills.values()) skill.save();
         collections.forEach(me.carscupcake.sbremake.item.collections.Collection::save);
         hotm.save();
+        ConfigFile petsFile = new ConfigFile("pets", this);
+        petsFile.set("stored", pets, STORED_PET_LIST_DATA);
+        petsFile.set("equipped", (pet == null) ? -1 : pets.indexOf(pet), ConfigSection.INTEGER);
+        petsFile.save();
     }
 
     public ISkill getSkill(Skill skill) {
@@ -621,6 +718,10 @@ public class SkyblockPlayer extends Player {
     public void spawn(Pos spawn) {
         super.spawn();
         recalculateArmor();
+        if (pet != null) {
+            pet.getPet().despawnPet(this, pet);
+            pet.getPet().spawnPet(this, pet);
+        }
         setHealth(getMaxHealth());
         setSbHealth(getMaxSbHealth());
         instance.loadChunk(spawn.chunkX(), spawn.chunkZ());
@@ -797,6 +898,11 @@ public class SkyblockPlayer extends Player {
                 }
             if (canUse)
                 event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{item.displayName()}", value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
+        }
+        if (pet != null) {
+            double bonus = pet.getPet().getStat(stat, pet.toPetInfo());
+            if (bonus != 0)
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(pet.getPet().getName(), bonus, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.PetStats));
         }
         for (Pair<PlayerStatEvent.PlayerStatModifier, ?> pair : temporaryModifiers.get(stat))
             event.modifiers().add(pair.getFirst());

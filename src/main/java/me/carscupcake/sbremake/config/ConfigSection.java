@@ -269,7 +269,10 @@ public class ConfigSection {
 
         @Override
         public void set(JsonElement element, String key, T data) {
-            element.getAsJsonObject().add(key, elementBuilder.apply(data));
+            if (element.isJsonArray())
+                element.getAsJsonArray().add(elementBuilder.apply(data));
+            else
+                element.getAsJsonObject().add(key, elementBuilder.apply(data));
         }
     }
 

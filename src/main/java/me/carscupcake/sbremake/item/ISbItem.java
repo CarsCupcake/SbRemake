@@ -5,6 +5,9 @@ import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.crafting.CraftingIngredient;
 import me.carscupcake.sbremake.item.crafting.ShapedRecipe;
 import me.carscupcake.sbremake.item.impl.armor.PerfectArmor;
+import me.carscupcake.sbremake.item.impl.pets.IPet;
+import me.carscupcake.sbremake.item.impl.pets.Pet;
+import me.carscupcake.sbremake.item.impl.pets.Pets;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneItem;
 import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
@@ -120,6 +123,7 @@ public interface ISbItem {
             try {
                 if (clazz.isInterface()) continue;
                 if (clazz.isRecord()) continue;
+                if (clazz.isEnum()) continue;
                 Constructor<? extends ISbItem> constructor = clazz.getConstructor();
                 ISbItem instance = constructor.newInstance();
                 SbItemStack.initSbItem(instance);
@@ -132,6 +136,8 @@ public interface ISbItem {
             }
         }
         PerfectArmor.init();
+        for (Pets pets : Pets.values())
+            IPet.pets.put(pets.getId(), pets);
         for (Map.Entry<ISbItem, EnchantedRecipe> recipe : recipes.entrySet()) {
             Map<Character, CraftingIngredient> items = Map.of('#', new CraftingIngredient(32, recipe.getValue().base()));
             Requirement[] requirements = new Requirement[]{new CollectionRequirement(recipe.getValue().collection(), recipe.getValue().level())};

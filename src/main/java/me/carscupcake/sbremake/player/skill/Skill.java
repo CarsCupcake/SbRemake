@@ -15,6 +15,7 @@ public enum Skill {
     Mining(MiningSkill.class),
     Farming(FarmingSkill.class),
     Foraging(ForagingSkill.class),
+    Fishing(FishingSkill.class),
     Dungeneering(Dungeoneering.class);
     private final Class<? extends ISkill> clazz;
     Skill(Class<? extends ISkill> clazz) {

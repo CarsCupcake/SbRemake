@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public sealed interface Ability permits ItemAbility, FullSetBonus {
+public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
     String headline(SbItemStack item, @Nullable SkyblockPlayer player);
 
     Lore lore();

@@ -12,7 +12,20 @@ public class StringUtils {
     }
 
     public static String cleanDouble(double d, int digits) {
-        return String.format(STR."%.\{(d % 1d == 0) ? 0 : digits}f", d);
+        int dg = countDigitsAfterDecimal(d);
+        if (dg == 0 || digits == 0) return String.valueOf((long) d);
+        if (dg <= digits) return String.valueOf(d);
+        return String.format(STR."%.\{digits}f", d);
+    }
+
+    private static int countDigitsAfterDecimal(double number) {
+        if (number % 1 == 0) return 0;
+        String numberStr = Double.toString(number);
+        int decimalIndex = numberStr.indexOf('.');
+        if (decimalIndex == -1) {
+            return 0;
+        }
+        return numberStr.length() - decimalIndex - 1;
     }
 
     public static String cleanDouble(double d) {
@@ -107,6 +120,15 @@ public class StringUtils {
         builder.append(Component.text(repeat, finishedProgress));
         builder.append(Component.text(String.valueOf(piece).repeat(Math.max(0, (bars - done))), notFinishedProgress));
         return builder.build();
+    }
+
+    public static String makeProgressBarAsString(int bars, double value, double maxValue, String notFinishedProgress, String finishedProgress, String piece) {
+        double pers = value / maxValue;
+        if (pers > 1) pers = 1;
+        if (pers < 0) pers = 0;
+        int done = (int) (bars * pers);
+        String repeat = String.valueOf(piece).repeat(Math.max(0, done));
+        return finishedProgress + repeat + notFinishedProgress + String.valueOf(piece).repeat(Math.max(0, (bars - done)));
     }
 
     public static String stripeColorCodes(String s) {

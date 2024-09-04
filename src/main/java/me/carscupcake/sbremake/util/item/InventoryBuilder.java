@@ -118,8 +118,9 @@ public class InventoryBuilder {
             return setItems(items.toArray(new ItemStack[0]), i);
         }
         public InventoryBuilder verticalFill(int start, int rows, ItemStack stack){
-            for (int i = start; i < (rows * 9) + start; i += 9)
+            for (int i = start; i < (rows * 9) + start; i += 9) {
                 setItem(stack, i);
+            }
             return this;
         }
 

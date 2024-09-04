@@ -1,6 +1,11 @@
 package me.carscupcake.sbremake.item.modifiers;
 
+import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.item.impl.pets.IPet;
+import me.carscupcake.sbremake.item.impl.pets.Pet;
+import me.carscupcake.sbremake.item.impl.pets.PetItem;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlot;
@@ -8,11 +13,17 @@ import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlotType;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlots;
 import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import net.kyori.adventure.nbt.*;
+import net.minestom.server.entity.PlayerSkin;
+import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.component.HeadProfile;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public interface Modifier<T> {
     default T get(SbItemStack item) {
@@ -130,6 +141,30 @@ public interface Modifier<T> {
             }
             SbItemStack item = SbItemStack.from(itemStack.item().withTag(Tag.NBT("ExtraAttributes"), extraAttributes.put("gems", gems)));
             return item.withModifier(UNLOCKED_GEMSTONE_SLOTS, unlocked);
+        }
+    };
+
+    Modifier<Pet.PetInfo> PET_INFO = new Modifier<>() {
+        @Override
+        public Pet.PetInfo getFromNbt(SbItemStack item) {
+            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"));
+            CompoundBinaryTag petInfoTag = extraAttributes.getCompound("petInfo");
+            if (CompoundBinaryTag.empty() == petInfoTag) return new Pet.PetInfo(null, ItemRarity.SPECIAL, 0, 0, null, 0);
+            IPet pet = IPet.pets.get(petInfoTag.getString("type"));
+            ISbItem petItemId = SbItemStack.raw(petInfoTag.getString("heldItem"));
+            PetItem petItem = (petItemId == null) ? null : (PetItem) petItemId;
+            return new Pet.PetInfo(pet, ItemRarity.valueOf(petInfoTag.getString("tier")), petInfoTag.getDouble("exp"), petItem, petInfoTag.getInt("candyUsed"));
+        }
+
+        @Override
+        public SbItemStack toNbt(Pet.PetInfo petInfo, SbItemStack itemStack) {
+            ItemStack item = itemStack.item().with(ItemComponent.PROFILE, new HeadProfile(new PlayerSkin("", petInfo.pet().skullValue())));
+            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(Tag.NBT("ExtraAttributes"));
+            CompoundBinaryTag petInfoTag = extraAttributes.getCompound("petInfo");
+            petInfoTag = petInfoTag.putString("type", petInfo.pet().getId()).putDouble("exp", petInfo.exp()).putInt("candyUsed", petInfo.petCandyUsed()).putString("tier", petInfo.rarity().name());
+            if (petInfo.petItem() == null) petInfoTag = petInfoTag.remove("heldItem");
+            else petInfoTag = petInfoTag.putString("heldItem", petInfo.petItem().getId());
+            return SbItemStack.from(item.withTag(Tag.NBT("ExtraAttributes"), extraAttributes.put("petInfo", petInfoTag)));
         }
     };
 }

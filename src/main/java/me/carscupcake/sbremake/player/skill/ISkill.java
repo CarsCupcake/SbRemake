@@ -60,6 +60,9 @@ public abstract class ISkill {
     public abstract Stat getWisdomStat();
 
     public void addXp(double amount) {
+        if (player.getPet() != null) {
+            player.getPet().addXp(player.getPet().getPet().getPetType().apply(amount, this.getType()));
+        }
         amount *= 1 + (getWisdomStat() != null ? (player.getStat(getWisdomStat()) / 100d) : 0);
         xp += amount;
         while (level < getMaxLevel() && nextLevelXp[level] <= xp) {
@@ -106,6 +109,12 @@ public abstract class ISkill {
         section.set("level", level, ConfigSection.INTEGER);
         file.set(id, section, ConfigSection.SECTION);
         file.save();
+    }
+
+    public Skill getType() {
+        for (Skill s : Skill.values())
+            if (s.getClazz() == this.getClass()) return s;
+        throw new IllegalStateException("Should not be possible!");
     }
 
     public static CoinReward makeCoinReward(int level) {

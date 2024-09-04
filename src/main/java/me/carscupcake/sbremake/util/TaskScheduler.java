@@ -28,6 +28,7 @@ public abstract class TaskScheduler implements Runnable {
     }
 
     public synchronized void cancel() {
+        if (task == null || !task.isAlive()) return;
         task.cancel();
         task = null;
     }

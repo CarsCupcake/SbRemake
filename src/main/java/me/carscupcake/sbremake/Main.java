@@ -22,8 +22,11 @@ import net.minestom.server.command.CommandManager;
 import net.minestom.server.command.ConsoleSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.event.player.*;
+import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
+import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
+import net.minestom.server.network.packet.server.play.DebugSamplePacket;
 import org.reflections.Reflections;
 
 import java.io.BufferedReader;
@@ -38,6 +41,7 @@ public class Main {
     public static volatile AtomicBoolean running = new AtomicBoolean(true);
     public static Thread CONSOLE_THREAD;
     public static volatile SkyblockSimpleLogger LOGGER;
+    static long tickDelay = -1;
 
     public static void main(String[] args) throws Exception {
         MinecraftServer server = MinecraftServer.init();
@@ -66,9 +70,17 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(ForagingSkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(MiningSkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(Dungeoneering.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(FishingSkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(Region.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(EnchantmentUtils.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(HotmUpgrade.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addListener(ServerTickMonitorEvent.class, serverTickMonitorEvent -> {
+            tickDelay = (long) serverTickMonitorEvent.getTickMonitor().getTickTime();
+        });
+        MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (clientDebugSampleSubscriptionPacket, player) -> {
+            //TODO return Debug Sample Packet
+            player.sendPacket(new DebugSamplePacket(new long[]{tickDelay, tickDelay, 0, 50 - tickDelay}, DebugSamplePacket.Type.TICK_TIME));
+        });
         for (SkyblockEnchantment enchantment : NormalEnchantment.values())
             SkyblockEnchantment.enchantments.put(enchantment.getId(), enchantment);
         Reforge.init();
@@ -99,8 +111,7 @@ public class Main {
             cracked = Boolean.parseBoolean(args[1]);
         } catch (Exception _) {
         }
-        if (!cracked)
-            MojangAuth.init();
+        if (!cracked) MojangAuth.init();
         System.out.println("Starting...");
         int port = 25565;
         try {
