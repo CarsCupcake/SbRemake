@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.player;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.item.ItemRarity;
@@ -62,7 +61,7 @@ public class StoredPet {
 
     public void addXp(double amount) {
         xp += amount;
-        if (xp >= requiredXp) {
+        while (xp >= requiredXp && level != pet.getMaxLevel()) {
             int[] i = switch (rarity) {
                 case COMMON -> Pet.common;
                 case UNCOMMON -> Pet.uncommon;
@@ -72,7 +71,6 @@ public class StoredPet {
             };
             requiredXp += i[level++];
         }
-        //TODO Calculate levelUp
     }
 
     public Pet.PetInfo toPetInfo() {
