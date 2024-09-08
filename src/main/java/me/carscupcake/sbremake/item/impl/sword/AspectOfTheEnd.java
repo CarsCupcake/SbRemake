@@ -1,6 +1,8 @@
 package me.carscupcake.sbremake.item.impl.sword;
 
+import kotlin.Pair;
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.ItemType;
@@ -18,7 +20,9 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
+import net.minestom.server.timer.TaskSchedule;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +32,7 @@ public class AspectOfTheEnd implements ISbItem, ISbItem.StatProvider, GemstoneSl
         Pos pos = playerInteractEvent.getPlayer().getPosition().add(0, playerInteractEvent.player().getEyeHeight(), 0);
         Vec dir = pos.direction().normalize().mul(0.5);
         playerInteractEvent.player().playSound(Sound.sound(Key.key("minecraft", "entity.enderman.teleport"), Sound.Source.PLAYER, 1, 1f));
+
         for (int i = 1; i <= 16; i++) {
             Pos newPos = pos.add(dir);
             Block b = playerInteractEvent.getPlayer().getInstance().getBlock(newPos);
@@ -37,8 +42,10 @@ public class AspectOfTheEnd implements ISbItem, ISbItem.StatProvider, GemstoneSl
             }
             pos = newPos;
         }
+        playerInteractEvent.player().getTemporaryModifiers().add(Stat.Speed, modifier, Duration.ofSeconds((3)));
         playerInteractEvent.player().teleport(pos);
     }, new Lore(STR."§7Teleport §a8 blocks §7ahead of you and gain §a+50 \{Stat.Speed.toString()} for §a3 seconds§7"), new ManaRequirement<>(50)));
+    private static final PlayerStatEvent.PlayerStatModifier modifier = new PlayerStatEvent.BasicModifier("Transmission", 50, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Ability);
     @Override
     public String getId() {
         return "ASPECT_OF_THE_END";

@@ -25,8 +25,10 @@ import me.carscupcake.sbremake.item.impl.other.*;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
 import me.carscupcake.sbremake.item.impl.pets.PetItem;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.potion.PotionInfo;
 import me.carscupcake.sbremake.player.hotm.HeartOfTheMountain;
 import me.carscupcake.sbremake.player.hotm.Powder;
+import me.carscupcake.sbremake.player.potion.IPotion;
 import me.carscupcake.sbremake.player.protocol.SetEntityEffectPacket;
 import me.carscupcake.sbremake.player.skill.ISkill;
 import me.carscupcake.sbremake.player.skill.Skill;
@@ -88,6 +90,7 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -165,6 +168,7 @@ public class SkyblockPlayer extends Player {
             return;
         }
         if (event.getPacket() instanceof ClientHeldItemChangePacket) {
+            player.lastInteractPotion = false;
             player.bowStartPull = -1;
             if (player.shortbowTask != null) {
                 player.shortbowTask.cancel();
@@ -173,6 +177,7 @@ public class SkyblockPlayer extends Player {
         }
         if (event.getPacket() instanceof ClientPlayerDiggingPacket packet) {
             if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
+                player.lastInteractPotion = false;
                 if (player.bowStartPull < 0) return;
                 if (player.getItemInHand(Hand.MAIN).material() != Material.BOW) return;
                 long chargingTime = System.currentTimeMillis() - player.bowStartPull;
@@ -241,9 +246,30 @@ public class SkyblockPlayer extends Player {
                 return;
             }
             long now = System.currentTimeMillis();
-            if (now - player.lastInteractPacket < 100) return;
+            long delta = now - player.lastInteractPacket;
+            if (delta < 100) return;
             player.lastInteractPacket = now;
             MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, PlayerInteractEvent.Interaction.Right));
+            SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+            if (item == null) return;
+            if (item.sbItem().getType() == ItemType.Potion) {
+                if (!player.lastInteractPotion)
+                    player.lastInteractPotion = true;
+                else {
+                    player.lastInteractPotion = false;
+                    player.setItemInHand(Hand.MAIN, SbItemStack.base(Material.GLASS_BOTTLE).item());
+                    PotionInfo info = item.getModifier(me.carscupcake.sbremake.item.modifiers.Modifier.POTION);
+                    if (info != null) {
+                        for (PotionInfo.PotionEffect ef : info.effects()) {
+                            {
+                                me.carscupcake.sbremake.player.potion.PotionEffect effect = new me.carscupcake.sbremake.player.potion.PotionEffect(ef.potion(),
+                                        System.currentTimeMillis() + (ef.durationTicks() * 50), ef.level());
+                                player.startPotionEffect(effect);
+                            }
+                        }
+                    }
+                }
+            }
             return;
         }
 
@@ -423,7 +449,7 @@ public class SkyblockPlayer extends Player {
             STORED_PET_DATA.set(array, null, pets);
         return array;
     });
-
+    private boolean lastInteractPotion = false;
     public static Task regenTask;
     private SkyblockWorld.WorldProvider worldProvider = null;
     @Setter
@@ -479,13 +505,7 @@ public class SkyblockPlayer extends Player {
     @Getter
     private final HeartOfTheMountain hotm;
     @Getter
-    private final MapList<Stat, Pair<PlayerStatEvent.PlayerStatModifier, TaskSchedule>> temporaryModifiers = new MapList<>() {
-        @Override
-        public void add(Stat key, Pair<PlayerStatEvent.PlayerStatModifier, TaskSchedule> value) {
-            super.add(key, value);
-            MinecraftServer.getSchedulerManager().buildTask(() -> removeFromList(key, value)).delay(value.getSecond()).schedule();
-        }
-    };
+    private final PlayerModifierList temporaryModifiers = new PlayerModifierList();
     @Getter
     @Setter
     private boolean onLaunchpad = false;
@@ -515,6 +535,14 @@ public class SkyblockPlayer extends Player {
     @Setter
     private StoredPet pet;
 
+    @Getter
+    @Setter
+    private double absorption;
+
+    @Getter
+    private volatile TreeSet<me.carscupcake.sbremake.player.potion.PotionEffect> potionEffects = new TreeSet<>(Comparator.comparingLong(me.carscupcake.sbremake.player.potion.PotionEffect::expiration));
+
+
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         ConfigFile file = new ConfigFile("defaults", this);
@@ -526,6 +554,11 @@ public class SkyblockPlayer extends Player {
         for (Powder p : Powder.values()) {
             powder.put(p, section.get(p.getId(), ConfigSection.INTEGER, 0));
         }
+        ConfigSection potions = file.get("potions", ConfigSection.SECTION, new ConfigSection(new JsonObject()));
+        potions.forEntries((s, section1) -> {
+            me.carscupcake.sbremake.player.potion.PotionEffect effect = new me.carscupcake.sbremake.player.potion.PotionEffect(s, section1);
+            potionEffects.add(effect);
+        });
         sbHealth = getMaxSbHealth();
         setNoGravity(true);
         Reflections reflections = new Reflections("me.carscupcake.sbremake.item.collections.impl");
@@ -547,6 +580,53 @@ public class SkyblockPlayer extends Player {
         }
     }
 
+    public boolean hasPotionEffect(IPotion potion) {
+        return getPotionEffect(potion) != null;
+    }
+
+    public me.carscupcake.sbremake.player.potion.PotionEffect getPotionEffect(IPotion potion) {
+        for (me.carscupcake.sbremake.player.potion.PotionEffect effect : potionEffects)
+            if (effect.potion() == potion) return effect;
+        return null;
+    }
+
+    public void startPotionEffect(me.carscupcake.sbremake.player.potion.PotionEffect effect) {
+        if (effect.potion().isInstant()) {
+            effect.potion().start(this, effect.amplifier(), 0);
+            return;
+        }
+        me.carscupcake.sbremake.player.potion.PotionEffect e = getPotionEffect(effect.potion());
+        if (e != null) {
+            if (effect.amplifier() >= e.amplifier()) {
+                e.potion().stop(this, e.amplifier());
+                potionEffects.remove(e);
+                potionEffects.add(effect);
+                effect.potion().start(this, effect.amplifier(), (long) ((effect.expiration() - System.currentTimeMillis()) / 50d));
+                initPotion(effect);
+            }
+            return;
+        }
+        potionEffects.add(effect);
+        effect.potion().start(this, effect.amplifier(), (long) ((effect.expiration() - System.currentTimeMillis()) / 50d));
+        initPotion(effect);
+    }
+
+    public void initPotion(me.carscupcake.sbremake.player.potion.PotionEffect effect) {
+        Map<Stat, PlayerStatEvent.PlayerStatModifier> modifierMap = effect.potion().getStatModifiers(effect.amplifier());
+        if (modifierMap != null) {
+            for (Map.Entry<Stat, PlayerStatEvent.PlayerStatModifier> entry : modifierMap.entrySet()) {
+                temporaryModifiers.add(entry.getKey(), entry.getValue(), Duration.ofMillis(effect.expiration() - System.currentTimeMillis()));
+            }
+        }
+        if (effect.potion().getVanillaEffect() != null) {
+            sendPacket(new SetEntityEffectPacket(getEntityId(), effect.potion().getVanillaEffect().id(), effect.amplifier() - 1, (int) ((effect.expiration() - System.currentTimeMillis()) / 50d), (byte) 0));
+        }
+    }
+
+    public void addAbsorption(double d) {
+        absorption += d;
+    }
+
     public void openPetsMenu() {
         InventoryBuilder builder = new InventoryBuilder(6, "Pets").fill(TemplateItems.EmptySlot.getItem(), 0, 9).verticalFill(0, 5, TemplateItems.EmptySlot.getItem())
                 .fill(TemplateItems.EmptySlot.getItem(), 45, 53).verticalFill(8, 5, TemplateItems.EmptySlot.getItem());
@@ -554,7 +634,7 @@ public class SkyblockPlayer extends Player {
         pets.sort(PET_COMPARATOR);
         int i = 10;
         for (StoredPet pet : pets) {
-            builder.setItem(i,new ItemBuilder(pet.toItem().update(this).item()).addLoreIf(() -> pet == SkyblockPlayer.this.pet, "§3 ", "§cClick to despawn.")
+            builder.setItem(i, new ItemBuilder(pet.toItem().update(this).item()).addLoreIf(() -> pet == SkyblockPlayer.this.pet, "§3 ", "§cClick to despawn.")
                     .addLoreIf(() -> pet != SkyblockPlayer.this.pet, "§3 ", "§aClick to spawn.").build());
             i++;
         }
@@ -637,7 +717,6 @@ public class SkyblockPlayer extends Player {
             configFile.set(STR."\{i}", item, ConfigSection.ITEM);
         }
         configFile.save();
-        Main.LOGGER.info(STR."Saved profile from \{((TextComponent) this.getName()).content()}");
         ConfigFile defaults = new ConfigFile("defaults", this);
         defaults.set("world", this.getWorldProvider().type().getId(), ConfigSection.STRING);
         defaults.set("coins", this.coins, ConfigSection.DOUBLE);
@@ -647,6 +726,10 @@ public class SkyblockPlayer extends Player {
             powders.set(powderIntegerEntry.getKey().getId(), powderIntegerEntry.getValue(), ConfigSection.INTEGER);
         }
         defaults.set("powder", powders, ConfigSection.SECTION);
+        ConfigSection potions = new ConfigSection(new JsonObject());
+        for (me.carscupcake.sbremake.player.potion.PotionEffect potionEffect : potionEffects)
+            potionEffect.store(potions);
+        defaults.set("potions", potions, ConfigSection.SECTION);
         defaults.save();
         for (ISkill skill : this.skills.values()) skill.save();
         collections.forEach(me.carscupcake.sbremake.item.collections.Collection::save);
@@ -655,6 +738,7 @@ public class SkyblockPlayer extends Player {
         petsFile.set("stored", pets, STORED_PET_LIST_DATA);
         petsFile.set("equipped", (pet == null) ? -1 : pets.indexOf(pet), ConfigSection.INTEGER);
         petsFile.save();
+        Main.LOGGER.info(STR."Saved profile from \{((TextComponent) this.getName()).content()}");
     }
 
     public ISkill getSkill(Skill skill) {
@@ -731,6 +815,7 @@ public class SkyblockPlayer extends Player {
 
     public void spawn(Pos spawn) {
         super.spawn();
+        absorption = 0;
         recalculateArmor();
         if (pet != null) {
             pet.getPet().despawnPet(this, pet);
@@ -757,6 +842,8 @@ public class SkyblockPlayer extends Player {
             sendPacket(new RemoveEntityEffectPacket(getEntityId(), PotionEffect.HASTE));
         }
         if (!sidebar.isViewer(this)) sidebar.addViewer(this);
+        for (me.carscupcake.sbremake.player.potion.PotionEffect effect : potionEffects)
+            effect.potion().start(this, effect.amplifier(), (long) ((effect.expiration() - System.currentTimeMillis()) / 50d));
 
     }
 
@@ -820,6 +907,7 @@ public class SkyblockPlayer extends Player {
         }).delay(TaskSchedule.millis((now - lastAttack < shortbowCd) ? shortbowCd - (now - lastAttack) : 0)).repeat(TaskSchedule.millis(shortbowCd)).schedule();
     }
 
+    private double lastAbsorbtion = 0;
 
     public static void tickLoop() {
         MinecraftServer.getGlobalEventHandler().addChild(PLAYER_NODE);
@@ -838,8 +926,19 @@ public class SkyblockPlayer extends Player {
                 if (maxHealth != player.getMaxHealth()) {
                     player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue((float) maxHealth);
                     player.updateHpBar();
+                } else if (player.lastAbsorbtion != player.absorption) {
+                    player.updateHpBar();
                 }
+
             } else player.oftick = false;
+            long now = System.currentTimeMillis();
+            if (!player.potionEffects.isEmpty()) {
+                while (!player.potionEffects.isEmpty() && now > player.potionEffects.getFirst().expiration()) {
+                    me.carscupcake.sbremake.player.potion.PotionEffect effect = player.potionEffects.pollFirst();
+                    assert effect != null;
+                    effect.potion().stop(player, effect.amplifier());
+                }
+            }
 
             player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue((float) (0.1 * (player.getStat(Stat.Speed) / 100d)));
 
@@ -918,8 +1017,7 @@ public class SkyblockPlayer extends Player {
             if (bonus != 0)
                 event.modifiers().add(new PlayerStatEvent.BasicModifier(pet.getPet().getName(), bonus, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.PetStats));
         }
-        for (Pair<PlayerStatEvent.PlayerStatModifier, ?> pair : temporaryModifiers.get(stat))
-            event.modifiers().add(pair.getFirst());
+        temporaryModifiers.forEachModifier(stat, modifier -> event.modifiers().add(modifier));
         SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
         if (item != null && (item.sbItem().getType().isStatsInMainhand() || (isBow && item.sbItem() instanceof BowItem))) {
             boolean canUse = true;
@@ -999,6 +1097,11 @@ public class SkyblockPlayer extends Player {
     public void updateHpBar() {
         double health = getMaxHealth() * (sbHealth / getMaxSbHealth());
         if (health != getHealth()) setHealth((float) health);
+        if (absorption > 0 || lastAbsorbtion != absorption) {
+            EntityMetaDataPacket packet = new EntityMetaDataPacket(getEntityId(), Map.of(15, Metadata.Float(getAbsorptionHearts(absorption))));
+            sendPacket(packet);
+            lastAbsorbtion = absorption;
+        }
     }
 
     public void addMana(double value) {
@@ -1019,7 +1122,18 @@ public class SkyblockPlayer extends Player {
         MinecraftServer.getGlobalEventHandler().call(event);
         if (event.isCancelled()) return;
         sendPacket(new DamageEventPacket(getEntityId(), 0, entity.getEntityId(), 0, getPosition()));
-        setSbHealth(getSbHealth() - event.calculateDamage());
+        double damage = event.calculateDamage();
+        if (absorption > 0) {
+            if (absorption - damage <= 0) {
+                damage -= absorption;
+                absorption = 0;
+            } else {
+                absorption -= damage;
+                damage = 0;
+            }
+            updateHpBar();
+        }
+        setSbHealth(getSbHealth() - damage);
         if (hasKb()) {
             this.takeKnockback(0.4f, Math.sin(entity.getPosition().yaw() * 0.017453292), -Math.cos(entity.getPosition().yaw() * 0.017453292));
         }
@@ -1030,14 +1144,40 @@ public class SkyblockPlayer extends Player {
         MinecraftServer.getGlobalEventHandler().call(event);
         if (event.isCancelled()) return;
         sendPacket(new DamageEventPacket(getEntityId(), 0, entity.getEntityId(), 0, getPosition()));
-        setSbHealth(getSbHealth() - event.calculateDamage());
+        double damage = event.calculateDamage();
+        if (absorption > 0) {
+            if (absorption - damage <= 0) {
+                damage -= absorption;
+                absorption = 0;
+            } else {
+                absorption -= damage;
+                damage = 0;
+            }
+            updateHpBar();
+        }
+        setSbHealth(getSbHealth() - damage);
         if (hasKb()) {
             this.takeKnockback(0.4f, Math.sin(entity.getPosition().yaw() * 0.017453292), -Math.cos(entity.getPosition().yaw() * 0.017453292));
         }
     }
 
     public void damage(double damage, double trueDamage) {
-
+        PlayerSelfDamageEvent event = new PlayerSelfDamageEvent(this, damage, trueDamage);
+        MinecraftServer.getGlobalEventHandler().call(event);
+        if (event.isCancelled()) return;
+        sendPacket(new DamageEventPacket(getEntityId(), 0, getEntityId(), 0, getPosition()));
+        double finalDamage = event.calculateDamage();
+        if (absorption > 0) {
+            if (absorption - finalDamage <= 0) {
+                finalDamage -= absorption;
+                absorption = 0;
+            } else {
+                absorption -= finalDamage;
+                finalDamage = 0;
+            }
+            updateHpBar();
+        }
+        setSbHealth(getSbHealth() - finalDamage);
     }
 
     public boolean hasKb() {
@@ -1114,6 +1254,26 @@ public class SkyblockPlayer extends Player {
             health = 40;
         }
         return health;
+    }
+
+    private static float getAbsorptionHearts(double absorption) {
+        if (absorption == 0) return 0;
+        if (absorption <= 10) return 1;
+        if (absorption <= 20) return 2;
+        if (absorption <= 30) return 3;
+        if (absorption <= 40) return 4;
+        if (absorption <= 50) return 5;
+        if (absorption <= 60) return 6;
+        if (absorption <= 70) return 7;
+        if (absorption <= 80) return 8;
+        if (absorption <= 90) return 9;
+        if (absorption <= 100) return 10;
+        if (absorption <= 125) return 11;
+        if (absorption <= 150) return 12;
+        if (absorption <= 175) return 13;
+        if (absorption <= 200) return 14;
+        if (absorption <= 250) return 15;
+        return 16;
     }
 
     public record DisguisedChatMessage(Component message, ChatType chatType, Component senderName,

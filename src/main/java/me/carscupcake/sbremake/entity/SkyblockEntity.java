@@ -10,6 +10,8 @@ import me.carscupcake.sbremake.event.PlayerToEntityMageDamage;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.SkyblockPlayerArrow;
+import me.carscupcake.sbremake.player.potion.Potion;
+import me.carscupcake.sbremake.player.potion.PotionEffect;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.SoundType;
@@ -139,8 +141,13 @@ public abstract class SkyblockEntity extends EntityCreature {
         spawnDamageTag(this, event.getDamageTag());
         lastDamager = event.getPlayer();
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
-        if (canTakeKnockback())
-            this.takeKnockback(0.4f, Math.sin(event.damagerPos().yaw() * 0.017453292), -Math.cos(event.damagerPos().yaw() * 0.017453292));
+        if (canTakeKnockback()) {
+            double mult = 1;
+            PotionEffect effect = event.getPlayer().getPotionEffect(Potion.Knockback);
+            if (effect != null)
+                mult = 1 + (0.2 * effect.amplifier());
+            this.takeKnockback((float) (0.4 * mult), Math.sin(event.damagerPos().yaw() * 0.017453292), -Math.cos(event.damagerPos().yaw() * 0.017453292));
+        }
     }
 
     @Override

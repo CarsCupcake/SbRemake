@@ -19,7 +19,7 @@ public class Dungeoneering extends ISkill {
     public static final EventNode<Event> LISTENER = EventNode.all("skill.dungeon").addListener(PlayerStatEvent.class, event -> {
         if (event.stat() == Stat.Health) {
             event.modifiers().add(new PlayerStatEvent.BasicModifier("Dungeon Skill",
-                    boost(event.player().getSkill(Skill.Farming).getLevel()), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Skills));
+                    boost(event.player().getSkill(Skill.Dungeneering).getLevel()), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Skills));
         }
     });
 

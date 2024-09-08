@@ -161,4 +161,16 @@ public class StringUtils {
         } else str = STR."\{cleanDouble(num)}";
         return str;
     }
+
+    public static String timeToString(int seconds) {
+        int minutes = (int) (seconds / 60d);
+        return STR."\{minutes}:\{(int) (seconds - (minutes * 60))}";
+    }
+
+    public static String ticksToString(long l) {
+        double seconds = (double) l / 20d;
+        int minutes = (int) (seconds / 60d);
+        int displaySeconds = (int) (seconds - (minutes * 60));
+        return STR."\{minutes}:\{displaySeconds < 10 ? "0" : ""}\{displaySeconds}";
+    }
 }

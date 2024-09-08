@@ -19,6 +19,7 @@ import org.junit.Assert;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -31,6 +32,7 @@ public class ConfigSection {
     public static final Data<Long> LONG = new ClassicGetter<>(JsonElement::getAsLong, JsonPrimitive::new);
     public static final Data<Float> FLOAT = new ClassicGetter<>(JsonElement::getAsFloat, JsonPrimitive::new);
     public static final Data<Double> DOUBLE = new ClassicGetter<>(JsonElement::getAsDouble, JsonPrimitive::new);
+    public static final Data<Byte> BYTE = new ClassicGetter<>(JsonElement::getAsByte, JsonPrimitive::new);
     public static final Data<String[]> STRING_ARRAY = new ClassicGetter<>(element1 -> {
         assert element1.isJsonArray();
         JsonArray array = element1.getAsJsonArray();
@@ -240,6 +242,12 @@ public class ConfigSection {
         element.getAsJsonArray().forEach(element1 -> {
             elementConsumer.accept(new ConfigSection(element1));
         });
+    }
+
+    public void forEntries(BiConsumer<String, ConfigSection> entryConsumer) {
+        for (Map.Entry<String, JsonElement> entry :  element.getAsJsonObject().asMap().entrySet()) {
+            entryConsumer.accept(entry.getKey(), new ConfigSection(entry.getValue()));
+        }
     }
 
     public interface Data<T> {

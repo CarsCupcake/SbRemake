@@ -72,7 +72,6 @@ public class StoredPet {
             requiredXp += i[level++];
         }
     }
-
     public Pet.PetInfo toPetInfo() {
         return new Pet.PetInfo(pet, rarity, level, xp, petItem, petCandyUsed);
     }

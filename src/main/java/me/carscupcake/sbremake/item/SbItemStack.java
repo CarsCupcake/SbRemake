@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.item;
 
-import it.unimi.dsi.fastutil.objects.ObjectLists;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.item.ability.Ability;
@@ -11,13 +10,13 @@ import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlot;
+import me.carscupcake.sbremake.item.modifiers.potion.PotionInfo;
 import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.ItemEntity;
@@ -28,7 +27,9 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.component.HeadProfile;
+import net.minestom.server.item.component.PotionContents;
 import net.minestom.server.item.enchant.Enchantment;
+import net.minestom.server.potion.PotionType;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -103,8 +104,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                 list = list.with(Enchantment.EFFICIENCY, min(255, enchantments.get(NormalEnchantment.Efficiency)));
             }
         } else {
-            if (sbItem.modifierBuilder().isGlint())
-                list = list.with(Enchantment.PROTECTION, 1);
+            if (sbItem.modifierBuilder().isGlint()) list = list.with(Enchantment.PROTECTION, 1);
 
         }
         ItemStack itemStack = item;
@@ -114,10 +114,23 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                 itemStack = itemStack.with(ItemComponent.PROFILE, new HeadProfile(new PlayerSkin(petInfo.pet().skullValue(), "")));
             }
         }
+        if (sbItem.getType() == ItemType.Potion) {
+            PotionInfo potionInfo = getModifier(Modifier.POTION);
+            if (potionInfo != null) {
+                itemStack = itemStack.with(ItemComponent.POTION_CONTENTS, new PotionContents(PotionType.AWKWARD, potionInfo.potion().getPotionColor()));
+                list = list.with(Enchantment.PROTECTION, 1);
+            }
+        }
         return new SbItemStack(itemStack.with(ItemComponent.LORE, lore).with(ItemComponent.ENCHANTMENTS, list.withTooltip(false)).with(ItemComponent.CUSTOM_NAME, Component.text(getRarity().getPrefix() + displayName())), sbItem);
     }
 
     public String displayName() {
+        if (sbItem.getType() == ItemType.Potion) {
+            PotionInfo potionInfo = getModifier(Modifier.POTION);
+            if (potionInfo != null) {
+                return potionInfo.customPotionName() != null ? potionInfo.customPotionName() : STR."\{potionInfo.potion().getName()} \{StringUtils.toRoman(potionInfo.potionLevel())} Potion";
+            }
+        }
         Reforge reforge = getModifier(Modifier.REFORGE);
         Pet.PetInfo petInfo = getModifier(Modifier.PET_INFO);
         return STR."\{sbItem().getType() == ItemType.Pet ? STR."§7[Lvl \{petInfo.level()}] " : ""}\{reforge != null ? STR."\{reforge.getName()} " : ""}\{petInfo.pet() == null ? sbItem.getName() : STR."\{petInfo.rarity().getPrefix()}\{petInfo.pet().getName()}"}";
@@ -186,8 +199,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             StringBuilder builder = new StringBuilder();
             for (GemstoneSlot s : gemstoneSlots) {
                 String bracketColor = s.unlocked() ? (s.gemstone() != null ? s.gemstone().quality().getRarity().getPrefix() : "§7") : "§8";
-                builder.append(bracketColor).append("[").append(s.gemstone() != null ? s.gemstone().type().getPrefix() : "§8").append(s.type().getSymbol())
-                        .append(bracketColor).append("] ");
+                builder.append(bracketColor).append("[").append(s.gemstone() != null ? s.gemstone().type().getPrefix() : "§8").append(s.type().getSymbol()).append(bracketColor).append("] ");
             }
             lore.add(builder.toString());
         }
@@ -228,6 +240,17 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                 lore.add("§a  ");
             }
         }
+        if (sbItem.getType() == ItemType.Potion) {
+            PotionInfo info = getModifier(Modifier.POTION);
+            if (info != null) {
+                lore.add("§a ");
+                for (PotionInfo.PotionEffect effect : info.effects()) {
+                    lore.add(STR."\{effect.potion().getPrefix()}\{effect.potion().getName()} \{StringUtils.toRoman(effect.level())} \{effect.potion().isInstant() ? "" : STR."§f(\{StringUtils.ticksToString(effect.durationTicks())})"}");
+                    lore.addAll(effect.potion().description().build(effect.level()));
+                    lore.add("§b ");
+                }
+            }
+        }
         if (sbItem.getLorePlacement() == ISbItem.LorePlace.BelowAbility && sbItem.getLore() != Lore.EMPTY) {
             lore.addAll(sbItem.getLore().build(this, player));
             lore.add("  ");
@@ -259,8 +282,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                     int xpForThis = xpPL[petInfo.level() - 1];
                     double percentage = (petInfo.exp() - totalDone) / ((double) xpForThis);
                     lore.add(STR."§7Progress to Level \{petInfo.level() + 1}: §e\{StringUtils.cleanDouble(percentage, 1)}%");
-                    lore.add(STR."\{StringUtils.makeProgressBarAsString(20, percentage, 1, "§f", "§a",
-                            "§m ")}§r §e\{StringUtils.cleanDouble(petInfo.exp() - totalDone, 1)}§6/§e\{StringUtils.toShortNumber(xpForThis)}");
+                    lore.add(STR."\{StringUtils.makeProgressBarAsString(20, percentage, 1, "§f", "§a", "§m ")}§r §e\{StringUtils.cleanDouble(petInfo.exp() - totalDone, 1)}§6/§e\{StringUtils.toShortNumber(xpForThis)}");
                 }
                 lore.add("§9 ");
             }
@@ -273,8 +295,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             lore.add("§8This item can be reforged!");
         }
         for (Requirement requirement : sbItem.requirements())
-            if (!requirement.canUse(player, item))
-                lore.add(requirement.display());
+            if (!requirement.canUse(player, item)) lore.add(requirement.display());
         lore.add(STR."\{rarity.getPrefix()}§l\{rarity.getDisplay().toUpperCase()} \{sbItem.getType().getDisplay().toUpperCase()}");
         return lore;
     }
@@ -297,9 +318,18 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     }
 
     public ItemRarity getRarity() {
+        if (sbItem.getType() == ItemType.Potion) {
+            PotionInfo info = getModifier(Modifier.POTION);
+            if (info != null) return switch (info.potionLevel()) {
+                case 1, 2 -> ItemRarity.COMMON;
+                case 3, 4 -> ItemRarity.UNCOMMON;
+                case 5, 6 -> ItemRarity.RARE;
+                case 7, 8 -> ItemRarity.EPIC;
+                default -> ItemRarity.LEGENDARY;
+            };
+        }
         //TODO add custom rarity getter
-        if (sbItem.getType() == ItemType.Pet)
-            return getModifier(Modifier.PET_INFO).rarity();
+        if (sbItem.getType() == ItemType.Pet) return getModifier(Modifier.PET_INFO).rarity();
         return sbItem.getRarity();
     }
 
@@ -319,8 +349,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         }
         if (sbItem().getType() == ItemType.Pet) {
             Pet.PetInfo petInfo = getModifier(Modifier.PET_INFO);
-            if (petInfo.pet() != null)
-                baseStat += petInfo.pet().getStat(stat, petInfo);
+            if (petInfo.pet() != null) baseStat += petInfo.pet().getStat(stat, petInfo);
         }
         GetItemStatEvent event = new GetItemStatEvent(this, stat, baseStat, player);
         MinecraftServer.getGlobalEventHandler().call(event);
@@ -334,15 +363,13 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     public List<Ability> getAbilities(SkyblockPlayer player) {
         //Later add stuff like hype ability
         List<Ability> abilities = sbItem.getDefaultAbilities();
-        if (sbItem.getType() == ItemType.Pickaxe || sbItem.getType() == ItemType.Drill)
-            if (player != null) {
-                PickaxeAbility ability = player.getHotm().getActiveAbility();
-                if (ability != null) abilities.add(ability.getAbility());
-            }
+        if (sbItem.getType() == ItemType.Pickaxe || sbItem.getType() == ItemType.Drill) if (player != null) {
+            PickaxeAbility ability = player.getHotm().getActiveAbility();
+            if (ability != null) abilities.add(ability.getAbility());
+        }
         if (sbItem().getType() == ItemType.Pet) {
             Pet.PetInfo petInfo = getModifier(Modifier.PET_INFO);
-            if (petInfo.pet() != null)
-                abilities.addAll(List.of(petInfo.pet().getAbility(getRarity())));
+            if (petInfo.pet() != null) abilities.addAll(List.of(petInfo.pet().getAbility(getRarity())));
         }
         return abilities;
     }

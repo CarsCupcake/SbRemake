@@ -11,7 +11,10 @@ import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlot;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlotType;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlots;
+import me.carscupcake.sbremake.item.modifiers.potion.PotionInfo;
 import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
+import me.carscupcake.sbremake.player.potion.IPotion;
+import me.carscupcake.sbremake.player.potion.PotionType;
 import net.kyori.adventure.nbt.*;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemComponent;
@@ -37,6 +40,8 @@ public interface Modifier<T> {
     @Nullable T getFromNbt(SbItemStack item);
 
     SbItemStack toNbt(T t, SbItemStack itemStack);
+
+    Tag<BinaryTag> EXTRA_ATTRIBUTES = Tag.NBT("ExtraAttributes");
 
     Modifier<Reforge> REFORGE = new Modifier<>() {
         @Override
@@ -165,6 +170,51 @@ public interface Modifier<T> {
             if (petInfo.petItem() == null) petInfoTag = petInfoTag.remove("heldItem");
             else petInfoTag = petInfoTag.putString("heldItem", petInfo.petItem().getId());
             return SbItemStack.from(item.withTag(Tag.NBT("ExtraAttributes"), extraAttributes.put("petInfo", petInfoTag)));
+        }
+    };
+
+    Modifier<List<PotionInfo.PotionEffect>> POTION_EFFECTS = new Modifier<>() {
+        @Override
+        public List<PotionInfo.PotionEffect> getFromNbt(SbItemStack item) {
+            List<PotionInfo.PotionEffect> effects = new ArrayList<>();
+            for (BinaryTag binaryTag : ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getList("effects")) {
+                CompoundBinaryTag c = (CompoundBinaryTag) binaryTag;
+                effects.add(new PotionInfo.PotionEffect(IPotion.potions.get(c.getString("effect")), c.getByte("level"), c.getLong("duration_ticks")));
+            }
+            return effects;
+        }
+
+        @Override
+        public SbItemStack toNbt(List<PotionInfo.PotionEffect> effects, SbItemStack itemStack) {
+            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(Tag.NBT("ExtraAttributes"));
+            List<BinaryTag> tags = new ArrayList<>();
+            for (PotionInfo.PotionEffect effect : effects) {
+                tags.add(CompoundBinaryTag.empty().putString("effect", effect.potion().getId()).putByte("level", effect.level()).putLong("duration_ticks", effect.durationTicks()));
+            }
+            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, extraAttributes.put("effects", ListBinaryTag.listBinaryTag(BinaryTagTypes.COMPOUND, tags))));
+        }
+    };
+
+    Modifier<PotionInfo> POTION = new Modifier<>() {
+        @Override
+        public @Nullable PotionInfo getFromNbt(SbItemStack item) {
+            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES);
+            String potionType = extraAttributes.getString("potion_type");
+            if (potionType.isEmpty()) return null;
+            String potion = extraAttributes.getString("potion");
+            if (potion.isEmpty()) return null;
+            List<PotionInfo.PotionEffect> effects = item.getModifier(POTION_EFFECTS);
+            String customPotionName = extraAttributes.getString("potion_name");
+            return new PotionInfo(IPotion.potions.get(potion), extraAttributes.getBoolean("enhanced"), extraAttributes.getBoolean("extended"), extraAttributes.getByte("potion_level"), PotionType.valueOf(potionType), customPotionName.isEmpty() ? null : customPotionName, effects);
+        }
+
+        @Override
+        public SbItemStack toNbt(PotionInfo potionInfo, SbItemStack itemStack) {
+            itemStack = itemStack.withModifier(POTION_EFFECTS, potionInfo.effects());
+            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES);
+            if (potionInfo.customPotionName() != null) extraAttributes = extraAttributes.putString("potion_name", potionInfo.customPotionName());
+            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, extraAttributes.putString("potion", potionInfo.potion().getId())
+                    .putBoolean("enhanced", potionInfo.enhanced()).putBoolean("extended", potionInfo.extended()).putByte("potion_level", potionInfo.potionLevel()).putString("potion_type", potionInfo.potionType().name())));
         }
     };
 }

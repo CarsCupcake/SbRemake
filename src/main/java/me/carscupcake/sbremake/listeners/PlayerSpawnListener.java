@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.entity.impl.deepCaverns.RedstonePigman;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.potion.PotionEffect;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 
 import java.util.function.Consumer;
@@ -20,6 +21,9 @@ public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
         player.teleport(player.getWorldProvider().getCustomEntry().getOrDefault(player.getPrevious(), player.getWorldProvider().spawn()));
         RedstonePigman.attacked.remove(player);
         if (playerSpawnEvent.isFirstSpawn()) {
+            for (PotionEffect effect : player.getPotionEffects()) {
+                player.initPotion(effect);
+            }
             ConfigFile file = new ConfigFile("inventory", player);
             if (file.getRawElement() == null) return;
             if (file.getRawElement().getAsJsonObject().isEmpty()) return;

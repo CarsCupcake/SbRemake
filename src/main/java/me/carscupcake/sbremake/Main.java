@@ -10,6 +10,8 @@ import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
+import me.carscupcake.sbremake.player.potion.IPotion;
+import me.carscupcake.sbremake.player.potion.Potion;
 import me.carscupcake.sbremake.player.skill.impl.*;
 import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.PlayerBrodcastOutputStream;
@@ -21,12 +23,14 @@ import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.command.ConsoleSender;
 import net.minestom.server.command.builder.Command;
+import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.event.player.*;
 import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
+import net.minestom.server.registry.Registry;
 import org.reflections.Reflections;
 
 import java.io.BufferedReader;
@@ -74,10 +78,13 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(Region.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(EnchantmentUtils.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(HotmUpgrade.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(Potion.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(AlchemySkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addListener(ServerTickMonitorEvent.class, serverTickMonitorEvent -> {
             tickDelay = (long) serverTickMonitorEvent.getTickMonitor().getTickTime();
         });
-        MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (clientDebugSampleSubscriptionPacket, player) -> {
+        for (Potion potion : Potion.values()) IPotion.potions.put(potion.getId(), potion);
+        MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (_, player) -> {
             //TODO return Debug Sample Packet
             player.sendPacket(new DebugSamplePacket(new long[]{tickDelay, tickDelay, 0, 50 - tickDelay}, DebugSamplePacket.Type.TICK_TIME));
         });
@@ -92,7 +99,6 @@ public class Main {
                 player.kick("Server shutting down!");
             });
         });
-
         CommandManager commandManager = MinecraftServer.getCommandManager();
         Reflections reflections = new Reflections("me.carscupcake.sbremake.command");
         for (Class<? extends Command> clazz : reflections.getSubTypesOf(Command.class)) {

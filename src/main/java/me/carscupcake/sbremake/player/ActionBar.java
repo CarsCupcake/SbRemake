@@ -39,7 +39,7 @@ public class ActionBar {
 
         @Override
         public String get(SkyblockPlayer player) {
-            return STR."\{Stat.Health.getPrefix()}\{StringUtils.cleanDouble(player.getSbHealth(), 1)}/\{StringUtils.cleanDouble(player.getMaxSbHealth(), 1)} \{Stat.Health.getSymbol()}";
+            return STR."\{player.getAbsorption() != 0 ? "§6" : Stat.Health.getPrefix()}\{StringUtils.cleanDouble(player.getSbHealth() + player.getAbsorption(), 1)}/\{StringUtils.cleanDouble(player.getMaxSbHealth(), 1)} \{Stat.Health.getSymbol()}";
         }
     }
 

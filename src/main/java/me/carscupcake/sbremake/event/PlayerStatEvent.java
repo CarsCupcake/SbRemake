@@ -26,6 +26,14 @@ public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> mo
         public BasicModifier(String name, double value, Type type, Material showItem, StatsCategory category) {
             this(name, value, type, ItemStack.of(showItem), category);
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof PlayerStatModifier modifier) {
+                return modifier.name().equals(name) && value == modifier.value() && modifier.type().equals(type) && modifier.category() == category;
+            }
+            return false;
+        }
     }
 
     public double calculate() {
@@ -62,6 +70,7 @@ public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> mo
         PetStats("Pet Stats"),
         Ability("Ability"),
         Hotm("HOTM", new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZmMDZlYWEzMDA0YWVlZDA5YjNkNWI0NWQ5NzZkZTU4NGU2OTFjMGU5Y2FkZTEzMzYzNWRlOTNkMjNiOWVkYiJ9fX0=").build()),
+        Potion("Potion", ItemStack.of(Material.POTION)),
         Uncategorized("Uncategorized");
         private final String name;
         private final ItemStack item;

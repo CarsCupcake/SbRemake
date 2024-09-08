@@ -10,6 +10,8 @@ import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.TaskSchedule;
 
+import java.time.Duration;
+
 public class MiningSpeedBoost extends PickaxeAbility {
     public MiningSpeedBoost(SkyblockPlayer player) {
         super(player, TitaniumInsanium.class, LuckOfTheCave.class);
@@ -22,7 +24,7 @@ public class MiningSpeedBoost extends PickaxeAbility {
 
     @Override
     public void onInteract() {
-        getPlayer().getTemporaryModifiers().add(Stat.MiningSpeed, new Pair<>(new PlayerStatEvent.BasicModifier(getName(), 3, PlayerStatEvent.Type.AddativeMultiplier, PlayerStatEvent.StatsCategory.Hotm), TaskSchedule.seconds(20)));
+        getPlayer().getTemporaryModifiers().add(Stat.MiningSpeed, new PlayerStatEvent.BasicModifier(getName(), 3, PlayerStatEvent.Type.AddativeMultiplier, PlayerStatEvent.StatsCategory.Hotm), Duration.ofSeconds(20));
         MinecraftServer.getSchedulerManager().buildTask(() -> getPlayer().sendMessage("§cYour Mining Speed Boost has expired!")).delay(TaskSchedule.seconds(20)).schedule();
     }
 
