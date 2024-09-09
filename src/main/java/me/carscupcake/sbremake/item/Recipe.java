@@ -25,12 +25,16 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public interface Recipe {
     SbItemStack getResult(@Nullable List<SbItemStack> items);
@@ -53,9 +57,14 @@ public interface Recipe {
     LinkedHashMap<String, Recipe> craftingRecipes = new LinkedHashMap<>();
     Map<String, JsonArray> later = new HashMap<>();
 
-    static void loadTags(File[] files) throws FileNotFoundException {
-        for (File f : files) {
-            JsonArray array = JsonParser.parseReader(new FileReader(f)).getAsJsonObject().getAsJsonArray("values");
+    static void loadTags(String path) throws URISyntaxException, IOException {
+        forFilesInResourceFolder(path, (name, f) -> {
+            JsonArray array;
+            try {
+                array = JsonParser.parseReader(new InputStreamReader(f)).getAsJsonObject().getAsJsonArray("values");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             ISbItem[] items = new ISbItem[array.size()];
             int i = 0;
             boolean doLater = false;
@@ -63,34 +72,58 @@ public interface Recipe {
                 String member = e.getAsString();
                 if (member.startsWith("#")) {
                     doLater = true;
-                    later.put(f.getName().split("\\.")[0], array);
+                    later.put(name.split("\\.")[0], array);
                     break;
                 }
                 items[i] = Objects.requireNonNull(SbItemStack.from(member.split(":", 2)[1].toUpperCase())).sbItem();
                 i++;
             }
-            if (doLater) continue;
-            tags.put(f.getName().split("\\.")[0], new CraftingIngredient(1, items));
-        }
+            if (doLater) return;
+            tags.put(name.split("\\.")[0], new CraftingIngredient(1, items));
+        });
     }
 
-    static void loadRecipes(File[] files) throws FileNotFoundException {
-        for (File f : files) {
-            JsonObject o = JsonParser.parseReader(new FileReader(f)).getAsJsonObject();
+    static void loadRecipes(String path) throws URISyntaxException, IOException {
+        forFilesInResourceFolder(path, (name, f) ->  {
+            JsonObject o;
+            try {
+                o = JsonParser.parseReader(new InputStreamReader(f)).getAsJsonObject();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             String type = o.get("type").getAsString();
             for (RecipeType recipeType : RecipeType.values()) {
                 if (recipeType.id.equals(type)) {
-                    craftingRecipes.put(f.getName().split("\\.")[0], recipeType.apply(o));
+                    craftingRecipes.put(name.split("\\.")[0], recipeType.apply(o));
                     break;
                 }
             }
+        });
+    }
+
+    static void forFilesInResourceFolder(String inResourcesPath, BiConsumer<String, InputStream> fileConsumer) throws URISyntaxException, IOException {
+        URI uri = Objects.requireNonNull(Main.class.getClassLoader().getResource(inResourcesPath)).toURI();
+        try( FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap() ) ){
+            Path folderRootPath = fileSystem.getPath(inResourcesPath);
+            Stream<Path> walk = Files.walk(folderRootPath, 1);
+            walk.forEach(childFileOrFolder -> {
+                try {
+                    fileConsumer.accept(childFileOrFolder.getFileName().toString(), Files.newInputStream(childFileOrFolder));
+                } catch (FileSystemException e) {
+                    if (e.getMessage().endsWith("is a directory")) return;
+                    throw new RuntimeException(e);
+                }catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     static void init() {
         try {
-            File folder = new File(Objects.requireNonNull(Main.class.getClassLoader().getResource("assets/tags/items")).getFile());
-            loadTags(Objects.requireNonNull(folder.listFiles()));
+            loadTags("assets/tags/items/");
             for (Map.Entry<String, JsonArray> entry : later.entrySet()) {
                 JsonArray array = entry.getValue();
                 List<ISbItem> items = new ArrayList<>();
@@ -104,10 +137,8 @@ public interface Recipe {
                 }
                 tags.put(entry.getKey(), new CraftingIngredient(1, items.toArray(new ISbItem[0])));
             }
-            folder = new File(Objects.requireNonNull(Main.class.getClassLoader().getResource("assets/crafting/native")).getFile());
-            loadRecipes(Objects.requireNonNull(folder.listFiles()));
-            folder = new File(Objects.requireNonNull(Main.class.getClassLoader().getResource("assets/crafting/custom")).getFile());
-            loadRecipes(Objects.requireNonNull(folder.listFiles()));
+            loadRecipes("assets/crafting/native");
+            loadRecipes("assets/crafting/custom");
         } catch (Exception e) {
             Main.LOGGER.error("An error occurred", e);
         }
@@ -126,6 +157,15 @@ public interface Recipe {
             id = STR."perfect_helmet_\{i}";
             craftingRecipes.put(id, new ShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw(STR."PERFECT_HELMET_\{i - 1}"))), recipeShape));
         }
+    }
+
+    private static File fileFromResource(String path) throws IOException, URISyntaxException {
+        /*InputStream s = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+        File f = new File("./tempLoad/");
+        if (!f.exists()) f.mkdirs();
+        assert s != null;
+        Files.copy(s, f.toPath());*/
+        return new File(Objects.requireNonNull(Main.class.getResource(path)).toURI());
     }
 
     enum RecipeType implements Function<JsonObject, Recipe> {
