@@ -3,10 +3,9 @@ package me.carscupcake.sbremake.util.lootTable;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.*;
 
-public class LootTable<T> {
+public class LootTable<T> implements ILootTable<T> {
     private final List<Loot<T>> loot = new ArrayList<>();
     private boolean singleLoot = false;
 
@@ -27,7 +26,7 @@ public class LootTable<T> {
     public Set<T> loot(SkyblockPlayer player) {
         Set<T> set = new HashSet<>();
         Random r = new Random();
-        if (singleLoot) {
+         if (singleLoot) {
             double sum = 0;
             HashMap<Loot<T>, Double> table = new HashMap<>();
             for (Loot<T> l : loot) {
@@ -51,7 +50,7 @@ public class LootTable<T> {
         return set;
     }
 
-    public static record LootTableLoot<T>(LootTable<T> table, double chance, boolean magicFind) implements Loot<T> {
+    public record LootTableLoot<T>(LootTable<T> table, double chance, boolean magicFind) implements Loot<T> {
 
         public LootTableLoot(LootTable<T> table, double chance) {
             this(table, chance, chance <= 0.05);

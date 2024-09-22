@@ -28,9 +28,9 @@ public class GodPotionCommand extends Command {
             }
             player.playSound(SoundType.ENTITY_PLAYER_BURP, Sound.Source.PLAYER, 2f, 0.1f);
         }, minutes);
-        addSyntax((commandSender, commandContext) -> {
+        addSyntax((commandSender, _) -> {
             SkyblockPlayer player = (SkyblockPlayer) commandSender;
-            long ms = 24 * 7 * 60 * 1000;
+            long ms = 604_800_000; //1 Week of God Potion
             ms += System.currentTimeMillis();
             synchronized (player.getPotionEffects()) {
                 for (IPotion potion : Potion.values()) {
@@ -42,12 +42,5 @@ public class GodPotionCommand extends Command {
             }
             player.playSound(SoundType.ENTITY_PLAYER_BURP, Sound.Source.PLAYER, 2f, 0.1f);
         });
-    }
-    private static int max() {
-        long maxInt = Integer.MAX_VALUE;
-        maxInt *= 50;
-        maxInt /= 1000;
-        maxInt /= 60;
-        return (int) maxInt;
     }
 }

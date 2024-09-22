@@ -275,13 +275,7 @@
         <dependency>
             <groupId>net.minestom</groupId>
             <artifactId>minestom-snapshots</artifactId>
-            <version>461c56e749</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.shrinkwrap.resolver</groupId>
-                    <artifactId>shrinkwrap-resolver-depchain</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>7ce047b22e</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>

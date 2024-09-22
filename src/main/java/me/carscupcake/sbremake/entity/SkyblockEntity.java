@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.entity;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.entity.slayer.SlayerQuest;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerProjectileDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerToEntityDamageEvent;
@@ -12,10 +13,12 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.SkyblockPlayerArrow;
 import me.carscupcake.sbremake.player.potion.Potion;
 import me.carscupcake.sbremake.player.potion.PotionEffect;
+import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.StringUtils;
+import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.sound.Sound;
@@ -56,13 +59,13 @@ public abstract class SkyblockEntity extends EntityCreature {
     private SkyblockPlayer lastDamager;
 
     @Getter
-    private final LootTable<SbItemStack> lootTable;
+    private final ILootTable<SbItemStack> lootTable;
 
     public SkyblockEntity(@NotNull EntityType entityType) {
         this(entityType, null);
     }
 
-    public SkyblockEntity(@NotNull EntityType entityType, LootTable<SbItemStack> lootTable) {
+    public SkyblockEntity(@NotNull EntityType entityType, ILootTable<SbItemStack> lootTable) {
         super(entityType, UUID.randomUUID());
         this.lootTable = lootTable == null ? new LootTable<>() : lootTable;
         setHealth(getMaxHealth());
@@ -154,7 +157,13 @@ public abstract class SkyblockEntity extends EntityCreature {
     public void kill() {
         super.kill();
         if (lastDamager != null) {
-            if (this instanceof SkillXpDropper dropper) dropper.apply(lastDamager);
+            if (this instanceof SkillXpDropper dropper) {
+                dropper.apply(lastDamager);
+                if (dropper.type() == Skill.Combat && lastDamager.getSlayerQuest() != null && lastDamager.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.XpGathering) {
+                    if (lastDamager.getSlayerQuest().getSlayer().getSlayer().addXp(this, lastDamager.getSlayerQuest().getTier())) lastDamager.getSlayerQuest()
+                            .addXp((1 + lastDamager.getStat(Stat.CombatWisdom) / 100d) * dropper.amount(lastDamager), getPosition());
+                }
+            }
             Set<SbItemStack> items = lootTable.loot(lastDamager);
             for (SbItemStack item : items) {
                 ItemEntity entity = new ItemEntity(item.item());

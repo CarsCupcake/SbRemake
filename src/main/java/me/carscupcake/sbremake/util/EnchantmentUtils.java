@@ -34,6 +34,15 @@ public class EnchantmentUtils {
         } : level * 5;
     }
 
+    public static double getSmiteBonus(int level) {
+        if (level <= 4) return level * 0.1d;
+        return switch (level) {
+            case 5 -> 0.6;
+            case 6 -> 0.8;
+            default -> (level + 3) * 0.1;
+        };
+    }
+
     public static int getFortuneBonus(int level) {
         return (level < 4) ? level * 10 : (5 + level * 10);
     }

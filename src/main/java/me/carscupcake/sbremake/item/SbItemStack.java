@@ -7,6 +7,7 @@ import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
 import me.carscupcake.sbremake.item.impl.pets.Pet;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
+import me.carscupcake.sbremake.item.modifiers.RuneModifier;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlot;
@@ -114,6 +115,12 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                 itemStack = itemStack.with(ItemComponent.PROFILE, new HeadProfile(new PlayerSkin(petInfo.pet().skullValue(), "")));
             }
         }
+        if (sbItem.getType() == ItemType.Rune) {
+            RuneModifier modifier = getModifier(Modifier.RUNE);
+            if (modifier != null) {
+                itemStack = itemStack.with(ItemComponent.PROFILE, new HeadProfile(new PlayerSkin(modifier.rune().headValue(), "")));
+            }
+        }
         if (sbItem.getType() == ItemType.Potion) {
             PotionInfo potionInfo = getModifier(Modifier.POTION);
             if (potionInfo != null) {
@@ -130,6 +137,11 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             if (potionInfo != null) {
                 return potionInfo.customPotionName() != null ? potionInfo.customPotionName() : STR."\{potionInfo.potion().getName()} \{StringUtils.toRoman(potionInfo.potionLevel())} Potion";
             }
+        }
+        if (sbItem.getType() == ItemType.Rune) {
+            RuneModifier runeModifier = getModifier(Modifier.RUNE);
+            if (runeModifier != null)
+                return STR."\{runeModifier.rune().getName()} Rune \{StringUtils.toRoman(runeModifier.level())}";
         }
         Reforge reforge = getModifier(Modifier.REFORGE);
         Pet.PetInfo petInfo = getModifier(Modifier.PET_INFO);
@@ -318,6 +330,11 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     }
 
     public ItemRarity getRarity() {
+        if (sbItem.getType() == ItemType.Rune) {
+            RuneModifier modifier = getModifier(Modifier.RUNE);
+            if (modifier != null)
+                return modifier.rune().getRarity();
+        }
         if (sbItem.getType() == ItemType.Potion) {
             PotionInfo info = getModifier(Modifier.POTION);
             if (info != null) return switch (info.potionLevel()) {

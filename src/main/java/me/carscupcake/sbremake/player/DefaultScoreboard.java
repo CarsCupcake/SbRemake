@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
+@SuppressWarnings("preview")
 public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
     Server {
         @Override
@@ -34,6 +35,21 @@ public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
             String s = (player.getPowderString() != null) ? player.getPowderString() : STR."§fPurse§6 \{StringUtils.toFormatedNumber(player.getCoins())}";
             player.setPowderString(null);
             return new String[]{" ", s, "§fBits:§b ∞"};
+        }
+    },
+    SlayerQuest {
+        @Override
+        public String[] apply(SkyblockPlayer player) {
+            if (player.getSlayerQuest() == null)
+                return new String[0];
+            return switch (player.getSlayerQuest().getStage()) {
+                case XpGathering -> new String[]{" ", "§fSlayer Quest", STR."§5\{player.getSlayerQuest().getSlayer().getSlayer().getName()}",
+                        player.getSlayerQuest().getLastXp() <= 0 ?  STR."§7(§e\{StringUtils.toShortNumber(player.getSlayerQuest().getXp())}§7/§c\{StringUtils.toShortNumber(player.getSlayerQuest().getRequiredXp())}§7) Combat Xp"
+                : STR."§7(§e\{(int) (player.getSlayerQuest().getXp() / player.getSlayerQuest().getLastXp())}§7/§c\{(int) (player.getSlayerQuest().getRequiredXp() / player.getSlayerQuest().getLastXp())}§7) Combat Xp"};
+                case MobKilling -> new String[]{" ", "§fSlayer Quest", STR."§5\{player.getSlayerQuest().getSlayer().getSlayer().getName()}", "§eSlay the boss!"};
+                case Completed -> new String[]{" ", "§fSlayer Quest", STR."§a\{player.getSlayerQuest().getSlayer().getSlayer().getName()}", "§eBoss Slain!"};
+                case Failed -> new String[]{" ", "§fSlayer Quest", STR."§c\{player.getSlayerQuest().getSlayer().getSlayer().getName()}", "§eQuest Failed!"};
+            };
         }
     },
     Footer {

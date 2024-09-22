@@ -25,17 +25,21 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+
+@SuppressWarnings("preview")
 public interface Recipe {
     SbItemStack getResult(@Nullable List<SbItemStack> items);
 
@@ -84,7 +88,7 @@ public interface Recipe {
     }
 
     static void loadRecipes(String path) throws URISyntaxException, IOException {
-        forFilesInResourceFolder(path, (name, f) ->  {
+        forFilesInResourceFolder(path, (name, f) -> {
             JsonObject o;
             try {
                 o = JsonParser.parseReader(new InputStreamReader(f)).getAsJsonObject();
@@ -103,7 +107,7 @@ public interface Recipe {
 
     static void forFilesInResourceFolder(String inResourcesPath, BiConsumer<String, InputStream> fileConsumer) throws URISyntaxException, IOException {
         URI uri = Objects.requireNonNull(Main.class.getClassLoader().getResource(inResourcesPath)).toURI();
-        try( FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap() ) ){
+        try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
             Path folderRootPath = fileSystem.getPath(inResourcesPath);
             Stream<Path> walk = Files.walk(folderRootPath, 1);
             walk.forEach(childFileOrFolder -> {
@@ -112,11 +116,11 @@ public interface Recipe {
                 } catch (FileSystemException e) {
                     if (e.getMessage().endsWith("is a directory")) return;
                     throw new RuntimeException(e);
-                }catch (IOException e) {
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
-            } catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -348,7 +352,7 @@ public interface Recipe {
             return false;
         });
         gui.setItemChangeEvent(event -> {
-            if (craftingGrid.contains(event.getSlot())){
+            if (craftingGrid.contains(event.getSlot())) {
                 Recipe recipe = null;
                 List<SbItemStack> itemStacks = new ArrayList<>();
                 for (int i : craftingGrid)

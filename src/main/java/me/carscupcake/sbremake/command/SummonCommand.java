@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.impl.deepCaverns.SneakyCreeper;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
 import me.carscupcake.sbremake.entity.impl.spidersDen.GravelSkeleton;
+import me.carscupcake.sbremake.entity.slayer.zombie.RevenantHorrorI;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
@@ -14,6 +15,7 @@ import net.minestom.server.command.builder.condition.Conditions;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
 import net.minestom.server.utils.location.RelativeVec;
+import org.apache.cassandra.repair.PreviewRepairConflictWithIncrementalRepairException;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -52,7 +54,13 @@ public class SummonCommand extends Command {
     enum EntityClass implements EntityFactory{
         GraveyardZombie(GraveyardZombie.class),
         GravelSkeleton(GravelSkeleton.class),
-        SneakyCreeper(me.carscupcake.sbremake.entity.impl.deepCaverns.SneakyCreeper.class);
+        SneakyCreeper(me.carscupcake.sbremake.entity.impl.deepCaverns.SneakyCreeper.class),
+        ZombieSlayerI(RevenantHorrorI.class) {
+            @Override
+            public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+                return new RevenantHorrorI(null);
+            }
+        };
         private final Class<? extends SkyblockEntity> entityClazz;
 
         EntityClass(Class<? extends SkyblockEntity> entityClazz) {

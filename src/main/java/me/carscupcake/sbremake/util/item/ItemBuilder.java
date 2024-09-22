@@ -1,10 +1,12 @@
 package me.carscupcake.sbremake.util.item;
 
+import lombok.extern.slf4j.Slf4j;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.util.Returnable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
@@ -15,6 +17,7 @@ import net.minestom.server.registry.DynamicRegistry;
 
 import java.util.*;
 
+@Slf4j
 @SuppressWarnings("unused")
 public class ItemBuilder {
     private final Material material;
@@ -50,6 +53,10 @@ public class ItemBuilder {
     }
     public ItemBuilder setName(String str){
         this.name = str;
+        return this;
+    }
+    public ItemBuilder clearLore() {
+        lore.clear();
         return this;
     }
     public ItemBuilder addLoreRow(String str){
@@ -121,9 +128,9 @@ public class ItemBuilder {
             item.set(ItemComponent.CUSTOM_NAME, Component.text(name));
         item.set(ItemComponent.LORE, lore);
         item.set(ItemComponent.ATTRIBUTE_MODIFIERS, AttributeList.EMPTY.withTooltip(false));
-        EnchantmentList enchantmentList = new EnchantmentList(enchants);
+        EnchantmentList enchantmentList = new EnchantmentList(enchants, false);
         if(glint && enchantmentList.enchantments().isEmpty())
-            enchantmentList.with(Enchantment.PROTECTION, 1).withTooltip(false);
+            enchantmentList = enchantmentList.with(Enchantment.PROTECTION, 1).withTooltip(false);
         item.set(ItemComponent.ENCHANTMENTS, enchantmentList);
         if(leatherColor != null){
             item.set(ItemComponent.DYED_COLOR, leatherColor.withTooltip(false));
@@ -145,6 +152,10 @@ public class ItemBuilder {
     }
     public ItemBuilder setLeatherColor(DyedItemColor color){
         this.leatherColor = color;
+        return this;
+    }
+    public ItemBuilder setLeatherColor(RGBLike color){
+        this.leatherColor = new DyedItemColor(color, false);
         return this;
     }
     public ItemBuilder setBannerPatterns(ArrayList<BannerPatterns.Layer> patterns){

@@ -6,6 +6,8 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
 import me.carscupcake.sbremake.item.impl.pets.Pet;
 import me.carscupcake.sbremake.item.impl.pets.PetItem;
+import me.carscupcake.sbremake.item.impl.rune.IRune;
+import me.carscupcake.sbremake.item.impl.rune.Rune;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlot;
@@ -16,6 +18,7 @@ import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.player.potion.IPotion;
 import me.carscupcake.sbremake.player.potion.PotionType;
 import net.kyori.adventure.nbt.*;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
@@ -23,10 +26,7 @@ import net.minestom.server.item.component.HeadProfile;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface Modifier<T> {
     default T get(SbItemStack item) {
@@ -215,6 +215,23 @@ public interface Modifier<T> {
             if (potionInfo.customPotionName() != null) extraAttributes = extraAttributes.putString("potion_name", potionInfo.customPotionName());
             return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, extraAttributes.putString("potion", potionInfo.potion().getId())
                     .putBoolean("enhanced", potionInfo.enhanced()).putBoolean("extended", potionInfo.extended()).putByte("potion_level", potionInfo.potionLevel()).putString("potion_type", potionInfo.potionType().name())));
+        }
+    };
+
+    Modifier<RuneModifier> RUNE = new Modifier<>() {
+        @Override
+        public @Nullable RuneModifier getFromNbt(SbItemStack item) {
+            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES);
+            CompoundBinaryTag tag = extraAttributes.getCompound("runes");
+            Iterator<Map.Entry<String, ? extends BinaryTag>> it = tag.iterator();
+            if (!it.hasNext()) return null;
+            Map.Entry<String, ? extends  BinaryTag> entry = it.next();
+            return new RuneModifier(Rune.runes.get(entry.getKey()), ((IntBinaryTag) entry.getValue()).value());
+        }
+
+        @Override
+        public SbItemStack toNbt(RuneModifier iRune, SbItemStack itemStack) {
+            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, ((CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES)).put("runes", iRune == null ? CompoundBinaryTag.empty() : CompoundBinaryTag.empty().putInt(iRune.rune().getId(), iRune.level()))));
         }
     };
 }

@@ -11,6 +11,7 @@ import me.carscupcake.sbremake.item.impl.pets.Pets;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneItem;
 import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
@@ -85,6 +86,15 @@ public interface ISbItem {
 
     default boolean isUnstackable() {
         return getMaterial().maxStackSize() == 1;
+    }
+
+    default boolean hasRequirements(SkyblockPlayer player, ItemStack item) {
+        for (Requirement requirement : requirements()) {
+            if (!requirement.canUse(player, item)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     default SbItemStack create() {

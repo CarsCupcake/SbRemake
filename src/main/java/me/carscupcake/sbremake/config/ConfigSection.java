@@ -91,6 +91,13 @@ public class ConfigSection {
         return object;
     }
 
+    public static ConfigSection empty() {
+        return new ConfigSection(new JsonObject());
+    }
+    public static ConfigSection emptyArray() {
+        return new ConfigSection(new JsonArray());
+    }
+
     private static JsonElement nbtTagToJson(BinaryTag binaryTag) {
         if (binaryTag instanceof StringBinaryTag stringBinaryTag) {
         }

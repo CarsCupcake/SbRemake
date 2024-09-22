@@ -40,6 +40,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * @author CarsCupcake
+ */
 public class Main {
     public static final Object _lock = new Object();
     public static volatile AtomicBoolean running = new AtomicBoolean(true);
