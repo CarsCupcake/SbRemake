@@ -17,6 +17,10 @@ public record Lore(List<String> base, Map<String, IPlaceHolder> placeHolderHashM
         this(refactorLore(lore));
     }
 
+    public Lore(String lore, String placeholder, IPlaceHolder iPlaceHolder) {
+        this(refactorLore(lore), Map.of(placeholder, iPlaceHolder));
+    }
+
     public Lore(String lore, Map<String, IPlaceHolder> placeHolderHashMap) {
         this(refactorLore(lore), placeHolderHashMap);
     }

@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.entity.slayer.SlayerQuest;
-import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
-import me.carscupcake.sbremake.event.PlayerProjectileDamageEntityEvent;
-import me.carscupcake.sbremake.event.PlayerToEntityDamageEvent;
-import me.carscupcake.sbremake.event.PlayerToEntityMageDamage;
+import me.carscupcake.sbremake.event.*;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.SkyblockPlayerArrow;
@@ -127,6 +124,9 @@ public abstract class SkyblockEntity extends EntityCreature {
         if (damage <= 0) return;
         spawnDamageTag(this, event.getDamageTag());
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
+        if (isDead) {
+            EventDispatcher.call(new EntityDeathEvent(this, EntityDeathEvent.Type.Magic));
+        }
     }
 
     public void damage(SkyblockPlayerArrow projectile) {
@@ -144,6 +144,9 @@ public abstract class SkyblockEntity extends EntityCreature {
         spawnDamageTag(this, event.getDamageTag());
         lastDamager = event.getPlayer();
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
+        if (isDead) {
+            EventDispatcher.call(new EntityDeathEvent(this, event.damageType()));
+        }
         if (canTakeKnockback()) {
             double mult = 1;
             PotionEffect effect = event.getPlayer().getPotionEffect(Potion.Knockback);

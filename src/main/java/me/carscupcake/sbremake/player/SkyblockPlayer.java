@@ -569,6 +569,9 @@ public class SkyblockPlayer extends Player {
     private SlayerQuest slayerQuest = null;
 
     @Getter
+    private final CountMap<Essence> essence = new CountMap<>();
+
+    @Getter
     private volatile TreeSet<me.carscupcake.sbremake.player.potion.PotionEffect> potionEffects = new TreeSet<>(Comparator.comparingLong(me.carscupcake.sbremake.player.potion.PotionEffect::expiration));
 
 

@@ -369,6 +369,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             if (petInfo.pet() != null) baseStat += petInfo.pet().getStat(stat, petInfo);
         }
         GetItemStatEvent event = new GetItemStatEvent(this, stat, baseStat, player);
+        if (sbItem instanceof Upgradable upgradable)
+            event.setMultiplier(event.getMultiplier() + upgradable.getBonus(player, getModifier(Modifier.STARS)));
         MinecraftServer.getGlobalEventHandler().call(event);
         return event.getValue() * event.getMultiplier();
     }

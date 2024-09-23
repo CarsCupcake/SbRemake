@@ -19,4 +19,9 @@ public class PlayerProjectileDamageEntityEvent extends PlayerToEntityDamageEvent
     public Pos damagerPos() {
         return projectile.getPosition();
     }
+
+    @Override
+    public EntityDeathEvent.Type damageType() {
+        return EntityDeathEvent.Type.Projectile;
+    }
 }

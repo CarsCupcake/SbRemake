@@ -234,4 +234,16 @@ public interface Modifier<T> {
             return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, ((CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES)).put("runes", iRune == null ? CompoundBinaryTag.empty() : CompoundBinaryTag.empty().putInt(iRune.rune().getId(), iRune.level()))));
         }
     };
+
+    Modifier<Integer> STARS = new Modifier<>() {
+        @Override
+        public Integer getFromNbt(SbItemStack item) {
+            return ((CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES)).getInt("upgrade_level", 0);
+        }
+
+        @Override
+        public SbItemStack toNbt(Integer integer, SbItemStack itemStack) {
+            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, ((CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES)).putInt("upgrade_level", integer)));
+        }
+    };
 }

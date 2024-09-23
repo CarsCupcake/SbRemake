@@ -1,13 +1,14 @@
 package me.carscupcake.sbremake.player;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility;
 import me.carscupcake.sbremake.util.StringUtils;
 
 import java.util.Iterator;
 import java.util.List;
 
 public class ActionBar {
-    private static final List<ActionBarSection> actionbar = List.of(new Health(), new Defense(), new Mana());
+    private static final List<ActionBarSection> actionbar = List.of(new Health(),  new DominusAbility(),new Defense(), new Mana());
     private final SkyblockPlayer player;
     public ActionBar(SkyblockPlayer player) {
         this.player = player;
@@ -40,6 +41,21 @@ public class ActionBar {
         @Override
         public String get(SkyblockPlayer player) {
             return STR."\{player.getAbsorption() != 0 ? "§6" : Stat.Health.getPrefix()}\{StringUtils.cleanDouble(player.getSbHealth() + player.getAbsorption(), 1)}/\{StringUtils.cleanDouble(player.getMaxSbHealth(), 1)} \{Stat.Health.getSymbol()}";
+        }
+    }
+
+    private static class DominusAbility implements ActionBarSection {
+
+        @Override
+        public boolean show(SkyblockPlayer player) {
+            if (player.getFullSetBonusPieceAmount(me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.INSTANCE) >= 2)
+                return me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.DOMINUS_STACKS.get(player) != 0;
+            return false;
+        }
+
+        @Override
+        public String get(SkyblockPlayer player) {
+            return STR."§6\{me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.DOMINUS_STACKS.get(player) == 10 ? "§l" : ""}ᝐ\{String.valueOf(me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.DOMINUS_STACKS.get(player))}";
         }
     }
 

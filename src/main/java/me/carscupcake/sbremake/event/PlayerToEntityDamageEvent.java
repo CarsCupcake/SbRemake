@@ -114,4 +114,6 @@ public abstract class PlayerToEntityDamageEvent implements PlayerEvent, Cancella
         }
         return builder.append(damageTagSuffix).toString();
     }
+
+    public abstract EntityDeathEvent.Type damageType();
 }

@@ -17,6 +17,10 @@ import static java.lang.Math.min;
 
 public class EntityUtils {
     public static Set<Entity> getEntitiesInLine(Pos first, Pos second, Instance instance) {
+        return getEntitiesInLine(first,second, instance, 1d);
+    }
+
+    public static Set<Entity> getEntitiesInLine(Pos first, Pos second, Instance instance, double boundingBoxMultiplier) {
         Set<Entity> entities = new HashSet<>();
         Line line = new Line(first.asVec(), second.sub(first).asVec());
         int minX = min(first.chunkX(), second.chunkX());
@@ -28,7 +32,7 @@ public class EntityUtils {
             for (int z = minZ; z <= maxZ; z++) {
                 Chunk chunk = instance.getChunk(x, z);
                 for (Entity e : instance.getChunkEntities(chunk)) {
-                    BoundingBox aabb = e.getBoundingBox();
+                    BoundingBox aabb = new BoundingBox(e.getBoundingBox().width() * boundingBoxMultiplier, e.getBoundingBox().height() * boundingBoxMultiplier, e.getBoundingBox().depth() * boundingBoxMultiplier);
                     for (Vec v : line.getCollidePoints(aabb.withOffset(e.getPosition().sub(aabb.width() / 2, 0, aabb.depth() / 2)), true)) {
                         if (first.distance(v) <= dis) {
                             entities.add(e);

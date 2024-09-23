@@ -10,6 +10,12 @@ import net.minestom.server.item.ItemStack;
 
 @SuppressWarnings("preview")
 public record ItemCost(ISbItem item, int amount) implements Cost {
+    public ItemCost(Class<? extends ISbItem> clazz, int amount) {
+        this(ISbItem.get(clazz), amount);
+    }
+    public ItemCost(Class<? extends ISbItem> clazz) {
+        this(ISbItem.get(clazz), 1);
+    }
     @Override
     public boolean canPay(SkyblockPlayer player) {
         int remaining = amount;

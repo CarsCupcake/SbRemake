@@ -10,4 +10,9 @@ public class PlayerMeleeDamageEntityEvent extends PlayerToEntityDamageEvent {
         super(player, target, weaponDamage, strength, critDamage, critChance, ferocity);
 
     }
+
+    @Override
+    public EntityDeathEvent.Type damageType() {
+        return EntityDeathEvent.Type.Melee;
+    }
 }
