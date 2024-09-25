@@ -5,6 +5,7 @@ import lombok.Getter;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.event.PlayerSkillXpEvent;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.rewards.impl.CoinReward;
@@ -15,6 +16,7 @@ import me.carscupcake.sbremake.util.item.InventoryBuilder;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.item.Material;
 
 import java.util.ArrayList;
@@ -63,7 +65,11 @@ public abstract class ISkill {
         if (player.getPet() != null) {
             player.getPet().addXp(player.getPet().getPet().getPetType().apply(amount, this.getType()));
         }
-        amount *= 1 + (getWisdomStat() != null ? (player.getStat(getWisdomStat()) / 100d) : 0);
+        double wisdom = getWisdomStat() != null ? (player.getStat(getWisdomStat()) / 100d) : 0;
+        PlayerSkillXpEvent event = new PlayerSkillXpEvent(player, this.getType(), amount, wisdom, 1);
+        MinecraftServer.getGlobalEventHandler().call(event);
+        amount = event.getXp() * event.getMultiplier();
+        amount *= 1 + (event.getWisdom());
         xp += amount;
         while (level < getMaxLevel() && nextLevelXp[level] <= xp) {
             xp -= nextLevelXp[level];

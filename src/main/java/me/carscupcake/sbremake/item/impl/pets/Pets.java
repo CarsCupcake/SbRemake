@@ -1,13 +1,17 @@
 package me.carscupcake.sbremake.item.impl.pets;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.event.PlayerSkillXpEvent;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.ability.PetAbility;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.StringUtils;
+import net.minestom.server.event.Event;
+import net.minestom.server.event.EventNode;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -29,6 +33,14 @@ public enum Pets implements IPet {
     private final PetAbility[] ability;
     private final Map<Stat, PetStat> petStats;
     private final PetType petType;
+
+    public static final EventNode<Event> events = EventNode.all("pets").addListener(PlayerSkillXpEvent.class, event -> {
+        if (event.getSkill() == Skill.Combat) {
+            if (event.getPlayer().getPet() != null && event.getPlayer().getPet().getPet() == Ghoul) {
+                event.setMultiplier(event.getMultiplier() * (1 + (event.getPlayer().getPet().getLevel() * 0.005d)));
+            }
+        }
+    });
 
     Pets(String name, PetType petType, String skullValue, Map<Stat, PetStat> petStats, PetAbility... ability) {
         this(name, name.toUpperCase().replace(' ', '_'), petType, skullValue, petStats, ability);
