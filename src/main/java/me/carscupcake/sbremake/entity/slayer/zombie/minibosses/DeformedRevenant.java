@@ -24,7 +24,7 @@ public class DeformedRevenant extends SkyblockEntity implements SkillXpDropper {
         setChestplate(new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
         setHelmet(new ItemBuilder(Material.LEATHER_HELMET).setLeatherColor(new DyedItemColor(0xFF0000)).setGlint(true).build());
         setItemInHand(Player.Hand.MAIN, new ItemBuilder(Material.GOLDEN_SWORD).setGlint(true).build());
-        zombieAiGroup(this);
+        addAIGroup(zombieAiGroup(this));
     }
 
     @Override

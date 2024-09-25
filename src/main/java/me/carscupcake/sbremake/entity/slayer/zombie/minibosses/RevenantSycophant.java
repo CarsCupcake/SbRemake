@@ -22,7 +22,7 @@ public class RevenantSycophant extends SkyblockEntity implements SkillXpDropper 
         setLeggings(new ItemBuilder(Material.CHAINMAIL_LEGGINGS).setGlint(true).build());
         setChestplate(new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
         setItemInHand(Player.Hand.MAIN, new ItemBuilder(Material.DIAMOND_SWORD).setGlint(true).build());
-        zombieAiGroup(this);
+        addAIGroup(zombieAiGroup(this));
     }
 
     @Override

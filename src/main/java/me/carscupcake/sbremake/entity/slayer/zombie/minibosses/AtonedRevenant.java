@@ -12,7 +12,6 @@ import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
-import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.DyedItemColor;
 
@@ -23,7 +22,7 @@ public class AtonedRevenant extends SkyblockEntity implements SkillXpDropper {
         setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).setGlint(true).setLeatherColor(new DyedItemColor(0xFFFFFF)).build());
         setChestplate(new ItemBuilder(Material.LEATHER_CHESTPLATE).setGlint(true).setLeatherColor(new DyedItemColor(0xFFFFFF)).build());
         setItemInHand(Player.Hand.MAIN, new ItemBuilder(Material.IRON_SWORD).setGlint(true).build());
-        zombieAiGroup(this);
+        addAIGroup(zombieAiGroup(this));
     }
 
     @Override
