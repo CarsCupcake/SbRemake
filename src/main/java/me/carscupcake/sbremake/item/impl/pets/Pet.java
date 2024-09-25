@@ -52,6 +52,9 @@ public class Pet implements ISbItem {
         public PetInfo(IPet pet, ItemRarity rarity, double exp, @Nullable PetItem petItem, int petCandyUsed) {
             this(pet, rarity, pet.getLevel(rarity, exp), exp, petItem, petCandyUsed);
         }
+        public PetInfo(IPet pet, ItemRarity rarity, double exp) {
+            this(pet, rarity, exp, null, 0);
+        }
     }
 
     @Override

@@ -106,7 +106,7 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
 
         Region(String name, Pos... positions) {
             pickP0(positions);
-            wrapped = new PolygonalRegion(name, positions);
+            wrapped = new PolygonalRegion(name, positions, 300, -64);
         }
 
         private static void pickP0(Pos[] pos2ds) {

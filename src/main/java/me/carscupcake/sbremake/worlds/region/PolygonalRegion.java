@@ -3,10 +3,11 @@ package me.carscupcake.sbremake.worlds.region;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 
-public record PolygonalRegion(String name, Pos[] points) implements Region {
+public record PolygonalRegion(String name, Pos[] points, int highestY, int lowestY) implements Region {
 
     @Override
     public boolean isInRegion(Point pos) {
+        if (pos.y() < lowestY || pos.y() > highestY) return false;
         double minX = points[0].x();
         double maxX = points[0].x();
         double minz = points[0].z();
