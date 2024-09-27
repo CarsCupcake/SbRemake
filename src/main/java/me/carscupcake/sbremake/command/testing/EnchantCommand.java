@@ -22,6 +22,7 @@ public class EnchantCommand extends Command {
                 commandSender.sendMessage("§cNot a valid item!");
                 return;
             }
+
             ((SkyblockPlayer) commandSender).setItemInHand(Player.Hand.MAIN, SbItemStack.from(enchantment.apply(item.item(), level)).update((SkyblockPlayer) commandSender).item());
         }, normalEnchantmentArgumentEnum, integerArgumentNumber);
 

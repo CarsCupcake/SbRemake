@@ -9,6 +9,8 @@ import me.carscupcake.sbremake.util.lootTable.LootTable;
 import net.minestom.server.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Function;
+
 @Getter
 public abstract class SlayerEntity extends SkyblockEntity {
     protected final SkyblockPlayer owner;
@@ -33,6 +35,11 @@ public abstract class SlayerEntity extends SkyblockEntity {
             owner.sendMessage(STR."§dRng Meter Stored Xp: \{playerSlayer.getMeter().getRngMeterXp()}");
             owner.getSlayerQuest().setStage(SlayerQuest.SlayerQuestStage.Completed);
         }
+    }
+
+    @Override
+    public Function<SkyblockEntity, String> nameTag() {
+        return NameTagType.Slayer;
     }
 
     public abstract int getTier();

@@ -34,6 +34,7 @@ public record RngMeterItemLoot(SbItemStack item, int min, int max, SlayerLootTab
     @Override
     public boolean isGuaranteed(SkyblockPlayer player) {
         SlayerRngMeter rngMeter = player.getSlayers().get(slayer).getMeter();
+        if (rngMeter.getSelected() == null) return false;
         return rngMeter.getSelected().contains(this) && rngMeter.getRngMeterXp() >= rngMeter.getRequiredXp(this);
     }
 

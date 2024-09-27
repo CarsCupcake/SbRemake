@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import net.minestom.server.entity.Player;
+import net.minestom.server.event.EventFilter;
+import net.minestom.server.event.trait.PlayerEvent;
 
 @Getter
 @Setter
@@ -28,4 +31,5 @@ public class PlayerDamageEntityEvent extends PlayerToEntityDamageEvent {
     public EntityDeathEvent.Type damageType() {
         return EntityDeathEvent.Type.Undefined;
     }
+    public static final EventFilter<PlayerDamageEntityEvent, Player> DAMAGE_EVENT = EventFilter.from(PlayerDamageEntityEvent.class, Player.class, PlayerToEntityDamageEvent::getPlayer);
 }

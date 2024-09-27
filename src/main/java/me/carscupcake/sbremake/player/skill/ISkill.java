@@ -62,14 +62,10 @@ public abstract class ISkill {
     public abstract Stat getWisdomStat();
 
     public void addXp(double amount) {
+        amount = calculateXp(amount);
         if (player.getPet() != null) {
             player.getPet().addXp(player.getPet().getPet().getPetType().apply(amount, this.getType()));
         }
-        double wisdom = getWisdomStat() != null ? (player.getStat(getWisdomStat()) / 100d) : 0;
-        PlayerSkillXpEvent event = new PlayerSkillXpEvent(player, this.getType(), amount, wisdom, 1);
-        MinecraftServer.getGlobalEventHandler().call(event);
-        amount = event.getXp() * event.getMultiplier();
-        amount *= 1 + (event.getWisdom());
         xp += amount;
         while (level < getMaxLevel() && nextLevelXp[level] <= xp) {
             xp -= nextLevelXp[level];
@@ -80,6 +76,15 @@ public abstract class ISkill {
             player.setDefenseString(STR."§3+\{StringUtils.cleanDouble(amount)} \{getName()}");
         else player.setDefenseString(STR."§3+\{StringUtils.cleanDouble(amount)} \{getName()} (\{StringUtils.toFormatedNumber((int) xp)}/\{StringUtils.toShortNumber(nextLevelXp[level])})");
         player.playSound(SoundType.ENTITY_EXPERIENCE_ORB_PICKUP.create(0.5f, 2f));
+    }
+
+    public double calculateXp(double amount) {
+        double wisdom = getWisdomStat() != null ? (player.getStat(getWisdomStat()) / 100d) : 0;
+        PlayerSkillXpEvent event = new PlayerSkillXpEvent(player, this.getType(), amount, wisdom, 1);
+        MinecraftServer.getGlobalEventHandler().call(event);
+        amount = event.getXp() * event.getMultiplier();
+        amount *= 1 + (event.getWisdom());
+        return amount;
     }
 
     public void levelUp(int level) {

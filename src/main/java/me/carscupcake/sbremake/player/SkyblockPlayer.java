@@ -1174,6 +1174,7 @@ public class SkyblockPlayer extends Player {
         MinecraftServer.getGlobalEventHandler().call(event);
         if (event.isCancelled()) return;
         double damage = event.calculateDamage();
+        double totalDamage = damage;
         event.spawnDamageTag();
         if (absorption > 0) {
             if (absorption - damage <= 0) {
@@ -1186,7 +1187,7 @@ public class SkyblockPlayer extends Player {
             updateHpBar();
         }
         setSbHealth(getSbHealth() - damage);
-        if (damage > 0.001){
+        if (totalDamage >= 1){
             sendPacket(new DamageEventPacket(getEntityId(), 0, entity.getEntityId(), 0, getPosition()));
             if (hasKb() && withKnockback) {
                 this.takeKnockback(0.4f, Math.sin(entity.getPosition().yaw() * 0.017453292), -Math.cos(entity.getPosition().yaw() * 0.017453292));

@@ -61,7 +61,7 @@ public class StoredPet {
 
     public void addXp(double amount) {
         xp += amount;
-        while (xp >= requiredXp && level != pet.getMaxLevel()) {
+        while (xp >= requiredXp && level < pet.getMaxLevel()) {
             int[] i = switch (rarity) {
                 case COMMON -> Pet.common;
                 case UNCOMMON -> Pet.uncommon;

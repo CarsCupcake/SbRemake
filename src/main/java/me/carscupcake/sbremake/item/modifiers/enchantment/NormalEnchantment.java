@@ -24,8 +24,15 @@ public enum NormalEnchantment implements SkyblockEnchantment {
     Smite("Smite", "smite", 7, ItemType.Sword, ItemType.Longsword) {
         @Override
         public Lore description() {
-            return new Lore("§7Increases damage dealt to Skeletons, Zombie Pigmen, Withers, and Zombies by §a%bonus%%§7.", Map.of("%bonus%", (item, _) ->
+            return new Lore("§7Increases damage dealt to Skeletons, Zombie Pigmen, Withers and Zombies by §a%bonus%%§7.", Map.of("%bonus%", (item, _) ->
                     StringUtils.cleanDouble(100 * EnchantmentUtils.getSharpnessBonus(item.getEnchantmentLevel(this)))));
+        }
+    },
+    Cleave("Cleave", "cleave", 6, ItemType.Sword, ItemType.Longsword) {
+        @Override
+        public Lore description() {
+            return new Lore("§7Deals §a%a%%§7 of your damage dealt to other monsters within §a%b%§7 blocks of the target.", Map.of("%a%", (item, _) -> StringUtils.cleanDouble(100 * EnchantmentUtils.getCleaveBonus(item.getEnchantmentLevel(this))),
+                    "%b%", (item, _) -> StringUtils.cleanDouble(3 + (item.getEnchantmentLevel(this)) * 0.03)));
         }
     },
     Efficiency("Efficiency", "efficiency", 10, ItemType.Pickaxe, ItemType.Drill) {

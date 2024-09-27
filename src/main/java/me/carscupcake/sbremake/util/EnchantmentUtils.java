@@ -3,8 +3,11 @@ package me.carscupcake.sbremake.util;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import net.minestom.server.entity.EntityType;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
+
+import java.util.Set;
 
 public class EnchantmentUtils {
     public static final EventNode<Event> LISTENER = EventNode.all("enchantments.listener")
@@ -42,6 +45,14 @@ public class EnchantmentUtils {
             default -> (level + 3) * 0.1;
         };
     }
+
+    public static double getCleaveBonus(int level) {
+        double d = level * 0.03;
+        if (level > 5) d += 0.02;
+        return d;
+    }
+
+    public static final Set<EntityType> SMITE_TYPES = Set.of(EntityType.SKELETON, EntityType.ZOMBIE, EntityType.ZOMBIFIED_PIGLIN, EntityType.WITHER);
 
     public static int getFortuneBonus(int level) {
         return (level < 4) ? level * 10 : (5 + level * 10);

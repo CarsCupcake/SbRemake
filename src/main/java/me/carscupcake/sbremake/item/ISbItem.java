@@ -8,13 +8,18 @@ import me.carscupcake.sbremake.item.impl.armor.PerfectArmor;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
 import me.carscupcake.sbremake.item.impl.pets.Pet;
 import me.carscupcake.sbremake.item.impl.pets.Pets;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneItem;
 import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.EnchantmentUtils;
+import me.carscupcake.sbremake.util.PlayerDamageEntityListener;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
@@ -28,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public interface ISbItem {
@@ -134,6 +140,7 @@ public interface ISbItem {
                 if (clazz.isInterface()) continue;
                 if (clazz.isRecord()) continue;
                 if (clazz.isEnum()) continue;
+                if (Modifier.isAbstract(clazz.getModifiers())) continue;
                 Constructor<? extends ISbItem> constructor = clazz.getConstructor();
                 ISbItem instance = constructor.newInstance();
                 SbItemStack.initSbItem(instance);
@@ -154,6 +161,8 @@ public interface ISbItem {
             Recipe.craftingRecipes.put(recipe.getKey().getId().toLowerCase(), new ShapedRecipe(recipe.getKey(), 1, -1, requirements, items, "###", "## "));
             Recipe.craftingRecipes.put(STR."\{recipe.getKey().getId().toLowerCase()}_star", new ShapedRecipe(recipe.getKey(), 1, -1, requirements, items, " # ", "###", " # "));
         }
+        SkyblockEnchantment.initListener();
+        MinecraftServer.getGlobalEventHandler().addChild(SkyblockEnchantment.LISTENER);
     }
 
     static ISbItem get(Class<? extends ISbItem> itemClass) {

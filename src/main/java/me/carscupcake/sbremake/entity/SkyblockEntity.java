@@ -141,6 +141,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         damage = damage * (1 - (getDefense() / (getDefense() + 100)));
         damage = onDamage(event.getPlayer(), damage);
         if (damage <= 0) return;
+        event.getPostEvent().forEach(c -> c.accept(event));
         spawnDamageTag(this, event.getDamageTag());
         lastDamager = event.getPlayer();
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
@@ -164,7 +165,7 @@ public abstract class SkyblockEntity extends EntityCreature {
                 dropper.apply(lastDamager);
                 if (dropper.type() == Skill.Combat && lastDamager.getSlayerQuest() != null && lastDamager.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.XpGathering) {
                     if (lastDamager.getSlayerQuest().getSlayer().getSlayer().addXp(this, lastDamager.getSlayerQuest().getTier())) lastDamager.getSlayerQuest()
-                            .addXp((1 + lastDamager.getStat(Stat.CombatWisdom) / 100d) * dropper.amount(lastDamager), getPosition());
+                            .addXp(lastDamager.getSkill(Skill.Combat).calculateXp(dropper.amount(lastDamager)), getPosition());
                 }
             }
             Set<SbItemStack> items = lootTable.loot(lastDamager);
@@ -250,11 +251,19 @@ public abstract class SkyblockEntity extends EntityCreature {
         return amount;
     }
 
+    private static final char skull = Character.toChars(9760)[0];
+
     public enum NameTagType implements Function<SkyblockEntity, String> {
         Basic() {
             @Override
             public String apply(SkyblockEntity skyblockEntity) {
                 return STR."§8[§7Lv\{skyblockEntity.getLevel()}§8] §c\{skyblockEntity.getName()} §a\{StringUtils.cleanDouble(skyblockEntity.getHealth(), 0)}§7/§a\{StringUtils.cleanDouble(skyblockEntity.getMaxHealth())}§c\{Stat.Health.getSymbol()}";
+            }
+        },
+        Slayer() {
+            @Override
+            public String apply(SkyblockEntity entity) {
+                return STR."§c\{skull} §f\{entity.getName()} §a\{StringUtils.toShortNumber(entity.getHealth())}§c\{Stat.Health.getSymbol()}";
             }
         }
     }

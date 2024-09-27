@@ -10,7 +10,10 @@ import net.minestom.server.event.trait.CancellableEvent;
 import net.minestom.server.event.trait.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
+import java.util.function.Consumer;
 
 @Getter
 @Setter
@@ -30,6 +33,7 @@ public abstract class PlayerToEntityDamageEvent implements PlayerEvent, Cancella
     private double critChance;
     private double ferocity;
     private boolean canDoFerocity = true;
+    private final Set<Consumer<PlayerToEntityDamageEvent>> postEvent = new HashSet<>();
 
     public PlayerToEntityDamageEvent(SkyblockPlayer player, SkyblockEntity target, double weaponDamage, double strength, double critDamage, double critChance, double ferocity) {
         this.player = player;

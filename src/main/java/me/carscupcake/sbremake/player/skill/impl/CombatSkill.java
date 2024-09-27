@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.player.skill.impl;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.entity.slayer.SlayerQuest;
 import me.carscupcake.sbremake.event.*;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
