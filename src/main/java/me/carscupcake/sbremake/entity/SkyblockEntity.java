@@ -37,6 +37,7 @@ import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.event.EventDispatcher;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
@@ -45,16 +46,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 @Getter
 @SuppressWarnings("preview")
 public abstract class SkyblockEntity extends EntityCreature {
-    private float health = getMaxHealth();
+    private float health = 1;
     @Getter
     @Setter
     private SkyblockPlayer lastDamager;
-
     @Getter
     private final ILootTable<SbItemStack> lootTable;
 
@@ -65,7 +66,6 @@ public abstract class SkyblockEntity extends EntityCreature {
     public SkyblockEntity(@NotNull EntityType entityType, ILootTable<SbItemStack> lootTable) {
         super(entityType, UUID.randomUUID());
         this.lootTable = lootTable == null ? new LootTable<>() : lootTable;
-        setHealth(getMaxHealth());
         getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
     }
 
@@ -89,6 +89,13 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     public Function<SkyblockEntity, String> nameTag() {
         return NameTagType.Basic;
+    }
+
+    @Override
+    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
+        setHealth(getMaxHealth());
+        health = getMaxHealth();
+        return super.setInstance(instance, spawnPosition);
     }
 
     public int getLevel() {
@@ -164,8 +171,9 @@ public abstract class SkyblockEntity extends EntityCreature {
             if (this instanceof SkillXpDropper dropper) {
                 dropper.apply(lastDamager);
                 if (dropper.type() == Skill.Combat && lastDamager.getSlayerQuest() != null && lastDamager.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.XpGathering) {
-                    if (lastDamager.getSlayerQuest().getSlayer().getSlayer().addXp(this, lastDamager.getSlayerQuest().getTier())) lastDamager.getSlayerQuest()
-                            .addXp(lastDamager.getSkill(Skill.Combat).calculateXp(dropper.amount(lastDamager)), getPosition());
+                    if (lastDamager.getSlayerQuest().getSlayer().getSlayer().addXp(this, lastDamager.getSlayerQuest().getTier()))
+                        lastDamager.getSlayerQuest()
+                                .addXp(lastDamager.getSkill(Skill.Combat).calculateXp(dropper.amount(lastDamager)), getPosition());
                 }
             }
             Set<SbItemStack> items = lootTable.loot(lastDamager);
@@ -286,8 +294,16 @@ public abstract class SkyblockEntity extends EntityCreature {
     }
 
     protected static EntityAIGroup regionTarget(SkyblockEntity entity, Region region, int range) {
+        return regionTarget(entity, List.of(region), range);
+    }
+
+    protected static EntityAIGroup regionTarget(SkyblockEntity entity, List<Region> region, int range) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p.getRegion() == region && !entity.isDead)));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range),
+                new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p
+                        && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL
+                        && region.contains(p.getRegion())
+                        && !entity.isDead)));
         return aiGroup;
     }
 
@@ -300,6 +316,10 @@ public abstract class SkyblockEntity extends EntityCreature {
     }
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region) {
+        return zombieAiGroup(entity, List.of(region));
+    }
+
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, List<Region> region) {
         EntityAIGroup aiGroup = regionTarget(entity, region, 8);
         aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 10, region) // Walk around
         ));
@@ -391,12 +411,19 @@ public abstract class SkyblockEntity extends EntityCreature {
         private final List<Vec> closePositions;
         private final Random random = new Random();
         private long lastStroll;
-        private final Region region;
+        private final List<Region> regions;
         private final long randomDelay = new Random().nextLong(5000);
 
         public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, Region region) {
             super(entityCreature);
-            this.region = region;
+            this.regions = List.of(region);
+            this.radius = radius;
+            this.closePositions = getNearbyBlocks(radius);
+        }
+
+        public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, List<Region> region) {
+            super(entityCreature);
+            this.regions = region;
             this.radius = radius;
             this.closePositions = getNearbyBlocks(radius);
         }
@@ -411,10 +438,12 @@ public abstract class SkyblockEntity extends EntityCreature {
                 int index = this.random.nextInt(this.closePositions.size());
                 Vec position = this.closePositions.get(index);
                 Pos target = this.entityCreature.getPosition().add(position);
-                if (region.isInRegion(target)) {
-                    boolean result = this.entityCreature.getNavigator().setPathTo(target);
-                    if (result) {
-                        break;
+                for (Region region : regions) {
+                    if (region.isInRegion(target)) {
+                        boolean result = this.entityCreature.getNavigator().setPathTo(target);
+                        if (result) {
+                            break;
+                        }
                     }
                 }
             }
