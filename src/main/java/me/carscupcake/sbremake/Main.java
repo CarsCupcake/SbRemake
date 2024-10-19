@@ -18,6 +18,7 @@ import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.PlayerBrodcastOutputStream;
 import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
 import me.carscupcake.sbremake.util.item.Gui;
+import me.carscupcake.sbremake.worlds.Time;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
@@ -100,6 +101,7 @@ public class Main {
                 SkyblockPlayer player = (SkyblockPlayer) audience;
                 player.save();
                 player.kick("Server shutting down!");
+                Time.save();
             });
         });
         CommandManager commandManager = MinecraftServer.getCommandManager();
@@ -157,5 +159,6 @@ public class Main {
             ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
         });*/
         SkyblockPlayer.tickLoop();
+        Time.init();
     }
 }

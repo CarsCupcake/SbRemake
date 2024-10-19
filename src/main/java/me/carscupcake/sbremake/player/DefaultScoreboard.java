@@ -1,6 +1,8 @@
 package me.carscupcake.sbremake.player;
 
+import me.carscupcake.sbremake.util.NumberUtil;
 import me.carscupcake.sbremake.util.StringUtils;
+import me.carscupcake.sbremake.worlds.Time;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,7 +22,7 @@ public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
     Time {
         @Override
         public String[] apply(SkyblockPlayer player) {
-            return new String[]{"§fSeason", "§7Time"};
+            return new String[]{STR."§f \{me.carscupcake.sbremake.worlds.Time.season.getName()}", STR."§7 \{me.carscupcake.sbremake.worlds.Time.timeToString()} \{NumberUtil.inRange(me.carscupcake.sbremake.worlds.Time.hour, 6, 18) ? "§e☀" : "§b☽"}"};
         }
     },
     Location {

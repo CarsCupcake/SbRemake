@@ -325,12 +325,14 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                     synchronized (_lock) {
                         loaded = true;
                         for (Runnable runnable : onStart) runnable.run();
+                        container.setTime(Time.tick);
                     }
                 });
                 else {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
                     LightingChunk.relight(container, container.getChunks());
                     container.loadChunk(spawn().chunkX(), spawn().chunkZ());
+                    container.setTime(Time.tick);
                 }
                 addWorld(this);
                 register();

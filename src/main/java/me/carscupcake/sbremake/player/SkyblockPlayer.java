@@ -44,10 +44,7 @@ import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.util.item.InventoryBuilder;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.quest.Dialog;
-import me.carscupcake.sbremake.worlds.Launchpad;
-import me.carscupcake.sbremake.worlds.Npc;
-import me.carscupcake.sbremake.worlds.SkyblockWorld;
-import me.carscupcake.sbremake.worlds.WarpLocation;
+import me.carscupcake.sbremake.worlds.*;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -886,6 +883,7 @@ public class SkyblockPlayer extends Player {
         for (me.carscupcake.sbremake.player.potion.PotionEffect effect : potionEffects)
             effect.potion().start(this, effect.amplifier(), (long) ((effect.expiration() - System.currentTimeMillis()) / 50d));
         sendPacket(new EntityMetaDataPacket(getEntityId(), Map.of(11, Metadata.Boolean(true))));
+        sendPacket(new TimeUpdatePacket(0, Time.tick));
     }
 
     public float getMaxHealth() {
