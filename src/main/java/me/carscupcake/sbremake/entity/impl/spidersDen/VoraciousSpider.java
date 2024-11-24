@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.entity.impl.spidersDen;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
+import me.carscupcake.sbremake.worlds.impl.SpidersDen;
 import net.minestom.server.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +32,7 @@ public class VoraciousSpider extends SkyblockEntity {
             case 4 -> 170;
             default -> throw new IllegalStateException();
         };
+        addAIGroup(zombieAiGroup(this, tier == 1 ? SpidersDen.Region.SpiderMound : SpidersDen.Region.ArachnesBurrow));
     }
 
     @Override

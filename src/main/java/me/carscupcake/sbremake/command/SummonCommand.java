@@ -3,9 +3,7 @@ package me.carscupcake.sbremake.command;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.impl.deepCaverns.SneakyCreeper;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
-import me.carscupcake.sbremake.entity.impl.spidersDen.GravelSkeleton;
-import me.carscupcake.sbremake.entity.impl.spidersDen.SpiderJockey;
-import me.carscupcake.sbremake.entity.impl.spidersDen.SplitterSpider;
+import me.carscupcake.sbremake.entity.impl.spidersDen.*;
 import me.carscupcake.sbremake.entity.slayer.zombie.RevenantHorrorI;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
@@ -67,6 +65,18 @@ public class SummonCommand extends Command {
             @Override
             public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
                 return new SpiderJockey(false);
+            }
+        },
+        VoraciousSpider(me.carscupcake.sbremake.entity.impl.spidersDen.VoraciousSpider.class) {
+            @Override
+            public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+                return new VoraciousSpider(4);
+            }
+        },
+        DasherSpider(me.carscupcake.sbremake.entity.impl.spidersDen.DasherSpider.class) {
+            @Override
+            public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+                return new DasherSpider(4);
             }
         };
         private final Class<? extends SkyblockEntity> entityClazz;

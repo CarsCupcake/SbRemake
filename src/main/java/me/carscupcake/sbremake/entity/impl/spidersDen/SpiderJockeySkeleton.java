@@ -10,13 +10,10 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.ai.EntityAIGroup;
 import net.minestom.server.entity.ai.GoalSelector;
-import net.minestom.server.entity.ai.TargetSelector;
 import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import net.minestom.server.network.packet.server.play.EntityAnimationPacket;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
-import net.minestom.server.tag.Tag;
 import net.minestom.server.utils.time.Cooldown;
 import net.minestom.server.utils.time.TimeUnit;
 import net.minestom.server.utils.validate.Check;
@@ -24,9 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class SpiderJockeySkeleton extends SkyblockEntity implements SkillXpDropper {
     private final boolean inSpidersMound;
@@ -132,12 +127,12 @@ public class SpiderJockeySkeleton extends SkyblockEntity implements SkillXpDropp
                             Vec dir = to.sub(entityCreature.getPosition().add(0, entityCreature.getEyeHeight(), 0)).asVec().withY(0).normalize().mul(0.3);
                             SpiderJockeySilverfish spiderJockeySilverfish = new SpiderJockeySilverfish(((SpiderJockeySkeleton) entityCreature).inSpidersMound);
                             spiderJockeySilverfish.setInstance(entityCreature.getInstance(), entityCreature.getPosition().add(0, entityCreature.getEyeHeight(), 0))
-                                    .thenRun(() -> {
-                                        spiderJockeySilverfish.setVelocity(dir);
-                                    });
+                                    .thenRun(() -> spiderJockeySilverfish.setVelocity(dir));
+                            isPulling = false;
                         } else {
                             for (Player player : entityCreature.getViewers())
                                 player.sendPacket(new EntityMetaDataPacket(entityCreature.getEntityId(), Map.of(8, Metadata.Byte((byte) 1))));
+                            isPulling = true;
                         }
                         this.lastShot = time;
                     } else {

@@ -34,6 +34,6 @@ public abstract class TaskScheduler implements Runnable {
     }
 
     public boolean isRunning() {
-        return task.isAlive();
+        return task != null && task.isAlive();
     }
 }
