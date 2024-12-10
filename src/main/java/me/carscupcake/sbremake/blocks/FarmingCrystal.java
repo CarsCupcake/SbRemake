@@ -55,6 +55,11 @@ public record FarmingCrystal(Pos location, TaskScheduler task, HashMap<BlockVec,
 
         @Override
         public void run() {
+            if (entity.getInstance() == null) {
+                //Instance was probably shutdown
+                cancel();
+                return;
+            }
             if (entity.getChunk() != null && entity.getChunk().isLoaded()) {
                 entity.teleport(base.add(0, 0.5 * Math.sin(Math.PI * ((double) i / 20d)), 0).withYaw(i * 18));
                 Audiences.players(player -> player.getInstance() == instance && player.getPosition().distanceSquared(base) < RENDER_DISTANCE).forEachAudience(audience -> {

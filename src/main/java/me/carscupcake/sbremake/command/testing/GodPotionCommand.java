@@ -17,30 +17,26 @@ public class GodPotionCommand extends Command {
         addSyntax((commandSender, commandContext) -> {
             SkyblockPlayer player = (SkyblockPlayer) commandSender;
             long ms = commandContext.get(minutes) * 60 * 1000;
-            ms += System.currentTimeMillis();
-            synchronized (player.getPotionEffects()) {
-                for (IPotion potion : Potion.values()) {
-                    if (potion.isBuff() && !potion.isInstant()) {
-                        player.startPotionEffect(new PotionEffect(potion, ms++, potion.getMaxLevel()));
-                    }
-                }
-                player.startPotionEffect(new PotionEffect(Potion.JumpBoost, ms, (byte) 6));
-            }
+            startPotion(player, ms);
             player.playSound(SoundType.ENTITY_PLAYER_BURP, Sound.Source.PLAYER, 2f, 0.1f);
         }, minutes);
         addSyntax((commandSender, _) -> {
             SkyblockPlayer player = (SkyblockPlayer) commandSender;
             long ms = 604_800_000; //1 Week of God Potion
-            ms += System.currentTimeMillis();
-            synchronized (player.getPotionEffects()) {
-                for (IPotion potion : Potion.values()) {
-                    if (potion.isBuff() && !potion.isInstant()) {
-                        player.startPotionEffect(new PotionEffect(potion, ms++, potion.getMaxLevel()));
-                    }
-                }
-                player.startPotionEffect(new PotionEffect(Potion.JumpBoost, ms, (byte) 6));
-            }
+            startPotion(player, ms);
             player.playSound(SoundType.ENTITY_PLAYER_BURP, Sound.Source.PLAYER, 2f, 0.1f);
         });
+    }
+
+    public static void startPotion(SkyblockPlayer player, long ms) {
+        ms += System.currentTimeMillis();
+        synchronized (player.getPotionEffects()) {
+            for (IPotion potion : Potion.values()) {
+                if (potion.isBuff() && !potion.isInstant()) {
+                    player.startPotionEffect(new PotionEffect(potion, ms++, potion.getMaxLevel()));
+                }
+            }
+            player.startPotionEffect(new PotionEffect(Potion.JumpBoost, ms, (byte) 6));
+        }
     }
 }

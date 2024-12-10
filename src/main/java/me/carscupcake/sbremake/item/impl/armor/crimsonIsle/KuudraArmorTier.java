@@ -54,6 +54,7 @@ public enum KuudraArmorTier {
     private final String name;
     private final String id;
     private final Cost[][] costs;
+
     KuudraArmorTier(String name, String id, Cost[]... cost) {
         this.id = id;
         this.name = name;
