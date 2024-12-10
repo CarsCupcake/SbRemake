@@ -1,6 +1,9 @@
 package me.carscupcake.sbremake.worlds.impl;
 
 import kotlin.Pair;
+import me.carscupcake.sbremake.entity.impl.spidersDen.DasherSpider;
+import me.carscupcake.sbremake.entity.impl.spidersDen.SpiderJockey;
+import me.carscupcake.sbremake.worlds.EntitySpawner;
 import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
@@ -33,6 +36,23 @@ public class SpidersDen extends SkyblockWorld.WorldProvider {
     @Override
     public Region[] regions() {
         return Region.values();
+    }
+
+    private final Set<EntitySpawner> entitySpawners = new HashSet<>();
+    @Override
+    protected void register() {
+        super.register();
+        entitySpawners.add(new EntitySpawner(new Pos[]{new Pos(-195.0, 78.0, -271.0),new Pos(-202.0, 81.0, -285.0),new Pos(-215.0, 81.0, -294.0),new Pos(-203.0, 84.0, -310.0),new Pos(-242.0, 95.0, -309.0),new Pos(-246.0, 95.0, -319.0),new Pos(-225.0, 111.0, -331.0),new Pos(-222.0, 111.0, -325.0),new Pos(-195.0, 107.0, -306.0),new Pos(-182.0, 114.0, -290.0),new Pos(-205.0, 120.0, -282.0),new Pos(-221.0, 133.0, -299.0),new Pos(-208.0, 175.0, -319.0)},
+                200, new EntitySpawner.BasicConstructor(() -> new DasherSpider(1)), this.container));
+        entitySpawners.add(new EntitySpawner(new Pos[]{new Pos(-216.0, 81.0, -290.0),new Pos(-203.0, 81.0, -288.0),new Pos(-245.0, 95.0, -311.0),new Pos(-244.0, 95.0, -317.0),new Pos(-227.0, 103.0, -286.0),new Pos(-209.0, 103.0, -268.0),new Pos(-193.0, 94.0, -261.0),new Pos(-182.0, 94.0, -271.0),new Pos(-159.0, 109.0, -293.0),new Pos(-163.0, 133.0, -320.0),new Pos(-175.0, 114.0, -348.0),new Pos(-196.0, 133.0, -344.0),new Pos(-209.0, 133.0, -334.0),new Pos(-222.0, 133.0, -308.0),new Pos(-217.0, 155.0, -322.0),new Pos(-196.0, 176.0, -325.0),new Pos(-186.0, 176.0, -323.0)},
+                250, new EntitySpawner.BasicConstructor(() -> new SpiderJockey(true)), this.container));
+    }
+
+    @Override
+    protected void unregister() {
+        super.unregister();
+        entitySpawners.forEach(EntitySpawner::stop);
+        entitySpawners.clear();
     }
 
     public enum Region implements me.carscupcake.sbremake.worlds.region.Region {

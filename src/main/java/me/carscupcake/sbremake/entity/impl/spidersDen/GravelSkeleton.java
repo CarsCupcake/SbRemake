@@ -47,4 +47,10 @@ public class GravelSkeleton extends SkyblockEntity implements SkillXpDropper
     public double amount(SkyblockPlayer target) {
         return 2;
     }
+
+    @Override
+    public void kill() {
+        super.kill();
+        //TODO: add bone
+    }
 }
