@@ -114,7 +114,6 @@ public class Main {
                 e.printStackTrace(System.err);
             }
         }
-        OpenToLAN.open();
         boolean cracked = false;
         try {
             cracked = Boolean.parseBoolean(args[1]);

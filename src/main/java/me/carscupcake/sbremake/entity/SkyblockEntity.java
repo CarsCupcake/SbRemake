@@ -22,6 +22,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.color.Color;
+import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
@@ -37,6 +38,7 @@ import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.event.EventDispatcher;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
@@ -45,6 +47,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 @Getter
@@ -239,6 +242,12 @@ public abstract class SkyblockEntity extends EntityCreature {
         String name = nameTag().apply(this);
         setCustomName(Component.text(name));
         setCustomNameVisible(true);
+    }
+
+    @Override
+    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
+        setHealth(getMaxHealth());
+        return super.setInstance(instance, spawnPosition);
     }
 
     /**

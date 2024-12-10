@@ -17,7 +17,8 @@ public enum WarpLocation {
     Barn("barn", SkyblockWorld.FarmingIsles, new Pos(113.5, 71, -207.5, -135, 0)),
     MushroomDesert("desert", SkyblockWorld.FarmingIsles, new Pos(160.5, 77, -370, -147, 0)),
     SpidersDen("spider", SkyblockWorld.SpidersDen, new Pos(-200.5, 83, -231.5, 135, 0)),
-    SpidersDenTopOfTheNest("top", SkyblockWorld.SpidersDen, new Pos(-189, 176, -310, 43.5f, 0));
+    SpidersDenTopOfTheNest("top", SkyblockWorld.SpidersDen, new Pos(-189, 176, -310, 43.5f, 0)),
+    End("end", SkyblockWorld.End, new Pos(-503, 101.5, -275.5, 90, 0));
     private final String id;
     private final SkyblockWorld world;
     private final Pos spawn;
