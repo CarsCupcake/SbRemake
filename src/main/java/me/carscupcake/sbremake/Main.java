@@ -33,6 +33,7 @@ import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
 import net.minestom.server.registry.Registry;
+import net.minestom.server.timer.TaskSchedule;
 import org.reflections.Reflections;
 
 import java.io.BufferedReader;
@@ -40,6 +41,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -116,7 +118,11 @@ public class Main {
                 e.printStackTrace(System.err);
             }
         }
-        OpenToLAN.open();
+        for (var arg : args)
+            if (arg.equals("--open-lan")) {
+                OpenToLAN.open();
+                break;
+            }
         boolean cracked = false;
         try {
             cracked = Boolean.parseBoolean(args[1]);
@@ -160,5 +166,6 @@ public class Main {
         });*/
         SkyblockPlayer.tickLoop();
         Time.init();
+        MinecraftServer.getSchedulerManager().scheduleTask(System::gc, TaskSchedule.seconds(5), TaskSchedule.minutes(5));
     }
 }

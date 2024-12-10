@@ -400,6 +400,7 @@ public class SkyblockPlayer extends Player {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         player.save();
         if (player.getPet() != null) player.getPet().getPet().despawnPet(player, player.getPet());
+        System.gc();
     }).addListener(PlayerRespawnEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         event.setRespawnPosition(player.getWorldProvider().spawn());
@@ -742,6 +743,7 @@ public class SkyblockPlayer extends Player {
     }
 
     public void save() {
+        if (noSave) return;
         ConfigFile configFile = new ConfigFile("inventory", this);
         configFile.setRawElement(new JsonObject());
         for (int i = 0; i < this.getInventory().getSize(); i++) {
@@ -1335,6 +1337,11 @@ public class SkyblockPlayer extends Player {
         if (absorption <= 200) return 14;
         if (absorption <= 250) return 15;
         return 16;
+    }
+    private boolean noSave = false;
+    public void kick(String s, boolean noSave) {
+        this.noSave = noSave;
+        kick(s);
     }
 
     public record DisguisedChatMessage(Component message, ChatType chatType, Component senderName,

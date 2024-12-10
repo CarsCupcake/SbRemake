@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 public class ConfigFile extends ConfigSection {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
     private final File file;
-    private static final File DATA_PATH = new File(Paths.get("").toAbsolutePath().toString(), "data");
+    public static final File DATA_PATH = new File(Paths.get("").toAbsolutePath().toString(), "data");
 
     static {
         DATA_PATH.mkdirs();

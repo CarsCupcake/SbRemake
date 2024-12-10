@@ -15,6 +15,7 @@ import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.StringUtils;
+import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.region.Region;
@@ -61,6 +62,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     private SkyblockPlayer lastDamager;
     @Getter
     private final ILootTable<SbItemStack> lootTable;
+    private final Set<TaskScheduler> assignedTask = new HashSet<>();
 
     public SkyblockEntity(@NotNull EntityType entityType) {
         this(entityType, null);
@@ -188,6 +190,15 @@ public abstract class SkyblockEntity extends EntityCreature {
                 entity.scheduleRemove(Duration.ofSeconds(30));
             }
         }
+        for (TaskScheduler scheduler : new HashSet<>(assignedTask))
+            scheduler.cancel();
+    }
+
+    @Override
+    protected void remove(boolean permanent) {
+        super.remove(permanent);
+        for (TaskScheduler scheduler : new HashSet<>(assignedTask))
+            scheduler.cancel();
     }
 
     public void doFerocity(SkyblockPlayer player, double ferocity) {
@@ -202,6 +213,8 @@ public abstract class SkyblockEntity extends EntityCreature {
     }
 
     public static void spawnDamageTag(SkyblockEntity entity, String tag) {
+        //in case the entity got removed in the damage process
+        if (entity.instance == null) return;
         EntityCreature creature = new EntityCreature(EntityType.ARMOR_STAND, UUID.randomUUID());
         creature.setCustomName(Component.text(tag));
         creature.setCustomNameVisible(true);
@@ -250,6 +263,15 @@ public abstract class SkyblockEntity extends EntityCreature {
         String name = nameTag().apply(this);
         setCustomName(Component.text(name));
         setCustomNameVisible(true);
+    }
+
+    public void assignTask(TaskScheduler task) {
+        assignedTask.add(task);
+        task.setEntity(this);
+    }
+
+    public void unassignTask(TaskScheduler task) {
+        assignedTask.remove(task);
     }
 
     /**

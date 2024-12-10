@@ -1,12 +1,19 @@
 package me.carscupcake.sbremake.util;
 
+import lombok.Getter;
+import lombok.Setter;
+import me.carscupcake.sbremake.entity.SkyblockEntity;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import org.junit.Assert;
 
 public abstract class TaskScheduler implements Runnable {
     private Task task;
+    @Getter
+    @Setter
+    private SkyblockEntity entity;
 
     public void repeatTask(int delay, int repeatDelay) {
         Task.Builder builder = MinecraftServer.getSchedulerManager().buildTask(this);
@@ -31,6 +38,9 @@ public abstract class TaskScheduler implements Runnable {
         if (task == null || !task.isAlive()) return;
         task.cancel();
         task = null;
+        if (entity != null) {
+            entity.unassignTask(this);
+        }
     }
 
     public boolean isRunning() {
