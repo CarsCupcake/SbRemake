@@ -1,8 +1,7 @@
 package me.carscupcake.sbremake.worlds.impl;
 
 import kotlin.Pair;
-import me.carscupcake.sbremake.entity.impl.spidersDen.DasherSpider;
-import me.carscupcake.sbremake.entity.impl.spidersDen.SpiderJockey;
+import me.carscupcake.sbremake.entity.impl.spidersDen.*;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
 import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
@@ -48,6 +47,12 @@ public class SpidersDen extends SkyblockWorld.WorldProvider {
                 200, new EntitySpawner.BasicConstructor(() -> new DasherSpider(1)), this.container));
         entitySpawners.add(new EntitySpawner(new Pos[]{new Pos(-216.0, 81.0, -290.0),new Pos(-203.0, 81.0, -288.0),new Pos(-245.0, 95.0, -311.0),new Pos(-244.0, 95.0, -317.0),new Pos(-227.0, 103.0, -286.0),new Pos(-209.0, 103.0, -268.0),new Pos(-193.0, 94.0, -261.0),new Pos(-182.0, 94.0, -271.0),new Pos(-159.0, 109.0, -293.0),new Pos(-163.0, 133.0, -320.0),new Pos(-175.0, 114.0, -348.0),new Pos(-196.0, 133.0, -344.0),new Pos(-209.0, 133.0, -334.0),new Pos(-222.0, 133.0, -308.0),new Pos(-217.0, 155.0, -322.0),new Pos(-196.0, 176.0, -325.0),new Pos(-186.0, 176.0, -323.0)},
                 250, new EntitySpawner.BasicConstructor(() -> new SpiderJockey(true)), this.container));
+        entitySpawners.add(new EntitySpawner(new Pos[]{new Pos(-187.0, 78.0, -276.0),new Pos(-209.0, 81.0, -279.0),new Pos(-225.0, 83.0, -286.0),new Pos(-211.0, 81.0, -292.0),new Pos(-191.0, 87.0, -304.0),new Pos(-180.0, 94.0, -275.0),new Pos(-195.0, 94.0, -260.0),new Pos(-213.0, 103.0, -274.0),new Pos(-229.0, 103.0, -293.0),new Pos(-229.0, 110.0, -330.0),new Pos(-205.0, 133.0, -339.0),new Pos(-195.0, 176.0, -325.0),new Pos(-195.0, 175.0, -309.0)},
+                200, new EntitySpawner.BasicConstructor(() -> new SplitterSpider(1)), this.container));
+        entitySpawners.add(new EntitySpawner(new Pos[]{new Pos(-188.0, 176.0, -318.0),new Pos(-196.0, 144.0, -311.0),new Pos(-186.0, 146.0, -295.0),new Pos(-205.0, 151.0, -324.0),new Pos(-209.0, 133.0, -336.0),new Pos(-220.0, 133.0, -305.0),new Pos(-198.0, 112.0, -343.0),new Pos(-174.0, 104.0, -335.0),new Pos(-189.0, 87.0, -307.0),new Pos(-206.0, 84.0, -308.0),new Pos(-204.0, 81.0, -287.0)},
+                200, new EntitySpawner.BasicConstructor(() -> new VoraciousSpider(1)), this.container));
+        entitySpawners.add(new EntitySpawner(new Pos[]{new Pos(-308.0, 109.0, -225.0),new Pos(-321.0, 111.0, -212.0),new Pos(-319.0, 110.0, -226.0),new Pos(-334.0, 111.0, -228.0),new Pos(-350.0, 111.0, -220.0),new Pos(-345.0, 111.0, -244.0),new Pos(-345.0, 110.0, -263.0),new Pos(-322.0, 108.0, -255.0)},
+                200, new EntitySpawner.BasicConstructor(GravelSkeleton::new), container));
     }
 
     @Override

@@ -39,6 +39,7 @@ import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.event.EventDispatcher;
+import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.timer.Task;
@@ -464,6 +465,8 @@ public abstract class SkyblockEntity extends EntityCreature {
                 int index = this.random.nextInt(this.closePositions.size());
                 Vec position = this.closePositions.get(index);
                 Pos target = this.entityCreature.getPosition().add(position);
+                Chunk c = entityCreature.getInstance().getChunkAt(target);
+                if (c == null || !c.isLoaded()) continue;
                 for (Region region : regions) {
                     if (region.isInRegion(target)) {
                         boolean result = this.entityCreature.getNavigator().setPathTo(target);
