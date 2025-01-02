@@ -42,7 +42,7 @@ public record RngMeterItemLoot(SbItemStack item, int min, int max, SlayerLootTab
     public Set<SbItemStack> loot(SkyblockPlayer player) {
         if (player != null) {
             SlayerRngMeter meter = player.getSlayers().get(slayer).getMeter();
-            if (meter.getSelected().contains(this))
+            if (meter.getSelected() != null && meter.getSelected().contains(this))
                 meter.setRngMeterXp(0);
         }
         SbItemStack itemStack = (item.sbItem().isUnstackable()) ? SbItemStack.from(item.item().withTag(Modifier.EXTRA_ATTRIBUTES, ((CompoundBinaryTag) item.item().getTag(Modifier.EXTRA_ATTRIBUTES)).putString("uuid", UUID.randomUUID().toString()))) : item;

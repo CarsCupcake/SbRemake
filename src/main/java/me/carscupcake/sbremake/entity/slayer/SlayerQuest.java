@@ -54,6 +54,14 @@ public class SlayerQuest {
         }
     }
 
+    public void claim() {
+        if (stage != SlayerQuestStage.Completed) {
+            throw new IllegalStateException("Slayer quest is not completed.");
+        }
+        slayer.addXp(slayer.getSlayer().getSlayerXp(tier));
+        slayer.getPlayer().sendMessage("§aYou have claimed the quest.");
+    }
+
     public enum SlayerQuestStage {
         XpGathering,
         MobKilling,
