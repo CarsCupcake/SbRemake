@@ -30,7 +30,7 @@ import java.util.Set;
 
 public class CrimsonBoots extends CrimsonBootsBaseline implements Listener {
     @Override
-    protected KuudraArmorTier armorTier() {
+    public KuudraArmorTier armorTier() {
         return KuudraArmorTier.Base;
     }
 
@@ -42,23 +42,19 @@ public class CrimsonBoots extends CrimsonBootsBaseline implements Listener {
     @Override
     public EventNode<Event> node() {
         return EventNode.all("ability.dominus").addListener(PlayerStatEvent.class, event -> {
-            if (event.stat() == Stat.SwingRange) {
-                int stacks = DominusAbility.DOMINUS_STACKS.getOrDefault(event.player(), 0);
-                if (stacks > 0)
-                    event.modifiers().add(new PlayerStatEvent.BasicModifier("Dominus", stacks * 0.1d, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Ability));
+            if (event.stat() == Stat.SwingRange || event.stat() == Stat.Ferocity ||event.stat() == Stat.Damage) {
+                DominusAbility.DominusCounter counter = DominusAbility.task.get(event.player());
+                if (counter != null) {
+                    DominusAbility.applyStatBonus(event.player(), counter.getTier(), event);
+                }
             }
         })
-                .addListener(EntityDeathEvent.class, event -> {
-                    if (event.entity().getLastDamager() != null && event.type() == EntityDeathEvent.Type.Melee) {
-                        SkyblockPlayer player = event.entity().getLastDamager();
-                        if (player.getFullSetBonusPieceAmount(DominusAbility.INSTANCE) < 2) return;
-                        if (DominusAbility.DOMINUS_STACKS.get(player) < 10) DominusAbility.DOMINUS_STACKS.add(player, 1);
-                        DominusAbility.task.get(player).resetTime();
-                    }
-                })
                 .addListener(PlayerMeleeDamageEntityEvent.class, event -> {
-                    if (event.getPlayer().getFullSetBonusPieceAmount(DominusAbility.INSTANCE) < 2) return;
+                    int pieces = event.getPlayer().getFullSetBonusPieceAmount(DominusAbility.INSTANCE);
+                    if (pieces < 2) return;
                     SkyblockPlayer player = event.getPlayer();
+                    var ability = DominusAbility.task.get(player);
+                    ability.add();
                     if (DominusAbility.DOMINUS_STACKS.get(player) == 10) {
                         player.playSound(SoundType.BLOCK_PISTON_EXTEND, Sound.Source.PLAYER, 1, 1);
                         if (DominusAbility.task.get(player).cooldown == 0) {
@@ -67,10 +63,48 @@ public class CrimsonBoots extends CrimsonBootsBaseline implements Listener {
                             Vec supportVec = event.getTarget().getPosition().asVec().add(v);
                             Vec dir = v.mul(-1).mul(2).withY(2);
                             Set<Entity> es = EntityUtils.getEntitiesInLine(supportVec.asPosition(), supportVec.add(dir).asPosition(), player.getInstance(), 2);
+                            double swipeStrength = switch (ability.getTier()) {
+                                case Base -> {
+                                    yield switch (pieces) {
+                                        case 3 -> 1;
+                                        case 4 -> 1.5;
+                                        default -> 0.5;
+                                    };
+                                }
+                                case Hot -> {
+                                    yield  switch (pieces) {
+                                        case 3 -> 1.25;
+                                        case 4 -> 1.875;
+                                        default -> 0.625;
+                                    };
+                                }
+                                case Burning -> {
+                                    yield switch (pieces) {
+                                        case 3 -> 1.5;
+                                        case 4 -> 2.25;
+                                        default -> 0.75;
+                                    };
+                                }
+                                case Fiery -> {
+                                    yield switch (pieces) {
+                                        case 3 -> 1.75;
+                                        case 4 -> 2.625;
+                                        default -> 0.875;
+                                    };
+                                }
+                                case Infernal -> {
+                                    yield switch (pieces) {
+                                        case 3 -> 2;
+                                        case 4 -> 3;
+                                        default -> 1;
+                                    };
+                                }
+                            };
                             MinecraftServer.getSchedulerManager().buildTask(() -> es.forEach(e -> {
                                 if (!(e instanceof SkyblockEntity entity)) return;
-                                PlayerDamageEntityEvent entityEvent = new PlayerDamageEntityEvent(player, event.getTarget(), event.calculateCritHit());
-                                entityEvent.setMultiplicativeMultiplier(0.4);
+                                double damage = event.isCrit() ? event.calculateCritHit() : event.calculateHit();
+                                double swipeDamage = damage * (swipeStrength / event.getAdditiveMultiplier());
+                                PlayerDamageEntityEvent entityEvent = new PlayerDamageEntityEvent(player, event.getTarget(), swipeDamage);
                                 entityEvent.setCanDoFerocity(false);
                                 MinecraftServer.getGlobalEventHandler().call(entityEvent);
                                 entity.damage(entityEvent);

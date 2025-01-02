@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.ability.Ability;
+import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmor;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmorTier;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneItem;
@@ -18,9 +19,11 @@ import net.minestom.server.item.Material;
 import java.util.List;
 import java.util.Map;
 
-public abstract class CrimsonHelmetBaseline implements ISbItem, ISbItem.StatProvider, HeadWithValue, Upgradable, GemstoneSlots {
-
-    protected abstract KuudraArmorTier armorTier();
+public abstract class CrimsonHelmetBaseline implements ISbItem, ISbItem.StatProvider, HeadWithValue, Upgradable, GemstoneSlots, KuudraArmor {
+    @Override
+    public KuudraArmorType armorType() {
+        return KuudraArmorType.Crimson;
+    }
     @Override
     public String getId() {
         return STR."\{armorTier().getId()}CRIMSON_HELMET";
