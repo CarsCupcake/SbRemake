@@ -64,41 +64,31 @@ public class CrimsonBoots extends CrimsonBootsBaseline implements Listener {
                             Vec dir = v.mul(-1).mul(2).withY(2);
                             Set<Entity> es = EntityUtils.getEntitiesInLine(supportVec.asPosition(), supportVec.add(dir).asPosition(), player.getInstance(), 2);
                             double swipeStrength = switch (ability.getTier()) {
-                                case Base -> {
-                                    yield switch (pieces) {
-                                        case 3 -> 1;
-                                        case 4 -> 1.5;
-                                        default -> 0.5;
-                                    };
-                                }
-                                case Hot -> {
-                                    yield  switch (pieces) {
-                                        case 3 -> 1.25;
-                                        case 4 -> 1.875;
-                                        default -> 0.625;
-                                    };
-                                }
-                                case Burning -> {
-                                    yield switch (pieces) {
-                                        case 3 -> 1.5;
-                                        case 4 -> 2.25;
-                                        default -> 0.75;
-                                    };
-                                }
-                                case Fiery -> {
-                                    yield switch (pieces) {
-                                        case 3 -> 1.75;
-                                        case 4 -> 2.625;
-                                        default -> 0.875;
-                                    };
-                                }
-                                case Infernal -> {
-                                    yield switch (pieces) {
-                                        case 3 -> 2;
-                                        case 4 -> 3;
-                                        default -> 1;
-                                    };
-                                }
+                                case Base -> switch (pieces) {
+                                    case 3 -> 1;
+                                    case 4 -> 1.5;
+                                    default -> 0.5;
+                                };
+                                case Hot -> switch (pieces) {
+                                    case 3 -> 1.25;
+                                    case 4 -> 1.875;
+                                    default -> 0.625;
+                                };
+                                case Burning -> switch (pieces) {
+                                    case 3 -> 1.5;
+                                    case 4 -> 2.25;
+                                    default -> 0.75;
+                                };
+                                case Fiery -> switch (pieces) {
+                                    case 3 -> 1.75;
+                                    case 4 -> 2.625;
+                                    default -> 0.875;
+                                };
+                                case Infernal -> switch (pieces) {
+                                    case 3 -> 2;
+                                    case 4 -> 3;
+                                    default -> 1;
+                                };
                             };
                             MinecraftServer.getSchedulerManager().buildTask(() -> es.forEach(e -> {
                                 if (!(e instanceof SkyblockEntity entity)) return;
