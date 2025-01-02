@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.worlds;
 
+import com.google.common.util.concurrent.Futures;
 import lombok.Getter;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.blocks.MiningBlock;
@@ -42,7 +43,7 @@ import org.kohsuke.github.GitHub;
 import java.io.*;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
@@ -240,6 +241,15 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
 
         public MiningBlock[] ores(Pos pos) {
             return type().getOres();
+        }
+
+        public Future<WorldProvider> initAsync() {
+            try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+                return executor.submit(() -> {
+                    init();
+                    return this;
+                });
+            }
         }
 
         public void init() {

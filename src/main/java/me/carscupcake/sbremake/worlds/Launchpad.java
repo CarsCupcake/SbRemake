@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.worlds;
 
+import com.google.common.util.concurrent.Futures;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import net.minestom.server.MinecraftServer;
@@ -7,10 +8,13 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.LivingEntity;
+import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.block.Block;
 
 import java.util.HashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 public record Launchpad(int x1, int z1, int x2, int z2, int y, SkyblockWorld targetWorld, Pos targetPos) {
     public void launch(SkyblockPlayer player) {
@@ -22,36 +26,50 @@ public record Launchpad(int x1, int z1, int x2, int z2, int y, SkyblockWorld tar
         int iterations = (int) (entity.getPosition().distance(targetPos) * 1) - 2;
         player.setOnLaunchpad(true);
         SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(targetWorld);
+        Future<SkyblockWorld.WorldProvider> instanceContainerFuture;
         if (provider == null) {
             provider = targetWorld.get();
-            provider.init();
+            instanceContainerFuture = provider.initAsync();
+        } else {
+            instanceContainerFuture = Futures.immediateFuture(provider);
         }
-
-        SkyblockWorld.WorldProvider finalProvider = provider;
         new TaskScheduler() {
-                Pos p = entity.getPosition();
-                int i = 0;
-                @Override
-                public void run() {
-                    if (i == iterations) {
-                        cancel();
-                        entity.removePassenger(player);
-                        player.setOnLaunchpad(false);
-                        if (player.getWorldProvider().type() == targetWorld) {
-                            player.teleport(targetPos.withView(player.getPosition()));
-                            return;
+            Pos p = entity.getPosition();
+            int i = 0;
+
+            @Override
+            public void run() {
+                if (i == iterations) {
+                    cancel();
+                    //Dont halt the entire thread only because the world did not load fast enough
+                    Thread.ofVirtual().start(() -> {
+                        try {
+                            SkyblockWorld.WorldProvider finalProvider = instanceContainerFuture.get();
+                            synchronized (player) {
+                                entity.removePassenger(player);
+                                player.setOnLaunchpad(false);
+                                if (player.getWorldProvider().type() == targetWorld) {
+                                    player.teleport(targetPos.withView(player.getPosition()));
+                                    return;
+                                }
+                                if (!finalProvider.isLoaded())
+                                    finalProvider.getOnStart().add(() -> player.setWorldProvider(finalProvider));
+                                else player.setWorldProvider(finalProvider);
+                                entity.remove();
+                            }
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
                         }
-                        if (!finalProvider.isLoaded())
-                            finalProvider.getOnStart().add(() -> player.setWorldProvider(finalProvider));
-                        else player.setWorldProvider(finalProvider);
-                        entity.remove();
-                        return;
-                    }
-                    p = p.add(direction);
-                    entity.teleport(p.add(0, sinus((double) i / iterations), 0));
-                    i++;
+                    });
+
+                    return;
+
                 }
-            }.repeatTask(1);
+                p = p.add(direction);
+                entity.teleport(p.add(0, sinus((double) i / iterations), 0));
+                i++;
+            }
+        }.repeatTask(1);
     }
 
     public boolean inBox(SkyblockPlayer player) {
@@ -61,7 +79,7 @@ public record Launchpad(int x1, int z1, int x2, int z2, int y, SkyblockWorld tar
         int maxZ = Math.max(z1, z2);
         Pos pos = player.getPosition();
         if (pos.blockX() >= minX && pos.blockX() <= maxX && pos.blockY() == y + 1 && pos.blockZ() >= minZ && pos.blockZ() <= maxZ && player.isOnGround() && !player.isOnLaunchpad()) {
-            return player.getInstance().getBlock(player.getPosition().sub(0, 1 ,0)) == Block.SLIME_BLOCK;
+            return player.getInstance().getBlock(player.getPosition().sub(0, 1, 0)) == Block.SLIME_BLOCK;
         }
         return false;
     }

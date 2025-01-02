@@ -10,6 +10,7 @@ import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.TemplateItems;
 import me.carscupcake.sbremake.util.quest.Dialog;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
+import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.Npc;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
@@ -23,9 +24,14 @@ import net.minestom.server.item.Material;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class DeepCaverns extends SkyblockWorld.WorldProvider {
+
+    public DeepCaverns() {
+        super(List.of(new Launchpad(5, 89, 2, 88, 156, SkyblockWorld.GoldMines, new Pos(0, 105, 181))));
+    }
     @Override
     public SkyblockWorld type() {
         return SkyblockWorld.DeepCaverns;
