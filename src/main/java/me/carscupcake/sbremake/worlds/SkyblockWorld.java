@@ -89,6 +89,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         public WorldProvider get() {
             return new SpidersDen();
         }
+    },
+    End("end", FileEnding.ZIP) {
+        @Override
+        public WorldProvider get() {
+            return new End();
+        }
     };
     private static final Object _lock = new Object();
     private static final MapList<SkyblockWorld, WorldProvider> worlds = new MapList<>();

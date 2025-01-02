@@ -20,7 +20,9 @@ import java.util.Set;
 
 public class SpidersDen extends SkyblockWorld.WorldProvider {
     public SpidersDen() {
-        super(List.of(new Launchpad(-199, -230, -195, -226, 82, SkyblockWorld.Hub, new Pos(-160, 75, -156))));
+        super(List.of(new Launchpad(-199, -230, -195, -226, 82, SkyblockWorld.Hub, new Pos(-160, 75, -156)),
+                new Launchpad(-384, -260, -385, -262, 118, SkyblockWorld.End, new Pos(-503, 101, -275.5))));
+        customEntry.put(SkyblockWorld.End, new Pos(-380, 119, -261, -90, 0));
     }
 
     @Override

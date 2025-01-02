@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class FieryCrimsonBoots extends CrimsonBootsBaseline {
     @Override
-    protected KuudraArmorTier armorTier() {
+    public KuudraArmorTier armorTier() {
         return KuudraArmorTier.Fiery;
     }
 

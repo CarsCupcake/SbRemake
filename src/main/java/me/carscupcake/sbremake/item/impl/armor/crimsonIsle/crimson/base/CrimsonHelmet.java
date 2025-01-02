@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class CrimsonHelmet extends CrimsonHelmetBaseline {
     @Override
-    protected KuudraArmorTier armorTier() {
+    public KuudraArmorTier armorTier() {
         return KuudraArmorTier.Base;
     }
 

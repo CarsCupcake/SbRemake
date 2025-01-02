@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class InfernalCrimsonBoots extends CrimsonBootsBaseline {
     @Override
-    protected KuudraArmorTier armorTier() {
+    public KuudraArmorTier armorTier() {
         return KuudraArmorTier.Infernal;
     }
 

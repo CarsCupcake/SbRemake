@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class CrimsonChestplate extends CrimsonChestplateBaseline {
     @Override
-    protected KuudraArmorTier armorTier() {
+    public KuudraArmorTier armorTier() {
         return KuudraArmorTier.Base;
     }
 

@@ -264,7 +264,6 @@ public abstract class SkyblockEntity extends EntityCreature {
         setCustomName(Component.text(name));
         setCustomNameVisible(true);
     }
-
     public void assignTask(TaskScheduler task) {
         assignedTask.add(task);
         task.setEntity(this);
@@ -272,7 +271,7 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     public void unassignTask(TaskScheduler task) {
         assignedTask.remove(task);
-    }
+
 
     /**
      * Is called to modifier and execute on damage

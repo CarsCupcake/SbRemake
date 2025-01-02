@@ -20,7 +20,11 @@ public enum ItemType {
     FishingRod(true, true, "Fishing Rod"),
     Pet(false, false, "Pet"),
     Potion(false, false, "Potion"),
-    Rune(false, false, "Rune");
+    Rune(false, false, "Rune"),
+    Cloak(true, false, "Cloak"),
+    Belt(true, false, "Belt"),
+    Gauntlet(true, false, "Gauntlet"),
+    Necklace(true, false, "Necklace");
     private final boolean reforgable;
     private final boolean statsInMainhand;
     private final String display;

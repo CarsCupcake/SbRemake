@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class BurningCrimsonHelmet extends CrimsonHelmetBaseline {
     @Override
-    protected KuudraArmorTier armorTier() {
+    public KuudraArmorTier armorTier() {
         return KuudraArmorTier.Burning;
     }
 

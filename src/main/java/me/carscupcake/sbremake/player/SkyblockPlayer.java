@@ -116,14 +116,14 @@ public class SkyblockPlayer extends Player {
         //Packet Logger
                 /*if (!(event.getPacket() instanceof ClientChunkBatchReceivedPacket || event.getPacket() instanceof ClientPlayerPositionPacket || event.getPacket() instanceof ClientPlayerRotationPacket || event.getPacket() instanceof ClientPlayerPositionAndRotationPacket))
                     System.out.println(event.getPacket());*/
-        if (event.getPacket() instanceof ClientTeleportConfirmPacket confirmPacket) {
-            if (player.spawnTeleportId == confirmPacket.teleportId()) {
+        if (event.getPacket() instanceof ClientTeleportConfirmPacket(int teleportId)) {
+            if (player.spawnTeleportId == teleportId) {
                 player.scheduler().buildTask(() -> player.setNoGravity(false)).delay(TaskSchedule.tick(5)).schedule();
                 player.spawnTeleportId = -1;
             }
         }
-        if (event.getPacket() instanceof ClientAnimationPacket packet) {
-            if (packet.hand() == Hand.MAIN) {
+        if (event.getPacket() instanceof ClientAnimationPacket(Hand hand)) {
+            if (hand == Hand.MAIN) {
                 long time = System.currentTimeMillis();
                 long delta = time - player.lastAttack;
                 Pos eyePos = player.getPosition().add(0, player.getEyeHeight(), 0);
@@ -405,6 +405,8 @@ public class SkyblockPlayer extends Player {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         event.setRespawnPosition(player.getWorldProvider().spawn());
         player.setSbHealth(player.getMaxSbHealth());
+        player.sendPacket(new PlayerAbilitiesPacket(player.getGameMode() == GameMode.CREATIVE ? PlayerAbilitiesPacket.FLAG_ALLOW_FLYING : (byte) 0, 0.05f, (float) (0.1 * (player.getStat(Stat.Speed) / 100d))));
+
     }).addListener(ItemDropEvent.class, event -> {
         SbItemStack stack = SbItemStack.from(event.getItemStack());
         if (stack.sbItem() instanceof SkyblockMenu) {
@@ -418,10 +420,7 @@ public class SkyblockPlayer extends Player {
             if (launchpad.inBox(player))
                 launchpad.launch(player);
 
-    }).addListener(PlayerGameModeChangeEvent.class, event -> {
-        event.getPlayer().sendPacket(new PlayerAbilitiesPacket(event.getNewGameMode() == GameMode.CREATIVE ? PlayerAbilitiesPacket.FLAG_ALLOW_FLYING : (byte) 0, (float) (0.1 * (((SkyblockPlayer) event.getPlayer()).getStat(Stat.Speed) / 100d)), (float) (0.1 * (((SkyblockPlayer) event.getPlayer()).getStat(Stat.Speed) / 100d))));
-
-    });
+    }).addListener(PlayerGameModeChangeEvent.class, event -> MinecraftServer.getSchedulerManager().buildTask(() -> event.getPlayer().sendPacket(new PlayerAbilitiesPacket(event.getNewGameMode() == GameMode.CREATIVE || event.getNewGameMode() == GameMode.SPECTATOR ? PlayerAbilitiesPacket.FLAG_ALLOW_FLYING : (byte) 0, (float) (0.1 * (((SkyblockPlayer) event.getPlayer()).getStat(Stat.Speed) / 100d)), (float) (0.1 * (((SkyblockPlayer) event.getPlayer()).getStat(Stat.Speed) / 100d))))).delay(TaskSchedule.tick(2)).schedule());
 
     private static int getSlot(ItemType type) {
         return switch (type) {
@@ -571,11 +570,13 @@ public class SkyblockPlayer extends Player {
 
     @Getter
     private volatile TreeSet<me.carscupcake.sbremake.player.potion.PotionEffect> potionEffects = new TreeSet<>(Comparator.comparingLong(me.carscupcake.sbremake.player.potion.PotionEffect::expiration));
-
-
+    @Getter
+    @Setter
+    private int zealotPity;
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         ConfigFile file = new ConfigFile("defaults", this);
+        zealotPity = file.get("zealotPity", ConfigSection.INTEGER, 0);
         coins = file.get("coins", ConfigSection.DOUBLE, 0d);
         tags = new ArrayList<>(List.of(file.get("tags", ConfigSection.STRING_ARRAY, new String[0])));
         for (Skill skill : Skill.values())
@@ -756,6 +757,7 @@ public class SkyblockPlayer extends Player {
         defaults.set("world", this.getWorldProvider().type().getId(), ConfigSection.STRING);
         defaults.set("coins", this.coins, ConfigSection.DOUBLE);
         defaults.set("tags", tags.toArray(new String[0]), ConfigSection.STRING_ARRAY);
+        defaults.set("zealotPity", zealotPity, ConfigSection.INTEGER);
         ConfigSection powders = defaults.get("powder", ConfigSection.SECTION, new ConfigSection(new JsonObject()));
         for (Map.Entry<Powder, Integer> powderIntegerEntry : powder.entrySet()) {
             powders.set(powderIntegerEntry.getKey().getId(), powderIntegerEntry.getValue(), ConfigSection.INTEGER);
@@ -1019,14 +1021,17 @@ public class SkyblockPlayer extends Player {
                         player.sidebar.createLine(new Sidebar.ScoreboardLine(id, text, 15 - lines));
                     else {
                         Sidebar.ScoreboardLine line = player.sidebar.getLine(id);
-                        assert line != null;
+                        if (line == null) {
+                            System.err.println(STR."Warning! Line \{id} is null!");
+                            continue;
+                        }
                         if (!line.getContent().equals(text)) player.sidebar.updateLineContent(id, text);
                     }
                     lines++;
                 }
             }
             for (int i = lines; i < lineCopie.size(); i++) {
-                String id = STR."\{15 - lines}";
+                String id = STR."\{15 - i}";
                 player.sidebar.removeLine(id);
             }
         })).repeat(TaskSchedule.seconds(1)).schedule();
