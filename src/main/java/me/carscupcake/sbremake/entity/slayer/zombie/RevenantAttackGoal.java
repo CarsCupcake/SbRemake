@@ -1,16 +1,15 @@
 package me.carscupcake.sbremake.entity.slayer.zombie;
 
+import me.carscupcake.sbremake.entity.SkyblockEntity;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.ai.GoalSelector;
-import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.utils.time.Cooldown;
 import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
-import java.time.temporal.TemporalUnit;
 
 public class RevenantAttackGoal extends GoalSelector {
 
@@ -83,15 +82,7 @@ public class RevenantAttackGoal extends GoalSelector {
             }
 
             // Move toward the target entity
-            Navigator navigator = entityCreature.getNavigator();
-            final var pathPosition = navigator.getPathPosition();
-            final var targetPosition = target.getPosition();
-            if (pathPosition == null || !pathPosition.samePoint(targetPosition)) {
-                if (this.cooldown.isReady(time)) {
-                    this.cooldown.refreshLastUpdate(time);
-                    navigator.setPathTo(targetPosition);
-                }
-            }
+            SkyblockEntity.MeleeAttackGoal.navigator(time, target, entityCreature.getNavigator(), this.cooldown);
         }
     }
 

@@ -36,6 +36,7 @@ public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
             player.updateHpBar();
             player.getWorldProvider().addPlayer(player);
             player.spawn();
+            System.gc();
         }
     }
 }

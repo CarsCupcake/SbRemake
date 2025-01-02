@@ -18,6 +18,7 @@ import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.PlayerBrodcastOutputStream;
 import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
 import me.carscupcake.sbremake.util.item.Gui;
+import me.carscupcake.sbremake.worlds.Time;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
@@ -32,6 +33,7 @@ import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
 import net.minestom.server.registry.Registry;
+import net.minestom.server.timer.TaskSchedule;
 import org.reflections.Reflections;
 
 import java.io.BufferedReader;
@@ -39,6 +41,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -100,6 +103,7 @@ public class Main {
                 SkyblockPlayer player = (SkyblockPlayer) audience;
                 player.save();
                 player.kick("Server shutting down!");
+                Time.save();
             });
         });
         CommandManager commandManager = MinecraftServer.getCommandManager();
@@ -114,6 +118,11 @@ public class Main {
                 e.printStackTrace(System.err);
             }
         }
+        for (var arg : args)
+            if (arg.equals("--open-lan")) {
+                OpenToLAN.open();
+                break;
+            }
         boolean cracked = false;
         try {
             cracked = Boolean.parseBoolean(args[1]);
@@ -156,5 +165,7 @@ public class Main {
             ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
         });*/
         SkyblockPlayer.tickLoop();
+        Time.init();
+        MinecraftServer.getSchedulerManager().scheduleTask(System::gc, TaskSchedule.seconds(5), TaskSchedule.minutes(5));
     }
 }

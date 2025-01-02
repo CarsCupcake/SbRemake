@@ -110,3 +110,5 @@ buildNumber.properties
 # Common working directory
 run/
 !/src/
+data/
+worlds/

@@ -15,6 +15,7 @@ import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.StringUtils;
+import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.region.Region;
@@ -29,7 +30,6 @@ import net.minestom.server.entity.*;
 import net.minestom.server.entity.ai.EntityAIGroup;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.goal.DoNothingGoal;
-import net.minestom.server.entity.ai.goal.MeleeAttackGoal;
 import net.minestom.server.entity.ai.goal.RandomStrollGoal;
 import net.minestom.server.entity.ai.goal.RangedAttackGoal;
 import net.minestom.server.entity.ai.target.ClosestEntityTarget;
@@ -37,15 +37,18 @@ import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
+import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
+import net.minestom.server.utils.time.Cooldown;
 import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -53,13 +56,13 @@ import java.util.function.Function;
 @Getter
 @SuppressWarnings("preview")
 public abstract class SkyblockEntity extends EntityCreature {
-    private float health = getMaxHealth();
+    private float health = 1;
     @Getter
     @Setter
     private SkyblockPlayer lastDamager;
-
     @Getter
     private final ILootTable<SbItemStack> lootTable;
+    private final Set<TaskScheduler> assignedTask = new HashSet<>();
 
     public SkyblockEntity(@NotNull EntityType entityType) {
         this(entityType, null);
@@ -68,7 +71,6 @@ public abstract class SkyblockEntity extends EntityCreature {
     public SkyblockEntity(@NotNull EntityType entityType, ILootTable<SbItemStack> lootTable) {
         super(entityType, UUID.randomUUID());
         this.lootTable = lootTable == null ? new LootTable<>() : lootTable;
-        setHealth(getMaxHealth());
         getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
     }
 
@@ -92,6 +94,13 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     public Function<SkyblockEntity, String> nameTag() {
         return NameTagType.Basic;
+    }
+
+    @Override
+    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
+        setHealth(getMaxHealth());
+        health = getMaxHealth();
+        return super.setInstance(instance, spawnPosition);
     }
 
     public int getLevel() {
@@ -167,8 +176,9 @@ public abstract class SkyblockEntity extends EntityCreature {
             if (this instanceof SkillXpDropper dropper) {
                 dropper.apply(lastDamager);
                 if (dropper.type() == Skill.Combat && lastDamager.getSlayerQuest() != null && lastDamager.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.XpGathering) {
-                    if (lastDamager.getSlayerQuest().getSlayer().getSlayer().addXp(this, lastDamager.getSlayerQuest().getTier())) lastDamager.getSlayerQuest()
-                            .addXp(lastDamager.getSkill(Skill.Combat).calculateXp(dropper.amount(lastDamager)), getPosition());
+                    if (lastDamager.getSlayerQuest().getSlayer().getSlayer().addXp(this, lastDamager.getSlayerQuest().getTier()))
+                        lastDamager.getSlayerQuest()
+                                .addXp(lastDamager.getSkill(Skill.Combat).calculateXp(dropper.amount(lastDamager)), getPosition());
                 }
             }
             Set<SbItemStack> items = lootTable.loot(lastDamager);
@@ -180,6 +190,15 @@ public abstract class SkyblockEntity extends EntityCreature {
                 entity.scheduleRemove(Duration.ofSeconds(30));
             }
         }
+        for (TaskScheduler scheduler : new HashSet<>(assignedTask))
+            scheduler.cancel();
+    }
+
+    @Override
+    protected void remove(boolean permanent) {
+        super.remove(permanent);
+        for (TaskScheduler scheduler : new HashSet<>(assignedTask))
+            scheduler.cancel();
     }
 
     public void doFerocity(SkyblockPlayer player, double ferocity) {
@@ -190,10 +209,12 @@ public abstract class SkyblockEntity extends EntityCreature {
         player.getInstance().playSound(Sound.sound(SoundType.ITEM_FLINTANDSTEEL_USE.getKey(), Sound.Source.AMBIENT, 1, 0f), getPosition());
         FerocityRunnable runnable = new FerocityRunnable(ticks, player);
         Task task = this.scheduler().scheduleTask(runnable, TaskSchedule.tick(10), TaskSchedule.tick(10));
-        runnable.setSelve(task);
+        runnable.setSelf(task);
     }
 
     public static void spawnDamageTag(SkyblockEntity entity, String tag) {
+        //in case the entity got removed in the damage process
+        if (entity.instance == null) return;
         EntityCreature creature = new EntityCreature(EntityType.ARMOR_STAND, UUID.randomUUID());
         creature.setCustomName(Component.text(tag));
         creature.setCustomNameVisible(true);
@@ -243,12 +264,14 @@ public abstract class SkyblockEntity extends EntityCreature {
         setCustomName(Component.text(name));
         setCustomNameVisible(true);
     }
-
-    @Override
-    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
-        setHealth(getMaxHealth());
-        return super.setInstance(instance, spawnPosition);
+    public void assignTask(TaskScheduler task) {
+        assignedTask.add(task);
+        task.setEntity(this);
     }
+
+    public void unassignTask(TaskScheduler task) {
+        assignedTask.remove(task);
+
 
     /**
      * Is called to modifier and execute on damage
@@ -295,8 +318,17 @@ public abstract class SkyblockEntity extends EntityCreature {
     }
 
     protected static EntityAIGroup regionTarget(SkyblockEntity entity, Region region, int range) {
+        return regionTarget(entity, List.of(region), range);
+    }
+
+    protected static EntityAIGroup regionTarget(SkyblockEntity entity, List<Region> region, int range) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p.getRegion() == region && !entity.isDead)));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range),
+                new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p
+                        && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL
+                        && p.getRegion() != null
+                        && region.contains(p.getRegion())
+                        && !entity.isDead)));
         return aiGroup;
     }
 
@@ -309,6 +341,10 @@ public abstract class SkyblockEntity extends EntityCreature {
     }
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region) {
+        return zombieAiGroup(entity, List.of(region));
+    }
+
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, List<Region> region) {
         EntityAIGroup aiGroup = regionTarget(entity, region, 8);
         aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 10, region) // Walk around
         ));
@@ -339,7 +375,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     public class FerocityRunnable implements Runnable {
 
         @Setter
-        public Task selve = null;
+        public Task self = null;
 
         private int ticks;
         private final SkyblockPlayer player;
@@ -389,7 +425,7 @@ public abstract class SkyblockEntity extends EntityCreature {
                 ParticleUtils.spawnParticle(instance, a, dust, 1);
             }
             player.getInstance().playSound(SoundType.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR.create(0.1f, 2f), getPosition());
-            if (ticks <= 0) selve.cancel();
+            if (ticks <= 0) self.cancel();
         }
     }
 
@@ -400,12 +436,19 @@ public abstract class SkyblockEntity extends EntityCreature {
         private final List<Vec> closePositions;
         private final Random random = new Random();
         private long lastStroll;
-        private final Region region;
+        private final List<Region> regions;
         private final long randomDelay = new Random().nextLong(5000);
 
         public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, Region region) {
             super(entityCreature);
-            this.region = region;
+            this.regions = List.of(region);
+            this.radius = radius;
+            this.closePositions = getNearbyBlocks(radius);
+        }
+
+        public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, List<Region> region) {
+            super(entityCreature);
+            this.regions = region;
             this.radius = radius;
             this.closePositions = getNearbyBlocks(radius);
         }
@@ -420,10 +463,12 @@ public abstract class SkyblockEntity extends EntityCreature {
                 int index = this.random.nextInt(this.closePositions.size());
                 Vec position = this.closePositions.get(index);
                 Pos target = this.entityCreature.getPosition().add(position);
-                if (region.isInRegion(target)) {
-                    boolean result = this.entityCreature.getNavigator().setPathTo(target);
-                    if (result) {
-                        break;
+                for (Region region : regions) {
+                    if (region.isInRegion(target)) {
+                        boolean result = this.entityCreature.getNavigator().setPathTo(target);
+                        if (result) {
+                            break;
+                        }
                     }
                 }
             }
@@ -453,6 +498,108 @@ public abstract class SkyblockEntity extends EntityCreature {
             }
 
             return blocks;
+        }
+    }
+
+    public static class MeleeAttackGoal extends GoalSelector {
+
+        private final Cooldown cooldown = new Cooldown(Duration.of(5, TimeUnit.SERVER_TICK));
+
+        private long lastHit;
+        private final double range;
+        private final Duration delay;
+
+        private boolean stop;
+        private Entity cachedTarget;
+
+        /**
+         * @param entityCreature the entity to add the goal to
+         * @param range          the allowed range the entity can attack others.
+         * @param delay          the delay between each attacks
+         * @param timeUnit       the unit of the delay
+         */
+        public MeleeAttackGoal(@NotNull EntityCreature entityCreature, double range, int delay, @NotNull TemporalUnit timeUnit) {
+            this(entityCreature, range, Duration.of(delay, timeUnit));
+        }
+
+        /**
+         * @param entityCreature the entity to add the goal to
+         * @param range          the allowed range the entity can attack others.
+         * @param delay          the delay between each attacks
+         */
+        public MeleeAttackGoal(@NotNull EntityCreature entityCreature, double range, Duration delay) {
+            super(entityCreature);
+            this.range = range;
+            this.delay = delay;
+        }
+
+        public @NotNull Cooldown getCooldown() {
+            return this.cooldown;
+        }
+
+        @Override
+        public boolean shouldStart() {
+            this.cachedTarget = findTarget();
+            return this.cachedTarget != null;
+        }
+
+        @Override
+        public void start() {
+            final Point targetPosition = this.cachedTarget.getPosition();
+            entityCreature.getNavigator().setPathTo(targetPosition);
+        }
+
+        @Override
+        public void tick(long time) {
+            Entity target;
+            if (this.cachedTarget != null) {
+                target = this.cachedTarget;
+                this.cachedTarget = null;
+            } else {
+                target = findTarget();
+                if (entityCreature instanceof MeleeAttackGoalEntity meleeAttackGoalEntity)
+                    meleeAttackGoalEntity.setGoalTarget(target);
+            }
+
+            this.stop = target == null;
+
+            if (!stop) {
+
+                // Attack the target entity
+                if (entityCreature.getDistanceSquared(target) <= range * range) {
+                    entityCreature.lookAt(target);
+                    if (!Cooldown.hasCooldown(time, lastHit, delay)) {
+                        entityCreature.attack(target, true);
+                        this.lastHit = time;
+                    }
+                    return;
+                }
+
+                // Move toward the target entity
+                navigator(time, target, entityCreature.getNavigator(), this.cooldown);
+            }
+        }
+
+        public static void navigator(long time, Entity target, Navigator navigator, Cooldown cooldown) {
+            final var pathPosition = navigator.getPathPosition();
+            final var targetPosition = target.getPosition();
+            if (pathPosition == null || !pathPosition.samePoint(targetPosition)) {
+                if (cooldown.isReady(time)) {
+                    cooldown.refreshLastUpdate(time);
+                    navigator.setPathTo(targetPosition);
+                }
+            }
+        }
+
+        @Override
+        public boolean shouldEnd() {
+            return stop;
+        }
+
+        @Override
+        public void end() {
+            // Stop following the target
+            entityCreature.getNavigator().setPathTo(null);
         }
     }
 }

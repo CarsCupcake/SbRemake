@@ -220,6 +220,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         @Getter
         public volatile InstanceContainer container;
 
+
         public WorldProvider(List<Launchpad> launchpads, Npc... npcs) {
             this.npcs = (npcs == null) ? new Npc[0] : npcs;
             id = STR."\{type().id}\{getWorlds(type()).size()}";
@@ -331,12 +332,14 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                     synchronized (_lock) {
                         loaded = true;
                         for (Runnable runnable : onStart) runnable.run();
+                        container.setTime(Time.tick);
                     }
                 });
                 else {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
                     LightingChunk.relight(container, container.getChunks());
                     container.loadChunk(spawn().chunkX(), spawn().chunkZ());
+                    container.setTime(Time.tick);
                 }
                 addWorld(this);
                 register();
@@ -351,6 +354,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                 e.printStackTrace(System.err);
                 Main.LOGGER.trace(STR."An Error occured while loading \{type().getId()}", e);
             }
+            System.gc();
         }
 
         public void init(@NotNull InstanceContainer container, @Nullable Runnable after, boolean async) {
@@ -375,6 +379,8 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
             MinecraftServer.getInstanceManager().unregisterInstance(container);
             removeWorld(this);
             unregister();
+            if (shutdownTask != null) shutdownTask.cancel();
+            System.gc();
         }
 
         protected void unregister() {

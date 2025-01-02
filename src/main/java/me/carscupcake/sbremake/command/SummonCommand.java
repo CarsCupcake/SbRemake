@@ -3,7 +3,8 @@ package me.carscupcake.sbremake.command;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.impl.deepCaverns.SneakyCreeper;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
-import me.carscupcake.sbremake.entity.impl.spidersDen.GravelSkeleton;
+import me.carscupcake.sbremake.entity.impl.spidersDen.*;
+import me.carscupcake.sbremake.entity.impl.spidersDen.arachne.Arachne;
 import me.carscupcake.sbremake.entity.slayer.zombie.RevenantHorrorI;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
@@ -55,12 +56,37 @@ public class SummonCommand extends Command {
         GraveyardZombie(GraveyardZombie.class),
         GravelSkeleton(GravelSkeleton.class),
         SneakyCreeper(me.carscupcake.sbremake.entity.impl.deepCaverns.SneakyCreeper.class),
-        ZombieSlayerI(RevenantHorrorI.class) {
+        SplitterSpider(me.carscupcake.sbremake.entity.impl.spidersDen.SplitterSpider.class) {
             @Override
             public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-                return new RevenantHorrorI(null);
+                return new SplitterSpider(4);
             }
-        };
+        },
+        SpiderJockey(me.carscupcake.sbremake.entity.impl.spidersDen.SpiderJockey.class) {
+            @Override
+            public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+                return new SpiderJockey(false);
+            }
+        },
+        VoraciousSpider(me.carscupcake.sbremake.entity.impl.spidersDen.VoraciousSpider.class) {
+            @Override
+            public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+                return new VoraciousSpider(4);
+            }
+        },
+        DasherSpider(me.carscupcake.sbremake.entity.impl.spidersDen.DasherSpider.class) {
+            @Override
+            public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+                return new DasherSpider(4);
+            }
+        },
+        Arachne(me.carscupcake.sbremake.entity.impl.spidersDen.arachne.Arachne.class)
+                {
+                    @Override
+                    public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+                        return new Arachne(true);
+                    }
+                };
         private final Class<? extends SkyblockEntity> entityClazz;
 
         EntityClass(Class<? extends SkyblockEntity> entityClazz) {
