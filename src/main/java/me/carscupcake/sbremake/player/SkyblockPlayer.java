@@ -1021,14 +1021,17 @@ public class SkyblockPlayer extends Player {
                         player.sidebar.createLine(new Sidebar.ScoreboardLine(id, text, 15 - lines));
                     else {
                         Sidebar.ScoreboardLine line = player.sidebar.getLine(id);
-                        assert line != null;
+                        if (line == null) {
+                            System.err.println(STR."Warning! Line \{id} is null!");
+                            continue;
+                        }
                         if (!line.getContent().equals(text)) player.sidebar.updateLineContent(id, text);
                     }
                     lines++;
                 }
             }
             for (int i = lines; i < lineCopie.size(); i++) {
-                String id = STR."\{15 - lines}";
+                String id = STR."\{15 - i}";
                 player.sidebar.removeLine(id);
             }
         })).repeat(TaskSchedule.seconds(1)).schedule();
