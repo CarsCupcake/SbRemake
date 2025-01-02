@@ -271,6 +271,7 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     public void unassignTask(TaskScheduler task) {
         assignedTask.remove(task);
+    }
 
 
     /**
