@@ -244,7 +244,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         }
 
         public Future<WorldProvider> initAsync() {
-            try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
                 return executor.submit(() -> {
                     init();
                     return this;

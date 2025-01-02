@@ -5,21 +5,49 @@ import lombok.Setter;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Entity;
+import net.minestom.server.timer.ExecutionType;
+import net.minestom.server.timer.Scheduler;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
+import org.apache.cassandra.concurrent.Interruptible;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class TaskScheduler implements Runnable {
     private Task task;
     @Getter
     @Setter
     private SkyblockEntity entity;
+    public AtomicBoolean cancelled = new AtomicBoolean(false);
 
     public void repeatTask(int delay, int repeatDelay) {
         Task.Builder builder = MinecraftServer.getSchedulerManager().buildTask(this);
         if (delay != 0)
             builder.delay(TaskSchedule.tick(delay));
         task = builder.repeat(TaskSchedule.tick(repeatDelay)).schedule();
+    }
+
+    public void repeatTaskAsync(int delay, int repeatDelay) {
+        Thread.ofVirtual().start(() -> {
+            try {
+                Thread.sleep(delay * 50L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            while (true) {
+                try {
+                    Thread.sleep(repeatDelay * 50L);
+                    if (cancelled.get()) {
+                        break;
+                    }
+                    run();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     public void repeatTask(int repeatDelay) {
@@ -35,6 +63,7 @@ public abstract class TaskScheduler implements Runnable {
     }
 
     public synchronized void cancel() {
+        cancelled.set(true);
         if (task == null || !task.isAlive()) return;
         task.cancel();
         task = null;
@@ -44,6 +73,6 @@ public abstract class TaskScheduler implements Runnable {
     }
 
     public boolean isRunning() {
-        return task != null && task.isAlive();
+        return task != null && task.isAlive() && !cancelled.get();
     }
 }

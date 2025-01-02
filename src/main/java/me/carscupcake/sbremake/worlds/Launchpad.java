@@ -41,26 +41,23 @@ public record Launchpad(int x1, int z1, int x2, int z2, int y, SkyblockWorld tar
             public void run() {
                 if (i == iterations) {
                     cancel();
-                    //Dont halt the entire thread only because the world did not load fast enough
-                    Thread.ofVirtual().start(() -> {
-                        try {
-                            SkyblockWorld.WorldProvider finalProvider = instanceContainerFuture.get();
-                            synchronized (player) {
-                                entity.removePassenger(player);
-                                player.setOnLaunchpad(false);
-                                if (player.getWorldProvider().type() == targetWorld) {
-                                    player.teleport(targetPos.withView(player.getPosition()));
-                                    return;
-                                }
-                                if (!finalProvider.isLoaded())
-                                    finalProvider.getOnStart().add(() -> player.setWorldProvider(finalProvider));
-                                else player.setWorldProvider(finalProvider);
-                                entity.remove();
+                    try {
+                        SkyblockWorld.WorldProvider finalProvider = instanceContainerFuture.get();
+                        synchronized (player) {
+                            entity.removePassenger(player);
+                            player.setOnLaunchpad(false);
+                            if (player.getWorldProvider().type() == targetWorld) {
+                                player.teleport(targetPos.withView(player.getPosition()));
+                                return;
                             }
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
+                            if (!finalProvider.isLoaded())
+                                finalProvider.getOnStart().add(() -> player.setWorldProvider(finalProvider));
+                            else player.setWorldProvider(finalProvider);
+                            entity.remove();
                         }
-                    });
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
 
                     return;
 
@@ -69,7 +66,7 @@ public record Launchpad(int x1, int z1, int x2, int z2, int y, SkyblockWorld tar
                 entity.teleport(p.add(0, sinus((double) i / iterations), 0));
                 i++;
             }
-        }.repeatTask(1);
+        }.repeatTaskAsync(0, 1);
     }
 
     public boolean inBox(SkyblockPlayer player) {
