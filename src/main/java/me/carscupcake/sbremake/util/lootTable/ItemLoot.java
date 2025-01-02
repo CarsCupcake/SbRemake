@@ -34,6 +34,9 @@ public record ItemLoot(SbItemStack item, int min, int max, double chance, boolea
     public ItemLoot(Class<? extends ISbItem> item, int amount, double chance) {
         this(item, amount, amount, chance);
     }
+    public ItemLoot(Class<? extends ISbItem> clazz) {
+        this(clazz, 1, 1);
+    }
     @Override
     public Set<SbItemStack> loot(SkyblockPlayer player) {
         int amount = (min == max) ? max : (new Random().nextInt(max - min) + min);
