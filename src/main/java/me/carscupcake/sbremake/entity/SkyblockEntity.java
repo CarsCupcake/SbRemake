@@ -467,13 +467,18 @@ public abstract class SkyblockEntity extends EntityCreature {
                 Pos target = this.entityCreature.getPosition().add(position);
                 Chunk c = entityCreature.getInstance().getChunkAt(target);
                 if (c == null || !c.isLoaded()) continue;
-                for (Region region : regions) {
-                    if (region.isInRegion(target)) {
-                        boolean result = this.entityCreature.getNavigator().setPathTo(target);
-                        if (result) {
-                            break;
+                try {
+                    for (Region region : regions) {
+                        if (region.isInRegion(target)) {
+                            boolean result = this.entityCreature.getNavigator().setPathTo(target);
+                            if (result) {
+                                break;
+                            }
                         }
                     }
+                } catch (NullPointerException e) {
+                    if (e.getMessage().startsWith("Unloaded chunk")) return;
+                    throw new RuntimeException(e);
                 }
             }
         }

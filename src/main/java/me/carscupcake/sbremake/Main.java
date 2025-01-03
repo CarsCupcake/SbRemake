@@ -18,6 +18,7 @@ import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.PlayerBrodcastOutputStream;
 import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
 import me.carscupcake.sbremake.util.item.Gui;
+import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.Time;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.MinecraftServer;
@@ -42,6 +43,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -105,6 +107,10 @@ public class Main {
                 player.kick("Server shutting down!");
                 Time.save();
             });
+            LOGGER.debug("Unloading Worlds...");
+            for (SkyblockWorld.WorldProvider provider : SkyblockWorld.getAllWorlds()) {
+                provider.remove();
+            }
         });
         CommandManager commandManager = MinecraftServer.getCommandManager();
         Reflections reflections = new Reflections("me.carscupcake.sbremake.command");

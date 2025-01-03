@@ -157,6 +157,10 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                 }
             }
         }
+        if (((SkyblockPlayer) event.getPlayer()).getWorldProvider().type() == SkyblockWorld.PrivateIsle) {
+            SbItemStack.base(Objects.requireNonNull(event.getBlock().registry().material())).drop(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
+            return;
+        }
         event.setCancelled(true);
     }
 }

@@ -51,7 +51,29 @@ import java.util.zip.ZipInputStream;
 
 @Getter
 @SuppressWarnings("preview")
-public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
+public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, WorldSelector {
+    PrivateIsle("private_isle", FileEnding.ZIP){
+        @Override
+        public WorldProvider get() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public SkyblockWorld.@NotNull WorldProvider getWorldProvider(List<WorldProvider> providers, SkyblockPlayer player) {
+            for (WorldProvider provider : providers) {
+                if (provider instanceof PrivateIsle privateIsle) {
+                    if (privateIsle.getOwner() == player) {
+                        return privateIsle;
+                    }
+                }
+            }
+            try {
+                return new PrivateIsle(player);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    },
     Hub("hub", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
         public WorldProvider get() {
@@ -127,19 +149,18 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         }
     }
 
-    public static WorldProvider getBestWorld(SkyblockWorld world) {
-        if (worlds.get(world).isEmpty()) {
-            return null;
-        }
-        return worlds.get(world).getFirst();
+    public static WorldProvider getBestWorld(SkyblockPlayer player, SkyblockWorld world) {
+        return world.getWorldProvider(worlds.get(world), player);
     }
 
-    public static void getBestWorld(SkyblockWorld world, Consumer<WorldProvider> after) {
-        if (worlds.get(world).isEmpty()) {
+
+    public static void getBestWorld(SkyblockPlayer player, SkyblockWorld world, Consumer<WorldProvider> after) {
+        var p = getBestWorld(player, world);
+        if (p == null) {
             WorldProvider provider = world.get();
             world.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> after.accept(provider), true);
         } else
-            after.accept(worlds.get(world).getFirst());
+            after.accept(p);
     }
 
     public static void sendToBest(WarpLocation warpLocation, SkyblockPlayer player) {
@@ -154,9 +175,11 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
             return;
         }
         player.setWorldProvider(worlds.get(world).getFirst());*/
-        SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(world);
+        SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(player, world);
         if (provider == null) {
             provider = world.get();
+        }
+        if (!provider.isLoaded()) {
             player.sendMessage(STR."§7Starting \{world.id}");
             SkyblockWorld.WorldProvider finalProvider = provider;
             provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
@@ -178,9 +201,11 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
             return;
         }
         player.setWorldProvider(worlds.get(world).getFirst());*/
-        SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(world);
+        SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(player, world);
         if (provider == null) {
             provider = world.get();
+        }
+        if (!provider.isLoaded()) {
             player.sendMessage(STR."§7Starting \{world.id}");
             SkyblockWorld.WorldProvider finalProvider = provider;
             provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
@@ -264,15 +289,20 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
             return true;
         }
 
+        protected File findWorldFolder() {
+            return new File(STR."./worlds/\{type().getId()}");
+        }
+
         public void init(InstanceContainer container, @Nullable Runnable after) {
             init(container, after, true);
         }
 
         private void init0(InstanceContainer container, @Nullable Runnable after, boolean async) {
+            container.setChunkSupplier(LightingChunk::new);
             if (after != null)
                 onStart.add(after);
             try {
-                File f = new File(STR."./worlds/\{type().getId()}");
+                File f = findWorldFolder();
                 if (!f.exists()) {
                     Main.LOGGER.info("Downloading world!");
                     //Download the world from my SkyblockRemake Repo
@@ -301,7 +331,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                         } else {
                             f.delete();
                             getZipFiles(file.get().getAbsolutePath(), dir.getAbsolutePath());
-                            new File(dir, "world").renameTo(new File(dir, type().getId()));
+                            new File(dir, "world").renameTo(findWorldFolder());
                         }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -309,7 +339,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                     File wrongFile = new File("./worlds/Unidentified_Server");
                     if (wrongFile.exists()) {
                         f.delete();
-                        wrongFile.renameTo(new File(dir, type().getId()));
+                        wrongFile.renameTo(findWorldFolder());
                     }
                     Arrays.stream(Objects.requireNonNull(tempFolder.listFiles())).forEach(file1 -> {
                         try {
@@ -330,11 +360,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                         });
                     }
                     fakeFolder.delete();
-                    f = new File(STR."./worlds/\{type().getId()}");
+                    f = findWorldFolder();
                 }
                 container.setChunkLoader(new AnvilLoader(f.toPath()));
+                container.loadChunk(spawn().chunkX(), spawn().chunkZ()).get();
                 var chunks = new ArrayList<CompletableFuture<Chunk>>();
-                ChunkUtils.forChunksInRange(0, 0, 32, (x, z) -> chunks.add(container.loadChunk(x, z)));
+                ChunkUtils.forChunksInRange(0, 0, 8, (x, z) -> chunks.add(container.loadChunk(x, z)));
                 if (async) CompletableFuture.runAsync(() -> {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
                     LightingChunk.relight(container, container.getChunks());
@@ -347,6 +378,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
                 });
                 else {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
+                    Main.LOGGER.info(STR."Relighting \{container.getChunks().size()} Chunks");
                     LightingChunk.relight(container, container.getChunks());
                     container.loadChunk(spawn().chunkX(), spawn().chunkZ());
                     container.setTime(Time.tick);
@@ -384,11 +416,11 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
             for (SkyblockPlayer player : players)
                 player.kick("§cInstance is shutting down!");
             container.getEntities().forEach(Entity::remove);
+            unregister();
             for (Chunk c : container.getChunks())
                 container.getChunkLoader().unloadChunk(c);
             MinecraftServer.getInstanceManager().unregisterInstance(container);
             removeWorld(this);
-            unregister();
             if (shutdownTask != null) shutdownTask.cancel();
             System.gc();
         }
@@ -457,7 +489,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         public abstract Region[] regions();
     }
 
-    private static Map<InputStream, String> extract(String filePath) throws IOException {
+    public static Map<InputStream, String> extract(String filePath) throws IOException {
         Map<InputStream, String> extractedMap = new HashMap<>();
 
         RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
@@ -481,7 +513,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         return extractedMap;
     }
 
-    private static void getZipFiles(String zipFile, String destFolder) throws IOException {
+    public static void getZipFiles(String zipFile, String destFolder) throws IOException {
         BufferedOutputStream dest;
         ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)));
         ZipEntry entry;
@@ -508,7 +540,8 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider> {
         }
     }
 
-    enum FileEnding {
+    @Getter
+    public enum FileEnding {
         ZIP("zip"), RAR("rar");
         private final String literal;
 

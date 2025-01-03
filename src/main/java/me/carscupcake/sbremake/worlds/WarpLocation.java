@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 @Getter
 public enum WarpLocation {
     Hub("hub", SkyblockWorld.Hub, new Pos(-2.5, 70.5, -70.5, 180, 0)),
+    PrivateIsle("home", SkyblockWorld.PrivateIsle, new Pos(7.5, 100, 7.5)),
     GoldMines("gold", SkyblockWorld.GoldMines, new Pos(-4.5, 74, -272.5, 180, 0)),
     DeepCaverns("deep", SkyblockWorld.DeepCaverns, new Pos(4, 157, 85, 180, 0)),
     DwarvenMines("mines", SkyblockWorld.DwarvenMines, new Pos(-48.5, 200, -121.5, 270, 0)),

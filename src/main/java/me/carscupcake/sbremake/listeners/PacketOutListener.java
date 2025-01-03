@@ -26,6 +26,7 @@ public class PacketOutListener implements Consumer<PlayerPacketOutEvent> {
     @Override
     public void accept(PlayerPacketOutEvent event) {
         if (event.getPacket() instanceof EntityMetaDataPacket(int entityId, Map<Integer, Metadata.Entry<?>> entries)) {
+            if (event.getPlayer().getInstance() == null) return;
             Entity entity = event.getPlayer().getInstance().getEntities().stream().filter(entity1 -> entity1.getEntityId() == entityId).findFirst().orElse(null);
             if (entity == null || entity.getEntityType() != EntityType.PLAYER) return;
             //Checking if its bow drawing or if it even is legal

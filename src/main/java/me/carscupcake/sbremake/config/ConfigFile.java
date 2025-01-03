@@ -23,7 +23,7 @@ public class ConfigFile extends ConfigSection {
     }
 
     public ConfigFile(String name, SkyblockPlayer player) {
-        this(new File(DATA_PATH, STR."\\\{player.getUuid().toString()}\\\{name}.json"));
+        this(new File(DATA_PATH, STR."/\{player.getUuid().toString()}/\{name}.json"));
     }
 
     public ConfigFile(String name) {
