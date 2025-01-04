@@ -12,22 +12,20 @@ import java.util.function.Consumer;
 public class AsyncPlayerConfigurationListener implements Consumer<AsyncPlayerConfigurationEvent> {
     @Override
     public void accept(AsyncPlayerConfigurationEvent asyncPlayerConfigurationEvent) {
-        System.out.println("got connection");
         SkyblockPlayer player = (SkyblockPlayer) asyncPlayerConfigurationEvent.getPlayer();
-        SkyblockWorld world = SkyblockWorld.Hub;
+        SkyblockWorld world = SkyblockWorld.PrivateIsle;
         ConfigFile defaults = new ConfigFile("defaults", player);
         if (defaults.has("world")) {
             world = SkyblockWorld.from(defaults.get("world", ConfigSection.STRING));
         }
+        assert world != null;
         SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(player, world);
         if (provider == null) {
             provider = world.get();
         }
         if (!provider.isLoaded()) {
             SkyblockWorld.WorldProvider finalProvider = provider;
-            provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
-                player.setWorldProvider(finalProvider);
-            }, false);
+            provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> player.setWorldProvider(finalProvider), false);
         } else {
             player.setWorldProvider(provider);
         }
