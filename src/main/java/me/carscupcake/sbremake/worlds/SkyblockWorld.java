@@ -164,6 +164,8 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
     }
 
     public static void sendToBest(WarpLocation warpLocation, SkyblockPlayer player) {
+        if (player.isInWorldTransfer()) return;
+        player.setInWorldTransfer(true);
         SkyblockWorld world = warpLocation.getWorld();
         player.sendMessage(STR."§7Sending to \{world.getId()}");
         /*if (worlds.get(world).isEmpty()) {

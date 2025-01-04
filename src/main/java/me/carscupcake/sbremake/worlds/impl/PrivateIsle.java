@@ -6,8 +6,12 @@ import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WarpLocation;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.event.Event;
+import net.minestom.server.event.EventNode;
+import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import org.apache.commons.io.FileUtils;
@@ -27,6 +31,16 @@ import static me.carscupcake.sbremake.worlds.SkyblockWorld.getZipFiles;
 
 @Getter
 public class PrivateIsle extends SkyblockWorld.WorldProvider {
+    public static final EventNode<Event> NODE = EventNode.all("privateIsle")
+            .addListener(PlayerMoveEvent.class, playerMoveEvent -> {
+                SkyblockPlayer player = (SkyblockPlayer) playerMoveEvent.getPlayer();
+                if (player.getWorldProvider().type() == SkyblockWorld.Hub) {
+                    var pos = player.getPosition();
+                    if (pos.x() <= -1 && pos.x() >= -5 && pos.z() <= -62 && pos.z() >= -65 && ((long) pos.y()) == 70) {
+                        SkyblockWorld.sendToBest(WarpLocation.PrivateIsle, player);
+                    }
+                }
+            });
     private final SkyblockPlayer owner;
     public PrivateIsle(SkyblockPlayer owner) throws IOException {
         super();
@@ -34,7 +48,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
         customEntry.put(SkyblockWorld.Hub, new Pos(6.5, 100, 40.5, 180, 0));
         File dir = new File(ConfigFile.DATA_PATH, STR."/\{owner.getUuid().toString()}/private_isle");
         if (!dir.exists() || !dir.isDirectory()) {
-            File localCashed = new File(STR."./worlds/\{type().getId()}");
+            File localCashed = new File(STR."./worlds/");
             if (!localCashed.exists() || !localCashed.isDirectory()) {
                 dir = localCashed;
             File f = localCashed.getParentFile();
@@ -94,7 +108,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
             fakeFolder.delete();
 
             }
-            FileUtils.copyDirectoryToDirectory(localCashed, findWorldFolder().getParentFile());
+            FileUtils.copyDirectoryToDirectory(new File(localCashed, type().getId()), findWorldFolder().getParentFile());
             Main.LOGGER.debug("Created new isle");
         } 
     }

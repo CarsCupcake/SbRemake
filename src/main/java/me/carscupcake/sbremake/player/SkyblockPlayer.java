@@ -573,6 +573,9 @@ public class SkyblockPlayer extends Player {
     @Getter
     @Setter
     private int zealotPity;
+    @Getter
+    @Setter
+    private boolean inWorldTransfer;
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
         super(uuid, username, playerConnection);
         ConfigFile file = new ConfigFile("defaults", this);
@@ -914,6 +917,7 @@ public class SkyblockPlayer extends Player {
         }
         this.worldProvider = provider;
         onLaunchpad = false;
+        inWorldTransfer = false;
     }
 
     public void addCoins(int i) {

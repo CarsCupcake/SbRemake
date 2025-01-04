@@ -20,6 +20,7 @@ import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
 import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.Time;
+import me.carscupcake.sbremake.worlds.impl.PrivateIsle;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
@@ -90,6 +91,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(Potion.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(AlchemySkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(Pets.events);
+        MinecraftServer.getGlobalEventHandler().addChild(PrivateIsle.NODE);
         MinecraftServer.getGlobalEventHandler().addListener(ServerTickMonitorEvent.class, serverTickMonitorEvent -> tickDelay = (long) serverTickMonitorEvent.getTickMonitor().getTickTime());
         for (Potion potion : Potion.values()) IPotion.potions.put(potion.getId(), potion);
         MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (_, player) -> {
@@ -121,7 +123,7 @@ public class Main {
                 Command instance = constructor.newInstance();
                 commandManager.register(instance);
             } catch (Exception e) {
-                e.printStackTrace(System.err);
+                LOGGER.error(STR."Error while instantiating \{clazz}", e);
             }
         }
         for (var arg : args)
