@@ -10,6 +10,7 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.arguments.ArgumentWord;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +26,7 @@ public class ReforgeCommand extends Command {
             String s = commandContext.get(word);
             if (s == null) return;
             SkyblockPlayer player = (SkyblockPlayer) commandSender;
-            SbItemStack item = SbItemStack.from(player.getItemInHand(Player.Hand.MAIN));
+            SbItemStack item = SbItemStack.from(player.getItemInHand(PlayerHand.MAIN));
             if (item == null) {
                 player.sendMessage("§cYou do not have a valid item");
                 return;
@@ -48,7 +49,7 @@ public class ReforgeCommand extends Command {
                     return;
                 }
             item = reforge.apply(item);
-            player.setItemInHand(Player.Hand.MAIN, item.update(player).item());
+            player.setItemInHand(PlayerHand.MAIN, item.update(player).item());
         }, word);
     }
 }

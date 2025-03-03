@@ -12,7 +12,7 @@ public class GraveyardZombie extends SkyblockEntity implements SkillXpDropper {
     public GraveyardZombie() {
         super(EntityType.ZOMBIE);
         addAIGroup(zombieAiGroup(this, Hub.Region.Graveyard));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
     }
 
     @Override

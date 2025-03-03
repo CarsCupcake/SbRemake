@@ -1,10 +1,7 @@
 package me.carscupcake.sbremake.listeners;
 
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.Metadata;
-import net.minestom.server.entity.Player;
+import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.attribute.AttributeModifier;
 import net.minestom.server.entity.attribute.AttributeOperation;
@@ -38,7 +35,7 @@ public class PacketOutListener implements Consumer<PlayerPacketOutEvent> {
             if (b != 1) return;
             //Bow draw or eating animation is triggered
             SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-            if (player.getBowStartPull() < 0 && player.getItemInHand(Player.Hand.MAIN).material() == Material.BOW)
+            if (player.getBowStartPull() < 0 && player.getItemInHand(PlayerHand.MAIN).material() == Material.BOW)
                 event.setCancelled(true);
         }
         if (event.getPacket() instanceof EntityAttributesPacket(
@@ -46,7 +43,7 @@ public class PacketOutListener implements Consumer<PlayerPacketOutEvent> {
         )) {
             if (entityId != event.getPlayer().getEntityId()) return;
             for (EntityAttributesPacket.Property attributeInstance : properties)
-                if (attributeInstance.attribute() == Attribute.GENERIC_ATTACK_SPEED && attributeInstance.value() != 4d) {
+                if (attributeInstance.attribute() == Attribute.ATTACK_SPEED && attributeInstance.value() != 4d) {
                     attributeInstance.modifiers().clear();
                     attributeInstance.modifiers().add(new AttributeModifier(NamespaceID.from("base"), 4, AttributeOperation.ADD_VALUE));
                 }

@@ -36,7 +36,6 @@ import me.carscupcake.sbremake.player.hotm.HeartOfTheMountain;
 import me.carscupcake.sbremake.player.hotm.Powder;
 import me.carscupcake.sbremake.player.potion.IPotion;
 import me.carscupcake.sbremake.player.potion.Potion;
-import me.carscupcake.sbremake.player.protocol.SetEntityEffectPacket;
 import me.carscupcake.sbremake.player.skill.ISkill;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.*;
@@ -73,10 +72,11 @@ import net.minestom.server.item.Material;
 import net.minestom.server.item.component.DyedItemColor;
 import net.minestom.server.item.component.Tool;
 import net.minestom.server.network.NetworkBuffer;
+import net.minestom.server.network.PlayerProvider;
 import net.minestom.server.network.packet.client.play.*;
 import net.minestom.server.network.packet.server.ServerPacket;
-import net.minestom.server.network.packet.server.ServerPacketIdentifier;
 import net.minestom.server.network.packet.server.play.*;
+import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.potion.PotionEffect;
 import net.minestom.server.scoreboard.Sidebar;
@@ -122,8 +122,8 @@ public class SkyblockPlayer extends Player {
                 player.spawnTeleportId = -1;
             }
         }
-        if (event.getPacket() instanceof ClientAnimationPacket(Hand hand)) {
-            if (hand == Hand.MAIN) {
+        if (event.getPacket() instanceof ClientAnimationPacket(PlayerHand hand)) {
+            if (hand == PlayerHand.MAIN) {
                 long time = System.currentTimeMillis();
                 long delta = time - player.lastAttack;
                 Pos eyePos = player.getPosition().add(0, player.getEyeHeight(), 0);
@@ -152,7 +152,7 @@ public class SkyblockPlayer extends Player {
                         return;
                     }
                 }
-                SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                SbItemStack item = SbItemStack.from(player.getItemInHand(PlayerHand.MAIN));
                 if (item == null) return;
                 if (item.sbItem() instanceof Shortbow shortbow && player.shortbowTask == null) {
                     for (Requirement requirement : item.sbItem().requirements())
@@ -181,10 +181,10 @@ public class SkyblockPlayer extends Player {
             if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
                 player.lastInteractPotion = false;
                 if (player.bowStartPull < 0) return;
-                if (player.getItemInHand(Hand.MAIN).material() != Material.BOW) return;
+                if (player.getItemInHand(PlayerHand.MAIN).material() != Material.BOW) return;
                 long chargingTime = System.currentTimeMillis() - player.bowStartPull;
                 player.bowStartPull = -1;
-                SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                SbItemStack item = SbItemStack.from(player.getItemInHand(PlayerHand.MAIN));
                 if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem)) return;
                 for (Requirement requirement : item.sbItem().requirements())
                     if (!requirement.canUse(player, item.item())) {
@@ -199,7 +199,7 @@ public class SkyblockPlayer extends Player {
                     Block block = player.getInstance().getBlock(packet.blockPosition());
                     double hardness = block.registry().hardness();
                     if (hardness > 0) {
-                        ItemStack item = player.getItemInHand(Hand.MAIN);
+                        ItemStack item = player.getItemInHand(PlayerHand.MAIN);
                         Tool tool = item.get(ItemComponent.TOOL);
                         if (tool != null) {
                             for (Tool.Rule rule : tool.rules()) {
@@ -240,9 +240,9 @@ public class SkyblockPlayer extends Player {
             return;
         }
         if (event.getPacket() instanceof ClientUseItemPacket packet) {
-            if (packet.hand() != Hand.MAIN) return;
-            if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
-                SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+            if (packet.hand() != PlayerHand.MAIN) return;
+            if (player.getItemInHand(PlayerHand.MAIN).material() == Material.BOW) {
+                SbItemStack item = SbItemStack.from(player.getItemInHand(PlayerHand.MAIN));
                 if (item.sbItem() instanceof Shortbow shortbow) {
                     for (Requirement requirement : item.sbItem().requirements())
                         if (!requirement.canUse(player, item.item())) {
@@ -265,14 +265,14 @@ public class SkyblockPlayer extends Player {
             if (delta < 100) return;
             player.lastInteractPacket = now;
             MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, PlayerInteractEvent.Interaction.Right));
-            SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+            SbItemStack item = SbItemStack.from(player.getItemInHand(PlayerHand.MAIN));
             if (item == null) return;
             if (item.sbItem().getType() == ItemType.Potion) {
                 if (!player.lastInteractPotion)
                     player.lastInteractPotion = true;
                 else {
                     player.lastInteractPotion = false;
-                    player.setItemInHand(Hand.MAIN, SbItemStack.base(Material.GLASS_BOTTLE).item());
+                    player.setItemInHand(PlayerHand.MAIN, SbItemStack.base(Material.GLASS_BOTTLE).item());
                     PotionInfo info = item.getModifier(me.carscupcake.sbremake.item.modifiers.Modifier.POTION);
                     if (info != null) {
                         for (PotionInfo.PotionEffect ef : info.effects()) {
@@ -289,7 +289,7 @@ public class SkyblockPlayer extends Player {
         }
 
         if (event.getPacket() instanceof ClientPlayerBlockPlacementPacket packet) {
-            if (packet.hand() != Hand.MAIN) return;
+            if (packet.hand() != PlayerHand.MAIN) return;
             long now = System.currentTimeMillis();
             if (now - player.lastInteractPacket < 100) return;
             player.lastInteractPacket = now;
@@ -576,8 +576,9 @@ public class SkyblockPlayer extends Player {
     @Getter
     @Setter
     private boolean inWorldTransfer;
-    public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
-        super(uuid, username, playerConnection);
+
+    public SkyblockPlayer(@NotNull PlayerConnection var1, @NotNull GameProfile var2) {
+        super(var1, var2);
         ConfigFile file = new ConfigFile("defaults", this);
         zealotPity = file.get("zealotPity", ConfigSection.INTEGER, 0);
         coins = file.get("coins", ConfigSection.DOUBLE, 0d);
@@ -657,7 +658,8 @@ public class SkyblockPlayer extends Player {
             }
         }
         if (effect.potion().getVanillaEffect() != null) {
-            sendPacket(new SetEntityEffectPacket(getEntityId(), effect.potion().getVanillaEffect().id(), effect.amplifier() - 1, (int) ((effect.expiration() - System.currentTimeMillis()) / 50d), (byte) 0));
+            sendPacket(new EntityEffectPacket(getEntityId(),
+                    new net.minestom.server.potion.Potion(effect.potion().getVanillaEffect(), effect.amplifier() - 1, (int) ((effect.expiration() - System.currentTimeMillis()) / 50d), (byte) 0)));
         }
     }
 
@@ -838,13 +840,13 @@ public class SkyblockPlayer extends Player {
     //For some reason the default implementation does not work :/
     @Override
     public void sendMessage(@NotNull String message) {
-        SystemMessagePackage chatMessage = new SystemMessagePackage(message, false);
+        SystemChatPacket chatMessage = new SystemChatPacket(Component.text(message), false);
         sendPacket(chatMessage);
     }
 
     @Override
     public void sendMessage(final @NotNull Component message) {
-        SystemMessagePackage messagePackage = new SystemMessagePackage(message, false);
+        SystemChatPacket messagePackage = new SystemChatPacket(message, false);
         sendPacket(messagePackage);
     }
 
@@ -871,17 +873,17 @@ public class SkyblockPlayer extends Player {
         instance.loadChunk(spawn.chunkX(), spawn.chunkZ());
         setNoGravity(true);
         spawnTeleportId = getNextTeleportId();
-        PlayerPositionAndLookPacket packet = new PlayerPositionAndLookPacket(spawn, (byte) 0, spawnTeleportId);
+        PlayerPositionAndLookPacket packet = new PlayerPositionAndLookPacket(spawnTeleportId, spawn, Pos.ZERO, spawn.yaw(), spawn.pitch(), (byte) 0);
         sendPacket(packet);
         sendPacket(new ClearTitlesPacket(true));
         getInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create().item());
-        SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
+        SbItemStack item = SbItemStack.from(getItemInHand(PlayerHand.MAIN));
         warping = false;
-        if (item != null) setItemInHand(Hand.MAIN, item.update().item());
+        if (item != null) setItemInHand(PlayerHand.MAIN, item.update().item());
         clearEffects();
         if (worldProvider.useCustomMining()) {
-            sendPacket(new SetEntityEffectPacket(getEntityId(), PotionEffect.MINING_FATIGUE.id(), 255, -1, (byte) 0));
-            sendPacket(new SetEntityEffectPacket(getEntityId(), PotionEffect.HASTE.id(), 0, -1, (byte) 0));
+            sendPacket(new EntityEffectPacket(getEntityId(), new net.minestom.server.potion.Potion(PotionEffect.MINING_FATIGUE, 255, -1, (byte) 0)));
+            sendPacket(new EntityEffectPacket(getEntityId(), new net.minestom.server.potion.Potion(PotionEffect.HASTE, 0, -1, (byte) 0)));
         } else {
             sendPacket(new RemoveEntityEffectPacket(getEntityId(), PotionEffect.MINING_FATIGUE));
             sendPacket(new RemoveEntityEffectPacket(getEntityId(), PotionEffect.HASTE));
@@ -890,11 +892,11 @@ public class SkyblockPlayer extends Player {
         for (me.carscupcake.sbremake.player.potion.PotionEffect effect : potionEffects)
             effect.potion().start(this, effect.amplifier(), (long) ((effect.expiration() - System.currentTimeMillis()) / 50d));
         sendPacket(new EntityMetaDataPacket(getEntityId(), Map.of(11, Metadata.Boolean(true))));
-        sendPacket(new TimeUpdatePacket(0, Time.tick));
+        sendPacket(new TimeUpdatePacket(0, Time.tick, true));
     }
 
     public float getMaxHealth() {
-        return (float) getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        return (float) getAttribute(Attribute.MAX_HEALTH).getValue();
     }
 
     public void setWorldProvider(SkyblockWorld.WorldProvider provider) {
@@ -972,7 +974,7 @@ public class SkyblockPlayer extends Player {
                 }
                 double maxHealth = getMaxHearts(player.getMaxSbHealth());
                 if (maxHealth != player.getMaxHealth()) {
-                    player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue((float) maxHealth);
+                    player.getAttribute(Attribute.MAX_HEALTH).setBaseValue((float) maxHealth);
                     player.updateHpBar();
                 } else if (player.lastAbsorbtion != player.absorption) {
                     player.updateHpBar();
@@ -989,8 +991,8 @@ public class SkyblockPlayer extends Player {
             }
             double speed = player.getStat(Stat.Speed);
             if (speed != player.lastSpeed){
-                player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue((float) (0.1 * (speed / 100d)));
-                player.getAttribute(Attribute.GENERIC_FLYING_SPEED).setBaseValue((float) (0.1 * (speed / 100d)));
+                player.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((float) (0.1 * (speed / 100d)));
+                player.getAttribute(Attribute.FLYING_SPEED).setBaseValue((float) (0.1 * (speed / 100d)));
                 player.sendPacket(new PlayerAbilitiesPacket(player.getGameMode() == GameMode.CREATIVE ? PlayerAbilitiesPacket.FLAG_ALLOW_FLYING : (byte) 0, 0.05f, (float) (0.1 * (speed / 100d))));
                 player.lastSpeed = speed;
             }
@@ -1075,7 +1077,7 @@ public class SkyblockPlayer extends Player {
                 event.modifiers().add(new PlayerStatEvent.BasicModifier(pet.getPet().getName(), bonus, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.PetStats));
         }
         temporaryModifiers.forEachModifier(stat, modifier -> event.modifiers().add(modifier));
-        SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
+        SbItemStack item = SbItemStack.from(getItemInHand(PlayerHand.MAIN));
         if (item != null && (item.sbItem().getType().isStatsInMainhand() || (isBow && item.sbItem() instanceof BowItem))) {
             boolean canUse = true;
             for (Requirement requirement : item.sbItem().requirements())
@@ -1353,61 +1355,7 @@ public class SkyblockPlayer extends Player {
         kick(s);
     }
 
-    public record DisguisedChatMessage(Component message, ChatType chatType, Component senderName,
-                                       boolean hasTargetName,
-                                       @Nullable Component targetname) implements ServerPacket.Play, ServerPacket.ComponentHolding {
-        public DisguisedChatMessage(String message) {
-            this(Component.text(message), ChatType.Chat, Component.text(""));
-        }
-
-        public DisguisedChatMessage(Component message, ChatType chatType, Component senderName) {
-            this(message, chatType, senderName, false, null);
-        }
-
-        @Override
-        public int playId() {
-            return ServerPacketIdentifier.DISGUISED_CHAT;
-        }
-
-        @Override
-        public void write(@NotNull NetworkBuffer networkBuffer) {
-            networkBuffer.write(NetworkBuffer.COMPONENT, message);
-            networkBuffer.write(NetworkBuffer.VAR_INT, chatType.id);
-            networkBuffer.write(NetworkBuffer.COMPONENT, senderName);
-            networkBuffer.write(NetworkBuffer.BOOLEAN, hasTargetName);
-            if (hasTargetName) {
-                assert targetname != null;
-                networkBuffer.write(NetworkBuffer.COMPONENT, targetname);
-            }
-
-        }
-
-        @Override
-        @Unmodifiable
-        public @NotNull Collection<Component> components() {
-            final ArrayList<Component> list = new ArrayList<>();
-            list.add(message);
-            list.add(senderName);
-            if (targetname != null) list.add(targetname);
-            return List.copyOf(list);
-        }
-
-        @Override
-        public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> unaryOperator) {
-            return new DisguisedChatMessage(unaryOperator.apply(message), chatType, unaryOperator.apply(senderName), hasTargetName, unaryOperator.apply(targetname));
-        }
-
-        public enum ChatType {
-            Chat(7), MsgIn(3), MsgOut(4), TeamMessageIn(6), TeamMessageOut(5), SayCommand(1), Narration(0);
-            private final int id;
-
-            ChatType(int id) {
-                this.id = id;
-            }
-        }
-    }
-
-    public record SystemMessagePackage(Component message, boolean actionbar) implements ServerPacket.Play {
+    /*public record SystemMessagePackage(Component message, boolean actionbar) implements ServerPacket.Play {
         public SystemMessagePackage(String message, boolean actionbar) {
             this(Component.text(message), actionbar);
         }
@@ -1422,5 +1370,5 @@ public class SkyblockPlayer extends Player {
             networkBuffer.write(NetworkBuffer.COMPONENT, message);
             networkBuffer.write(NetworkBuffer.BOOLEAN, actionbar);
         }
-    }
+    }*/
 }

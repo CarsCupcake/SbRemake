@@ -86,7 +86,7 @@ public class RevenantHorrorV extends SlayerEntity {
         setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new DyedItemColor(0xFFFFFF)).setGlint(true).build());
         setChestplate(new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
         setHelmet(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjg0Njk5MzU1NDNmYzY5ODY0MTcyYzZhZDk1Yzg5YjI4NTVjZDYwNDNkNzAyOGY2NmViZmE4NDRiNTllYTJlOSJ9fX0=").build());
-        setItemInHand(Player.Hand.MAIN, new ItemBuilder(Material.IRON_SWORD).setGlint(true).build());
+        setItemInHand(PlayerHand.MAIN, new ItemBuilder(Material.IRON_SWORD).setGlint(true).build());
         new TaskScheduler() {
             boolean second = false;
             int i = 0;

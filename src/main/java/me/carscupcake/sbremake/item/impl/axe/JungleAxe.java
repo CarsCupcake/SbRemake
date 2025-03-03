@@ -17,6 +17,7 @@ import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.instance.block.Block;
@@ -66,7 +67,7 @@ public class JungleAxe implements ISbItem, Listener, GemstoneSlots {
     @Override
     public EventNode<Event> node() {
         return EventNode.all("jungle_axe").addListener(LogBreakEvent.class, event -> {
-            SbItemStack stack = SbItemStack.from(event.player().getItemInHand(Player.Hand.MAIN));
+            SbItemStack stack = SbItemStack.from(event.player().getItemInHand(PlayerHand.MAIN));
             if (stack == null) return;
             ISbItem item = stack.sbItem();
             int blocks = item instanceof JungleAxe ? 10 : (item instanceof Treecapitator ? 35 : 0);

@@ -15,7 +15,7 @@ public class MinerZombie15 extends SkyblockEntity implements SkillXpDropper {
     public MinerZombie15() {
         super(EntityType.ZOMBIE);
         this.addAIGroup(zombieAiGroup(this, DeepCaverns.Region.DiamondReserve));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
         setEquipment(EquipmentSlot.HELMET, ItemStack.of(Material.DIAMOND_HELMET));
         setEquipment(EquipmentSlot.CHESTPLATE, ItemStack.of(Material.DIAMOND_CHESTPLATE));
         setEquipment(EquipmentSlot.LEGGINGS, ItemStack.of(Material.DIAMOND_LEGGINGS));

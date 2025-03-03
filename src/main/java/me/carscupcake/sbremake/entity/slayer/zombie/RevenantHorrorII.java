@@ -67,7 +67,7 @@ public class RevenantHorrorII extends SlayerEntity implements SkillXpDropper {
         setEquipment(EquipmentSlot.LEGGINGS, new ItemBuilder(Material.CHAINMAIL_LEGGINGS).setGlint(true).build());
         setEquipment(EquipmentSlot.BOOTS, new ItemBuilder(Material.DIAMOND_BOOTS).build());
         setEquipment(EquipmentSlot.MAIN_HAND, new ItemBuilder(Material.DIAMOND_HOE).setGlint(true).build());
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.368);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.368);
         /*8.5^2*/
         TaskScheduler aoeTask = new TaskScheduler() {
             @Override

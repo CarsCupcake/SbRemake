@@ -11,6 +11,7 @@ import me.carscupcake.sbremake.util.PlayerDamageEntityListener;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
@@ -55,7 +56,7 @@ public interface SkyblockEnchantment {
     EventNode<Event> LISTENER = EventNode.all("enchantments");
     static void initListener() {
         LISTENER.register(new PlayerDamageEntityListener(event -> {
-            SbItemStack item = SbItemStack.from(event.getPlayer().getItemInHand(Player.Hand.MAIN));
+            SbItemStack item = SbItemStack.from(event.getPlayer().getItemInHand(PlayerHand.MAIN));
             if (item == null) return;
             Map<SkyblockEnchantment, Integer> enchantments = item.getEnchantments();
             if (enchantments.containsKey(NormalEnchantment.Sharpness))

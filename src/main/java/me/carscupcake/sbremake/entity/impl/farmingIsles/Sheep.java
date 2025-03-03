@@ -17,7 +17,7 @@ public class Sheep extends SkyblockEntity implements SkillXpDropper {
     public Sheep() {
         super(EntityType.SHEEP, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(Material.MUTTON), 1, 1)).addLoot(new ItemLoot(ISbItem.get(Material.WHITE_WOOL), 1, 1)));
         addAIGroup(randomStroll(this, FarmingIsles.Region.Oasis, 4));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.1);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.1);
     }
 
     @Override

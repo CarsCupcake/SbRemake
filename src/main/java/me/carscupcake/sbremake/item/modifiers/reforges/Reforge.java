@@ -10,6 +10,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.ItemStack;
@@ -54,7 +55,7 @@ public interface Reforge {
     Map<String, Reforge> reforges = new HashMap<>();
     EventNode<Event> LISTENER = EventNode.all("reforge").addListener(PlayerMeleeDamageEntityEvent.class, event -> {
         if (!event.isCrit()) return;
-        SbItemStack item = SbItemStack.from(event.getPlayer().getItemInHand(Player.Hand.MAIN));
+        SbItemStack item = SbItemStack.from(event.getPlayer().getItemInHand(PlayerHand.MAIN));
         if (item == null) return;
         if (SwordReforge.Fabled.hasThisReforge(item)) {
             if (new Random().nextDouble() <= 0.075) event.addAdditiveMultiplier(0.15);

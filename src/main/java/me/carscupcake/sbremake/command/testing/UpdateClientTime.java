@@ -11,7 +11,7 @@ public class UpdateClientTime extends Command {
     public UpdateClientTime() {
         super("updateclinettime");
         addSyntax((sender, context) -> {
-            ((SkyblockPlayer) sender).sendPacket(new TimeUpdatePacket(0, Time.tick));
+            ((SkyblockPlayer) sender).sendPacket(new TimeUpdatePacket(0, Time.tick, true));
         });
     }
 }

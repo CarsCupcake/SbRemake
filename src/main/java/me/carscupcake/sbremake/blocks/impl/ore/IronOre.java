@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
 
@@ -29,7 +30,7 @@ public class IronOre extends MiningBlock {
 
     @Override
     public Set<SbItemStack> getDrops(SkyblockPlayer player) {
-        SbItemStack item = SbItemStack.from(player.getItemInHand(Player.Hand.MAIN));
+        SbItemStack item = SbItemStack.from(player.getItemInHand(PlayerHand.MAIN));
         return Set.of(withMiningFortune(ISbItem.get((item != null && item.getEnchantmentLevel(NormalEnchantment.SmeltingTouch) > 0) ? Material.IRON_INGOT : Material.IRON_ORE), 1, player));
     }
 

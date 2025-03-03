@@ -275,7 +275,7 @@
         <dependency>
             <groupId>net.minestom</groupId>
             <artifactId>minestom-snapshots</artifactId>
-            <version>7ce047b22e</version>
+            <version>d89c45359b</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>

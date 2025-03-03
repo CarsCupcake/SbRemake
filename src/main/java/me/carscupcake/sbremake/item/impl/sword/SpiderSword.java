@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.item.*;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.Material;
@@ -50,7 +51,7 @@ public class SpiderSword implements ISbItem, Listener, NpcSellable {
     public EventNode<Event> node() {
         return EventNode.all("spider_sword").addListener(PlayerMeleeDamageEntityEvent.class, event -> {
             if (!(event.getTarget().getEntityType() == EntityType.SPIDER || event.getTarget().getEntityType() == EntityType.CAVE_SPIDER || event.getTarget().getEntityType() == EntityType.SILVERFISH)) return;
-            SbItemStack stack = SbItemStack.from(event.getPlayer().getItemInHand(Player.Hand.MAIN));
+            SbItemStack stack = SbItemStack.from(event.getPlayer().getItemInHand(PlayerHand.MAIN));
             if (stack == null) return;
             if (!(stack.sbItem() instanceof SpiderSword)) return;
             event.addAdditiveMultiplier(1);

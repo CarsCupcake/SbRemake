@@ -12,6 +12,7 @@ import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
@@ -21,7 +22,7 @@ public class RevenantSycophant extends SkyblockEntity implements SkillXpDropper 
         setBoots(ItemStack.of(Material.IRON_BOOTS));
         setLeggings(new ItemBuilder(Material.CHAINMAIL_LEGGINGS).setGlint(true).build());
         setChestplate(new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
-        setItemInHand(Player.Hand.MAIN, new ItemBuilder(Material.DIAMOND_SWORD).setGlint(true).build());
+        setItemInHand(PlayerHand.MAIN, new ItemBuilder(Material.DIAMOND_SWORD).setGlint(true).build());
         addAIGroup(zombieAiGroup(this));
     }
 

@@ -36,7 +36,7 @@ public class LapisZombies extends SkyblockEntity implements SkillXpDropper {
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new DyedItemColor(0x0000ff)).build());
         setEquipment(EquipmentSlot.LEGGINGS, new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new DyedItemColor(0x0000ff)).build());
         setEquipment(EquipmentSlot.BOOTS, new ItemBuilder(Material.LEATHER_BOOTS).setLeatherColor(new DyedItemColor(0x0000ff)).build());
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
     }
 
     @Override

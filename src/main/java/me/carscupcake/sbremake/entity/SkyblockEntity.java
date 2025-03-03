@@ -72,7 +72,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     public SkyblockEntity(@NotNull EntityType entityType, ILootTable<SbItemStack> lootTable) {
         super(entityType, UUID.randomUUID());
         this.lootTable = lootTable == null ? new LootTable<>() : lootTable;
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
     }
 
     public abstract float getMaxHealth();
@@ -250,7 +250,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     @Override
     public void setHealth(float health) {
         this.health = Math.max(0, Math.min(getMaxHealth(), health));
-        super.setHealth((float) (getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * (health / getMaxHealth())));
+        super.setHealth((float) (getAttribute(Attribute.MAX_HEALTH).getValue() * (health / getMaxHealth())));
         update();
     }
 

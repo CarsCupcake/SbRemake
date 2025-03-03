@@ -12,6 +12,7 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityProjectile;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.server.play.EntityVelocityPacket;
 import net.minestom.server.particle.Particle;
@@ -67,7 +68,7 @@ public class SkyblockPlayerArrow extends EntityProjectile {
 
     public static void launchArrow(SkyblockPlayer player, Vec shootVec, long chargeTime, SkyblockArrow arrow, boolean critParticlesEnabled) {
         double chargingSeconds = Math.min(1d, chargeTime / 1000d);
-        SkyblockPlayerArrow projectile = new SkyblockPlayerArrow(player, arrow, chargingSeconds >= 1, critParticlesEnabled, SbItemStack.from(player.getItemInHand(Player.Hand.MAIN)));
+        SkyblockPlayerArrow projectile = new SkyblockPlayerArrow(player, arrow, chargingSeconds >= 1, critParticlesEnabled, SbItemStack.from(player.getItemInHand(PlayerHand.MAIN)));
         var pos = player.getPosition().add(0D, player.getEyeHeight(), 0D);
         projectile.setInstance(player.getInstance(), pos);
         projectile.setVelocity(shootVec.normalize().mul(60 * chargingSeconds));

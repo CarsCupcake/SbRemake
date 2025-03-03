@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.item.*;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.Material;
@@ -50,7 +51,7 @@ public class EndSword implements ISbItem, Listener, NpcSellable {
     public EventNode<Event> node() {
         return EventNode.all("end_sword").addListener(PlayerMeleeDamageEntityEvent.class, event -> {
             if (!(event.getTarget().getEntityType() == EntityType.ENDERMITE || event.getTarget().getEntityType() == EntityType.ENDERMAN || event.getTarget().getEntityType() == EntityType.ENDER_DRAGON)) return;
-            SbItemStack stack = SbItemStack.from(event.getPlayer().getItemInHand(Player.Hand.MAIN));
+            SbItemStack stack = SbItemStack.from(event.getPlayer().getItemInHand(PlayerHand.MAIN));
             if (stack == null) return;
             if (!(stack.sbItem() instanceof EndSword)) return;
             event.addAdditiveMultiplier(1);

@@ -5,12 +5,12 @@ import me.carscupcake.sbremake.event.ManaRegenEvent;
 import me.carscupcake.sbremake.event.PlayerProjectileDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.player.protocol.SetEntityEffectPacket;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.util.RGBLike;
 import net.minestom.server.color.Color;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
+import net.minestom.server.network.packet.server.play.EntityEffectPacket;
 import net.minestom.server.network.packet.server.play.RemoveEntityEffectPacket;
 import org.jetbrains.annotations.Nullable;
 
@@ -186,7 +186,7 @@ public enum Potion implements IPotion {
         public void start(SkyblockPlayer player, int level, long duration) {
             super.start(player, level, duration);
             if (!player.getWorldProvider().useCustomMining())
-                player.sendPacket(new SetEntityEffectPacket(player.getEntityId(), net.minestom.server.potion.PotionEffect.HASTE.id(), level - 1, (int) duration, (byte) 0));
+                player.sendPacket(new EntityEffectPacket(player.getEntityId(), new net.minestom.server.potion.Potion(net.minestom.server.potion.PotionEffect.HASTE, level - 1, (int) duration, (byte) 0)));
         }
 
         @Override
@@ -273,7 +273,7 @@ public enum Potion implements IPotion {
             if (jumpBoost != null && jumpBoost.amplifier() > jumpBoostLevel) {
                 return;
             }
-            player.sendPacket(new SetEntityEffectPacket(player, new net.minestom.server.potion.Potion(net.minestom.server.potion.PotionEffect.JUMP_BOOST, jumpBoostLevel, (int) duration)));
+            player.sendPacket(new EntityEffectPacket(player.getEntityId(), new net.minestom.server.potion.Potion(net.minestom.server.potion.PotionEffect.JUMP_BOOST, jumpBoostLevel, (int) duration)));
         }
 
         @Override

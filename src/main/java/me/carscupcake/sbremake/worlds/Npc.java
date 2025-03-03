@@ -37,7 +37,7 @@ public class Npc {
         PlayerInfoUpdatePacket.Property property = new PlayerInfoUpdatePacket.Property("textures", playerSkin.textures(), playerSkin.signature());
         this.entry = new PlayerInfoUpdatePacket.Entry(UuidCreator.getDceSecurity(UuidCreator.LOCAL_DOMAIN_PERSON, entityId),
                 name, List.of(property),
-                false, 0, GameMode.CREATIVE, Component.text(name), null);
+                false, 0, GameMode.CREATIVE, Component.text(name), null, 99);
 
     }
 
