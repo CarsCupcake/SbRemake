@@ -20,7 +20,10 @@ public class PlayerBrodcastOutputStream extends OutputStream {
         char c = (char) b;
         if (c == '\r') return;
         if (c == '\n') {
-            Audiences.players().sendMessage(Component.text(STR."§c\{builder.toString()}"));
+            if (builder.length() >= 255) {
+                Audiences.players().sendMessage(Component.text(STR."--- Too long log message ---"));
+            } else
+                Audiences.players().sendMessage(Component.text(STR."§c\{builder.toString()}"));
             builder = new StringBuilder();
         } else {
             if (c == '\t') {

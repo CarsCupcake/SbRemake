@@ -366,13 +366,11 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                     f = findWorldFolder();
                 }
                 container.setChunkLoader(new AnvilLoader(f.toPath()));
-                container.loadChunk(spawn().chunkX(), spawn().chunkZ()).get();
                 var chunks = new ArrayList<CompletableFuture<Chunk>>();
                 ChunkRange.chunksInRange(0, 0, 8, (x, z) -> chunks.add(container.loadChunk(x, z)));
                 if (async) CompletableFuture.runAsync(() -> {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
                     LightingChunk.relight(container, container.getChunks());
-                    container.loadChunk(spawn().chunkX(), spawn().chunkZ());
                     synchronized (_lock) {
                         loaded = true;
                         for (Runnable runnable : onStart) runnable.run();
@@ -453,7 +451,10 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                 }
                 player.setWarping(true);
                 if (player.getInstance() != container) {
-                    player.setInstance(getContainer(), spawn).thenRun(() -> player.spawn(spawn));
+                    if (container.getPlayers().contains(player)) {
+                        player.setRawInstance(container);
+                    } else
+                        player.setInstance(getContainer(), spawn).thenRun(() -> player.spawn(spawn));
                 }
                 MinecraftServer.getSchedulerManager().buildTask(() -> {
                     synchronized (_lock) {
@@ -474,6 +475,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         private Task shutdownTask;
 
         public final void removePlayer(SkyblockPlayer player) {
+            Main.LOGGER.info("Removing Player " + player.getName());
             players.remove(player);
             List<Integer> ids = new ArrayList<>();
             for (Npc npc : npcs) ids.add(npc.getEntityId());

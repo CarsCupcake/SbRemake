@@ -171,9 +171,6 @@ public class Main {
             }
         });
         System.setErr(new PrintStream(new PlayerBrodcastOutputStream(System.err)));
-        /*Thread.ofPlatform().name("Error").start(() -> {
-            ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
-        });*/
         SkyblockPlayer.tickLoop();
         Time.init();
         MinecraftServer.getSchedulerManager().scheduleTask(System::gc, TaskSchedule.seconds(5), TaskSchedule.minutes(5));

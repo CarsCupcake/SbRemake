@@ -7,10 +7,7 @@ import net.minestom.server.entity.attribute.AttributeModifier;
 import net.minestom.server.entity.attribute.AttributeOperation;
 import net.minestom.server.event.player.PlayerPacketOutEvent;
 import net.minestom.server.item.Material;
-import net.minestom.server.network.packet.server.play.EntityAttributesPacket;
-import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
-import net.minestom.server.network.packet.server.play.ParticlePacket;
-import net.minestom.server.network.packet.server.play.PlayerAbilitiesPacket;
+import net.minestom.server.network.packet.server.play.*;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.utils.NamespaceID;
 
@@ -50,6 +47,9 @@ public class PacketOutListener implements Consumer<PlayerPacketOutEvent> {
 
         if (event.getPacket() instanceof PlayerAbilitiesPacket(_, _, float speed)) {
             if (speed != 0.1) event.setCancelled(true);
+        }
+        if (event.getPacket()instanceof PlayerAbilitiesPacket) {
+
         }
         }
     }

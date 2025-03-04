@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.listeners;
 
+import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -12,6 +13,7 @@ import java.util.function.Consumer;
 public class AsyncPlayerConfigurationListener implements Consumer<AsyncPlayerConfigurationEvent> {
     @Override
     public void accept(AsyncPlayerConfigurationEvent asyncPlayerConfigurationEvent) {
+        try {
         SkyblockPlayer player = (SkyblockPlayer) asyncPlayerConfigurationEvent.getPlayer();
         SkyblockWorld world = SkyblockWorld.PrivateIsle;
         ConfigFile defaults = new ConfigFile("defaults", player);
@@ -29,7 +31,15 @@ public class AsyncPlayerConfigurationListener implements Consumer<AsyncPlayerCon
         } else {
             player.setWorldProvider(provider);
         }
+        player.setRespawnPoint(provider.spawn());
+        Main.LOGGER.info("The provider: " + provider.getClass().getName());
         asyncPlayerConfigurationEvent.setSpawningInstance(provider.getContainer());
         asyncPlayerConfigurationEvent.getPlayer().setPermissionLevel(4);
+        asyncPlayerConfigurationEvent.setSendRegistryData(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            asyncPlayerConfigurationEvent.setSendRegistryData(false);
+            asyncPlayerConfigurationEvent.getPlayer().kick("Error");
+        }
     }
 }

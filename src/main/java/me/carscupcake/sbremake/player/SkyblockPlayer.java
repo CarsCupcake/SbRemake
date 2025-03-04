@@ -50,6 +50,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
+import net.minestom.server.coordinate.ChunkRange;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
@@ -64,6 +65,7 @@ import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.*;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemComponent;
@@ -93,6 +95,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -856,6 +859,10 @@ public class SkyblockPlayer extends Player {
 
     private int spawnTeleportId = 0;
 
+    public void setRawInstance(Instance instance) {
+        this.instance = instance;
+    }
+
     public void spawn() {
         spawn((previous == null) ? worldProvider.spawn() : worldProvider.getCustomEntry().getOrDefault(previous, worldProvider.spawn()));
     }
@@ -870,10 +877,9 @@ public class SkyblockPlayer extends Player {
         }
         setHealth(getMaxHealth());
         setSbHealth(getMaxSbHealth());
-        instance.loadChunk(spawn.chunkX(), spawn.chunkZ());
         setNoGravity(true);
         spawnTeleportId = getNextTeleportId();
-        PlayerPositionAndLookPacket packet = new PlayerPositionAndLookPacket(spawnTeleportId, spawn, Pos.ZERO, spawn.yaw(), spawn.pitch(), (byte) 0);
+        EntityPositionSyncPacket packet = new EntityPositionSyncPacket(getEntityId(), spawn, Pos.ZERO, spawn.yaw(), spawn.pitch(), true);
         sendPacket(packet);
         sendPacket(new ClearTitlesPacket(true));
         getInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create().item());
@@ -924,6 +930,11 @@ public class SkyblockPlayer extends Player {
 
     public void addCoins(int i) {
         coins += i;
+    }
+
+    @Override
+    public @Nullable CompletableFuture<Void> getResourcePackFuture() {
+        return null;
     }
 
     public void removeCoins(int i) {
