@@ -7,7 +7,7 @@ import net.minestom.server.item.Material;
 
 import java.util.Map;
 
-public class RookiePickaxe implements ISbItem, ISbItem.StatProvider, NpcSellable {
+public class RookiePickaxe implements ISbItem, ISbItem.StatProvider, NpcSellable, IVanillaPickaxe {
     @Override
     public String getId() {
         return "ROOKIE_PICKAXE";
@@ -46,5 +46,10 @@ public class RookiePickaxe implements ISbItem, ISbItem.StatProvider, NpcSellable
     @Override
     public int sellPrice() {
         return 2;
+    }
+
+    @Override
+    public VanillaPickaxeTier getTier() {
+        return VanillaPickaxeTier.Stone;
     }
 }

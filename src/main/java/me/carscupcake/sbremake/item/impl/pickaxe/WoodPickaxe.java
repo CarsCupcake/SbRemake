@@ -1,14 +1,12 @@
 package me.carscupcake.sbremake.item.impl.pickaxe;
 
 import me.carscupcake.sbremake.Stat;
-import me.carscupcake.sbremake.item.ISbItem;
-import me.carscupcake.sbremake.item.ItemRarity;
-import me.carscupcake.sbremake.item.ItemType;
+import me.carscupcake.sbremake.item.*;
 import net.minestom.server.item.Material;
 
 import java.util.Map;
 
-public class WoodPickaxe implements ISbItem, ISbItem.StatProvider {
+public class WoodPickaxe implements ISbItem, ISbItem.StatProvider, IVanillaPickaxe {
     @Override
     public String getId() {
         return "WOODEN_PICKAXE";
@@ -37,5 +35,10 @@ public class WoodPickaxe implements ISbItem, ISbItem.StatProvider {
     @Override
     public Map<Stat, Number> stats() {
         return Map.of(Stat.Damage, 15, Stat.MiningSpeed, 70, Stat.BreakingPower, 1);
+    }
+
+    @Override
+    public VanillaPickaxeTier getTier() {
+        return VanillaPickaxeTier.Wood;
     }
 }

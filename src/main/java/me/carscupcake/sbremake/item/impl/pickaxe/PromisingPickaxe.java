@@ -9,7 +9,7 @@ import net.minestom.server.tag.Tag;
 import java.util.List;
 import java.util.Map;
 
-public class PromisingPickaxe implements ISbItem, ISbItem.StatProvider, NpcSellable {
+public class PromisingPickaxe implements ISbItem, ISbItem.StatProvider, NpcSellable, IVanillaPickaxe {
     @Override
     public String getId() {
         return "PROMISING_PICKAXE";
@@ -48,5 +48,10 @@ public class PromisingPickaxe implements ISbItem, ISbItem.StatProvider, NpcSella
     @Override
     public Lore getLore() {
         return new Lore(List.of("§7Gains §ßEfficiency I§7 after breaking §a50", "§ablocks§7!", " ", "§7Blocks Broken: §a%b%"), Map.of("%b%", (item, _) -> String.valueOf(((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getInt("blocks", 0))));
+    }
+
+    @Override
+    public VanillaPickaxeTier getTier() {
+        return VanillaPickaxeTier.Iron;
     }
 }

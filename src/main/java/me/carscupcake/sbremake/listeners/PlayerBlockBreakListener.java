@@ -1,12 +1,17 @@
 package me.carscupcake.sbremake.listeners;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.blocks.Crop;
 import me.carscupcake.sbremake.blocks.FarmingCrystal;
 import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.event.LogBreakEvent;
+import me.carscupcake.sbremake.item.IVanillaPickaxe;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.item.VanillaPickaxeTier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.lootTable.blockLoot.BlockLootTable;
@@ -18,16 +23,43 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
+import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.timer.TaskSchedule;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent> {
+    private final String[] pickaxesBlocks;
+    private final Map<VanillaPickaxeTier, String[]> needToolTierBlocks = new HashMap<>();
+    public PlayerBlockBreakListener() {
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        try (InputStream resource = classloader.getResourceAsStream("assets/tags/blocks/pickaxe.json")) {
+            JsonElement json = JsonParser.parseReader(new InputStreamReader(Objects.requireNonNull(resource)));
+            pickaxesBlocks = json.getAsJsonObject().get("values").getAsJsonArray().asList().stream().parallel().map(JsonElement::getAsString).toArray(String[]::new);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        loadTierBlocks("assets/tags/blocks/needs_diamond_tool.json", VanillaPickaxeTier.Diamond);
+        loadTierBlocks("assets/tags/blocks/needs_iron_tool.json", VanillaPickaxeTier.Iron);
+        loadTierBlocks("assets/tags/blocks/needs_stone_tool.json", VanillaPickaxeTier.Stone);
+    }
+
+    private void loadTierBlocks(String file, VanillaPickaxeTier tier) {
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        try (InputStream resource = classloader.getResourceAsStream(file)) {
+            JsonElement json = JsonParser.parseReader(new InputStreamReader(Objects.requireNonNull(resource)));
+            needToolTierBlocks.put(tier, json.getAsJsonObject().get("values").getAsJsonArray().asList().stream().parallel().map(JsonElement::getAsString).toArray(String[]::new));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void accept(PlayerBlockBreakEvent event) {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
@@ -142,6 +174,28 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
             }
         }
         if (((SkyblockPlayer) event.getPlayer()).getWorldProvider().type() == SkyblockWorld.PrivateIsle) {
+            boolean b = false;
+            for (String s : pickaxesBlocks) {
+                if (s.equalsIgnoreCase(event.getBlock().registry().namespace().asString())){
+                    b = true;
+                    break;
+                }
+            }
+            if (b) {
+                SbItemStack mainHand = player.getSbItemStack(Player.Hand.MAIN);
+                if (mainHand == null || !(mainHand.sbItem() instanceof IVanillaPickaxe pick)) return;
+                switch (pick.getTier()) {
+                    case Wood:
+                        if (checkBlocks(VanillaPickaxeTier.Stone, event.getBlock()))
+                            return;
+                    case Stone:
+                        if (checkBlocks(VanillaPickaxeTier.Iron, event.getBlock()))
+                            return;
+                    case Iron:
+                        if (checkBlocks(VanillaPickaxeTier.Diamond, event.getBlock()))
+                            return;
+                }
+            }
             BlockLootTable lootTable = BlockLootTable.blockLootTables.get(event.getBlock().registry().id());
             if (lootTable != null) {
                 var items = lootTable.loot(player);
@@ -150,6 +204,13 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
             return;
         }
         event.setCancelled(true);
+    }
+
+    private boolean checkBlocks(VanillaPickaxeTier tier, Block block) {
+        for (var s : needToolTierBlocks.get(tier))
+            if (s.equalsIgnoreCase(block.registry().namespace().asString()))
+                return true;
+        return false;
     }
 
     private void blockBreakLog(PlayerBlockBreakEvent event, SkyblockPlayer player, Log log) {
