@@ -18,6 +18,7 @@ import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.PlayerBrodcastOutputStream;
 import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
 import me.carscupcake.sbremake.util.item.Gui;
+import me.carscupcake.sbremake.util.lootTable.blockLoot.BlockLootTable;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.Time;
 import me.carscupcake.sbremake.worlds.impl.PrivateIsle;
@@ -27,25 +28,32 @@ import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.command.ConsoleSender;
 import net.minestom.server.command.builder.Command;
-import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.event.player.*;
 import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
+import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
-import net.minestom.server.registry.Registry;
 import net.minestom.server.timer.TaskSchedule;
 import org.reflections.Reflections;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.time.Duration;
-import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.*;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author CarsCupcake
@@ -56,6 +64,7 @@ public class Main {
     public static Thread CONSOLE_THREAD;
     public static volatile SkyblockSimpleLogger LOGGER;
     static long tickDelay = -1;
+    private static final long startTime = System.currentTimeMillis();
 
     public static void main(String[] args) throws Exception {
         MinecraftServer server = MinecraftServer.init();
@@ -64,8 +73,10 @@ public class Main {
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             System.out.println(STR."Error occured on thread \{t.getName()}");
             LOGGER.error("", e);
+            if (t.getName().equals("main")) System.exit(1);
         });
         ISbItem.init();
+        loadBlockDrops();
         LOGGER.info("Loading Recipes");
         long time = System.currentTimeMillis();
         Recipe.init();
@@ -134,6 +145,8 @@ public class Main {
         boolean cracked = false;
         try {
             cracked = Boolean.parseBoolean(args[1]);
+            if (cracked) {
+            }
         } catch (Exception _) {
         }
         if (!cracked) MojangAuth.init();
@@ -175,5 +188,69 @@ public class Main {
         SkyblockPlayer.tickLoop();
         Time.init();
         MinecraftServer.getSchedulerManager().scheduleTask(System::gc, TaskSchedule.seconds(5), TaskSchedule.minutes(5));
+        LOGGER.info(MessageFormat.format("Time to start took {0}ms", System.currentTimeMillis() - startTime));
+        if (cracked)
+            LOGGER.warn("------ Cracked Enabled - Note that this is not officially supported ------");
+    }
+
+    private static void loadBlockDrops() throws URISyntaxException {
+        URI uri = Objects.requireNonNull(Main.class.getClassLoader().getResource("assets/loot/blocks")).toURI();
+        try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+            Path folderRootPath = fileSystem.getPath("assets/loot/blocks");
+            try (Stream<Path> stream = Files.walk(folderRootPath)) {
+                BlockLootTable.blockLootTables = stream.parallel()
+                        .filter(b -> Block.fromNamespaceId(b.getFileName().toString().replace(".json", "")) != null)
+                        .map(path -> {
+                            try (var s = Files.newInputStream(path)) {
+                                return new BlockLootTable(s, Block.fromNamespaceId(path.getFileName().toString().replace(".json", "")));
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                        .filter(b -> b.getPools() != null)
+                        .collect(Collectors.groupingBy(blockLootTable -> blockLootTable.getBlock().registry().id(), new SingleCollector<>()));
+                LOGGER.info("Loaded {} block loot tables", BlockLootTable.blockLootTables.size());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Collection a single item
+     * @param <T> the type
+     */
+    public static class SingleCollector<T> implements Collector<T, SingleItem<T>, T> {
+
+        @Override
+        public Supplier<SingleItem<T>> supplier() {
+            return SingleItem::new;
+        }
+
+        @Override
+        public BiConsumer<SingleItem<T>, T> accumulator() {
+            return (i, t) -> {
+                if (i.value == null)  i.value = t;
+            };
+        }
+
+        @Override
+        public BinaryOperator<SingleItem<T>> combiner() {
+            return (a, a2) -> a.value != null ? a : a2;
+        }
+
+        @Override
+        public Function<SingleItem<T>, T> finisher() {
+            return i -> i.value;
+        }
+
+        @Override
+        public Set<Characteristics> characteristics() {
+            return Set.of(Characteristics.UNORDERED);
+        }
+    }
+
+    public static class SingleItem<T>  {
+        private T value = null;
     }
 }

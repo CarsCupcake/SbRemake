@@ -432,6 +432,11 @@ public class SkyblockPlayer extends Player {
         };
     }
 
+    public SbItemStack getSbItemStack(Hand hand) {
+        //TODO Cache
+        return SbItemStack.from(getItemInHand(hand));
+    }
+
     public static final Comparator<StoredPet> PET_COMPARATOR = (o1, o2) -> {
         int rarity = o2.getRarity().ordinal() - o1.getRarity().ordinal();
         if (rarity != 0) return rarity;

@@ -9,6 +9,7 @@ import me.carscupcake.sbremake.event.LogBreakEvent;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
+import me.carscupcake.sbremake.util.lootTable.blockLoot.BlockLootTable;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.impl.FarmingIsles;
 import me.carscupcake.sbremake.worlds.impl.Hub;
@@ -40,15 +41,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                     }
                 if (log != null) {
                     ((Hub) player.getWorldProvider()).brokenLogs.put(event.getBlockPosition(), new Log.LogInfo(log, event.getBlock().properties()));
-                    SbItemStack item = log.drops(player);
-                    LogBreakEvent logBreakEvent = new LogBreakEvent(player, event.getBlockPosition(), log, new ArrayList<>(List.of(item)));
-                    MinecraftServer.getGlobalEventHandler().call(logBreakEvent);
-                    for (SbItemStack i : logBreakEvent.drops()) {
-                        ItemEntity entity = new ItemEntity(i.item());
-                        entity.setInstance(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
-                        entity.addViewer(player);
-                    }
-                    player.getSkill(Skill.Foraging).addXp(log.xp());
+                    blockBreakLog(event, player, log);
                     return;
                 }
             }
@@ -100,16 +93,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                 }
             if (log != null) {
                 ((Park) player.getWorldProvider()).brokenLogs.put(event.getBlockPosition(), new Log.LogInfo(log, event.getBlock().properties()));
-                SbItemStack item = log.drops(player);
-                LogBreakEvent logBreakEvent = new LogBreakEvent(player, event.getBlockPosition(), log, new ArrayList<>(List.of(item)));
-                MinecraftServer.getGlobalEventHandler().call(logBreakEvent);
-                for (SbItemStack i : logBreakEvent.drops()) {
-                    ItemEntity entity = new ItemEntity(i.item());
-                    entity.setInstance(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
-                    entity.addViewer(player);
-                }
-                player.getSkill(Skill.Foraging).addXp(log.xp());
-                return;
+                blockBreakLog(event, player, log);
             }
         } else if (player.getWorldProvider().type() == SkyblockWorld.FarmingIsles) {
             for (Crop c : Crop.crops) {
@@ -158,9 +142,26 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
             }
         }
         if (((SkyblockPlayer) event.getPlayer()).getWorldProvider().type() == SkyblockWorld.PrivateIsle) {
-            SbItemStack.base(Objects.requireNonNull(event.getBlock().registry().material())).drop(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
+            BlockLootTable lootTable = BlockLootTable.blockLootTables.get(event.getBlock().registry().id());
+            if (lootTable != null) {
+                var items = lootTable.loot(player);
+                items.forEach(item -> item.drop(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5)));
+            }
             return;
         }
         event.setCancelled(true);
+    }
+
+    private void blockBreakLog(PlayerBlockBreakEvent event, SkyblockPlayer player, Log log) {
+        SbItemStack item = log.drops(player);
+        LogBreakEvent logBreakEvent = new LogBreakEvent(player, event.getBlockPosition(), log, new ArrayList<>(List.of(item)));
+        MinecraftServer.getGlobalEventHandler().call(logBreakEvent);
+        for (SbItemStack i : logBreakEvent.drops()) {
+            ItemEntity entity = new ItemEntity(i.item());
+            entity.setInstance(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
+            entity.addViewer(player);
+        }
+        player.getSkill(Skill.Foraging).addXp(log.xp());
+        return;
     }
 }
