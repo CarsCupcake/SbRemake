@@ -120,6 +120,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         }
     };
     private static final Object _lock = new Object();
+    @Getter
     private static final MapList<SkyblockWorld, WorldProvider> worlds = new MapList<>();
     private final String id;
     private final FileEnding fileEnding;
