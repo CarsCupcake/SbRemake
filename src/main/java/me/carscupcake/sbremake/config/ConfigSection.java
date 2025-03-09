@@ -19,6 +19,7 @@ import org.junit.Assert;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -81,6 +82,8 @@ public class ConfigSection {
         object.add("nbt", nbtCompoundToJson((CompoundBinaryTag) stack.item().getTag(Tag.NBT("ExtraAttributes"))));
         return object;
     });
+
+    public static final Data<UUID> UUID = new ClassicGetter<>(jsonElement -> java.util.UUID.fromString(jsonElement.getAsString()), uuid -> new JsonPrimitive(uuid.toString()));
 
     private static JsonObject nbtCompoundToJson(CompoundBinaryTag compoundBinaryTag) {
         JsonObject object = new JsonObject();
@@ -211,6 +214,15 @@ public class ConfigSection {
     public <T> T get(String key, ConfigFile.Data<T> data, T def) {
         if (element == null) element = new JsonObject();
         if (!has(key)) return def;
+        return data.get(element, key);
+    }
+
+    public <T> T getOrSetDefault(String key, ConfigFile.Data<T> data, T def) {
+        if (element == null) element = new JsonObject();
+        if (!has(key)) {
+            set(key, def, data);
+            return def;
+        }
         return data.get(element, key);
     }
 

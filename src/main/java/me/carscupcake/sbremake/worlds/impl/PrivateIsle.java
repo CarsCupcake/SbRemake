@@ -42,76 +42,81 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
                 }
             });
     private final SkyblockPlayer owner;
+
     public PrivateIsle(SkyblockPlayer owner) throws IOException {
         super();
         this.owner = owner;
         customEntry.put(SkyblockWorld.Hub, new Pos(6.5, 100, 40.5, 180, 0));
-        File dir = new File(ConfigFile.DATA_PATH, STR."/\{owner.getUuid().toString()}/private_isle");
+        File dir = new File(ConfigFile.getConfigFolder(owner), "private_isle");
         if (!dir.exists() || !dir.isDirectory()) {
-            File localCashed = new File(STR."./worlds/");
-            if (!localCashed.exists() || !localCashed.isDirectory()) {
-                dir = localCashed;
-            File f = localCashed.getParentFile();
-            GitHub gitHub = GitHub.connectAnonymously();
-            f.mkdirs();
-            File tempFolder = new File("./temp");
-            tempFolder.mkdirs();
-            AtomicReference<File> file = new AtomicReference<>();
-            try {
-                file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent(STR."resources/worlds/\{type().getId()}.\{type().getFileEnding().getLiteral()}").getDownloadUrl(), null, tempFolder));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                if (type().getFileEnding() == SkyblockWorld.FileEnding.RAR) {
-                    for (InputStream stream : extract(file.get().getAbsolutePath()).keySet()) {
-                        BufferedInputStream in = new BufferedInputStream(stream);
-                        FileOutputStream fout = new FileOutputStream(f);
-                        final byte[] data = new byte[1024];
-                        int count;
-                        while ((count = in.read(data, 0, 1024)) != -1) {
-                            fout.write(data, 0, count);
-                        }
-                    }
-                } else {
-                    f.delete();
-                    getZipFiles(file.get().getAbsolutePath(), dir.getAbsolutePath());
-                    new File(dir, "world").renameTo(new File(dir, type().getId()));
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            File wrongFile = new File("./worlds/Unidentified_Server");
-            if (wrongFile.exists()) {
-                f.delete();
-                wrongFile.renameTo(new File(dir, type().getId()));
-            }
-            Arrays.stream(Objects.requireNonNull(tempFolder.listFiles())).forEach(file1 -> {
-                try {
-                    file1.delete();
-                } catch (Exception e) {
-                    e.printStackTrace(System.err);
-                }
-            });
-            tempFolder.delete();
-            File fakeFolder = new File(dir, "world");
 
-            if (fakeFolder.exists()) {
-                Arrays.stream(Objects.requireNonNull(fakeFolder.listFiles())).forEach(file1 -> {
+            File localCashed = new File("./worlds/%s".formatted(type().getId()));
+            if (!localCashed.exists() || !localCashed.isDirectory()) {
+                Main.LOGGER.info("File not found in cache! Downloading...");
+                dir = localCashed;
+                File f = localCashed.getParentFile();
+                GitHub gitHub = GitHub.connectAnonymously();
+                f.mkdirs();
+                File tempFolder = new File("./temp");
+                tempFolder.mkdirs();
+                AtomicReference<File> file = new AtomicReference<>();
+                try {
+                    file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent(STR."resources/worlds/\{type().getId()}.\{type().getFileEnding().getLiteral()}").getDownloadUrl(), null, tempFolder));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    if (type().getFileEnding() == SkyblockWorld.FileEnding.RAR) {
+                        for (InputStream stream : extract(file.get().getAbsolutePath()).keySet()) {
+                            BufferedInputStream in = new BufferedInputStream(stream);
+                            FileOutputStream fout = new FileOutputStream(f);
+                            final byte[] data = new byte[1024];
+                            int count;
+                            while ((count = in.read(data, 0, 1024)) != -1) {
+                                fout.write(data, 0, count);
+                            }
+                            fout.close();
+                        }
+                    } else {
+                        f.delete();
+                        getZipFiles(file.get().getAbsolutePath(), dir.getAbsolutePath());
+                        new File(dir, "world").renameTo(new File(dir, type().getId()));
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                File wrongFile = new File("./worlds/Unidentified_Server");
+                if (wrongFile.exists()) {
+                    f.delete();
+                    wrongFile.renameTo(new File(dir, type().getId()));
+                }
+                Arrays.stream(Objects.requireNonNull(tempFolder.listFiles())).forEach(file1 -> {
                     try {
                         file1.delete();
                     } catch (Exception e) {
                         e.printStackTrace(System.err);
                     }
                 });
-            }
-            fakeFolder.delete();
+                tempFolder.delete();
+                File fakeFolder = new File(dir, "world");
+
+                if (fakeFolder.exists()) {
+                    Arrays.stream(Objects.requireNonNull(fakeFolder.listFiles())).forEach(file1 -> {
+                        try {
+                            file1.delete();
+                        } catch (Exception e) {
+                            e.printStackTrace(System.err);
+                        }
+                    });
+                }
+                fakeFolder.delete();
 
             }
-            FileUtils.copyDirectoryToDirectory(new File(localCashed, type().getId()), findWorldFolder().getParentFile());
+            FileUtils.copyDirectoryToDirectory(localCashed, findWorldFolder().getParentFile());
             Main.LOGGER.debug("Created new isle");
-        } 
+        }
     }
+
     @Override
     public SkyblockWorld type() {
         return SkyblockWorld.PrivateIsle;
@@ -145,7 +150,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
 
     @Override
     protected File findWorldFolder() {
-        return new File(ConfigFile.DATA_PATH, STR."/\{owner.getUuid().toString()}/private_isle");
+        return new File(ConfigFile.getConfigFolder(owner), "/private_isle");
     }
 
     @Override

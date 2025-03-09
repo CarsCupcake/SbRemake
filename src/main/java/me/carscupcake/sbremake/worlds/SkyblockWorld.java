@@ -62,7 +62,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         public SkyblockWorld.@NotNull WorldProvider getWorldProvider(List<WorldProvider> providers, SkyblockPlayer player) {
             for (WorldProvider provider : providers) {
                 if (provider instanceof PrivateIsle privateIsle) {
-                    if (privateIsle.getOwner() == player) {
+                    if (privateIsle.getOwner().getConfigId().equals(player.getConfigId())) {
                         return privateIsle;
                     }
                 }

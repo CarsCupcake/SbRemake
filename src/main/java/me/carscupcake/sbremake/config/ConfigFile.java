@@ -23,11 +23,11 @@ public class ConfigFile extends ConfigSection {
     }
 
     public ConfigFile(String name, SkyblockPlayer player) {
-        this(new File(DATA_PATH, STR."/\{player.getUuid().toString()}/\{name}.json"));
+        this(new File(getConfigFolder(player), String.format("%s.json", name)));
     }
 
     public ConfigFile(String name) {
-        this(new File(DATA_PATH, STR."\{name}.json"));
+        this(new File(DATA_PATH, String.format("%s.json", name)));
     }
 
     public ConfigFile(File file) {
@@ -42,6 +42,10 @@ public class ConfigFile extends ConfigSection {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static File getConfigFolder(SkyblockPlayer player) {
+        return new File(DATA_PATH, player.getConfigId().toString());
     }
 
     public void save() {

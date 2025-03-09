@@ -1,6 +1,8 @@
 package me.carscupcake.sbremake;
 
 import me.carscupcake.sbremake.blocks.MiningBlock;
+import me.carscupcake.sbremake.config.ConfigFile;
+import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.Recipe;
 import me.carscupcake.sbremake.item.ability.Ability;
@@ -65,6 +67,8 @@ public class Main {
     public static volatile SkyblockSimpleLogger LOGGER;
     static long tickDelay = -1;
     private static final long startTime = System.currentTimeMillis();
+    public static volatile boolean isCracked = false;
+    private volatile static ConfigFile crackedRegistry;
 
     public static void main(String[] args) throws Exception {
         MinecraftServer server = MinecraftServer.init();
@@ -112,9 +116,21 @@ public class Main {
         for (SkyblockEnchantment enchantment : NormalEnchantment.values())
             SkyblockEnchantment.enchantments.put(enchantment.getId(), enchantment);
         Reforge.init();
-        MinecraftServer.getConnectionManager().setPlayerProvider(SkyblockPlayer::new);
+        MinecraftServer.getConnectionManager().setPlayerProvider((uuid, s, playerConnection) -> {
+            UUID configId;
+            synchronized (_lock) {
+                configId = isCracked ? crackedRegistry.getOrSetDefault(s, ConfigSection.UUID, UUID.randomUUID()) : uuid;
+            }
+            return new SkyblockPlayer(uuid, s, playerConnection, configId);
+        });
         MinecraftServer.getSchedulerManager().buildShutdownTask(() -> {
             Audiences.players().forEachAudience(audience -> {
+                if (isCracked) {
+                    Main.LOGGER.info("Saving cracked player info");
+                    synchronized (_lock) {
+                        crackedRegistry.save();
+                    }
+                }
                 SkyblockPlayer player = (SkyblockPlayer) audience;
                 player.save();
                 player.kick("Server shutting down!");
@@ -142,14 +158,12 @@ public class Main {
                 OpenToLAN.open();
                 break;
             }
-        boolean cracked = false;
         try {
-            cracked = Boolean.parseBoolean(args[1]);
-            if (cracked) {
-            }
+            isCracked = Boolean.parseBoolean(args[1]);
         } catch (Exception _) {
         }
-        if (!cracked) MojangAuth.init();
+        if (!isCracked) MojangAuth.init();
+        else crackedRegistry = new ConfigFile("cracked-players");
         System.out.println("Starting...");
         int port = 25565;
         try {
@@ -189,7 +203,7 @@ public class Main {
         Time.init();
         MinecraftServer.getSchedulerManager().scheduleTask(System::gc, TaskSchedule.seconds(5), TaskSchedule.minutes(5));
         LOGGER.info(MessageFormat.format("Time to start took {0}ms", System.currentTimeMillis() - startTime));
-        if (cracked)
+        if (isCracked)
             LOGGER.warn("------ Cracked Enabled - Note that this is not officially supported ------");
     }
 
@@ -218,6 +232,7 @@ public class Main {
 
     /**
      * Collection a single item
+     *
      * @param <T> the type
      */
     public static class SingleCollector<T> implements Collector<T, SingleItem<T>, T> {
@@ -230,7 +245,7 @@ public class Main {
         @Override
         public BiConsumer<SingleItem<T>, T> accumulator() {
             return (i, t) -> {
-                if (i.value == null)  i.value = t;
+                if (i.value == null) i.value = t;
             };
         }
 
@@ -250,7 +265,7 @@ public class Main {
         }
     }
 
-    public static class SingleItem<T>  {
+    public static class SingleItem<T> {
         private T value = null;
     }
 }
