@@ -126,6 +126,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
             if (log != null) {
                 ((Park) player.getWorldProvider()).brokenLogs.put(event.getBlockPosition(), new Log.LogInfo(log, event.getBlock().properties()));
                 blockBreakLog(event, player, log);
+                return;
             }
         } else if (player.getWorldProvider().type() == SkyblockWorld.FarmingIsles) {
             for (Crop c : Crop.crops) {

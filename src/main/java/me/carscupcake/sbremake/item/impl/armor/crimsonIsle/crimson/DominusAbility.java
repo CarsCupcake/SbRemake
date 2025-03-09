@@ -101,7 +101,8 @@ public class DominusAbility extends FullSetBonus {
     private static KuudraArmorTier calculateTier(SkyblockPlayer player) {
         KuudraArmorTier tier = null;
         for (var slot : EquipmentSlot.armors()) {
-            if (SbItemStack.from(player.getEquipment(slot)).sbItem() instanceof KuudraArmor kuudraArmor) {
+            var item = SbItemStack.from(player.getEquipment(slot));
+            if (item != null && item.sbItem() instanceof KuudraArmor kuudraArmor) {
                 if (kuudraArmor.armorType() != KuudraArmorType.Crimson) continue;
                 if (tier == null) tier = kuudraArmor.armorTier();
                 else if (tier.ordinal() > kuudraArmor.armorTier().ordinal()) tier = kuudraArmor.armorTier();
