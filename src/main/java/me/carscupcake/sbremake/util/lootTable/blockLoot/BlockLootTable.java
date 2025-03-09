@@ -253,7 +253,6 @@ public class BlockLootTable implements ILootTable<SbItemStack> {
             return Arrays.stream(enchantments).filter(enchantment -> {
                 var level = item.getEnchantmentLevel(enchantment.enchantment);
                 var b = level < enchantment.min || !(enchantment.max < 0 || level <= enchantment.max);
-                System.out.println(b);
                 return b;
             }).findFirst().isEmpty();
         }

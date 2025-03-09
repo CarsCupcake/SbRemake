@@ -425,6 +425,14 @@ public class SkyblockPlayer extends Player {
                 if (!event.getPlayer().getGameMode().canTakeDamage()) return;
                 if (event.getNewPosition().y() <= -64)
                     ((SkyblockPlayer) event.getPlayer()).setSbHealth(0);
+            })
+            .addListener(PlayerInteractEvent.class, event -> {
+                if (event.player().isSneaking()) return;
+                if (event.block() == null) return;
+                if (event.interaction() != PlayerInteractEvent.Interaction.Right) return;
+                if (event.player().instance.getBlock(event.block()).registry().material() == Material.CRAFTING_TABLE) {
+                    Recipe.openCraftingGui(event.player());
+                }
             });
 
     private static int getSlot(ItemType type) {
