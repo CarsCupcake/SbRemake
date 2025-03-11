@@ -22,17 +22,14 @@ import java.util.Map;
 
 @Setter
 @Getter
-public class Npc {
+public class Npc extends AbstractNpc {
     public static final HashMap<Integer, Npc> npcs = new HashMap<>();
     private Interaction interaction = null;
     private final int entityId;
     private final PlayerInfoUpdatePacket.Entry entry;
-    private final Pos pos;
-    private final Instance instance;
     public Npc(Pos pos, Instance instance, String name, PlayerSkin playerSkin) {
+        super(pos, instance, name);
         entityId = Entity.generateId();
-        this.pos = pos;
-        this.instance = instance;
         npcs.put(entityId, this);
         PlayerInfoUpdatePacket.Property property = new PlayerInfoUpdatePacket.Property("textures", playerSkin.textures(), playerSkin.signature());
         this.entry = new PlayerInfoUpdatePacket.Entry(UuidCreator.getDceSecurity(UuidCreator.LOCAL_DOMAIN_PERSON, entityId),
@@ -43,7 +40,7 @@ public class Npc {
 
     public void spawn(SkyblockPlayer player) {
         player.sendPacket(new PlayerInfoUpdatePacket(PlayerInfoUpdatePacket.Action.ADD_PLAYER, entry));
-        player.sendPacket(new SpawnEntityPacket(entityId, entry.uuid(), EntityType.PLAYER.id(), getPos(), pos.yaw(), 0, (short) 0, (short) 0, (short) 0));
+        player.sendPacket(new SpawnEntityPacket(entityId, entry.uuid(), EntityType.PLAYER.id(), getPos(), getPos().yaw(), 0, (short) 0, (short) 0, (short) 0));
         byte b = 0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40;
         new TaskScheduler() {
             @Override
@@ -53,18 +50,8 @@ public class Npc {
         }.delayTask(10);
     }
 
-    public Npc withInteraction(Interaction interaction) {
-        this.interaction = interaction;
-        return this;
-    }
-
     public Dialog buildDialog() {
         return new Dialog(STR."§e[NPC] \{StringUtils.stripeColorCodes(entry.username())}§f:", 20);
-    }
-
-
-    public interface Interaction {
-        void interact(SkyblockPlayer player, PlayerInteractEvent.Interaction interaction);
     }
     private static char[] chars = {'a', 'a', 'a', 'a', 'a', 'a'};
     private static String makeName() {
@@ -79,4 +66,5 @@ public class Npc {
         }
         return s;
     }
+
 }

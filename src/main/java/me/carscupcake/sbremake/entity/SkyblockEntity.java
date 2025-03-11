@@ -12,10 +12,7 @@ import me.carscupcake.sbremake.player.potion.Potion;
 import me.carscupcake.sbremake.player.potion.PotionEffect;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
-import me.carscupcake.sbremake.util.ParticleUtils;
-import me.carscupcake.sbremake.util.SoundType;
-import me.carscupcake.sbremake.util.StringUtils;
-import me.carscupcake.sbremake.util.TaskScheduler;
+import me.carscupcake.sbremake.util.*;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.region.Region;
@@ -285,8 +282,6 @@ public abstract class SkyblockEntity extends EntityCreature {
         return amount;
     }
 
-    private static final char skull = Character.toChars(9760)[0];
-
     public enum NameTagType implements Function<SkyblockEntity, String> {
         Basic() {
             @Override
@@ -297,7 +292,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         Slayer() {
             @Override
             public String apply(SkyblockEntity entity) {
-                return STR."§c\{skull} §f\{entity.getName()} §a\{StringUtils.toShortNumber(entity.getHealth())}§c\{Stat.Health.getSymbol()}";
+                return STR."§c\{Characters.Skull} §f\{entity.getName()} §a\{StringUtils.toShortNumber(entity.getHealth())}§c\{Stat.Health.getSymbol()}";
             }
         }
     }

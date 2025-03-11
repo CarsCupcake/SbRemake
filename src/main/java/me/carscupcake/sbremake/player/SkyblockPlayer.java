@@ -412,6 +412,7 @@ public class SkyblockPlayer extends Player {
                 if (stack.sbItem() instanceof SkyblockMenu) {
                     event.setCancelled(true);
                     ((SkyblockPlayer) event.getPlayer()).openSkyblockMenu();
+                    return;
                 }
                 //Todo make item drop
             }).addListener(PlayerMoveEvent.class, event -> {
@@ -433,6 +434,10 @@ public class SkyblockPlayer extends Player {
                 if (event.player().instance.getBlock(event.block()).registry().material() == Material.CRAFTING_TABLE) {
                     Recipe.openCraftingGui(event.player());
                 }
+            })
+            .addListener(PlayerDeathEvent.class, event -> {
+                event.setChatMessage(Component.text("§c%s §7You Died!".formatted(Characters.Skull)));
+                event.setDeathText(Component.text("You Died!"));
             });
 
     private static int getSlot(ItemType type) {

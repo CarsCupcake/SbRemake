@@ -241,7 +241,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
 
         private final Set<SkyblockPlayer> players = Collections.synchronizedSet(new HashSet<>());
         private final String id;
-        protected Npc[] npcs;
+        protected AbstractNpc[] npcs;
         private final List<Launchpad> launchpads;
         private boolean loaded = false;
         public List<Runnable> onStart = new ArrayList<>();
@@ -250,14 +250,14 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         public volatile InstanceContainer container;
 
 
-        public WorldProvider(List<Launchpad> launchpads, Npc... npcs) {
+        public WorldProvider(List<Launchpad> launchpads, AbstractNpc... npcs) {
             this.npcs = (npcs == null) ? new Npc[0] : npcs;
             id = STR."\{type().id}\{getWorlds(type()).size()}";
             this.launchpads = launchpads;
         }
 
-        public WorldProvider(Npc... npcs) {
-            this(new ArrayList<>());
+        public WorldProvider(AbstractNpc... npcs) {
+            this(new ArrayList<>(), npcs);
         }
 
         public abstract SkyblockWorld type();
@@ -467,7 +467,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
 
         public void initPlayer(SkyblockPlayer player, Pos spawn) {
             players.add(player);
-            for (Npc npc : npcs)
+            for (AbstractNpc npc : npcs)
                 npc.spawn(player);
         }
 
@@ -476,7 +476,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         public final void removePlayer(SkyblockPlayer player) {
             players.remove(player);
             List<Integer> ids = new ArrayList<>();
-            for (Npc npc : npcs) ids.add(npc.getEntityId());
+            for (AbstractNpc npc : npcs) ids.add(npc.getEntityId());
             player.sendPacket(new DestroyEntitiesPacket(ids));
             if (players.isEmpty()) {
                 shutdownTask = MinecraftServer.getSchedulerManager().buildTask(this::remove).delay(Duration.ofMinutes(5)).schedule();

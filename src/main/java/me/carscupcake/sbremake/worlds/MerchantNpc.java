@@ -15,7 +15,7 @@ import java.util.Map;
 public class MerchantNpc extends Npc{
     public MerchantNpc(Pos pos, Instance instance, String name, PlayerSkin playerSkin, List<Pair<SbItemStack, Cost>> items) {
         super(pos, instance, name, playerSkin);
-        withInteraction((player, _) -> {
+        super.withInteraction((player, _) -> {
             ShopGui shopGui = new ShopGui(items, name, player);
             shopGui.showGui(player);
         });

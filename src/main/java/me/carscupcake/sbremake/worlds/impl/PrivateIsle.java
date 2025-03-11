@@ -5,10 +5,10 @@ import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
-import me.carscupcake.sbremake.worlds.SkyblockWorld;
-import me.carscupcake.sbremake.worlds.WarpLocation;
+import me.carscupcake.sbremake.worlds.*;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.EntityType;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerMoveEvent;
@@ -44,7 +44,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
     private final SkyblockPlayer owner;
 
     public PrivateIsle(SkyblockPlayer owner) throws IOException {
-        super();
+        super(new EntityNpc[]{new EntityNpc(new Pos(9, 100, 33), null, "Jerry", EntityType.VILLAGER)});
         this.owner = owner;
         customEntry.put(SkyblockWorld.Hub, new Pos(6.5, 100, 40.5, 180, 0));
         File dir = new File(ConfigFile.getConfigFolder(owner), "private_isle");
