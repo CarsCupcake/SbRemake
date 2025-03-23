@@ -1,6 +1,6 @@
 package me.carscupcake.sbremake.worlds.impl;
 
-import kotlin.Pair;
+import me.carscupcake.sbremake.util.Pair;
 import lombok.Getter;
 import me.carscupcake.sbremake.blocks.FarmingCrystal;
 import me.carscupcake.sbremake.blocks.Log;

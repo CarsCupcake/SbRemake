@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.util.item;
 
-import kotlin.Pair;
 import me.carscupcake.sbremake.item.NpcSellable;
 import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -9,22 +8,14 @@ import me.carscupcake.sbremake.util.Cost;
 import me.carscupcake.sbremake.util.TemplateItems;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import me.carscupcake.sbremake.util.Pair;
 
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("preview")
 public class ShopGui extends Gui {
 
-    public ShopGui(List<Pair<SbItemStack, Cost>> items, String name, SkyblockPlayer player) {
-        InventoryBuilder builder = new InventoryBuilder(6, name).fill(TemplateItems.EmptySlot.getItem(), 0, 8).fill(TemplateItems.EmptySlot.getItem(), 45, 53).setItem(TemplateItems.EmptySlot.getItem(), 9).setItem(TemplateItems.EmptySlot.getItem(), 18).setItem(TemplateItems.EmptySlot.getItem(), 27).setItem(TemplateItems.EmptySlot.getItem(), 36).setItem(TemplateItems.EmptySlot.getItem(), 8).setItem(TemplateItems.EmptySlot.getItem(), 17).setItem(TemplateItems.EmptySlot.getItem(), 26).setItem(TemplateItems.EmptySlot.getItem(), 35).setItem(TemplateItems.EmptySlot.getItem(), 44).setItem(49, player.getSellHistory().isEmpty() ? new ItemBuilder(Material.HOPPER).setName("§aSell Item").addLore("§7Click items in your inventory to sell them to this Shop!").build() : new ItemBuilder(player.getSellHistory().peek().getFirst().item()).addAllLore(" ", "§7Cost", "§6" + (Objects.requireNonNull(player.getSellHistory().peek()).getSecond()) + " Coins").build());
-        int slot = 10;
-        for (Pair<SbItemStack, Cost> item : items) {
-            builder.setItem(slot, item.getSecond().appendToLore(new ItemBuilder(item.getFirst().update(player).item()).addAllLore(" ", "§7Cost")).build());
-            slot++;
-            if ((slot + 1) % 9 == 0)
-                slot += 2;
-        }
+    private ShopGui(InventoryBuilder builder, SkyblockPlayer player, List<Pair<SbItemStack, Cost>> items) {
         super(builder.build());
         setGeneralClickEvent(event -> {
             if (event.getInventory() == null) {
@@ -86,6 +77,18 @@ public class ShopGui extends Gui {
             }
             return true;
         });
+    }
+
+    public static ShopGui createShopGui(List<Pair<SbItemStack, Cost>> items, String name, SkyblockPlayer player) {
+        InventoryBuilder builder = new InventoryBuilder(6, name).fill(TemplateItems.EmptySlot.getItem(), 0, 8).fill(TemplateItems.EmptySlot.getItem(), 45, 53).setItem(TemplateItems.EmptySlot.getItem(), 9).setItem(TemplateItems.EmptySlot.getItem(), 18).setItem(TemplateItems.EmptySlot.getItem(), 27).setItem(TemplateItems.EmptySlot.getItem(), 36).setItem(TemplateItems.EmptySlot.getItem(), 8).setItem(TemplateItems.EmptySlot.getItem(), 17).setItem(TemplateItems.EmptySlot.getItem(), 26).setItem(TemplateItems.EmptySlot.getItem(), 35).setItem(TemplateItems.EmptySlot.getItem(), 44).setItem(49, player.getSellHistory().isEmpty() ? new ItemBuilder(Material.HOPPER).setName("§aSell Item").addLore("§7Click items in your inventory to sell them to this Shop!").build() : new ItemBuilder(player.getSellHistory().peek().getFirst().item()).addAllLore(" ", "§7Cost", "§6" + (Objects.requireNonNull(player.getSellHistory().peek()).getSecond()) + " Coins").build());
+        int slot = 10;
+        for (Pair<SbItemStack, Cost> item : items) {
+            builder.setItem(slot, item.getSecond().appendToLore(new ItemBuilder(item.getFirst().update(player).item()).addAllLore(" ", "§7Cost")).build());
+            slot++;
+            if ((slot + 1) % 9 == 0)
+                slot += 2;
+        }
+        return new ShopGui(builder, player, items);
     }
 
     public void updateSellHistory(SkyblockPlayer player) {

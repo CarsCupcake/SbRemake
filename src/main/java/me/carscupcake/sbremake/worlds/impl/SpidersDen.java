@@ -1,6 +1,6 @@
 package me.carscupcake.sbremake.worlds.impl;
 
-import kotlin.Pair;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.entity.impl.spidersDen.*;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
 import me.carscupcake.sbremake.worlds.Launchpad;

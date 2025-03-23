@@ -52,7 +52,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 @Getter
-@SuppressWarnings("preview")
 public abstract class SkyblockEntity extends EntityCreature {
     private float health = 1;
     @Getter

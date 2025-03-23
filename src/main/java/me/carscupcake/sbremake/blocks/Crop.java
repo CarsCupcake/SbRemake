@@ -1,6 +1,6 @@
 package me.carscupcake.sbremake.blocks;
 
-import kotlin.Pair;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;

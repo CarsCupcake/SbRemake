@@ -1,9 +1,8 @@
 package me.carscupcake.sbremake.player;
-
-import kotlin.Pair;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.util.MapList;
+import me.carscupcake.sbremake.util.Pair;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.Task;
 

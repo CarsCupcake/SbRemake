@@ -24,8 +24,8 @@ import java.util.Random;
 
 public record FarmingCrystal(Pos location, TaskScheduler task, HashMap<BlockVec, Block> blocks) {
     public FarmingCrystal(String headTexture, Pos location, Instance instance) {
-        CrystalTask crystalTask = new CrystalTask(headTexture, location, instance);
-        this(location, crystalTask, new HashMap<>());
+        this(location, new CrystalTask(headTexture, location, instance), new HashMap<>());
+        CrystalTask crystalTask = (CrystalTask) task;
         crystalTask.farmingCrystal = this;
         crystalTask.repeatTask(1);
 

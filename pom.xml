@@ -6,16 +6,15 @@
 
     <groupId>me.carscupcake</groupId>
     <artifactId>SbRemake</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <packaging>jar</packaging>
 
 
     <name>SbRemake</name>
 
     <properties>
-        <java.version>23</java.version>
+        <java.version>22</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.8.10</kotlin.version>
         <output.dir>${project.build.directory}</output.dir>
     </properties>
 
@@ -85,45 +84,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                                <sourceDir>${project.basedir}/src/test/java</sourceDir>
-                            </sourceDirs>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jvmTarget>17</jvmTarget>
-                    <compilerPlugins>
-                        <plugin>kotlinx-serialization</plugin>
-                    </compilerPlugins>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jetbrains.kotlin</groupId>
-                        <artifactId>kotlin-maven-serialization</artifactId>
-                        <version>${kotlin.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
@@ -154,9 +114,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>23</source>
-                    <target>23</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
+                    <source>22</source>
+                    <target>22</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -168,10 +127,6 @@
         </resources>
     </build>
     <repositories>
-        <repository>
-            <id>ktor-eap</id>
-            <url>https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev</url>
-        </repository>
         <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
@@ -207,6 +162,12 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.36</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -232,21 +193,6 @@
             <version>20240303</version>
             <scope>compile</scope>
         </dependency>
-        <!--<dependency>
-            <groupId>org.tinylog</groupId>
-            <artifactId>tinylog-api</artifactId>
-            <version>2.7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tinylog</groupId>
-            <artifactId>tinylog-impl</artifactId>
-            <version>2.7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tinylog</groupId>
-            <artifactId>slf4j-tinylog</artifactId>
-            <version>2.7.0</version>
-        </dependency>-->
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
@@ -290,21 +236,10 @@
             <version>1.1.1</version>
         </dependency>
         <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
+            <version>1.18.36</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -330,7 +265,7 @@
         <dependency>
             <groupId> org.apache.cassandra</groupId>
             <artifactId>cassandra-all</artifactId>
-            <version>4.1.5</version>
+            <version>4.1.6</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -351,7 +286,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.318</version>
+            <version>1.326</version>
         </dependency>
         <dependency>
             <groupId>net.sf.sevenzipjbinding</groupId>

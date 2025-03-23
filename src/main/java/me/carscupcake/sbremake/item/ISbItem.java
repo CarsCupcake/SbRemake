@@ -152,8 +152,8 @@ public interface ISbItem {
         for (Map.Entry<ISbItem, EnchantedRecipe> recipe : recipes.entrySet()) {
             Map<Character, CraftingIngredient> items = Map.of('#', new CraftingIngredient(32, recipe.getValue().base()));
             Requirement[] requirements = new Requirement[]{new CollectionRequirement(recipe.getValue().collection(), recipe.getValue().level())};
-            Recipe.craftingRecipes.put(recipe.getKey().getId().toLowerCase(), new ShapedRecipe(recipe.getKey(), 1, -1, requirements, items, "###", "## "));
-            Recipe.craftingRecipes.put( (recipe.getKey().getId().toLowerCase()) + "_star", new ShapedRecipe(recipe.getKey(), 1, -1, requirements, items, " # ", "###", " # "));
+            Recipe.craftingRecipes.put(recipe.getKey().getId().toLowerCase(), ShapedRecipe.createShapedRecipe(recipe.getKey(), 1, -1, requirements, items, "###", "## "));
+            Recipe.craftingRecipes.put( (recipe.getKey().getId().toLowerCase()) + "_star", ShapedRecipe.createShapedRecipe(recipe.getKey(), 1, -1, requirements, items, " # ", "###", " # "));
         }
         SkyblockEnchantment.initListener();
         MinecraftServer.getGlobalEventHandler().addChild(SkyblockEnchantment.LISTENER);

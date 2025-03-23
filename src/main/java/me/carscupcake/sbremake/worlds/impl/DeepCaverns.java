@@ -1,6 +1,6 @@
 package me.carscupcake.sbremake.worlds.impl;
 
-import kotlin.Pair;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.entity.impl.deepCaverns.*;
 import me.carscupcake.sbremake.event.PlayerInteractEvent;
 import me.carscupcake.sbremake.player.SkyblockPlayer;

@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.player;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import kotlin.Pair;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -780,7 +779,7 @@ public class SkyblockPlayer extends Player {
         for (int i = 0; i < this.getInventory().getSize(); i++) {
             SbItemStack item = SbItemStack.from(this.getInventory().getItemStack(i));
             if (item == null) continue;
-            configFile.set( (i) , item, ConfigSection.ITEM);
+            configFile.set(i + "", item, ConfigSection.ITEM);
         }
         configFile.save();
         ConfigFile defaults = new ConfigFile("defaults", this);
@@ -1047,7 +1046,7 @@ public class SkyblockPlayer extends Player {
                 String[] l = display.apply(player);
                 for (String s : l) {
                     Component text = Component.text(s);
-                    String id =  (15 - lines) ;
+                    String id =  Integer.toString(15 - lines);
                     if (lines >= lineCopie.size())
                         player.sidebar.createLine(new Sidebar.ScoreboardLine(id, text, 15 - lines));
                     else {
@@ -1062,7 +1061,7 @@ public class SkyblockPlayer extends Player {
                 }
             }
             for (int i = lines; i < lineCopie.size(); i++) {
-                String id =  (15 - i) ;
+                String id =  Integer.toString(15 - i);
                 player.sidebar.removeLine(id);
             }
         })).repeat(TaskSchedule.seconds(1)).schedule();

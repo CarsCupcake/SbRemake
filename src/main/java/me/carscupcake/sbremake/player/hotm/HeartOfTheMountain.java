@@ -144,7 +144,7 @@ public class HeartOfTheMountain {
                     .build());
         }
 
-        OversizedGui gui = new OversizedGui(item, OversizedGui.StartingPosition.Bottom, "Heart of the Mountain", 8, 53);
+        OversizedGui gui = OversizedGui.createGui(item, OversizedGui.StartingPosition.Bottom, "Heart of the Mountain", 8, 53);
         gui.setCancelled(true);
         gui.setClose(45);
         gui.addStatic(46, TemplateItems.EmptySlot.getItem());
