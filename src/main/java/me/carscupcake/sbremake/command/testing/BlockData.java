@@ -11,9 +11,9 @@ public class BlockData extends Command {
         addSyntax((commandSender, _) -> {
             BlockVec block = new BlockVec(((SkyblockPlayer) commandSender).getLineOfSight(5).getFirst());
             Block b = ((SkyblockPlayer) commandSender).getInstance().getBlock(block);
-            commandSender.sendMessage(STR."Properties: \{b.properties().toString()}");
+            commandSender.sendMessage("Properties: " + (b.properties().toString()) );
             if (b.nbt() != null)
-                commandSender.sendMessage(STR."Nbt: \{b.nbt().toString()}");
+                commandSender.sendMessage("Nbt: " + (b.nbt().toString()) );
         });
     }
 }

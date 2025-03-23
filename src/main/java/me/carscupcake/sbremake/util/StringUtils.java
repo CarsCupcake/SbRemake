@@ -15,7 +15,7 @@ public class StringUtils {
         int dg = countDigitsAfterDecimal(d);
         if (dg == 0 || digits == 0) return String.valueOf((long) d);
         if (dg <= digits) return String.valueOf(d);
-        return String.format(STR."%.\{digits}f", d);
+        return String.format("%." + (digits) + "f", d);
     }
 
     private static int countDigitsAfterDecimal(double number) {
@@ -151,26 +151,26 @@ public class StringUtils {
                 if (num > 999999) {
                     if (num > 9999999) {
                         if (num > 999999999d) {
-                            if (num > 9999999999d) str = STR."\{(int) ((num / 1000000000))}b";
-                            else str = STR."\{NumberUtil.round(num / 1000000000, 1)}b";
-                        } else str = STR."\{(int) ((num / 1000000))}M";
+                            if (num > 9999999999d) str =  ((int) ((num / 1000000000))) + "b";
+                            else str =  (NumberUtil.round(num / 1000000000, 1)) + "b";
+                        } else str =  ((int) ((num / 1000000))) + "M";
 
-                    } else str = STR."\{NumberUtil.round(num / 1000000, 1)}M";
-                } else str = STR."\{(int) ((num / 1000))}k";
-            } else str = STR."\{NumberUtil.round(num / 1000, 1)}k";
-        } else str = STR."\{cleanDouble(num)}";
+                    } else str =  (NumberUtil.round(num / 1000000, 1)) + "M";
+                } else str =  ((int) ((num / 1000))) + "k";
+            } else str =  (NumberUtil.round(num / 1000, 1)) + "k";
+        } else str =  (cleanDouble(num)) ;
         return str;
     }
 
     public static String timeToString(int seconds) {
         int minutes = (int) (seconds / 60d);
-        return STR."\{minutes}:\{(int) (seconds - (minutes * 60))}";
+        return  (minutes) + ":" + ((int) (seconds - (minutes * 60))) ;
     }
 
     public static String ticksToString(long l) {
         double seconds = (double) l / 20d;
         int minutes = (int) (seconds / 60d);
         int displaySeconds = (int) (seconds - (minutes * 60));
-        return STR."\{minutes}:\{displaySeconds < 10 ? "0" : ""}\{displaySeconds}";
+        return  (minutes) + ":" + (displaySeconds < 10 ? "0" : "") +  (displaySeconds) ;
     }
 }

@@ -1,9 +1,7 @@
 package me.carscupcake.sbremake.player.potion;
 
 import com.google.gson.JsonObject;
-import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
-import me.carscupcake.sbremake.item.modifiers.potion.PotionInfo;
 
 public record PotionEffect(IPotion potion, long expiration, byte amplifier) {
     public PotionEffect(String id, ConfigSection section) {

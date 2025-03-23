@@ -137,7 +137,7 @@ public class ConfigSection {
                     array.add(new JsonPrimitive(tag));
                 yield array;
             }
-            default -> throw new IllegalStateException(STR."Unexpected value: \{binaryTag.getClass().getSimpleName()}");
+            default -> throw new IllegalStateException("Unexpected value: " + (binaryTag.getClass().getSimpleName()) );
         };
     }
 
@@ -175,7 +175,7 @@ public class ConfigSection {
                         }
                     }
                     default ->
-                            throw new IllegalStateException(STR."Unexpected value: \{primitive.getAsNumber().getClass()}");
+                            throw new IllegalStateException("Unexpected value: " + (primitive.getAsNumber().getClass()) );
                 }
             } else if (primitive.isString()) return StringBinaryTag.stringBinaryTag(primitive.getAsString());
         }

@@ -9,15 +9,16 @@ import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.player.hotm.impl.*;
+import me.carscupcake.sbremake.player.hotm.impl.MiningFortune;
+import me.carscupcake.sbremake.player.hotm.impl.MiningFortune2;
+import me.carscupcake.sbremake.player.hotm.impl.MiningSpeed;
+import me.carscupcake.sbremake.player.hotm.impl.MiningSpeed2;
 import me.carscupcake.sbremake.util.StringUtils;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-
-import java.math.BigInteger;
 
 @Getter
 @SuppressWarnings({"preview", "unchecked", "unused"})
@@ -76,12 +77,12 @@ public abstract class HotmUpgrade {
     }
 
     public ItemStack getItem() {
-        return new ItemBuilder((level == 0) ? Material.COAL : (level == getMaxLevel() ? Material.DIAMOND : Material.EMERALD)).setName(STR."\{level == 0 ? "§c" : (level == getMaxLevel() ? "§a" : "§e")}\{getName()}").addAllLore(STR."§7Level \{level == 0 ? STR."1§8/\{getMaxLevel()}" : (level == getMaxLevel()) ? String.valueOf(getMaxLevel()) : STR."\{level}§8/\{getMaxLevel()}"}", "§7 ").addAllLore(lore((level == 0) ? 1 : level).build(null, player))
+        return new ItemBuilder((level == 0) ? Material.COAL : (level == getMaxLevel() ? Material.DIAMOND : Material.EMERALD)).setName( (level == 0 ? "§c" : (level == getMaxLevel() ? "§a" : "§e")) +  (getName()) ).addAllLore("§7Level " + (level == 0 ? "1§8/" + (getMaxLevel())  : (level == getMaxLevel()) ? String.valueOf(getMaxLevel()) :  (level) + "§8/" + (getMaxLevel()) ) , "§7 ").addAllLore(lore((level == 0) ? 1 : level).build(null, player))
                 .addLoreIf(() -> level != getMaxLevel(), " ")
                 .addLoreIf(() -> level == 0, "§7Cost", "§51 Token of the Mountain")
                 .addLoreIf(() -> level != getMaxLevel() && level != 0, "§a=====[UPGRADE]=====")
                 .addLoreIf(() -> level != getMaxLevel() && level != 0, lore(level + 1).build(null, player))
-                .addLoreIf(() -> level != getMaxLevel() && level != 0, " ", "§7Cost", STR."\{upgradeType(level).getColor()}\{StringUtils.toFormatedNumber(nextLevelCost(level))} \{upgradeType(level).getName()}")
+                .addLoreIf(() -> level != getMaxLevel() && level != 0, " ", "§7Cost",  (upgradeType(level).getColor()) +  (StringUtils.toFormatedNumber(nextLevelCost(level))) + " " + (upgradeType(level).getName()) )
                 .addAllLore(" ",  enabled ? "§a§lENABLED" : "§c§lDISABLED")
                 .build();
     }

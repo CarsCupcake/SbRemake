@@ -1,10 +1,7 @@
 package me.carscupcake.sbremake.player.protocol;
 
-import net.minestom.server.entity.Entity;
 import net.minestom.server.network.NetworkBuffer;
 import net.minestom.server.network.packet.server.ServerPacket;
-import net.minestom.server.network.packet.server.ServerPacketIdentifier;
-import net.minestom.server.potion.Potion;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings({"unused", "UnstableApiUsage"})

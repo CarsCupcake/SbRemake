@@ -5,23 +5,21 @@ import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
-import me.carscupcake.sbremake.worlds.*;
+import me.carscupcake.sbremake.worlds.EntityNpc;
+import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WarpLocation;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerMoveEvent;
-import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.github.GitHub;
 
 import java.io.*;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -61,7 +59,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
                 tempFolder.mkdirs();
                 AtomicReference<File> file = new AtomicReference<>();
                 try {
-                    file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent(STR."resources/worlds/\{type().getId()}.\{type().getFileEnding().getLiteral()}").getDownloadUrl(), null, tempFolder));
+                    file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent("resources/worlds/" + (type().getId()) + "." + (type().getFileEnding().getLiteral()) ).getDownloadUrl(), null, tempFolder));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -142,7 +140,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-        Main.LOGGER.info(STR."Saving Private Isle to \{path == null ? "null" : path.toAbsolutePath().toString()}");
+        Main.LOGGER.info("Saving Private Isle to " + (path == null ? "null" : path.toAbsolutePath().toString()) );
         container.saveInstance();
         container.saveChunksToStorage().thenRun(() -> Main.LOGGER.info("Done!"));
         super.unregister();

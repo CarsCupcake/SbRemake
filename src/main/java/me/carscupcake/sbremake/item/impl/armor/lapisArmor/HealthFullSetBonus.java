@@ -29,6 +29,6 @@ public class HealthFullSetBonus extends FullSetBonus {
 
     @Override
     public Lore lore() {
-        return new Lore(STR."§7Increase the wearesr's maximum \{Stat.Health.toString()}§7 by §a60");
+        return new Lore("§7Increase the wearesr's maximum " + (Stat.Health.toString()) + "§7 by §a60");
     }
 }

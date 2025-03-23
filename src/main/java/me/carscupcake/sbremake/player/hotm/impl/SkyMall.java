@@ -41,8 +41,8 @@ public class SkyMall extends HotmUpgrade {
     @Override
     public Lore lore(int level) {
         return new Lore(List.of("§7Every SkyBlock day, you receive", "§7a random buff in the §2Dwarven", "§2Mines§7.", " ", "§7Possible Buffs"
-                ,STR."§8 ■ §7Gain §a+100 \{Stat.MiningSpeed}"
-                ,STR."§8 ■ §7Gain §a+100 \{Stat.MiningSpeed}"
+                ,"§8 ■ §7Gain §a+100 " + (Stat.MiningSpeed) 
+                ,"§8 ■ §7Gain §a+100 " + (Stat.MiningSpeed) 
                 ,"§8 ■ §7Gain §a+15& §7 chance to gain", "   §7extra Powder while mining."
                 ,"§8 ■ §7Reduce Pickaxe Ability cooldown", "   §7by §a20%"
                 ,"§8 ■ §a10x §7chance to find Goblins", "   §7while mining."

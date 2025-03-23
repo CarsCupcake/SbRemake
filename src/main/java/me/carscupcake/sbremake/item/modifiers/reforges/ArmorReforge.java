@@ -59,7 +59,7 @@ public enum ArmorReforge implements Reforge {
             Stat.Health, new RarityStat(7),
             Stat.Defense, new RarityStat(7),
             Stat.Intelligence, new RarityStat(6, 9, 12, 16, 20, 25)),
-            new Lore(STR."§7Grants §a+1 \{Stat.CritDamage}§7 per §cCatacombs§7 level."), new SkillRequirement(Skill.Mining, 30)) {
+            new Lore("§7Grants §a+1 " + (Stat.CritDamage) + "§7 per §cCatacombs§7 level."), new SkillRequirement(Skill.Mining, 30)) {
         @Override
         public double getStat(Stat stat, ItemRarity rarity, @Nullable SkyblockPlayer player) {
             if (stat == Stat.CritDamage) {

@@ -88,7 +88,7 @@ public class SuperiorDragonBoots implements ISbItem, ISbItem.StatProvider, NpcSe
                 ItemStack item = event.player().getEquipment(equipmentSlot);
                 SbItemStack itemStack = SbItemStack.from(item);
                 if (itemStack != null && itemStack.getModifier(Modifier.REFORGE) == ArmorReforge.Renowned)
-                    event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."Renowned \{itemStack.sbItem().getType()}", 0.01, PlayerStatEvent.Type.AddativeMultiplier, PlayerStatEvent.StatsCategory.Armor));
+                    event.modifiers().add(new PlayerStatEvent.BasicModifier("Renowned " + (itemStack.sbItem().getType()) , 0.01, PlayerStatEvent.Type.AddativeMultiplier, PlayerStatEvent.StatsCategory.Armor));
 
             }
         });

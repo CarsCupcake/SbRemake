@@ -4,7 +4,6 @@ import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.requirements.SkillRequirement;
 import me.carscupcake.sbremake.player.skill.Skill;
-import net.minestom.server.color.Color;
 import net.minestom.server.item.Material;
 
 import java.util.List;

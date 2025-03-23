@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.worlds;
 import com.github.f4b6a3.uuid.UuidCreator;
 import lombok.Getter;
 import lombok.Setter;
-import me.carscupcake.sbremake.event.PlayerInteractEvent;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
 import me.carscupcake.sbremake.util.TaskScheduler;
@@ -51,7 +50,7 @@ public class Npc extends AbstractNpc {
     }
 
     public Dialog buildDialog() {
-        return new Dialog(STR."§e[NPC] \{StringUtils.stripeColorCodes(entry.username())}§f:", 20);
+        return new Dialog("§e[NPC] " + (StringUtils.stripeColorCodes(entry.username())) + "§f:", 20);
     }
     private static char[] chars = {'a', 'a', 'a', 'a', 'a', 'a'};
     private static String makeName() {

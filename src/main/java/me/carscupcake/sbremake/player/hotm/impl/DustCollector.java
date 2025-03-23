@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.player.hotm.impl;
 
-import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
@@ -41,7 +40,7 @@ public class DustCollector extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Receive §a%b%% §7more §fFossile Dust §7from all sources.", Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore("§7Receive §a%b%% §7more §fFossile Dust §7from all sources.", Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
     }
 
     public int getBonus(int level) {

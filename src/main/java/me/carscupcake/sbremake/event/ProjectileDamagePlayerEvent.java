@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.event;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Stat;
-import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.SkyblockEntityProjectile;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
@@ -51,7 +50,7 @@ public class ProjectileDamagePlayerEvent implements CancellableEvent {
 
     public void spawnDamageTag() {
         LivingEntity e = new LivingEntity(EntityType.ARMOR_STAND);
-        e.setCustomName(Component.text(STR."§7\{StringUtils.cleanDouble(cachedDamage, 0)}"));
+        e.setCustomName(Component.text("§7" + (StringUtils.cleanDouble(cachedDamage, 0)) ));
         e.setCustomNameVisible(true);
         e.setInvisible(true);
         e.setNoGravity(true);

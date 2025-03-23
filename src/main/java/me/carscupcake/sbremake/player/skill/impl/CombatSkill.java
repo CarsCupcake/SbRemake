@@ -1,7 +1,6 @@
 package me.carscupcake.sbremake.player.skill.impl;
 
 import me.carscupcake.sbremake.Stat;
-import me.carscupcake.sbremake.entity.slayer.SlayerQuest;
 import me.carscupcake.sbremake.event.*;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -68,7 +67,7 @@ public class CombatSkill extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of(STR."§eWarrior \{StringUtils.toRoman(level)}", STR." §fDeal \{(level == 0) ? "" : STR."§8\{4 * (level - 1)}%➜"}§a\{4 * level}% §fmore damage to mobs.", STR."§8+ §a0.5% \{Stat.CritChance}"));
+            return new Lore(List.of("§eWarrior " + (StringUtils.toRoman(level)) , " §fDeal " + ((level == 0) ? "" : "§8" + (4 * (level - 1)) + "%➜") + "§a" + (4 * level) + "% §fmore damage to mobs.", "§8+ §a0.5% " + (Stat.CritChance) ));
         }
     }
 }

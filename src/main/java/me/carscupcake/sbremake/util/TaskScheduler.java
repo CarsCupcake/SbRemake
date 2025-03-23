@@ -4,13 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.entity.Entity;
-import net.minestom.server.timer.ExecutionType;
-import net.minestom.server.timer.Scheduler;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
-import org.apache.cassandra.concurrent.Interruptible;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 
 import java.util.concurrent.atomic.AtomicBoolean;

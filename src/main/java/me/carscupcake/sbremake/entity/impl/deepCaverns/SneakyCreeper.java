@@ -5,8 +5,6 @@ import me.carscupcake.sbremake.entity.goal.CreeperGoal;
 import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.EntityAIGroup;
-import net.minestom.server.entity.ai.goal.DoNothingGoal;
-import org.jetbrains.annotations.NotNull;
 
 public class SneakyCreeper extends SkyblockEntity {
     private final CreeperGoal goal;

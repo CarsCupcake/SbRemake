@@ -1,11 +1,9 @@
 package me.carscupcake.sbremake.player.hotm.impl;
 
-import kotlin.Pair;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.TaskSchedule;
@@ -40,7 +38,7 @@ public class MiningSpeedBoost extends PickaxeAbility {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Grants §a+300% \{Stat.MiningSpeed} §7for §a20s§7.");
+        return new Lore("§7Grants §a+300% " + (Stat.MiningSpeed) + " §7for §a20s§7.");
     }
 
     @Override

@@ -1,6 +1,9 @@
 package me.carscupcake.sbremake.util;
 
-import me.carscupcake.sbremake.event.*;
+import me.carscupcake.sbremake.event.PlayerDamageEntityEvent;
+import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
+import me.carscupcake.sbremake.event.PlayerProjectileDamageEntityEvent;
+import me.carscupcake.sbremake.event.PlayerToEntityDamageEvent;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventBinding;
 import org.jetbrains.annotations.NotNull;

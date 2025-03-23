@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmor;
-import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmorTier;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneItem;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlotType;
@@ -25,12 +24,12 @@ public abstract class CrimsonBootsBaseline implements ISbItem, ISbItem.StatProvi
     }
     @Override
     public String getId() {
-        return STR."\{armorTier().getId()}CRIMSON_BOOTS";
+        return  (armorTier().getId()) + "CRIMSON_BOOTS";
     }
 
     @Override
     public String getName() {
-        return STR."\{armorTier().getName()} Crimson Boots";
+        return  (armorTier().getName()) + " Crimson Boots";
     }
 
     @Override

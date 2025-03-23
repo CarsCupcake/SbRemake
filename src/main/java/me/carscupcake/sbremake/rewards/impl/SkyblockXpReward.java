@@ -12,6 +12,6 @@ public record SkyblockXpReward(int xp) implements Reward {
 
     @Override
     public Lore lore() {
-        return new Lore(STR."§8+ §b\{xp} Skyblock XP");
+        return new Lore("§8+ §b" + (xp) + " Skyblock XP");
     }
 }

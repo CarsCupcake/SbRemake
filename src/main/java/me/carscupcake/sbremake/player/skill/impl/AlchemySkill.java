@@ -60,7 +60,7 @@ public class AlchemySkill extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of(STR."§8+ §a\{level <= 14 ? 1 : 2} \{Stat.Intelligence}"));
+            return new Lore(List.of("§8+ §a" + (level <= 14 ? 1 : 2) + " " + (Stat.Intelligence) ));
         }
     }
     public record DungeonStatReward(int level) implements Reward {
@@ -71,7 +71,7 @@ public class AlchemySkill extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(STR."§fPotions that you brew have a §a\{level == 1 ? "1" : STR."§8\{level - 1}➜§a\{level}%"} §flonger duration.");
+            return new Lore("§fPotions that you brew have a §a" + (level == 1 ? "1" : "§8" + (level - 1) + "➜§a" + (level) + "%") + " §flonger duration.");
         }
     }
 }

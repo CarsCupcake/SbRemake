@@ -1,13 +1,8 @@
 package me.carscupcake.sbremake.player.hotm.impl;
 
-import kotlin.Pair;
-import me.carscupcake.sbremake.Stat;
-import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
-import net.minestom.server.MinecraftServer;
-import net.minestom.server.timer.TaskSchedule;
 
 public class GemstoneInfusion extends PickaxeAbility {
     public GemstoneInfusion(SkyblockPlayer player) {
@@ -36,7 +31,7 @@ public class GemstoneInfusion extends PickaxeAbility {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Increases the effectiveness of §6every Gemstone §7in your pick's Gemstone Slots by §a50% §7for §a16s§7.");
+        return new Lore("§7Increases the effectiveness of §6every Gemstone §7in your pick's Gemstone Slots by §a50% §7for §a16s§7.");
     }
 
     @Override

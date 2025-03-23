@@ -1,7 +1,6 @@
 package me.carscupcake.sbremake.player;
 
 import me.carscupcake.sbremake.Stat;
-import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility;
 import me.carscupcake.sbremake.util.StringUtils;
 
 import java.util.Iterator;
@@ -40,7 +39,7 @@ public class ActionBar {
 
         @Override
         public String get(SkyblockPlayer player) {
-            return STR."\{player.getAbsorption() != 0 ? "§6" : Stat.Health.getPrefix()}\{StringUtils.cleanDouble(player.getSbHealth() + player.getAbsorption(), 1)}/\{StringUtils.cleanDouble(player.getMaxSbHealth(), 1)} \{Stat.Health.getSymbol()}";
+            return  (player.getAbsorption() != 0 ? "§6" : Stat.Health.getPrefix()) +  (StringUtils.cleanDouble(player.getSbHealth() + player.getAbsorption(), 1)) + "/" + (StringUtils.cleanDouble(player.getMaxSbHealth(), 1)) + " " + (Stat.Health.getSymbol()) ;
         }
     }
 
@@ -55,7 +54,7 @@ public class ActionBar {
 
         @Override
         public String get(SkyblockPlayer player) {
-            return STR."§6\{me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.DOMINUS_STACKS.get(player) == 10 ? "§l" : ""}ᝐ\{String.valueOf(me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.DOMINUS_STACKS.get(player))}";
+            return "§6" + (me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.DOMINUS_STACKS.get(player) == 10 ? "§l" : "") + "ᝐ" + (String.valueOf(me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.DOMINUS_STACKS.get(player))) ;
         }
     }
 
@@ -68,7 +67,7 @@ public class ActionBar {
 
         @Override
         public String get(SkyblockPlayer player) {
-            return (player.getDefenseString() != null) ? player.getDefenseString() : STR."\{Stat.Defense.getPrefix()}\{StringUtils.cleanDouble(player.getStat(Stat.Defense))} \{Stat.Defense.getSymbol()} Defense";
+            return (player.getDefenseString() != null) ? player.getDefenseString() :  (Stat.Defense.getPrefix()) +  (StringUtils.cleanDouble(player.getStat(Stat.Defense))) + " " + (Stat.Defense.getSymbol()) + " Defense";
         }
     }
 
@@ -83,7 +82,7 @@ public class ActionBar {
         public String get(SkyblockPlayer player) {
             if (player.isNotEnoughMana())
                 return "§c§lNOT ENOUGH MANA";
-            return STR."\{Stat.Intelligence.getPrefix()}\{StringUtils.cleanDouble(player.getMana(), 1)}/\{StringUtils.cleanDouble(player.getManaPool(), 1)} \{Stat.Intelligence.getSymbol()} Mana";
+            return  (Stat.Intelligence.getPrefix()) +  (StringUtils.cleanDouble(player.getMana(), 1)) + "/" + (StringUtils.cleanDouble(player.getManaPool(), 1)) + " " + (Stat.Intelligence.getSymbol()) + " Mana";
         }
     }
 }

@@ -45,7 +45,6 @@ import static java.lang.Math.min;
  * @param item   the item that gets wrapped
  * @param sbItem the Sb item
  */
-@SuppressWarnings("preview")
 public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                           @NotNull HashMap<Modifier<?>, Object> modifierCache) {
     public SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem) {
@@ -135,17 +134,17 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         if (sbItem.getType() == ItemType.Potion) {
             PotionInfo potionInfo = getModifier(Modifier.POTION);
             if (potionInfo != null) {
-                return potionInfo.customPotionName() != null ? potionInfo.customPotionName() : STR."\{potionInfo.potion().getName()} \{StringUtils.toRoman(potionInfo.potionLevel())} Potion";
+                return potionInfo.customPotionName() != null ? potionInfo.customPotionName() : (potionInfo.potion().getName()) + " " + (StringUtils.toRoman(potionInfo.potionLevel())) + " Potion";
             }
         }
         if (sbItem.getType() == ItemType.Rune) {
             RuneModifier runeModifier = getModifier(Modifier.RUNE);
             if (runeModifier != null)
-                return STR."\{runeModifier.rune().getName()} Rune \{StringUtils.toRoman(runeModifier.level())}";
+                return (runeModifier.rune().getName()) + " Rune " + (StringUtils.toRoman(runeModifier.level()));
         }
         Reforge reforge = getModifier(Modifier.REFORGE);
         Pet.PetInfo petInfo = getModifier(Modifier.PET_INFO);
-        return STR."\{sbItem().getType() == ItemType.Pet ? STR."§7[Lvl \{petInfo.level()}] " : ""}\{reforge != null ? STR."\{reforge.getName()} " : ""}\{petInfo.pet() == null ? sbItem.getName() : STR."\{petInfo.rarity().getPrefix()}\{petInfo.pet().getName()}"}";
+        return (sbItem().getType() == ItemType.Pet ? "§7[Lvl " + (petInfo.level()) + "] " : "") + (reforge != null ? (reforge.getName()) + " " : "") + (petInfo.pet() == null ? sbItem.getName() :  (petInfo.rarity().getPrefix()) + (petInfo.pet().getName()));
     }
 
     /*
@@ -186,24 +185,24 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         } else {
             double breakingPower = getStat(Stat.BreakingPower, player);
             if (breakingPower > 0) {
-                lore.add(STR."§8Breaking Power \{StringUtils.cleanDouble(breakingPower, 1)}");
+                lore.add("§8Breaking Power " + (StringUtils.cleanDouble(breakingPower, 1)) );
                 lore.add("§8  ");
             }
 
             for (Stat stat : redStats) {
                 double value = getStat(stat, player);
                 if (value == 0) continue;
-                lore.add(STR."§7\{stat.getName()} §c\{statLine(stat, value, player)}");
+                lore.add("§7" + (stat.getName()) + " §c" + (statLine(stat, value, player)) );
                 space = true;
             }
             for (Stat stat : greenStats) {
                 double value = getStat(stat, player);
                 if (value == 0) continue;
-                lore.add(STR."§7\{stat.getName()} §a\{statLine(stat, value, player)}");
+                lore.add("§7" + (stat.getName()) + " §a" + (statLine(stat, value, player)) );
                 space = true;
             }
             if (sbItem instanceof Shortbow shortbow) {
-                lore.add(STR."§7Shot Cooldown: §a\{StringUtils.cleanDouble(((player == null) ? shortbow.getShortbowCooldown(getStat(Stat.AttackSpeed, player)) : shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) / 1000d)}s");
+                lore.add("§7Shot Cooldown: §a" + (StringUtils.cleanDouble(((player == null) ? shortbow.getShortbowCooldown(getStat(Stat.AttackSpeed, player)) : shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) / 1000d)) + "s");
             }
         }
         if (gemstoneSlots.length > 0) {
@@ -222,14 +221,14 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         if (!enchantmentIntegerMap.isEmpty()) {
             if (enchantmentIntegerMap.size() <= 6) {
                 enchantmentIntegerMap.forEach((skyblockEnchantment, integer) -> {
-                    lore.add(STR."§9\{skyblockEnchantment.getName()} \{StringUtils.toRoman(integer)}");
+                    lore.add("§9" + (skyblockEnchantment.getName()) + " " + (StringUtils.toRoman(integer)) );
                     lore.addAll(skyblockEnchantment.description().build(this, player));
                 });
             } else {
                 StringBuilder builder = new StringBuilder("§9");
                 int i = 0;
                 for (Map.Entry<SkyblockEnchantment, Integer> entry : enchantmentIntegerMap.entrySet()) {
-                    builder.append(STR."\{entry.getKey().getName()} \{StringUtils.toRoman(entry.getValue())}");
+                    builder.append( (entry.getKey().getName()) + " " + (StringUtils.toRoman(entry.getValue())) );
                     i++;
                     if (i == 3) {
                         i = 0;
@@ -257,7 +256,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             if (info != null) {
                 lore.add("§a ");
                 for (PotionInfo.PotionEffect effect : info.effects()) {
-                    lore.add(STR."\{effect.potion().getPrefix()}\{effect.potion().getName()} \{StringUtils.toRoman(effect.level())} \{effect.potion().isInstant() ? "" : STR."§f(\{StringUtils.ticksToString(effect.durationTicks())})"}");
+                    lore.add( (effect.potion().getPrefix()) +  (effect.potion().getName()) + " " + (StringUtils.toRoman(effect.level())) + " " + (effect.potion().isInstant() ? "" : "§f(" + (StringUtils.ticksToString(effect.durationTicks())) + ")") );
                     lore.addAll(effect.potion().description().build(effect.level()));
                     lore.add("§b ");
                 }
@@ -269,7 +268,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         }
         Reforge reforge = getModifier(Modifier.REFORGE);
         if (reforge != null && reforge.getLore() != Lore.EMPTY) {
-            lore.add(STR."§9\{reforge.getName()} Bonus");
+            lore.add("§9" + (reforge.getName()) + " Bonus");
             lore.addAll(reforge.getLore().build(this, player));
             lore.add(" ");
         }
@@ -278,7 +277,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             if (petInfo.pet() != null) {
                 if (petInfo.level() == petInfo.pet().getMaxLevel()) {
                     lore.add("§b§lMAX LEVEL");
-                    lore.add(STR."§8Total Xp \{StringUtils.cleanDouble(petInfo.exp())}");
+                    lore.add("§8Total Xp " + (StringUtils.cleanDouble(petInfo.exp())) );
                 } else {
                     double totalDone = 0;
                     int[] xpPL = switch (rarity) {
@@ -293,14 +292,14 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                     }
                     int xpForThis = xpPL[petInfo.level() - 1];
                     double percentage = (petInfo.exp() - totalDone) / ((double) xpForThis);
-                    lore.add(STR."§7Progress to Level \{petInfo.level() + 1}: §e\{StringUtils.cleanDouble(percentage, 1)}%");
-                    lore.add(STR."\{StringUtils.makeProgressBarAsString(20, percentage, 1, "§f", "§a", "§m ")}§r §e\{StringUtils.cleanDouble(petInfo.exp() - totalDone, 1)}§6/§e\{StringUtils.toShortNumber(xpForThis)}");
+                    lore.add("§7Progress to Level " + (petInfo.level() + 1) + ": §e" + (StringUtils.cleanDouble(percentage, 1)) + "%");
+                    lore.add( (StringUtils.makeProgressBarAsString(20, percentage, 1, "§f", "§a", "§m ")) + "§r §e" + (StringUtils.cleanDouble(petInfo.exp() - totalDone, 1)) + "§6/§e" + (StringUtils.toShortNumber(xpForThis)) );
                 }
                 lore.add("§9 ");
             }
         }
         if (sbItem instanceof Shortbow) {
-            lore.add(STR."\{rarity.getPrefix()}Shortbow: Instatntly shoots!");
+            lore.add( (rarity.getPrefix()) + "Shortbow: Instatntly shoots!");
             lore.add("  ");
         }
         if (sbItem.getType().isReforgable()) /* Todo add reforge check*/ {
@@ -308,7 +307,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         }
         for (Requirement requirement : sbItem.requirements())
             if (!requirement.canUse(player, item)) lore.add(requirement.display());
-        lore.add(STR."\{rarity.getPrefix()}§l\{rarity.getDisplay().toUpperCase()} \{sbItem.getType().getDisplay().toUpperCase()}");
+        lore.add( (rarity.getPrefix()) + "§l" + (rarity.getDisplay().toUpperCase()) + " " + (sbItem.getType().getDisplay().toUpperCase()) );
         return lore;
     }
 
@@ -326,7 +325,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                 }
             }
         }
-        return STR."\{(value < 0) ? "" : "+"}\{StringUtils.cleanDouble(value, 1)}\{(stat.isPercentValue()) ? "%" : ""}\{reforgeValue != 0 ? STR." §9(\{value < 0 ? "" : "+"}\{StringUtils.cleanDouble(reforgeValue, 1)}\{stat.isPercentValue() ? "%" : ""})" : ""}\{gemstoneValue != 0 ? STR." §d(+\{StringUtils.cleanDouble(gemstoneValue, 1)})" : ""}";
+        return  ((value < 0) ? "" : "+") +  (StringUtils.cleanDouble(value, 1)) +  ((stat.isPercentValue()) ? "%" : "") +  (reforgeValue != 0 ? " §9(" + (value < 0 ? "" : "+") +  (StringUtils.cleanDouble(reforgeValue, 1)) +  (stat.isPercentValue() ? "%" : "") + ")" : "") +  (gemstoneValue != 0 ? " §d(+" + (StringUtils.cleanDouble(gemstoneValue, 1)) + ")" : "") ;
     }
 
     public ItemRarity getRarity() {

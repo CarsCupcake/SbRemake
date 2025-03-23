@@ -17,11 +17,11 @@ public record CoinsCost(int coins) implements Cost{
 
     @Override
     public ItemBuilder appendToLore(ItemBuilder builder) {
-        return builder.addLoreRow(STR."§6\{StringUtils.toFormatedNumber(coins)} Coins");
+        return builder.addLoreRow("§6" + (StringUtils.toFormatedNumber(coins)) + " Coins");
     }
 
     @Override
     public String toString() {
-        return STR."§6\{StringUtils.toFormatedNumber(coins)} Coins";
+        return "§6" + (StringUtils.toFormatedNumber(coins)) + " Coins";
     }
 }

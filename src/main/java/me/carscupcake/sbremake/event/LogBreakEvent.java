@@ -1,7 +1,6 @@
 package me.carscupcake.sbremake.event;
 
 import me.carscupcake.sbremake.blocks.Log;
-import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.coordinate.BlockVec;

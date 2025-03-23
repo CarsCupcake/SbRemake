@@ -9,8 +9,6 @@ import net.minestom.server.event.trait.CancellableEvent;
 import net.minestom.server.event.trait.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Random;
-
 @Getter
 @Setter
 public class PlayerToEntityMageDamage implements PlayerEvent, CancellableEvent {

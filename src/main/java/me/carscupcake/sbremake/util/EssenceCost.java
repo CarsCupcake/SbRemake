@@ -17,6 +17,6 @@ public record EssenceCost(Essence essence, int amount) implements Cost{
 
     @Override
     public ItemBuilder appendToLore(ItemBuilder builder) {
-        return builder.addLoreRow(STR."§d\{StringUtils.toFormatedNumber(amount)} \{essence.name()} Essence");
+        return builder.addLoreRow("§d" + (StringUtils.toFormatedNumber(amount)) + " " + (essence.name()) + " Essence");
     }
 }

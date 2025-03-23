@@ -6,15 +6,11 @@ import me.carscupcake.sbremake.item.ability.AbilityType;
 import me.carscupcake.sbremake.item.ability.CooldownRequirement;
 import me.carscupcake.sbremake.item.ability.ItemAbility;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.Requirement;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.timer.TaskSchedule;
-
-import javax.annotation.processing.Generated;
-import java.util.List;
 
 @Getter
 public abstract class PickaxeAbility extends HotmUpgrade {
@@ -24,8 +20,8 @@ public abstract class PickaxeAbility extends HotmUpgrade {
     public PickaxeAbility(SkyblockPlayer player, Class<? extends HotmUpgrade>... priorUpgrades) {
         super(player, priorUpgrades);
         ability = new ItemAbility<>(getName(), AbilityType.RIGHT_CLICK, _ -> {
-            player.sendMessage(STR."§aYou used your §6\{getName()} §aPickaxe Ability!");
-            MinecraftServer.getSchedulerManager().buildTask(() -> player.sendMessage(STR."§6\{getName()} §ais now ready!")).delay(TaskSchedule.seconds(cooldown())).schedule();
+            player.sendMessage("§aYou used your §6" + (getName()) + " §aPickaxe Ability!");
+            MinecraftServer.getSchedulerManager().buildTask(() -> player.sendMessage("§6" + (getName()) + " §ais now ready!")).delay(TaskSchedule.seconds(cooldown())).schedule();
             onInteract();
         }, lore(1), new CooldownRequirement<>(cooldown()));
     }
@@ -49,10 +45,10 @@ public abstract class PickaxeAbility extends HotmUpgrade {
     public ItemStack getItem() {
         return new ItemBuilder(level == 0 ? Material.COAL_BLOCK : Material.EMERALD_BLOCK)
                 .setGlint(getPlayer().getHotm().getActiveAbility() == this)
-                .setName(STR."\{level == 0 ? "§c" : "§a"}\{getName()}")
-                .addAllLore(" ", STR."§6Pickaxe Ability: \{getName()}")
+                .setName( (level == 0 ? "§c" : "§a") +  (getName()) )
+                .addAllLore(" ", "§6Pickaxe Ability: " + (getName()) )
                 .addAllLore(lore(level == 0 ? 1 : level).build(null, getPlayer()))
-                .addLoreRow(STR."§8Cooldown: §a\{cooldown()}s")
+                .addLoreRow("§8Cooldown: §a" + (cooldown()) + "s")
                 .addLoreRow("  ")
                 .addLoreIf(() -> level != 0 && getPlayer().getHotm().getActiveAbility() == this, "§a§lSELECTED")
                 .addLoreIf(() -> level != 0 && getPlayer().getHotm().getActiveAbility() != this, "§eClick to select!")

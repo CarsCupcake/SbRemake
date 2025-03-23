@@ -12,9 +12,7 @@ import net.minestom.server.event.player.PlayerPacketOutEvent;
 import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.server.play.EntityAttributesPacket;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
-import net.minestom.server.network.packet.server.play.ParticlePacket;
 import net.minestom.server.network.packet.server.play.PlayerAbilitiesPacket;
-import net.minestom.server.particle.Particle;
 import net.minestom.server.utils.NamespaceID;
 
 import java.util.List;

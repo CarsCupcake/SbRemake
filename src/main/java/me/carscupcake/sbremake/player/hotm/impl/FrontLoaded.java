@@ -6,8 +6,6 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
 
-import java.util.Map;
-
 public class FrontLoaded extends HotmUpgrade {
     public FrontLoaded(SkyblockPlayer player) {
         super(player, Crystallized.class, Orbiter.class, StarPowder.class);
@@ -40,7 +38,7 @@ public class FrontLoaded extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Grants §a+100 \{Stat.MiningSpeed} §7and \{Stat.MiningFortune} §7as well as §7+2 Base Powder §7for the first §e2,500 §7ores you mine in a day.");
+        return new Lore("§7Grants §a+100 " + (Stat.MiningSpeed) + " §7and " + (Stat.MiningFortune) + " §7as well as §7+2 Base Powder §7for the first §e2,500 §7ores you mine in a day.");
     }
 
     @Override

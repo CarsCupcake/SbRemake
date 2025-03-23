@@ -13,7 +13,7 @@
     <name>SbRemake</name>
 
     <properties>
-        <java.version>22</java.version>
+        <java.version>23</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.8.10</kotlin.version>
         <output.dir>${project.build.directory}</output.dir>
@@ -154,8 +154,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>22</source>
-                    <target>22</target>
+                    <source>23</source>
+                    <target>23</target>
                     <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>

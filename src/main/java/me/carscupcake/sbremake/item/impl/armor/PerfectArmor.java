@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.item.impl.armor;
 
-import com.google.common.collect.HashBiMap;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
@@ -12,11 +11,9 @@ import me.carscupcake.sbremake.util.Cost;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.minestom.server.item.Material;
 
-import java.util.HashMap;
-
 public record PerfectArmor(String id, String name, int level, ItemType type) implements ISbItem, GemstoneSlots {
     public PerfectArmor(int level, ItemType type) {
-        this(STR."PERFECT_\{type.name().toUpperCase()}_\{level}", STR."Perfect \{type.name()} - Tier \{StringUtils.toRoman(level)}", level, type);
+        this("PERFECT_" + (type.name().toUpperCase()) + "_" + (level) , "Perfect " + (type.name()) + " - Tier " + (StringUtils.toRoman(level)) , level, type);
         SbItemStack.initSbItem(this);
     }
     @Override

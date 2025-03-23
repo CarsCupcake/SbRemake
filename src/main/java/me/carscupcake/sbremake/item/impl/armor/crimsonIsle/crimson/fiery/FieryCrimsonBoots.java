@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.fiery;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmorTier;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.CrimsonBootsBaseline;
-import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.CrimsonLeggingsBaseline;
 
 import java.util.Map;
 

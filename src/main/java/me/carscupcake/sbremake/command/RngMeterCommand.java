@@ -4,8 +4,6 @@ import me.carscupcake.sbremake.entity.slayer.Slayers;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentEnum;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class RngMeterCommand extends Command {
     public RngMeterCommand() {

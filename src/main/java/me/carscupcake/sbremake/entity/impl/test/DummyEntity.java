@@ -42,7 +42,7 @@ public class DummyEntity extends SkyblockEntity {
 
     @Override
     public Function<SkyblockEntity, String> nameTag() {
-        return _ -> STR."§aLast Damage: §c\{StringUtils.cleanDouble(damage)}";
+        return _ -> "§aLast Damage: §c" + (StringUtils.cleanDouble(damage)) ;
     }
 
     @Override

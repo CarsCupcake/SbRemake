@@ -61,7 +61,7 @@ public class PlayerSlayer {
             Map<SkyblockEnchantment, Integer> enchantmentIntegerMap = meterEntry.loots()[0].previewItem().getEnchantments();
             if (!enchantmentIntegerMap.isEmpty()) {
                 for (Map.Entry<SkyblockEnchantment, Integer> enchantment : enchantmentIntegerMap.entrySet())
-                    itemBuilder.addLoreRow(STR."§9\{enchantment.getKey().getName()} \{StringUtils.toRoman(enchantment.getValue())}");
+                    itemBuilder.addLoreRow("§9" + (enchantment.getKey().getName()) + " " + (StringUtils.toRoman(enchantment.getValue())) );
             }
             double chance = meter.getLootTableChances().get(meterEntry);
             String oddMessage;
@@ -72,7 +72,7 @@ public class PlayerSlayer {
             else if (chance < 0.31) oddMessage = "§9Occasional";
             else if (chance < 1) oddMessage = "§fCommon";
             else oddMessage = "§aGuaranteed";
-            itemBuilder.addAllLore("§c ", STR."§7Odds: \{oddMessage} §7(\{meter.getSelected() == meterEntry ? "§8§m" : ""}\{StringUtils.cleanDouble(chance * 100, 4)}\{meter.getSelected() == meterEntry ? STR."§7 \{StringUtils.cleanDouble((chance * (1 + Math.min(2, 2 * (meter.getRngMeterXp() / meter.getLootTableGoals().get(meterEntry))))) * 100, 4)}" : "§7"})", " ", STR."§d\{StringUtils.cleanDouble(meter.getRngMeterXp())}§5/§d\{StringUtils.toShortNumber(meter.getLootTableGoals().get(meterEntry))}");
+            itemBuilder.addAllLore("§c ", "§7Odds: " + (oddMessage) + " §7(" + (meter.getSelected() == meterEntry ? "§8§m" : "") +  (StringUtils.cleanDouble(chance * 100, 4)) +  (meter.getSelected() == meterEntry ? "§7 " + (StringUtils.cleanDouble((chance * (1 + Math.min(2, 2 * (meter.getRngMeterXp() / meter.getLootTableGoals().get(meterEntry))))) * 100, 4))  : "§7") + ")", " ", "§d" + (StringUtils.cleanDouble(meter.getRngMeterXp())) + "§5/§d" + (StringUtils.toShortNumber(meter.getLootTableGoals().get(meterEntry))) );
             builder.setItem(i, itemBuilder.build().withTag(Tag.String("meter_id"), meterEntry.id()));
             i++;
             if ((i + 1) % 9 == 0) i += 2;

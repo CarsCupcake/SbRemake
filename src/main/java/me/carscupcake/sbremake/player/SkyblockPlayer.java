@@ -20,8 +20,8 @@ import me.carscupcake.sbremake.entity.slayer.PlayerSlayer;
 import me.carscupcake.sbremake.entity.slayer.SlayerQuest;
 import me.carscupcake.sbremake.entity.slayer.Slayers;
 import me.carscupcake.sbremake.event.*;
-import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.*;
+import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.FullSetBonus;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
@@ -727,7 +727,7 @@ public class SkyblockPlayer extends Player {
             if (SkyblockPlayer.this.pet == clickedPet) {
                 SkyblockPlayer.this.pet = null;
                 clickedPet.getPet().despawnPet(SkyblockPlayer.this, clickedPet);
-                sendMessage(STR."§cYou despawned your \{clickedPet.getPet().getName()}");
+                sendMessage("§cYou despawned your " + (clickedPet.getPet().getName()) );
                 closeGui();
                 return true;
             }
@@ -736,7 +736,7 @@ public class SkyblockPlayer extends Player {
             }
             SkyblockPlayer.this.pet = clickedPet;
             clickedPet.getPet().spawnPet(SkyblockPlayer.this, clickedPet);
-            sendMessage(STR."§aYou spawned your \{clickedPet.getPet().getName()}");
+            sendMessage("§aYou spawned your " + (clickedPet.getPet().getName()) );
             closeGui();
             return true;
         });
@@ -751,8 +751,8 @@ public class SkyblockPlayer extends Player {
             profileItem.setHeadTexture(s.textures());
         profileItem.setName("§aYour Skyblock Profile").addAllLore("§7View your equipment, stats,").addAllLore("§7and more!").addAllLore("§7 ");
         for (Stat stat : Stat.values())
-            profileItem.addLoreRow(STR."\{stat} §f\{getStat(stat)}\{stat.isPercentValue() ? "%" : ""}");
-        inventoryBuilder.setItem(profileItem.addAllLore("§7  ").addLoreRow("§eClick to view!").build(), 13).setItem(new ItemBuilder(Material.DIAMOND_SWORD).setName("§aYour Skills").addAllLore("§7View your skills progression", "§7and rewards.", "§7 ", STR."§6\{StringUtils.cleanDouble(skillsAverage())} Skill Avearage", "§e ", "§eClick to view!").build(), 19).setItem(new ItemBuilder(Material.PAINTING).setName("§aCollections §c§lWIP").build(), 20).setItem(new ItemBuilder(Material.BOOK).setName("§aRecipe Book §c§lWIP").build(), 21).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0=").setName("§aSkyblock Leveling §c§lWIP").build(), 22).setItem(new ItemBuilder(Material.WRITABLE_BOOK).setName("§aQuest Log §c§lWIP").build(), 23).setItem(new ItemBuilder(Material.CLOCK).setName("§aCalendar and Events §c§lWIP").build(), 24).setItem(new ItemBuilder(Material.CHEST).setName("§aStorage §c§lWIP").build(), 25).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0=").setName("§aYour Bags §c§lWIP").build(), 29).setItem(new ItemBuilder(Material.BONE).setName("§aPets §c§lWIP").build(), 30).setItem(new ItemBuilder(Material.CRAFTING_TABLE).setName("§aCrafting Table §c§lWIP").build(), 31).setItem(new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new DyedItemColor(0x3e05af)).setName("§aWardrobe §c§lWIP").build(), 32).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA5Mjk5YTExN2JlZTg4ZDMyNjJmNmFiOTgyMTFmYmEzNDRlY2FlMzliNDdlYzg0ODEyOTcwNmRlZGM4MWU0ZiJ9fX0=").setName("§aPersonal Bank §c§lWIP").build(), 33).setItem(new ItemBuilder(Material.BARRIER).setName("§cClose").build(), 49);
+            profileItem.addLoreRow( (stat) + " §f" + (getStat(stat)) +  (stat.isPercentValue() ? "%" : "") );
+        inventoryBuilder.setItem(profileItem.addAllLore("§7  ").addLoreRow("§eClick to view!").build(), 13).setItem(new ItemBuilder(Material.DIAMOND_SWORD).setName("§aYour Skills").addAllLore("§7View your skills progression", "§7and rewards.", "§7 ", "§6" + (StringUtils.cleanDouble(skillsAverage())) + " Skill Avearage", "§e ", "§eClick to view!").build(), 19).setItem(new ItemBuilder(Material.PAINTING).setName("§aCollections §c§lWIP").build(), 20).setItem(new ItemBuilder(Material.BOOK).setName("§aRecipe Book §c§lWIP").build(), 21).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0=").setName("§aSkyblock Leveling §c§lWIP").build(), 22).setItem(new ItemBuilder(Material.WRITABLE_BOOK).setName("§aQuest Log §c§lWIP").build(), 23).setItem(new ItemBuilder(Material.CLOCK).setName("§aCalendar and Events §c§lWIP").build(), 24).setItem(new ItemBuilder(Material.CHEST).setName("§aStorage §c§lWIP").build(), 25).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0=").setName("§aYour Bags §c§lWIP").build(), 29).setItem(new ItemBuilder(Material.BONE).setName("§aPets §c§lWIP").build(), 30).setItem(new ItemBuilder(Material.CRAFTING_TABLE).setName("§aCrafting Table §c§lWIP").build(), 31).setItem(new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new DyedItemColor(0x3e05af)).setName("§aWardrobe §c§lWIP").build(), 32).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA5Mjk5YTExN2JlZTg4ZDMyNjJmNmFiOTgyMTFmYmEzNDRlY2FlMzliNDdlYzg0ODEyOTcwNmRlZGM4MWU0ZiJ9fX0=").setName("§aPersonal Bank §c§lWIP").build(), 33).setItem(new ItemBuilder(Material.BARRIER).setName("§cClose").build(), 49);
         Gui gui = new Gui(inventoryBuilder.build());
         gui.setCancelled(true);
         gui.getClickEvents().add(31, clickType -> {
@@ -780,7 +780,7 @@ public class SkyblockPlayer extends Player {
         for (int i = 0; i < this.getInventory().getSize(); i++) {
             SbItemStack item = SbItemStack.from(this.getInventory().getItemStack(i));
             if (item == null) continue;
-            configFile.set(STR."\{i}", item, ConfigSection.ITEM);
+            configFile.set( (i) , item, ConfigSection.ITEM);
         }
         configFile.save();
         ConfigFile defaults = new ConfigFile("defaults", this);
@@ -805,7 +805,7 @@ public class SkyblockPlayer extends Player {
         petsFile.set("stored", pets, STORED_PET_LIST_DATA);
         petsFile.set("equipped", (pet == null) ? -1 : pets.indexOf(pet), ConfigSection.INTEGER);
         petsFile.save();
-        Main.LOGGER.info(STR."Saved profile from \{((TextComponent) this.getName()).content()}");
+        Main.LOGGER.info("Saved profile from " + (((TextComponent) this.getName()).content()) );
 
         ConfigFile file = new ConfigFile("slayer", this);
         for (PlayerSlayer s : slayers.values())
@@ -828,7 +828,7 @@ public class SkyblockPlayer extends Player {
     public void addPowder(Powder type, int amount) {
         int newAmount = powder.get(type) + amount;
         setPowder(type, newAmount);
-        powderString = STR."\{type.getColor()}᠅ §f\{type.getName()}: \{type.getColor()}\{StringUtils.toFormatedNumber(newAmount)}";
+        powderString =  (type.getColor()) + "᠅ §f" + (type.getName()) + ": " + (type.getColor()) +  (StringUtils.toFormatedNumber(newAmount)) ;
     }
 
     public void setPowder(Powder type, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
@@ -1047,13 +1047,13 @@ public class SkyblockPlayer extends Player {
                 String[] l = display.apply(player);
                 for (String s : l) {
                     Component text = Component.text(s);
-                    String id = STR."\{15 - lines}";
+                    String id =  (15 - lines) ;
                     if (lines >= lineCopie.size())
                         player.sidebar.createLine(new Sidebar.ScoreboardLine(id, text, 15 - lines));
                     else {
                         Sidebar.ScoreboardLine line = player.sidebar.getLine(id);
                         if (line == null) {
-                            System.err.println(STR."Warning! Line \{id} is null!");
+                            System.err.println("Warning! Line " + (id) + " is null!");
                             continue;
                         }
                         if (!line.getContent().equals(text)) player.sidebar.updateLineContent(id, text);
@@ -1062,7 +1062,7 @@ public class SkyblockPlayer extends Player {
                 }
             }
             for (int i = lines; i < lineCopie.size(); i++) {
-                String id = STR."\{15 - i}";
+                String id =  (15 - i) ;
                 player.sidebar.removeLine(id);
             }
         })).repeat(TaskSchedule.seconds(1)).schedule();
@@ -1094,7 +1094,7 @@ public class SkyblockPlayer extends Player {
                     break;
                 }
             if (canUse)
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{item.displayName()}", value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier( (item.displayName()) , value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
         }
         if (pet != null) {
             double bonus = pet.getPet().getStat(stat, pet.toPetInfo());
@@ -1111,7 +1111,7 @@ public class SkyblockPlayer extends Player {
                     break;
                 }
             if (canUse)
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{item.displayName()}", item.getStat(stat, this), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier( (item.displayName()) , item.getStat(stat, this), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
         }
         MinecraftServer.getGlobalEventHandler().call(event);
         return event;

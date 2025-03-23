@@ -55,18 +55,18 @@ public class SlayerLootTable implements ILootTable<SbItemStack> {
                         chance = lootEntry.getKey().apply(this, rngMeterLoot.weight());
                         for (SbItemStack sbItemStack : loot) {
                             if (chance < 0.0003)
-                                player.sendMessage(STR."§c§lRNGESUS INCARNATE DROP! §7(\{sbItemStack.getRarity().getPrefix()}\{sbItemStack.displayName()}§7) §b(+\{StringUtils.cleanDouble(magicFind)}% \{Stat.MagicFind})");
+                                player.sendMessage("§c§lRNGESUS INCARNATE DROP! §7(" + (sbItemStack.getRarity().getPrefix()) +  (sbItemStack.displayName()) + "§7) §b(+" + (StringUtils.cleanDouble(magicFind)) + "% " + (Stat.MagicFind) + ")");
                             else
                             if (chance < 0.006)
-                                player.sendMessage(STR."§d§lPRAY RNGESUS DROP! §7(\{sbItemStack.getRarity().getPrefix()}\{sbItemStack.displayName()}§7) §b(+\{StringUtils.cleanDouble(magicFind)}% \{Stat.MagicFind})");
+                                player.sendMessage("§d§lPRAY RNGESUS DROP! §7(" + (sbItemStack.getRarity().getPrefix()) +  (sbItemStack.displayName()) + "§7) §b(+" + (StringUtils.cleanDouble(magicFind)) + "% " + (Stat.MagicFind) + ")");
                             else
                             if (chance < 0.03)
-                                player.sendMessage(STR."§5§lVERY RARE DROP! §7(\{sbItemStack.getRarity().getPrefix()}\{sbItemStack.displayName()}§7) §b(+\{StringUtils.cleanDouble(magicFind)}% \{Stat.MagicFind})");
+                                player.sendMessage("§5§lVERY RARE DROP! §7(" + (sbItemStack.getRarity().getPrefix()) +  (sbItemStack.displayName()) + "§7) §b(+" + (StringUtils.cleanDouble(magicFind)) + "% " + (Stat.MagicFind) + ")");
                             else
                             if (chance < 0.11)
-                                player.sendMessage(STR."§9§lRARE DROP! §7(\{sbItemStack.getRarity().getPrefix()}\{sbItemStack.displayName()}§7) §b(+\{StringUtils.cleanDouble(magicFind)}% \{Stat.MagicFind})");
+                                player.sendMessage("§9§lRARE DROP! §7(" + (sbItemStack.getRarity().getPrefix()) +  (sbItemStack.displayName()) + "§7) §b(+" + (StringUtils.cleanDouble(magicFind)) + "% " + (Stat.MagicFind) + ")");
                             else if (chance < 0.311)
-                                player.sendMessage(STR."§a§lUNCOMMON DROP! §7(\{sbItemStack.getRarity().getPrefix()}\{sbItemStack.displayName()}§7) §b(+\{StringUtils.cleanDouble(magicFind)}% \{Stat.MagicFind})");
+                                player.sendMessage("§a§lUNCOMMON DROP! §7(" + (sbItemStack.getRarity().getPrefix()) +  (sbItemStack.displayName()) + "§7) §b(+" + (StringUtils.cleanDouble(magicFind)) + "% " + (Stat.MagicFind) + ")");
                         }
                     }
                     lootSet.addAll(loot);

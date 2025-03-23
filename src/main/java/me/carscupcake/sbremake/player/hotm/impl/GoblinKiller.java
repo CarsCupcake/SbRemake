@@ -1,12 +1,9 @@
 package me.carscupcake.sbremake.player.hotm.impl;
 
-import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
-
-import java.util.List;
 
 public class GoblinKiller extends HotmUpgrade {
     public GoblinKiller(SkyblockPlayer player) {

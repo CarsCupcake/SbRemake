@@ -1,11 +1,9 @@
 package me.carscupcake.sbremake.command;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
-import me.carscupcake.sbremake.entity.impl.deepCaverns.SneakyCreeper;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
 import me.carscupcake.sbremake.entity.impl.spidersDen.*;
 import me.carscupcake.sbremake.entity.impl.spidersDen.arachne.Arachne;
-import me.carscupcake.sbremake.entity.slayer.zombie.RevenantHorrorI;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
@@ -14,9 +12,9 @@ import net.minestom.server.command.builder.arguments.ArgumentEnum;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.condition.Conditions;
 import net.minestom.server.coordinate.Vec;
-import net.minestom.server.entity.*;
+import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.Player;
 import net.minestom.server.utils.location.RelativeVec;
-import org.apache.cassandra.repair.PreviewRepairConflictWithIncrementalRepairException;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -48,7 +46,7 @@ public class SummonCommand extends Command {
             entity.setInstance(((Player) commandSender).getInstance(), commandContext.get(pos).fromSender(commandSender));
         } catch (Exception e) {
             e.printStackTrace(System.err);
-            commandSender.sendMessage(STR."§cAn Error occurred while executing the command! §7(\{e.getClass().getSimpleName()})");
+            commandSender.sendMessage("§cAn Error occurred while executing the command! §7(" + (e.getClass().getSimpleName()) + ")");
         }
     }
 

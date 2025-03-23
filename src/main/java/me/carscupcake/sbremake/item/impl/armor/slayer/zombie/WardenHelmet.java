@@ -55,7 +55,7 @@ public class WardenHelmet implements ISbItem, ISbItem.StatProvider, HeadWithValu
 
     @Override
     public Lore getLore() {
-        return new Lore(STR."§6Ability: Brute Force\n§7Halves your \{Stat.Speed} §7but grants §c+20% §7base weapon damage for every §a25 \{Stat.Speed}§7.");
+        return new Lore("§6Ability: Brute Force\n§7Halves your " + (Stat.Speed) + " §7but grants §c+20% §7base weapon damage for every §a25 " + (Stat.Speed) + "§7.");
     }
 
     @Override

@@ -32,7 +32,7 @@ public class HazardousMiner extends PickaxeAbility {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Grants §a+40 \{Stat.MiningSpeed}§7for each enemy withing §a20 §7blocks.");
+        return new Lore("§7Grants §a+40 " + (Stat.MiningSpeed) + "§7for each enemy withing §a20 §7blocks.");
     }
 
     @Override

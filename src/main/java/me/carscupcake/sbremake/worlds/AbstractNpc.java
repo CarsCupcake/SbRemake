@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.worlds;
 import lombok.Getter;
 import me.carscupcake.sbremake.event.PlayerInteractEvent;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.StringUtils;
 import me.carscupcake.sbremake.util.quest.Dialog;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
@@ -27,7 +26,7 @@ public abstract class AbstractNpc {
 
 
     public Dialog buildDialog() {
-        return new Dialog(STR."§e[NPC] \{name}§f:", 20);
+        return new Dialog("§e[NPC] " + (name) + "§f:", 20);
     }
 
     public AbstractNpc withInteraction(Interaction interaction) {

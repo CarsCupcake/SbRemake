@@ -1,7 +1,6 @@
 package me.carscupcake.sbremake.entity.slayer.zombie;
 
 import me.carscupcake.sbremake.Stat;
-import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.slayer.ISlayer;
 import me.carscupcake.sbremake.entity.slayer.SlayerEntity;
 import me.carscupcake.sbremake.entity.slayer.Slayers;
@@ -9,7 +8,6 @@ import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.other.slayer.zombie.FoulFlesh;
 import me.carscupcake.sbremake.item.impl.other.slayer.zombie.RevenantCatalyst;
-import me.carscupcake.sbremake.item.impl.other.slayer.zombie.RevenantFlesh;
 import me.carscupcake.sbremake.item.impl.other.slayer.zombie.UndeadCatalyst;
 import me.carscupcake.sbremake.item.impl.rune.Rune;
 import me.carscupcake.sbremake.item.impl.rune.impl.PestilenceRune;

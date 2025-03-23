@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.player.skill;
 
-import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 
 public interface SkillXpDropper {

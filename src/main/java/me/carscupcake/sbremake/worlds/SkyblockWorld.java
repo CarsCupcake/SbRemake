@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.worlds;
 
-import com.google.common.util.concurrent.Futures;
 import lombok.Getter;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.blocks.MiningBlock;
@@ -19,13 +18,11 @@ import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.GameMode;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.network.packet.server.play.DestroyEntitiesPacket;
-import net.minestom.server.network.packet.server.play.PlayerAbilitiesPacket;
 import net.minestom.server.registry.DynamicRegistry;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
@@ -43,7 +40,10 @@ import org.kohsuke.github.GitHub;
 import java.io.*;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
@@ -168,7 +168,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         if (player.isInWorldTransfer()) return;
         player.setInWorldTransfer(true);
         SkyblockWorld world = warpLocation.getWorld();
-        player.sendMessage(STR."§7Sending to \{world.getId()}");
+        player.sendMessage("§7Sending to " + (world.getId()) );
         /*if (worlds.get(world).isEmpty()) {
             WorldProvider provider = world.get();
             world.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
@@ -183,7 +183,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             provider = world.get();
         }
         if (!provider.isLoaded()) {
-            player.sendMessage(STR."§7Starting \{world.id}");
+            player.sendMessage("§7Starting " + (world.id) );
             SkyblockWorld.WorldProvider finalProvider = provider;
             provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
                 synchronized (player) {
@@ -194,7 +194,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
     }
 
     public static void sendToBest(SkyblockWorld world, SkyblockPlayer player) {
-        player.sendMessage(STR."§7Sending to \{world.getId()}");
+        player.sendMessage("§7Sending to " + (world.getId()) );
         /*if (worlds.get(world).isEmpty()) {
             WorldProvider provider = world.get();
             world.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
@@ -209,7 +209,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             provider = world.get();
         }
         if (!provider.isLoaded()) {
-            player.sendMessage(STR."§7Starting \{world.id}");
+            player.sendMessage("§7Starting " + (world.id) );
             SkyblockWorld.WorldProvider finalProvider = provider;
             provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
                 synchronized (player) {
@@ -252,7 +252,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
 
         public WorldProvider(List<Launchpad> launchpads, AbstractNpc... npcs) {
             this.npcs = (npcs == null) ? new Npc[0] : npcs;
-            id = STR."\{type().id}\{getWorlds(type()).size()}";
+            id =  (type().id) +  (getWorlds(type()).size()) ;
             this.launchpads = launchpads;
         }
 
@@ -293,7 +293,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         }
 
         protected File findWorldFolder() {
-            return new File(STR."./worlds/\{type().getId()}");
+            return new File("./worlds/" + (type().getId()) );
         }
 
         public void init(InstanceContainer container, @Nullable Runnable after) {
@@ -316,7 +316,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                     tempFolder.mkdirs();
                     AtomicReference<File> file = new AtomicReference<>();
                     try {
-                        file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent(STR."resources/worlds/\{type().getId()}.\{type().fileEnding.literal}").getDownloadUrl(), null, tempFolder));
+                        file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent("resources/worlds/" + (type().getId()) + "." + (type().fileEnding.literal) ).getDownloadUrl(), null, tempFolder));
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -381,7 +381,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                 });
                 else {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
-                    Main.LOGGER.info(STR."Relighting \{container.getChunks().size()} Chunks");
+                    Main.LOGGER.info("Relighting " + (container.getChunks().size()) + " Chunks");
                     LightingChunk.relight(container, container.getChunks());
                     container.loadChunk(spawn().chunkX(), spawn().chunkZ());
                     container.setTime(Time.tick);
@@ -392,12 +392,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                     synchronized (_lock) {
                         for (Runnable runnable : onStart) runnable.run();
                     }
-                Main.LOGGER.info(STR."Loaded \{type().getId()} Instance");
+                Main.LOGGER.info("Loaded " + (type().getId()) + " Instance");
                 loaded = true;
             } catch (Exception e) {
                 Main.LOGGER.info("A world failed to load!");
                 e.printStackTrace(System.err);
-                Main.LOGGER.trace(STR."An Error occured while loading \{type().getId()}", e);
+                Main.LOGGER.trace("An Error occured while loading " + (type().getId()) , e);
             }
             System.gc();
         }
@@ -446,7 +446,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
 
         public final void addPlayer(SkyblockPlayer player, Pos spawn) {
             if (onPlayerAdd(player)) {
-                Main.LOGGER.info(STR."Adding \{((TextComponent) player.getName()).content()} to \{type().name()}");
+                Main.LOGGER.info("Adding " + (((TextComponent) player.getName()).content()) + " to " + (type().name()) );
                 if (shutdownTask != null) {
                     shutdownTask.cancel();
                     shutdownTask = null;
@@ -521,20 +521,20 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)));
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
-            System.out.println(STR."Extracting: \{entry.getName()}");
+            System.out.println("Extracting: " + (entry.getName()) );
             int count;
             byte[] data = new byte[1024];
 
             if (entry.isDirectory()) {
-                new File(STR."\{destFolder}/\{entry.getName()}").mkdirs();
+                new File( (destFolder) + "/" + (entry.getName()) ).mkdirs();
                 continue;
             } else {
                 int di = entry.getName().lastIndexOf('/');
                 if (di != -1) {
-                    new File(STR."\{destFolder}/\{entry.getName().substring(0, di)}").mkdirs();
+                    new File( (destFolder) + "/" + (entry.getName().substring(0, di)) ).mkdirs();
                 }
             }
-            FileOutputStream fos = new FileOutputStream(STR."\{destFolder}/\{entry.getName()}");
+            FileOutputStream fos = new FileOutputStream( (destFolder) + "/" + (entry.getName()) );
             dest = new BufferedOutputStream(fos);
             while ((count = zis.read(data)) != -1) dest.write(data, 0, count);
             dest.flush();

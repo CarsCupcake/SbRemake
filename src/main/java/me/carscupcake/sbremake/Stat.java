@@ -79,6 +79,6 @@ public enum Stat {
 
     @Override
     public String toString() {
-        return STR."\{prefix}\{symbol} \{name}";
+        return  (prefix) +  (symbol) + " " + (name) ;
     }
 }

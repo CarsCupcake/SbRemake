@@ -7,7 +7,6 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.EntityAIGroup;
 import net.minestom.server.entity.metadata.other.SlimeMeta;
 import net.minestom.server.utils.time.TimeUnit;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 

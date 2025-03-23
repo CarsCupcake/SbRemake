@@ -7,7 +7,6 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.Material;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +49,7 @@ public class Terminator implements ISbItem, Shortbow, ISbItem.StatProvider, List
 
     @Override
     public Lore getLore() {
-        return new Lore(List.of("§7Shoots §b3 §7arrows at once.", "§7Can damage endermen.", "§c  ", STR."§cDivides your \{Stat.CritChance.toString()} §cby 4!"));
+        return new Lore(List.of("§7Shoots §b3 §7arrows at once.", "§7Can damage endermen.", "§c  ", "§cDivides your " + (Stat.CritChance.toString()) + " §cby 4!"));
     }
 
     @Override

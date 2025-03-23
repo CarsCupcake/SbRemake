@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.item.impl.other;
 
-import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.event.PlayerInteractEvent;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.ability.Ability;

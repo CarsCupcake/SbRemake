@@ -6,7 +6,6 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
 import me.carscupcake.sbremake.util.StringUtils;
-import org.antlr.runtime.misc.Stats;
 
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public class RagsToRiches extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7GRants §a+%b% \{Stat.MiningFortune} §7while inside a §bGlacite Mineshaft", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
+        return new Lore("§7GRants §a+%b% " + (Stat.MiningFortune) + " §7while inside a §bGlacite Mineshaft", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
     }
 
     public double getBonus(int level) {

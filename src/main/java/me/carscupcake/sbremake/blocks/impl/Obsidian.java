@@ -1,16 +1,12 @@
 package me.carscupcake.sbremake.blocks.impl;
 
 import me.carscupcake.sbremake.blocks.MiningBlock;
-import me.carscupcake.sbremake.entity.impl.end.Endermite;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.instance.block.BlockFace;
 import net.minestom.server.item.Material;
 
-import java.util.Random;
 import java.util.Set;
 
 public class Obsidian extends MiningBlock {

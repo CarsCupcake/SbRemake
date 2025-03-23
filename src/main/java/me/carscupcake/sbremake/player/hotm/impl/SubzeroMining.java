@@ -5,7 +5,6 @@ import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
-import me.carscupcake.sbremake.util.StringUtils;
 
 import java.util.Map;
 
@@ -42,7 +41,7 @@ public class SubzeroMining extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Grants §a+%b% \{Stat.MiningFortune} §7when mining §bGlacite§7.", Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore("§7Grants §a+%b% " + (Stat.MiningFortune) + " §7when mining §bGlacite§7.", Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
     }
 
     public int getBonus(int level) {

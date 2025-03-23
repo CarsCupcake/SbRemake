@@ -15,6 +15,6 @@ public record SkillRequirement(Skill skill, int level) implements Requirement {
 
     @Override
     public String display() {
-        return STR."§4❣ §cRequires §a\{skill.name()} Skill \{level}.";
+        return "§4❣ §cRequires §a" + (skill.name()) + " Skill " + (level) + ".";
     }
 }

@@ -57,9 +57,9 @@ public record PotionLore(List<String> base, Map<String, Function<Integer, String
                 color = false;
                 if (chars.contains(c)) {
                     if (c == 'r') lastFormat = "";
-                    else lastFormat += STR."§\{c}";
+                    else lastFormat += "§" + (c) ;
                 } else {
-                    lastColorCode = STR."§\{c}";
+                    lastColorCode = "§" + (c) ;
                     lastFormat = "";
                 }
             } else if (c == '§') {

@@ -2,7 +2,6 @@ package me.carscupcake.sbremake.item.impl.armor.slayer.zombie;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.entity.slayer.Slayers;
-import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
@@ -78,7 +77,7 @@ public class ReaperMask implements ISbItem, ISbItem.StatProvider, GemstoneSlots,
 
     @Override
     public Lore getLore() {
-        return new Lore(STR."§6Ability: Evil Incarnate\n§7While wearing:\n§a• §7Doubles your \{Stat.Mending}§7.\n§a• §7Doubles your \{Stat.Vitality}§7.\n§a• §7Zombie Armor triggers on all hits.\n§a• §7Store §b2 §7extra necromancer souls.\n§a• §7Summon§b2§7 more necromancy mobs.");
+        return new Lore("§6Ability: Evil Incarnate\n§7While wearing:\n§a• §7Doubles your " + (Stat.Mending) + "§7.\n§a• §7Doubles your " + (Stat.Vitality) + "§7.\n§a• §7Zombie Armor triggers on all hits.\n§a• §7Store §b2 §7extra necromancer souls.\n§a• §7Summon§b2§7 more necromancy mobs.");
     }
 
     @Override

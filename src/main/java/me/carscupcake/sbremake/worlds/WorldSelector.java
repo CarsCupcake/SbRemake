@@ -4,7 +4,6 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Set;
 
 public interface WorldSelector {
     @Nullable

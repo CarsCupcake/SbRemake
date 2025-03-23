@@ -42,7 +42,7 @@ public class LonesomeMiner extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Increases \{Stat.Strength}§7, \{Stat.CritChance}§7, \{Stat.CritDamage}§7, \{Stat.Defense}§7 and \{Stat.Health} §7stats gain by §a%p%% §7while in the Crystal Hollows.", Map.of("%p%", (_, _) -> {
+        return new Lore("§7Increases " + (Stat.Strength) + "§7, " + (Stat.CritChance) + "§7, " + (Stat.CritDamage) + "§7, " + (Stat.Defense) + "§7 and " + (Stat.Health) + " §7stats gain by §a%p%% §7while in the Crystal Hollows.", Map.of("%p%", (_, _) -> {
             return StringUtils.cleanDouble(getBonus(level), 1);
         }));
     }

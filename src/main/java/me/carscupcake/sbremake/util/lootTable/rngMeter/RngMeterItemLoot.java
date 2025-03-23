@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.util.lootTable.rngMeter;
 
-import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.entity.slayer.ISlayer;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;

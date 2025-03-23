@@ -14,6 +14,6 @@ public record SlayerRequirement(ISlayer slayer, int level) implements Requiremen
 
     @Override
     public String display() {
-        return STR."§4☠ §cRequires §5\{slayer.getName()} \{level}§c.";
+        return "§4☠ §cRequires §5" + (slayer.getName()) + " " + (level) + "§c.";
     }
 }

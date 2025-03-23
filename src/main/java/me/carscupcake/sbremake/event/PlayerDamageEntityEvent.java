@@ -6,7 +6,6 @@ import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;
-import net.minestom.server.event.trait.PlayerEvent;
 
 @Getter
 @Setter

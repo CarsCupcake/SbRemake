@@ -47,7 +47,7 @@ public class PlayerSelfDamageEvent implements CancellableEvent {
 
     public void spawnDamageTag() {
         LivingEntity e = new LivingEntity(EntityType.ARMOR_STAND);
-        e.setCustomName(Component.text(STR."§7\{StringUtils.cleanDouble(cachedDamage, 0)}"));
+        e.setCustomName(Component.text("§7" + (StringUtils.cleanDouble(cachedDamage, 0)) ));
         e.setCustomNameVisible(true);
         e.setInvisible(true);
         e.setNoGravity(true);

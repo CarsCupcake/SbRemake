@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Function;
 
 public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> modifiers, Stat stat) implements PlayerEvent {
     @Override

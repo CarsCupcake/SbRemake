@@ -8,9 +8,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.instance.Instance;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MerchantNpc extends Npc{
     public MerchantNpc(Pos pos, Instance instance, String name, PlayerSkin playerSkin, List<Pair<SbItemStack, Cost>> items) {

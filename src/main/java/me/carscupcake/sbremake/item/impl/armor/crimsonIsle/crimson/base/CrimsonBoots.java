@@ -2,14 +2,12 @@ package me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.base;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
-import me.carscupcake.sbremake.event.EntityDeathEvent;
 import me.carscupcake.sbremake.event.PlayerDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.Listener;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmorTier;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.CrimsonBootsBaseline;
-import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.CrimsonLeggingsBaseline;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.EntityUtils;

@@ -1,7 +1,6 @@
 package me.carscupcake.sbremake.util;
 
 import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.timer.Task;

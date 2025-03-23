@@ -6,8 +6,6 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
 
-import java.util.Map;
-
 public class PrecisionMining extends HotmUpgrade {
     public PrecisionMining(SkyblockPlayer player) {
         super(player, FrontLoaded.class);
@@ -40,7 +38,7 @@ public class PrecisionMining extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7When mining ores, a particle target appears on the block that increases your \{Stat.MiningSpeed} §7by §a30% §7when aiming at it.");
+        return new Lore("§7When mining ores, a particle target appears on the block that increases your " + (Stat.MiningSpeed) + " §7by §a30% §7when aiming at it.");
     }
 
     @Override
