@@ -39,6 +39,7 @@ import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscript
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
 import net.minestom.server.timer.TaskSchedule;
 import org.reflections.Reflections;
+import org.slf4j.event.Level;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -83,6 +84,11 @@ public class Main {
         MinecraftServer server = MinecraftServer.init();
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
         LOGGER = new SkyblockSimpleLogger();
+        if (System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true")) {
+            LOGGER.setLogLevel(0);
+            LOGGER.isEnabledForLevel(Level.DEBUG);
+            LOGGER.debug("Debug logging enabled");
+        }
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             System.out.println("Error occured on thread " + (t.getName()) );
             LOGGER.error("", e);
@@ -211,7 +217,7 @@ public class Main {
         SkyblockPlayer.tickLoop();
         Time.init();
         MinecraftServer.getSchedulerManager().scheduleTask(System::gc, TaskSchedule.seconds(5), TaskSchedule.minutes(5));
-        LOGGER.info(MessageFormat.format("Time to start took {0}ms", System.currentTimeMillis() - startTime));
+        LOGGER.info("Time to start took {}ms", System.currentTimeMillis() - startTime);
         if (isCracked)
             LOGGER.warn("------ Cracked Enabled - Note that this is not officially supported ------");
     }

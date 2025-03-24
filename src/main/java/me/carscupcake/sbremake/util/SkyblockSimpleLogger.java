@@ -31,6 +31,10 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
         super("Skyblock");
     }
 
+    public void setLogLevel(int level) {
+        currentLogLevel = level;
+    }
+
     @Override
     public void trace(String msg, Throwable throwable) {
         if (throwable != null) {

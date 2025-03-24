@@ -52,7 +52,7 @@ import java.util.zip.ZipInputStream;
 @Getter
 @SuppressWarnings("preview")
 public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, WorldSelector {
-    PrivateIsle("private_isle", FileEnding.ZIP){
+    PrivateIsle("private_isle", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             throw new UnsupportedOperationException();
@@ -168,7 +168,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         if (player.isInWorldTransfer()) return;
         player.setInWorldTransfer(true);
         SkyblockWorld world = warpLocation.getWorld();
-        player.sendMessage("§7Sending to " + (world.getId()) );
+        player.sendMessage("§7Sending to " + (world.getId()));
         /*if (worlds.get(world).isEmpty()) {
             WorldProvider provider = world.get();
             world.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
@@ -183,7 +183,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             provider = world.get();
         }
         if (!provider.isLoaded()) {
-            player.sendMessage("§7Starting " + (world.id) );
+            player.sendMessage("§7Starting " + (world.id));
             SkyblockWorld.WorldProvider finalProvider = provider;
             provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
                 synchronized (player) {
@@ -194,7 +194,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
     }
 
     public static void sendToBest(SkyblockWorld world, SkyblockPlayer player) {
-        player.sendMessage("§7Sending to " + (world.getId()) );
+        player.sendMessage("§7Sending to " + (world.getId()));
         /*if (worlds.get(world).isEmpty()) {
             WorldProvider provider = world.get();
             world.get().init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
@@ -209,7 +209,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             provider = world.get();
         }
         if (!provider.isLoaded()) {
-            player.sendMessage("§7Starting " + (world.id) );
+            player.sendMessage("§7Starting " + (world.id));
             SkyblockWorld.WorldProvider finalProvider = provider;
             provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> {
                 synchronized (player) {
@@ -252,7 +252,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
 
         public WorldProvider(List<Launchpad> launchpads, AbstractNpc... npcs) {
             this.npcs = (npcs == null) ? new Npc[0] : npcs;
-            id =  (type().id) +  (getWorlds(type()).size()) ;
+            id = (type().id) + (getWorlds(type()).size());
             this.launchpads = launchpads;
         }
 
@@ -293,7 +293,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         }
 
         protected File findWorldFolder() {
-            return new File("./worlds/" + (type().getId()) );
+            return new File("./worlds/" + (type().getId()));
         }
 
         public void init(InstanceContainer container, @Nullable Runnable after) {
@@ -316,7 +316,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                     tempFolder.mkdirs();
                     AtomicReference<File> file = new AtomicReference<>();
                     try {
-                        file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent("resources/worlds/" + (type().getId()) + "." + (type().fileEnding.literal) ).getDownloadUrl(), null, tempFolder));
+                        file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent("resources/worlds/" + (type().getId()) + "." + (type().fileEnding.literal)).getDownloadUrl(), null, tempFolder));
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -330,6 +330,9 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                                 while ((count = in.read(data, 0, 1024)) != -1) {
                                     fout.write(data, 0, count);
                                 }
+                                fout.flush();
+                                fout.close();
+                                in.close();
                             }
                         } else {
                             f.delete();
@@ -381,7 +384,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                 });
                 else {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
-                    Main.LOGGER.info("Relighting " + (container.getChunks().size()) + " Chunks");
+                    Main.LOGGER.info("Relighting {} Chunks", container.getChunks().size());
                     LightingChunk.relight(container, container.getChunks());
                     container.loadChunk(spawn().chunkX(), spawn().chunkZ());
                     container.setTime(Time.tick);
@@ -392,12 +395,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                     synchronized (_lock) {
                         for (Runnable runnable : onStart) runnable.run();
                     }
-                Main.LOGGER.info("Loaded " + (type().getId()) + " Instance");
+                Main.LOGGER.info("Loaded {} Instance", type().getId());
                 loaded = true;
             } catch (Exception e) {
                 Main.LOGGER.info("A world failed to load!");
                 e.printStackTrace(System.err);
-                Main.LOGGER.trace("An Error occured while loading " + (type().getId()) , e);
+                Main.LOGGER.trace("An Error occured while loading {}", type().getId(), e);
             }
             System.gc();
         }
@@ -446,7 +449,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
 
         public final void addPlayer(SkyblockPlayer player, Pos spawn) {
             if (onPlayerAdd(player)) {
-                Main.LOGGER.info("Adding " + (((TextComponent) player.getName()).content()) + " to " + (type().name()) );
+                Main.LOGGER.info("Adding " + (((TextComponent) player.getName()).content()) + " to " + (type().name()));
                 if (shutdownTask != null) {
                     shutdownTask.cancel();
                     shutdownTask = null;
@@ -496,19 +499,21 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         Map<InputStream, String> extractedMap = new HashMap<>();
 
         RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
-        RandomAccessFileInStream randomAccessFileStream = new RandomAccessFileInStream(randomAccessFile);
-        IInArchive inArchive = SevenZip.openInArchive(null, randomAccessFileStream);
+        try (RandomAccessFileInStream randomAccessFileStream = new RandomAccessFileInStream(randomAccessFile))
+        {
+            try(IInArchive inArchive = SevenZip.openInArchive(null, randomAccessFileStream)) {
+                for (ISimpleInArchiveItem item : inArchive.getSimpleInterface().getArchiveItems()) {
+                    if (!item.isFolder()) {
+                        ExtractOperationResult result = item.extractSlow(data -> {
+                            extractedMap.put(new BufferedInputStream(new ByteArrayInputStream(data)), item.getPath());
 
-        for (ISimpleInArchiveItem item : inArchive.getSimpleInterface().getArchiveItems()) {
-            if (!item.isFolder()) {
-                ExtractOperationResult result = item.extractSlow(data -> {
-                    extractedMap.put(new BufferedInputStream(new ByteArrayInputStream(data)), item.getPath());
+                            return data.length;
+                        }, "");
 
-                    return data.length;
-                }, "");
-
-                if (result != ExtractOperationResult.OK) {
-                    throw new RuntimeException(String.format("Error extracting archive. Extracting error: %s", result));
+                        if (result != ExtractOperationResult.OK) {
+                            throw new RuntimeException(String.format("Error extracting archive. Extracting error: %s", result));
+                        }
+                    }
                 }
             }
         }
@@ -518,29 +523,33 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
 
     public static void getZipFiles(String zipFile, String destFolder) throws IOException {
         BufferedOutputStream dest;
-        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)));
-        ZipEntry entry;
-        while ((entry = zis.getNextEntry()) != null) {
-            System.out.println("Extracting: " + (entry.getName()) );
-            int count;
-            byte[] data = new byte[1024];
+        try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                System.out.println("Extracting: " + (entry.getName()));
+                int count;
+                byte[] data = new byte[1024];
 
-            if (entry.isDirectory()) {
-                new File( (destFolder) + "/" + (entry.getName()) ).mkdirs();
-                continue;
-            } else {
-                int di = entry.getName().lastIndexOf('/');
-                if (di != -1) {
-                    new File( (destFolder) + "/" + (entry.getName().substring(0, di)) ).mkdirs();
+                if (entry.isDirectory()) {
+                    new File((destFolder) + "/" + (entry.getName())).mkdirs();
+                    continue;
+                } else {
+                    int di = entry.getName().lastIndexOf('/');
+                    if (di != -1) {
+                        new File((destFolder) + "/" + (entry.getName().substring(0, di))).mkdirs();
+                    }
+                }
+                try (FileOutputStream fos = new FileOutputStream((destFolder) + "/" + (entry.getName())))
+                {
+                    dest = new BufferedOutputStream(fos);
+                    while ((count = zis.read(data)) != -1) dest.write(data, 0, count);
+                    dest.flush();
+                    dest.close();
+                    new File(zipFile).delete();
                 }
             }
-            FileOutputStream fos = new FileOutputStream( (destFolder) + "/" + (entry.getName()) );
-            dest = new BufferedOutputStream(fos);
-            while ((count = zis.read(data)) != -1) dest.write(data, 0, count);
-            dest.flush();
-            dest.close();
-            new File(zipFile).delete();
         }
+
     }
 
     @Getter

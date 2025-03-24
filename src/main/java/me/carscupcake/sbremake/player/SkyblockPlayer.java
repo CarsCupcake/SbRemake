@@ -65,6 +65,8 @@ import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.*;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.inventory.AbstractInventory;
+import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
@@ -82,6 +84,7 @@ import net.minestom.server.scoreboard.Sidebar;
 import net.minestom.server.tag.Tag;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
+import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -97,7 +100,7 @@ import java.util.function.UnaryOperator;
 
 @Slf4j
 @Getter
-@SuppressWarnings({"unused", "preview", "UnstableApiUsage"})
+@SuppressWarnings({"unused", "UnstableApiUsage"})
 public class SkyblockPlayer extends Player {
     private static final UUID speedUUID = UUID.randomUUID();
     private static final Set<Class<? extends ISbItem>> COIN_ITEMS = Set.of(CoinItem1.class, CoinItem10.class, CoinItem100.class, CoinItem1000.class, CoinItem2000.class, CoinItem5000.class);
@@ -393,8 +396,9 @@ public class SkyblockPlayer extends Player {
                     event.setCancelled(true);
                 }
             }).addListener(InventoryClickEvent.class, event -> {
-                if (event.getInventory() != null || (event.getSlot() < 41 || event.getSlot() > 44)) return;
-                ((SkyblockPlayer) event.getPlayer()).recalculateArmor();
+                if (event.getInventory() == null && (event.getClickType() == ClickType.SHIFT_CLICK || (event.getSlot() >= 41 && event.getSlot() <= 44))) {
+                    MinecraftServer.getSchedulerManager().buildTask(() ->((SkyblockPlayer) event.getPlayer()).recalculateArmor()).delay(1, TimeUnit.SERVER_TICK).schedule();
+                }
             }).addListener(PlayerDisconnectEvent.class, event -> {
                 SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
                 player.save();
@@ -411,7 +415,6 @@ public class SkyblockPlayer extends Player {
                 if (stack.sbItem() instanceof SkyblockMenu) {
                     event.setCancelled(true);
                     ((SkyblockPlayer) event.getPlayer()).openSkyblockMenu();
-                    return;
                 }
                 //Todo make item drop
             }).addListener(PlayerMoveEvent.class, event -> {
@@ -1208,21 +1211,8 @@ public class SkyblockPlayer extends Player {
         EntityMeleeDamagePlayerEvent event = new EntityMeleeDamagePlayerEvent(entity, this);
         MinecraftServer.getGlobalEventHandler().call(event);
         if (event.isCancelled()) return;
-        double damage = event.calculateDamage();
-        double totalDamage = damage;
-        event.spawnDamageTag();
-        if (absorption > 0) {
-            if (absorption - damage <= 0) {
-                damage -= absorption;
-                absorption = 0;
-            } else {
-                absorption -= damage;
-                damage = 0;
-            }
-            updateHpBar();
-        }
-        setSbHealth(getSbHealth() - damage);
-        if (totalDamage >= 1) {
+        dealDamage(event);
+        if (event.getCachedDamage() >= 1) {
             sendPacket(new DamageEventPacket(getEntityId(), 0, entity.getEntityId(), 0, getPosition()));
             if (hasKb() && withKnockback) {
                 this.takeKnockback(0.4f, Math.sin(entity.getPosition().yaw() * 0.017453292), -Math.cos(entity.getPosition().yaw() * 0.017453292));
@@ -1235,19 +1225,7 @@ public class SkyblockPlayer extends Player {
         MinecraftServer.getGlobalEventHandler().call(event);
         if (event.isCancelled()) return;
         sendPacket(new DamageEventPacket(getEntityId(), 0, entity.getEntityId(), 0, getPosition()));
-        double damage = event.calculateDamage();
-        event.spawnDamageTag();
-        if (absorption > 0) {
-            if (absorption - damage <= 0) {
-                damage -= absorption;
-                absorption = 0;
-            } else {
-                absorption -= damage;
-                damage = 0;
-            }
-            updateHpBar();
-        }
-        setSbHealth(getSbHealth() - damage);
+        dealDamage(event);
         if (hasKb()) {
             this.takeKnockback(0.4f, Math.sin(entity.getPosition().yaw() * 0.017453292), -Math.cos(entity.getPosition().yaw() * 0.017453292));
         }
@@ -1258,6 +1236,10 @@ public class SkyblockPlayer extends Player {
         MinecraftServer.getGlobalEventHandler().call(event);
         if (event.isCancelled()) return;
         sendPacket(new DamageEventPacket(getEntityId(), 0, getEntityId(), 0, getPosition()));
+        dealDamage(event);
+    }
+
+    private void dealDamage(IDamageEvent event) {
         double finalDamage = event.calculateDamage();
         event.spawnDamageTag();
         if (absorption > 0) {
@@ -1283,10 +1265,14 @@ public class SkyblockPlayer extends Player {
     }
 
     public void recalculateArmor() {
+        recalculateArmor(getInventory());
+    }
+    public void recalculateArmor(AbstractInventory inventory) {
+        Main.LOGGER.debug("Recalculate Armor");
         Map<FullSetBonus, Integer> copy = new HashMap<>(fullSetBonuses);
         fullSetBonuses.clear();
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
-            SbItemStack stack = SbItemStack.from(getInventory().getItemStack(slot.armorSlot()));
+            SbItemStack stack = SbItemStack.from(inventory.getItemStack(slot.armorSlot()));
             if (stack == null) continue;
             for (Ability ability : stack.getAbilities(this))
                 if (ability instanceof FullSetBonus fullSetBonus)
@@ -1300,21 +1286,24 @@ public class SkyblockPlayer extends Player {
             if (neu == old) continue;
             if (neu < bonus.getMinPieces() && old >= bonus.getMinPieces()) {
                 bonus.stop(this);
+                Main.LOGGER.debug("Stopping {}", bonus.toString());
                 continue;
             }
             if (old < bonus.getMinPieces() && neu >= bonus.getMinPieces()) {
                 bonus.start(this);
+                Main.LOGGER.debug("Starting {}", bonus.toString());
                 continue;
             }
             if (neu >= bonus.getMinPieces()) {
                 bonus.stop(this);
                 bonus.start(this);
+                Main.LOGGER.debug("Restarting {}", bonus.toString());
             }
         }
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
-            SbItemStack stack = SbItemStack.from(getInventory().getItemStack(slot.armorSlot()));
+            SbItemStack stack = SbItemStack.from(inventory.getItemStack(slot.armorSlot()));
             if (stack == null) continue;
-            getInventory().setItemStack(slot.armorSlot(), stack.update(this).item());
+            inventory.setItemStack(slot.armorSlot(), stack.update(this).item());
         }
     }
 

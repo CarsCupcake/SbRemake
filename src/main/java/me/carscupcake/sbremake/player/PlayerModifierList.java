@@ -8,6 +8,7 @@ import net.minestom.server.timer.Task;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.function.Consumer;
 
 public class PlayerModifierList {
