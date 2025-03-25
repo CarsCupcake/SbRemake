@@ -197,6 +197,10 @@
             <id>jitpack</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>enginhub</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
     </repositories>
     <dependencyManagement>
         <dependencies>
@@ -367,6 +371,21 @@
             <groupId>com.github.f4b6a3</groupId>
             <artifactId>uuid-creator</artifactId>
             <version>6.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.enginehub.lin-bus</groupId>
+            <artifactId>lin-bus-tree</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.enginehub.lin-bus</groupId>
+            <artifactId>lin-bus-common</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.enginehub.lin-bus</groupId>
+            <artifactId>lin-bus-stream</artifactId>
+            <version>0.2.0</version>
         </dependency>
     </dependencies>
 </project>

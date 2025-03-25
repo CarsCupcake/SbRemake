@@ -7,6 +7,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.worlds.*;
 import me.carscupcake.sbremake.worlds.region.Region;
+import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.event.Event;
@@ -129,7 +130,17 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
 
     @Override
     public Region[] regions() {
-        return new Region[0];
+        return new Region[]{new Region() {
+            @Override
+            public boolean isInRegion(Point pos) {
+                return true;
+            }
+
+            @Override
+            public String name() {
+                return "§aYour Island";
+            }
+        }};
     }
 
     @Override
