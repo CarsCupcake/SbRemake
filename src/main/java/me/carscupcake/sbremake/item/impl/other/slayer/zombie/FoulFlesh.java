@@ -2,7 +2,6 @@ package me.carscupcake.sbremake.item.impl.other.slayer.zombie;
 
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
-import me.carscupcake.sbremake.item.ItemStackModifiers;
 import me.carscupcake.sbremake.item.ItemType;
 import net.minestom.server.item.Material;
 

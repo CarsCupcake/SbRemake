@@ -1,20 +1,15 @@
 package me.carscupcake.sbremake.entity.goal;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.ai.GoalSelector;
-import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.utils.position.PositionUtils;
 import net.minestom.server.utils.time.Cooldown;
 import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
-import java.time.temporal.TemporalUnit;
 import java.util.Random;
 
 public class SlimeAttackGoal extends GoalSelector {

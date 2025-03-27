@@ -40,7 +40,7 @@ public class MiningFortune extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Grants §a+%a% \{Stat.MiningFortune}", Map.of("%a%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore("§7Grants §a+%a% " + (Stat.MiningFortune) , Map.of("%a%", (_, _) -> String.valueOf(getBonus(level))));
     }
 
     public int getBonus(int level) {

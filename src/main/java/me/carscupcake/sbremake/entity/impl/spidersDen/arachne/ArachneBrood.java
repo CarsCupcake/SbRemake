@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.entity.impl.spidersDen.arachne;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.worlds.impl.SpidersDen;
 import net.minestom.server.entity.EntityType;
-import org.jetbrains.annotations.NotNull;
 
 public class ArachneBrood extends SkyblockEntity {
     private final Arachne parent;

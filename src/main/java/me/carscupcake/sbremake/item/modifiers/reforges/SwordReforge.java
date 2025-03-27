@@ -103,7 +103,7 @@ public enum SwordReforge implements Reforge {
     },
     Fabled(Map.of(Stat.Strength, new RarityStat(30, 35, 40, 50, 60, 75),
             Stat.CritDamage, new RarityStat(15, 20, 25, 32, 40, 50)), new Lore("§7Critical hits have a chance to deal up to §a+15%§7 extra damage.")),
-    Withered(new HashMap<>(), new Lore(STR."§7Grants §a+1 \{Stat.Strength} §7per §cCatacombs §7level.")) {
+    Withered(new HashMap<>(), new Lore("§7Grants §a+1 " + (Stat.Strength) + " §7per §cCatacombs §7level.")) {
         private final RarityStat strength = new RarityStat(60, 75, 90, 110, 135, 170);
 
         @Override

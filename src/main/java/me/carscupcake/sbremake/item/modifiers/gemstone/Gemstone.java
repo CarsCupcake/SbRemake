@@ -146,18 +146,18 @@ public interface Gemstone {
             GemstoneSlot slot = gemstoneSlots[i];
             if (slot.unlocked()) {
                 if (slot.gemstone() == null) {
-                    ItemBuilder builder = new ItemBuilder(slot.type().getGlassPane()).setName(STR."\{slot.type().getPrefix()}\{slot.type().getPrefix()}\{slot.type().name()} Gemstone Slot").addLore("§7Click §aany Gemstone §7of any quality in your inventoryto apply this item!\n \nApplicable Gemstones");
+                    ItemBuilder builder = new ItemBuilder(slot.type().getGlassPane()).setName( (slot.type().getPrefix()) +  (slot.type().getPrefix()) +  (slot.type().name()) + " Gemstone Slot").addLore("§7Click §aany Gemstone §7of any quality in your inventoryto apply this item!\n \nApplicable Gemstones");
                     for (Gemstone.Type type : slot.type().getTypes())
-                        builder.addLoreRow(STR."\{type.getPrefix()}\{type.name()} Gemstone");
+                        builder.addLoreRow( (type.getPrefix()) +  (type.name()) + " Gemstone");
                     inventory.setItemStack(slots[i], builder.build());
                 } else {
                     ItemBuilder builder = new ItemBuilder(slot.gemstone().asItem().create().item());
-                    inventory.setItemStack(slots[i], builder.addAllLore("§c  ", "§7Cost", STR."§6\{StringUtils.toFormatedNumber(slot.gemstone().quality().cost)} Coins").build());
+                    inventory.setItemStack(slots[i], builder.addAllLore("§c  ", "§7Cost", "§6" + (StringUtils.toFormatedNumber(slot.gemstone().quality().cost)) + " Coins").build());
                 }
             } else {
-                ItemBuilder builder = new ItemBuilder(slot.type().getGlassPane()).setName(STR."\{slot.type().getPrefix()}\{slot.type().getPrefix()}\{slot.type().name()} Gemstone Slot").addLore(STR."§7This slot is locked! Purchasing this slot allows you to apply a \{slot.type().getPrefix()}\{slot.type().getSymbol()} \{slot.type().name()} Gemsotne §7 to it!\n \nApplicable Gemstones");
+                ItemBuilder builder = new ItemBuilder(slot.type().getGlassPane()).setName( (slot.type().getPrefix()) +  (slot.type().getPrefix()) +  (slot.type().name()) + " Gemstone Slot").addLore("§7This slot is locked! Purchasing this slot allows you to apply a " + (slot.type().getPrefix()) +  (slot.type().getSymbol()) + " " + (slot.type().name()) + " Gemsotne §7 to it!\n \nApplicable Gemstones");
                 for (Gemstone.Type type : slot.type().getTypes())
-                    builder.addLoreRow(STR."\{type.getPrefix()}\{type.name()} Gemstone");
+                    builder.addLoreRow( (type.getPrefix()) +  (type.name()) + " Gemstone");
                 builder.addAllLore("§8 ", "§7Cost");
                 for (Cost costs : gemstoneSlot.getLockedSlotCost()[i]) {
                     builder = costs.appendToLore(builder);

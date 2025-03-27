@@ -1,6 +1,6 @@
 package me.carscupcake.sbremake.blocks;
 
-import kotlin.Pair;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -9,7 +9,10 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 public record Crop(Block block, Map<ISbItem, Pair<Integer, Integer>> drop, double xp, @Nullable Stat cropFortune) {
     public static final Set<Crop> crops = Set.of(new Crop(Block.WHEAT, Map.of(ISbItem.get(Material.WHEAT), new Pair<>(1, 1), ISbItem.get(Material.WHEAT_SEEDS), new Pair<>(2, 2)), 4, Stat.WheatFortune),

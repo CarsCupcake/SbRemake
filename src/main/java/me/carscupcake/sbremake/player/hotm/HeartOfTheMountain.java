@@ -103,7 +103,7 @@ public class HeartOfTheMountain {
                 if (level == 7) tokenOfTheMountain++;
             }
             //TODO level up message
-            player.sendMessage(STR."§5Hotm§f level \{level}");
+            player.sendMessage("§5Hotm§f level " + (level) );
         }
     }
 
@@ -140,11 +140,11 @@ public class HeartOfTheMountain {
             item.set(i * 9, new ItemBuilder(level == this.level + 1 ? Material.YELLOW_STAINED_GLASS_PANE : (level > this.level) ? Material.RED_STAINED_GLASS_PANE : Material.LIME_STAINED_GLASS_PANE)
                     .addLoreIf(() -> level > this.level, lockedLore)
                     .addLoreIf(() -> level <= this.level, unlockedLore)
-                    .setName(STR."\{level <= this.level ? "§a" : (level == this.level + 1 ? "§e" : "§c")}Tier \{level}")
+                    .setName( (level <= this.level ? "§a" : (level == this.level + 1 ? "§e" : "§c")) + "Tier " + (level) )
                     .build());
         }
 
-        OversizedGui gui = new OversizedGui(item, OversizedGui.StartingPosition.Bottom, "Heart of the Mountain", 8, 53);
+        OversizedGui gui = OversizedGui.createGui(item, OversizedGui.StartingPosition.Bottom, "Heart of the Mountain", 8, 53);
         gui.setCancelled(true);
         gui.setClose(45);
         gui.addStatic(46, TemplateItems.EmptySlot.getItem());
@@ -183,10 +183,10 @@ public class HeartOfTheMountain {
                     } else {
                         if (event.getClickType() == ClickType.RIGHT_CLICK && !(upgrade instanceof PickaxeAbility) && !(upgrade instanceof PeakOfTheMountain)) {
                             if (upgrade.isEnabled()) {
-                                player.sendMessage(STR."§cDisabled \{upgrade.getName()}");
+                                player.sendMessage("§cDisabled " + (upgrade.getName()) );
                                 upgrade.setEnabled(false);
                             } else {
-                                player.sendMessage(STR."§aEnabled \{upgrade.getName()}");
+                                player.sendMessage("§aEnabled " + (upgrade.getName()) );
                                 upgrade.setEnabled(true);
                             }
                             player.playSound(SoundType.BLOCK_NOTE_BLOCK_PLING.create(1, 2));
@@ -200,7 +200,7 @@ public class HeartOfTheMountain {
                                     player.sendMessage("§cYou have selected this as your pickaxe ability!");
                                 else {
                                     this.activeAbility = ability;
-                                    player.sendMessage(STR."§aYou have selected §e\{ability.getName()} §aas your Pickaxe Ability. This ability will apply to all of your pickaxes!");
+                                    player.sendMessage("§aYou have selected §e" + (ability.getName()) + " §aas your Pickaxe Ability. This ability will apply to all of your pickaxes!");
                                     updateAfterUpgrade(upgrade, slot, gui);
                                 }
                             } else
@@ -218,7 +218,7 @@ public class HeartOfTheMountain {
                                 upgrade.level += shift ? Math.min(upgrade.getMaxLevel() - upgrade.getLevel(), 10) : 1;
                                 updateAfterUpgrade(upgrade, slot, gui);
                             } else {
-                                player.sendMessage(STR."§cYou dont have enough \{upgrade.upgradeType(upgrade.level).getName()} Powder!");
+                                player.sendMessage("§cYou dont have enough " + (upgrade.upgradeType(upgrade.level).getName()) + " Powder!");
                             }
                         }
                     }
@@ -233,7 +233,7 @@ public class HeartOfTheMountain {
     private ItemStack buildHotmDiplayItem() {
         return new ItemBuilder(Material.PLAYER_HEAD)
                 .setName("§5Heart of the Mountain")
-                .addAllLore(STR."§7Token of the Mountain: §5\{tokenOfTheMountain}",
+                .addAllLore("§7Token of the Mountain: §5" + (tokenOfTheMountain) ,
                         " ",
                         "§8Use §5Token of the Mountain",
                         "§8to unlock perks and abilities",
@@ -245,9 +245,9 @@ public class HeartOfTheMountain {
                         "§2Mines §8and are used to upgrade",
                         "§8the perks you've unlocked!",
                         "   ",
-                        STR."§7Mithril Powder: §2\{player.getPowder(Powder.MithrilPowder)}",
-                        STR."§7Gemstone Powder: §d\{player.getPowder(Powder.GemstonePowder)}",
-                        STR."§7Glacial Powder: §b\{player.getPowder(Powder.GlacialPowder)}")
+                        "§7Mithril Powder: §2" + (player.getPowder(Powder.MithrilPowder)) ,
+                        "§7Gemstone Powder: §d" + (player.getPowder(Powder.GemstonePowder)) ,
+                        "§7Glacial Powder: §b" + (player.getPowder(Powder.GlacialPowder)) )
                 .setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZmMDZlYWEzMDA0YWVlZDA5YjNkNWI0NWQ5NzZkZTU4NGU2OTFjMGU5Y2FkZTEzMzYzNWRlOTNkMjNiOWVkYiJ9fX0=")
                 .build();
     }

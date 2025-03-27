@@ -44,7 +44,7 @@ public class FarmingSkill extends ISkill {
     public FarmingSkill(SkyblockPlayer player) {
         super(player, "farming", Material.GOLDEN_HOE, Material.HAY_BLOCK,
                 new Lore(List.of("§7Harvest crops and shear sheep to", "§7earn Farming XP!", "§7 ",
-                        "§eFarmhand %level%", STR." §fGrants §a%bonus%% \{Stat.FarmingFortune}§f, which", " §fincreases your chance for", " §fmultiple crops"), Map.of(
+                        "§eFarmhand %level%", " §fGrants §a%bonus%% " + (Stat.FarmingFortune) + "§f, which", " §fincreases your chance for", " §fmultiple crops"), Map.of(
                         "%level%", (_, _) -> StringUtils.toRoman(player.getSkill(Skill.Farming).getLevel()),
                         "%bonus%", (_, _) -> {
                             int level = player.getSkill(Skill.Farming).getLevel();
@@ -81,8 +81,8 @@ public class FarmingSkill extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of(STR."§eFarmhand \{StringUtils.toRoman(level)}", STR." §fGrants \{(level == 0) ? "" : STR."§8\{4 * (level - 1)}➜"}§a\{4 * level} \{Stat.FarmingFortune}§f, which",
-                    " §fincreases your chance for", " §fmultiple crops", STR."§8+ §a\{(level < 15) ? 2 : (level < 20) ? 3 : (level <= 25) ? 4 : 5} \{Stat.Health}"));
+            return new Lore(List.of("§eFarmhand " + (StringUtils.toRoman(level)) , " §fGrants " + ((level == 0) ? "" : "§8" + (4 * (level - 1)) + "➜") + "§a" + (4 * level) + " " + (Stat.FarmingFortune) + "§f, which",
+                    " §fincreases your chance for", " §fmultiple crops", "§8+ §a" + ((level < 15) ? 2 : (level < 20) ? 3 : (level <= 25) ? 4 : 5) + " " + (Stat.Health) ));
         }
     }
 }

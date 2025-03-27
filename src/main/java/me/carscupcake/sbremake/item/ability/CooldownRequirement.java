@@ -29,7 +29,7 @@ public record CooldownRequirement<T extends PlayerEvent>(long cooldown, Temporal
                 return true;
             }
             int seconds = (int) ((delta * -1) / 1000d);
-             t.getPlayer().sendMessage(STR."§cThe ability is on Cooldown for \{seconds}s.");
+             t.getPlayer().sendMessage("§cThe ability is on Cooldown for " + (seconds) + "s.");
             return false;
         }
         return true;

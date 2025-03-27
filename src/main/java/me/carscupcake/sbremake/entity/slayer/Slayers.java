@@ -4,7 +4,6 @@ import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.slayer.zombie.*;
 import me.carscupcake.sbremake.entity.slayer.zombie.minibosses.*;
 import me.carscupcake.sbremake.item.Requirement;
-import me.carscupcake.sbremake.item.impl.other.slayer.zombie.FoulFlesh;
 import me.carscupcake.sbremake.item.requirements.SkillRequirement;
 import me.carscupcake.sbremake.item.requirements.SlayerRequirement;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -13,7 +12,6 @@ import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
-import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerLootTable;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerRngMeter;
 import net.kyori.adventure.sound.Sound;
 import net.minestom.server.coordinate.Pos;
@@ -41,7 +39,7 @@ public enum Slayers implements ISlayer{
                 case 3 -> new RevenantHorrorIII(player);
                 case 4 -> new RevenantHorrorIV(player);
                 case 5 -> new RevenantHorrorV(player);
-                default -> throw new IllegalArgumentException(STR."Zombie Slayer Tier \{tier} does not exsist");
+                default -> throw new IllegalArgumentException("Zombie Slayer Tier " + (tier) + " does not exsist");
             };
         }
 
@@ -144,7 +142,7 @@ public enum Slayers implements ISlayer{
                 case 3 -> 20_000;
                 case 4 -> 50_000;
                 case 5 -> 100_000;
-                default -> throw new IllegalStateException(STR."Tier \{tier} does not exist!");
+                default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
             };
             if (coinCost > player.getCoins()) {
                 player.sendMessage("§cNot enough Coins");
@@ -161,7 +159,7 @@ public enum Slayers implements ISlayer{
                 case 3 -> 2_400;
                 case 4 -> 4_800;
                 case 5 -> 6_000;
-                default -> throw new IllegalStateException(STR."Tier \{tier} does not exist!");
+                default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
             }));
             player.playSound(SoundType.ENTITY_ENDER_DRAGON_GROWL, Sound.Source.PLAYER, 1, 1);
             return true;

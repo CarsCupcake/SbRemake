@@ -30,7 +30,7 @@ public class LapisLazuliOre extends MiningBlock {
 
     @Override
     public Set<SbItemStack> getDrops(SkyblockPlayer player) {
-        SbItemStack item = SbItemStack.from(player.getItemInHand(Player.Hand.MAIN));
+        SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
         boolean b = item != null && item.getEnchantmentLevel(NormalEnchantment.SilkTouch) > 0;
         return Set.of(withMiningFortune(ISbItem.get(b ? Material.LAPIS_ORE : Material.LAPIS_LAZULI), b ? 1 : (4 + new Random().nextInt(6)), player));
     }

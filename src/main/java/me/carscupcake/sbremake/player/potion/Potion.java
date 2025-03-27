@@ -45,7 +45,7 @@ public enum Potion implements IPotion {
                 default -> (level - 2) * 50;
             };
         }
-    }, Adrenaline("Adrenaline", "§c", new Color(13458603), new PotionLore(STR."§7Grants §a+%b% §7of §6❤ Absorption§7 and §a+%s% \{Stat.Speed.toString()}§7.", Map.of("%b%", level -> {
+    }, Adrenaline("Adrenaline", "§c", new Color(13458603), new PotionLore("§7Grants §a+%b% §7of §6❤ Absorption§7 and §a+%s% " + (Stat.Speed.toString()) + "§7.", Map.of("%b%", level -> {
         if (level < 6) return String.valueOf(level * 20);
         return switch (level) {
             case 6 -> "150";
@@ -78,42 +78,42 @@ public enum Potion implements IPotion {
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.Speed, new PlayerStatEvent.BasicModifier("Adrenaline", level * 5, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, Agility("Agility", "§5", new Color(0x0000ff), new PotionLore(STR."§7Grants §a+%b% \{Stat.Speed}§7 and increases the chance for mob attacks to miss by §a%s%%§7.", Map.of("%b%", level -> String.valueOf(level * 10), "%s%", integer -> String.valueOf(integer * 10))), 4) {
+    }, Agility("Agility", "§5", new Color(0x0000ff), new PotionLore("§7Grants §a+%b% " + (Stat.Speed) + "§7 and increases the chance for mob attacks to miss by §a%s%%§7.", Map.of("%b%", level -> String.valueOf(level * 10), "%s%", integer -> String.valueOf(integer * 10))), 4) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.Speed, new PlayerStatEvent.BasicModifier(name(), level * 10, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, AlchemyXPBoost("Alchemy XP Boost", "§a", new Color(0x0000ff), new PotionLore(STR."§7Grants §a+%b% \{Stat.AlchemyWisdom}§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
+    }, AlchemyXPBoost("Alchemy XP Boost", "§a", new Color(0x0000ff), new PotionLore("§7Grants §a+%b% " + (Stat.AlchemyWisdom) + "§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.AlchemyWisdom, new PlayerStatEvent.BasicModifier(name(), level == 1 ? 5 : ((level - 1) * 10), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, CombatXPBoost("Combat XP Boost", "§a", new Color(0x0000ff), new PotionLore(STR."§7Grants §a+%b% \{Stat.CombatWisdom}§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
+    }, CombatXPBoost("Combat XP Boost", "§a", new Color(0x0000ff), new PotionLore("§7Grants §a+%b% " + (Stat.CombatWisdom) + "§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.CombatWisdom, new PlayerStatEvent.BasicModifier(name(), level == 1 ? 5 : ((level - 1) * 10), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, EnchantingXPBoost("Enchanting XP Boost", "§a", new Color(0x0000ff), new PotionLore(STR."§7Grants §a+%b% \{Stat.EnchantingWisdom}§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
+    }, EnchantingXPBoost("Enchanting XP Boost", "§a", new Color(0x0000ff), new PotionLore("§7Grants §a+%b% " + (Stat.EnchantingWisdom) + "§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.EnchantingWisdom, new PlayerStatEvent.BasicModifier(name(), level == 1 ? 5 : ((level - 1) * 10), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, FarmingXPBoost("Farming XP Boost", "§a", new Color(0x0000ff), new PotionLore(STR."§7Grants §a+%b% \{Stat.FarmingFortune}§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
+    }, FarmingXPBoost("Farming XP Boost", "§a", new Color(0x0000ff), new PotionLore("§7Grants §a+%b% " + (Stat.FarmingFortune) + "§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.FarmingFortune, new PlayerStatEvent.BasicModifier(name(), level == 1 ? 5 : ((level - 1) * 10), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, FishingXPBoost("Fishing XP Boost", "§a", new Color(0x0000ff), new PotionLore(STR."§7Grants §a+%b% \{Stat.FishingWisdom}§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
+    }, FishingXPBoost("Fishing XP Boost", "§a", new Color(0x0000ff), new PotionLore("§7Grants §a+%b% " + (Stat.FishingWisdom) + "§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.FishingWisdom, new PlayerStatEvent.BasicModifier(name(), level == 1 ? 5 : ((level - 1) * 10), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, ForagingXPBoost("Foraging XP Boost", "§a", new Color(0x0000ff), new PotionLore(STR."§7Grants §a+%b% \{Stat.ForagingWisdom}§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
+    }, ForagingXPBoost("Foraging XP Boost", "§a", new Color(0x0000ff), new PotionLore("§7Grants §a+%b% " + (Stat.ForagingWisdom) + "§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.ForagingWisdom, new PlayerStatEvent.BasicModifier(name(), level == 1 ? 5 : ((level - 1) * 10), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, MiningXPBoost("Mining XP Boost", "§a", new Color(0x0000ff), new PotionLore(STR."§7Grants §a+%b% \{Stat.MiningWisdom}§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
+    }, MiningXPBoost("Mining XP Boost", "§a", new Color(0x0000ff), new PotionLore("§7Grants §a+%b% " + (Stat.MiningWisdom) + "§7.", Map.of("%b%", level -> String.valueOf(level == 1 ? 5 : ((level - 1) * 10)))), 3) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.MiningWisdom, new PlayerStatEvent.BasicModifier(name(), level == 1 ? 5 : ((level - 1) * 10), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
@@ -128,12 +128,12 @@ public enum Potion implements IPotion {
         public net.minestom.server.potion.PotionEffect getVanillaEffect() {
             return net.minestom.server.potion.PotionEffect.BLINDNESS;
         }
-    }, ColdResistance("Cold Resistance", "§b", new Color(0x7F8392), new PotionLore(STR."§7Gain §b+%b% \{Stat.ColdResistance}", "%b%", integer -> StringUtils.cleanDouble(2.5 * integer)), 4) {
+    }, ColdResistance("Cold Resistance", "§b", new Color(0x7F8392), new PotionLore("§7Gain §b+%b% " + (Stat.ColdResistance) , "%b%", integer -> StringUtils.cleanDouble(2.5 * integer)), 4) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.ColdResistance, new PlayerStatEvent.BasicModifier("Cold Resistance", level * 2.5, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, Critical("Critical", "§4", new Color(0x271514), new PotionLore(STR."§7Increases §9☣Crit Chance§7 by §a%cc%%§7 and §9☠Crit Damage§7 by §a%cd%%§7.", Map.of("%cc%", integer -> String.valueOf(5 + (5 * integer)), "%cd%", integer -> String.valueOf(10 * integer))), 4) {
+    }, Critical("Critical", "§4", new Color(0x271514), new PotionLore("§7Increases §9☣Crit Chance§7 by §a%cc%%§7 and §9☠Crit Damage§7 by §a%cd%%§7.", Map.of("%cc%", integer -> String.valueOf(5 + (5 * integer)), "%cd%", integer -> String.valueOf(10 * integer))), 4) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.CritChance, new PlayerStatEvent.BasicModifier("Critical", 5 + (5 * level), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion), Stat.CritDamage, new PlayerStatEvent.BasicModifier("Critical", 10 * level, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
@@ -166,17 +166,17 @@ public enum Potion implements IPotion {
         public boolean isInstant() {
             return true;
         }
-    }, DoucePluieDeStinkyCheese("Douce Pluie de Stinky Cheese", "§e", new Color(16750848), new PotionLore(STR."§7Gain §a+20 \{Stat.BonusPestChance}§7."), 1) {
+    }, DoucePluieDeStinkyCheese("Douce Pluie de Stinky Cheese", "§e", new Color(16750848), new PotionLore("§7Gain §a+20 " + (Stat.BonusPestChance) + "§7."), 1) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.BonusPestChance, new PlayerStatEvent.BasicModifier(name(), 20, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, HarvestHarbinger("Harvest Harbinger", "§6", new Color(16750848), new PotionLore(STR."§7Gain §a+50 \{Stat.FarmingFortune}§7."), 5) {
+    }, HarvestHarbinger("Harvest Harbinger", "§6", new Color(16750848), new PotionLore("§7Gain §a+50 " + (Stat.FarmingFortune) + "§7."), 5) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.FarmingFortune, new PlayerStatEvent.BasicModifier(name(), 50, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, Haste("Haste", "§e", new Color(0xD9C043), new PotionLore(STR."§7Gain §a+%b% \{Stat.MiningSpeed}§7.", "%b%", integer -> String.valueOf(50 * integer)), 4) {
+    }, Haste("Haste", "§e", new Color(0xD9C043), new PotionLore("§7Gain §a+%b% " + (Stat.MiningSpeed) + "§7.", "%b%", integer -> String.valueOf(50 * integer)), 4) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.MiningSpeed, new PlayerStatEvent.BasicModifier(name(), 50 * level, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
@@ -196,7 +196,7 @@ public enum Potion implements IPotion {
                 player.sendPacket(new RemoveEntityEffectPacket(player.getEntityId(), net.minestom.server.potion.PotionEffect.HASTE));
 
         }
-    }, Healing("Healing", "§c", new Color(16262179), new PotionLore(STR."§7Instantly heals §c%d% \{Stat.Health}", "%d%", integer -> switch (integer) {
+    }, Healing("Healing", "§c", new Color(16262179), new PotionLore("§7Instantly heals §c%d% " + (Stat.Health) , "%d%", integer -> switch (integer) {
         case 1 -> "20";
         case 2 -> "50";
         case 3 -> "100";
@@ -235,7 +235,7 @@ public enum Potion implements IPotion {
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.MagicFind, new PlayerStatEvent.BasicModifier(getName(), level == 1 ? 10 : ((level - 1) * 25), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, Mana("Mana", "§9", new Color(2039713), new PotionLore(STR."§7Grants §b+%b% \{Stat.Intelligence.getSymbol()} Mana§7 per second.", "%b%", String::valueOf), 8),
+    }, Mana("Mana", "§9", new Color(2039713), new PotionLore("§7Grants §b+%b% " + (Stat.Intelligence.getSymbol()) + " Mana§7 per second.", "%b%", String::valueOf), 8),
     MushedGlowyTonic("Mushed Glowy Tonic", "§2", new Color(2293580), new PotionLore("§7Grants §b+30 ☂Fishing Speed§7."), 1) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
@@ -251,7 +251,7 @@ public enum Potion implements IPotion {
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.PetLuck, new PlayerStatEvent.BasicModifier(getName(), 5 * level, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, Rabbit("Rabbit", "§b", new Color(5017135), new PotionLore(STR."§7Grants Jump Boost %jb% and §a+%b% \{Stat.Speed} §7.", Map.of("%jb%", integer -> switch (integer) {
+    }, Rabbit("Rabbit", "§b", new Color(5017135), new PotionLore("§7Grants Jump Boost %jb% and §a+%b% " + (Stat.Speed) + " §7.", Map.of("%jb%", integer -> switch (integer) {
         case 1, 2 -> "I";
         case 3, 4 -> "II";
         default -> "III";
@@ -290,33 +290,33 @@ public enum Potion implements IPotion {
             if (jumpBoost != null && jumpBoost.amplifier() >= jumpBoostLevel) return;
             player.sendPacket(new RemoveEntityEffectPacket(player.getEntityId(), net.minestom.server.potion.PotionEffect.JUMP_BOOST));
         }
-    }, Regeneration("Regeneration", "§4", new Color(13458603), new PotionLore(STR."§7Grants §c+%b% \{Stat.HealthRegen}§7.", "%b%", level -> String.valueOf(level < 7 ? level * 5 : (((level - 3) * 10)))), 9) {
+    }, Regeneration("Regeneration", "§4", new Color(13458603), new PotionLore("§7Grants §c+%b% " + (Stat.HealthRegen) + "§7.", "%b%", level -> String.valueOf(level < 7 ? level * 5 : (((level - 3) * 10)))), 9) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.HealthRegen, new PlayerStatEvent.BasicModifier(getName(), level < 7 ? level * 5 : (((level - 3) * 10)), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, Resistance("Resistance", "§a", new Color(8889187), new PotionLore(STR."§7Grants §a+%b% \{Stat.Defense}§7.", "%b%", level -> String.valueOf(level < 7 ? level * 5 : (((level - 3) * 10)))), 8) {
+    }, Resistance("Resistance", "§a", new Color(8889187), new PotionLore("§7Grants §a+%b% " + (Stat.Defense) + "§7.", "%b%", level -> String.valueOf(level < 7 ? level * 5 : (((level - 3) * 10)))), 8) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.Defense, new PlayerStatEvent.BasicModifier(getName(), level < 7 ? level * 5 : (((level - 3) * 10)), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, Speed("Speed", "§9", new Color(8171462), new PotionLore(STR."§7Grants §a+%b% \{Stat.Speed}§7.", "%b%", level -> String.valueOf(level * 5)), 8) {
+    }, Speed("Speed", "§9", new Color(8171462), new PotionLore("§7Grants §a+%b% " + (Stat.Speed) + "§7.", "%b%", level -> String.valueOf(level * 5)), 8) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.Speed, new PlayerStatEvent.BasicModifier(getName(), level * 5, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, Spelunker("Spelunker", "§b", new Color(2039713), new PotionLore(STR."§7Grants §a+%b% \{Stat.MiningFortune}§7.", "%b%", level -> String.valueOf(level * 5)), 5) {
+    }, Spelunker("Spelunker", "§b", new Color(2039713), new PotionLore("§7Grants §a+%b% " + (Stat.MiningFortune) + "§7.", "%b%", level -> String.valueOf(level * 5)), 5) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.MiningFortune, new PlayerStatEvent.BasicModifier(getName(), level * 5, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, Spirit("Spirit", "§b", new Color(8171462), new PotionLore(STR."§7Grants §a+%b% \{Stat.Speed}§7 and §a+%b%% \{Stat.CritDamage}§7.", "%b%", level -> String.valueOf(level * 5)), 5) {
+    }, Spirit("Spirit", "§b", new Color(8171462), new PotionLore("§7Grants §a+%b% " + (Stat.Speed) + "§7 and §a+%b%% " + (Stat.CritDamage) + "§7.", "%b%", level -> String.valueOf(level * 5)), 5) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.Speed, new PlayerStatEvent.BasicModifier(getName(), level * 5, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion),
                     Stat.CritDamage, new PlayerStatEvent.BasicModifier(getName(), level * 5, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, Strength("Strength", "§4", new Color(9643043), new PotionLore(STR."§7Grants §a+%b% \{Stat.Strength}§7.", "%b%", level -> StringUtils.cleanDouble(switch (level) {
+    }, Strength("Strength", "§4", new Color(9643043), new PotionLore("§7Grants §a+%b% " + (Stat.Strength) + "§7.", "%b%", level -> StringUtils.cleanDouble(switch (level) {
         case 1 -> 5;
         case 2 -> 12.5;
         case 8 -> 75;
@@ -331,12 +331,12 @@ public enum Potion implements IPotion {
                 default -> ((level - 1) * 10);
             }, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, TrueResistance("True Resistance", "§f", new Color(2039713), new PotionLore(STR."§7Grants §a+%b% \{Stat.TrueDefense}§7.", "%b%", level -> String.valueOf(level * 5)), 4) {
+    }, TrueResistance("True Resistance", "§f", new Color(2039713), new PotionLore("§7Grants §a+%b% " + (Stat.TrueDefense) + "§7.", "%b%", level -> String.valueOf(level * 5)), 4) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.TrueDefense, new PlayerStatEvent.BasicModifier(getName(), level * 5, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
         }
-    }, WispsIceFlavoredWater("Wisp's Ice-Flavored Water", "§b", new Color(2039713), new PotionLore(STR."§7Grants §4+10 \{Stat.Vitality}§7 and §f+25 \{Stat.TrueDefense}."), 1) {
+    }, WispsIceFlavoredWater("Wisp's Ice-Flavored Water", "§b", new Color(2039713), new PotionLore("§7Grants §4+10 " + (Stat.Vitality) + "§7 and §f+25 " + (Stat.TrueDefense) + "."), 1) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.TrueDefense, new PlayerStatEvent.BasicModifier(getName(), 25, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion),

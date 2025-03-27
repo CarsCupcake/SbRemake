@@ -13,7 +13,6 @@ import me.carscupcake.sbremake.util.Cost;
 import me.carscupcake.sbremake.util.ItemCost;
 import net.minestom.server.item.Material;
 
-import java.util.List;
 import java.util.Map;
 
 public class DarkClaymore implements ISbItem, ISbItem.StatProvider, GemstoneSlots {

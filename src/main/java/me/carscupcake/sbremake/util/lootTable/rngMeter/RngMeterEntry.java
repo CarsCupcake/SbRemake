@@ -1,7 +1,5 @@
 package me.carscupcake.sbremake.util.lootTable.rngMeter;
 
-import me.carscupcake.sbremake.util.lootTable.LootTable;
-
 public record RngMeterEntry(String id, RngMeterLoot... loots) {
     public boolean contains(RngMeterLoot loot) {
         for (RngMeterLoot loots : loots)

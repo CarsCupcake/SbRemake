@@ -17,6 +17,6 @@ public record CollectionRequirement(String id, int level) implements Requirement
 
     @Override
     public String display() {
-        return STR."§4❣ §cRequires §a\{id} Collection \{level}.";
+        return "§4❣ §cRequires §a" + (id) + " Collection " + (level) + ".";
     }
 }

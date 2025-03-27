@@ -18,9 +18,7 @@ public class OversizedGui extends Gui {
     private int close = -1;
     private final Map<Integer, ItemStack> staticItems = new HashMap<>();
 
-    public OversizedGui(StartingPosition startingPosition, String name, List<List<ItemStack>> items, int up, int down) {
-        int index = startingPosition == StartingPosition.Top || startingPosition == StartingPosition.Left ? 0 :
-                (startingPosition == StartingPosition.Bottom) ? (items.size() - 6) : (items.size() - 9);
+    private OversizedGui(StartingPosition startingPosition, String name, List<List<ItemStack>> items, int up, int down, int index) {
         super(buildInventory(items, index, startingPosition == StartingPosition.Bottom || startingPosition == StartingPosition.Top, new InventoryBuilder(Math.min(items.size(), 6), name).build(), true, up, down, -1, new HashMap<>()));
         this.startingPosition = startingPosition;
         this.items = items;
@@ -40,7 +38,13 @@ public class OversizedGui extends Gui {
         this.down = down;
     }
 
-    public OversizedGui(List<ItemStack> items, StartingPosition startingPosition, String name, int up, int down) {
+    public static OversizedGui createGui(StartingPosition startingPosition, String name, List<List<ItemStack>> items, int up, int down) {
+        int index = startingPosition == StartingPosition.Top || startingPosition == StartingPosition.Left ? 0 :
+                (startingPosition == StartingPosition.Bottom) ? (items.size() - 6) : (items.size() - 9);
+        return new OversizedGui(startingPosition, name, items, up, down, index);
+    }
+
+    public static OversizedGui createGui(List<ItemStack> items, StartingPosition startingPosition, String name, int up, int down) {
         List<List<ItemStack>> itemStacks = new ArrayList<>();
         List<ItemStack> itemList = new ArrayList<>();
         for (ItemStack item : items) {
@@ -52,7 +56,7 @@ public class OversizedGui extends Gui {
         }
         if (!itemList.isEmpty())
             itemStacks.add(itemList);
-        this(startingPosition, name, itemStacks, up, down);
+        return createGui(startingPosition, name, itemStacks, up, down);
     }
 
     public void setClose(int index) {

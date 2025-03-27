@@ -6,7 +6,6 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.minestom.server.item.ItemStack;
 
 import java.util.*;
 
@@ -44,7 +43,7 @@ public record ItemLoot(SbItemStack item, int min, int max, double chance, boolea
         item = item.withAmount(amount);
         if (item == null) return new HashSet<>(0);
         if (builder != null)
-            player.sendMessage(builder.message(player, STR."\{item.getRarity().getPrefix()}\{item.displayName()}", amount, magicFind));
+            player.sendMessage(builder.message(player,  (item.getRarity().getPrefix()) +  (item.displayName()) , amount, magicFind));
         return Set.of(Objects.requireNonNull(item));
     }
 
@@ -61,19 +60,19 @@ public record ItemLoot(SbItemStack item, int min, int max, double chance, boolea
         Rare {
             @Override
             public String message(SkyblockPlayer player, String itemName, int amount, boolean magicFind) {
-                return STR."§6§lRARE DROP! \{itemName} \{(amount != 1) ? STR."§8\{amount}x " : ""}\{magicFind ? STR."§b(+\{player.getStat(Stat.MagicFind)} \{Stat.MagicFind})" : ""}";
+                return "§6§lRARE DROP! " + (itemName) + " " + ((amount != 1) ? "§8" + (amount) + "x " : "") +  (magicFind ? "§b(+" + (player.getStat(Stat.MagicFind)) + " " + (Stat.MagicFind) + ")" : "") ;
             }
         },
         Legendary {
             @Override
             public String message(SkyblockPlayer player, String itemName, int amount, boolean magicFind) {
-                return STR."§6§lLEGENDARY DROP! \{itemName} \{(amount != 1) ? STR."§8\{amount}x " : ""}\{magicFind ? STR."§b(+\{player.getStat(Stat.MagicFind)} \{Stat.MagicFind})" : ""}";
+                return "§6§lLEGENDARY DROP! " + (itemName) + " " + ((amount != 1) ? "§8" + (amount) + "x " : "") +  (magicFind ? "§b(+" + (player.getStat(Stat.MagicFind)) + " " + (Stat.MagicFind) + ")" : "") ;
             }
         },
         RNGesus {
             @Override
             public String message(SkyblockPlayer player, String itemName, int amount, boolean magicFind) {
-                return STR."§d§lRNGesus DROP! \{itemName} \{(amount != 1) ? STR."§8\{amount}x " : ""}\{magicFind ? STR."§b(+\{player.getStat(Stat.MagicFind)} \{Stat.MagicFind})" : ""}";
+                return "§d§lRNGesus DROP! " + (itemName) + " " + ((amount != 1) ? "§8" + (amount) + "x " : "") +  (magicFind ? "§b(+" + (player.getStat(Stat.MagicFind)) + " " + (Stat.MagicFind) + ")" : "") ;
             }
         };
 

@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.item.impl.arrows;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.ItemRarity;
-import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 
 public class FlintArrow implements SkyblockArrow{

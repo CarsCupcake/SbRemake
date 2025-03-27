@@ -20,7 +20,7 @@ public class PlayerBrodcastOutputStream extends OutputStream {
         char c = (char) b;
         if (c == '\r') return;
         if (c == '\n') {
-            Audiences.players().sendMessage(Component.text(STR."§c\{builder.toString()}"));
+            Audiences.players().sendMessage(Component.text("§c" + (builder.toString()) ));
             builder = new StringBuilder();
         } else {
             if (c == '\t') {

@@ -17,6 +17,6 @@ public record PetAbility(String name, Lore lore) implements Ability {
     }
     @Override
     public String headline(SbItemStack item, @Nullable SkyblockPlayer player) {
-        return STR."§6\{name}";
+        return "§6" + (name) ;
     }
 }

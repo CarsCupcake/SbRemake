@@ -1,17 +1,13 @@
 package me.carscupcake.sbremake.command.testing;
 
-import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.command.builder.Command;
-import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.arguments.ArgumentWord;
 import net.minestom.server.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +21,7 @@ public class ReforgeCommand extends Command {
             String s = commandContext.get(word);
             if (s == null) return;
             SkyblockPlayer player = (SkyblockPlayer) commandSender;
-            SbItemStack item = SbItemStack.from(player.getItemInHand(Player.Hand.MAIN));
+            SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
             if (item == null) {
                 player.sendMessage("§cYou do not have a valid item");
                 return;

@@ -2,7 +2,6 @@ package me.carscupcake.sbremake.listeners;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.blocks.Crop;
 import me.carscupcake.sbremake.blocks.FarmingCrystal;
@@ -183,7 +182,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                 }
             }
             if (b) {
-                SbItemStack mainHand = player.getSbItemStack(Player.Hand.MAIN);
+                SbItemStack mainHand = player.getSbItemInHand(Player.Hand.MAIN);
                 if (mainHand == null || !(mainHand.sbItem() instanceof IVanillaPickaxe pick)) return;
                 switch (pick.getTier()) {
                     case Wood:

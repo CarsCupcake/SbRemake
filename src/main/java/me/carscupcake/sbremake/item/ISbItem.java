@@ -6,20 +6,14 @@ import me.carscupcake.sbremake.item.crafting.CraftingIngredient;
 import me.carscupcake.sbremake.item.crafting.ShapedRecipe;
 import me.carscupcake.sbremake.item.impl.armor.PerfectArmor;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
-import me.carscupcake.sbremake.item.impl.pets.Pet;
 import me.carscupcake.sbremake.item.impl.pets.Pets;
-import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
-import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneItem;
 import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.EnchantmentUtils;
-import me.carscupcake.sbremake.util.PlayerDamageEntityListener;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
@@ -90,6 +84,10 @@ public interface ISbItem {
         return new ArrayList<>();
     }
 
+    default int getMaxStackSize() {
+        return isUnstackable() ? 1 : getMaterial().maxStackSize();
+    }
+
     default boolean isUnstackable() {
         return getMaterial().maxStackSize() == 1;
     }
@@ -158,8 +156,8 @@ public interface ISbItem {
         for (Map.Entry<ISbItem, EnchantedRecipe> recipe : recipes.entrySet()) {
             Map<Character, CraftingIngredient> items = Map.of('#', new CraftingIngredient(32, recipe.getValue().base()));
             Requirement[] requirements = new Requirement[]{new CollectionRequirement(recipe.getValue().collection(), recipe.getValue().level())};
-            Recipe.craftingRecipes.put(recipe.getKey().getId().toLowerCase(), new ShapedRecipe(recipe.getKey(), 1, -1, requirements, items, "###", "## "));
-            Recipe.craftingRecipes.put(STR."\{recipe.getKey().getId().toLowerCase()}_star", new ShapedRecipe(recipe.getKey(), 1, -1, requirements, items, " # ", "###", " # "));
+            Recipe.craftingRecipes.put(recipe.getKey().getId().toLowerCase(), ShapedRecipe.createShapedRecipe(recipe.getKey(), 1, -1, requirements, items, "###", "## "));
+            Recipe.craftingRecipes.put( (recipe.getKey().getId().toLowerCase()) + "_star", ShapedRecipe.createShapedRecipe(recipe.getKey(), 1, -1, requirements, items, " # ", "###", " # "));
         }
         SkyblockEnchantment.initListener();
         MinecraftServer.getGlobalEventHandler().addChild(SkyblockEnchantment.LISTENER);

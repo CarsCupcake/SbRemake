@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.listeners;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.event.player.PlayerChangeHeldSlotEvent;
-import net.minestom.server.event.player.PlayerSwapItemEvent;
 
 import java.util.function.Consumer;
 

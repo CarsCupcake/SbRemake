@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.event;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Stat;

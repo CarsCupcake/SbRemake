@@ -60,7 +60,7 @@ public class Pet implements ISbItem {
     @Override
     public List<Ability> getDefaultAbilities() {
         return new ArrayList<>(List.of(new ItemAbility<>("", AbilityType.RIGHT_CLICK, playerInteractEvent -> {
-            playerInteractEvent.player().getPets().add(StoredPet.to(SbItemStack.from(playerInteractEvent.getPlayer().getItemInHand(Player.Hand.MAIN))));
+            playerInteractEvent.player().getPets().add(StoredPet.to(playerInteractEvent.player().getSbItemInHand(Player.Hand.MAIN)));
             playerInteractEvent.player().sendMessage("§aAdded the Pet to you pet menu!");
             playerInteractEvent.getPlayer().setItemInMainHand(ItemStack.AIR);
         })));

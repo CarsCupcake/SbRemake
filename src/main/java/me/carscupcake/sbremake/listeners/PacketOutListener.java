@@ -12,9 +12,7 @@ import net.minestom.server.event.player.PlayerPacketOutEvent;
 import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.server.play.EntityAttributesPacket;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
-import net.minestom.server.network.packet.server.play.ParticlePacket;
 import net.minestom.server.network.packet.server.play.PlayerAbilitiesPacket;
-import net.minestom.server.particle.Particle;
 import net.minestom.server.utils.NamespaceID;
 
 import java.util.List;
@@ -38,7 +36,7 @@ public class PacketOutListener implements Consumer<PlayerPacketOutEvent> {
             if (b != 1) return;
             //Bow draw or eating animation is triggered
             SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-            if (player.getBowStartPull() < 0 && player.getItemInHand(Player.Hand.MAIN).material() == Material.BOW)
+            if (player.getBowStartPull() < 0 && player.getSbItemInHand(Player.Hand.MAIN).item().material() == Material.BOW)
                 event.setCancelled(true);
         }
         if (event.getPacket() instanceof EntityAttributesPacket(

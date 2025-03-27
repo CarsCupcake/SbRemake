@@ -1,8 +1,6 @@
 package me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.base;
 
 import me.carscupcake.sbremake.Stat;
-import me.carscupcake.sbremake.item.Requirement;
-import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmorTier;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.CrimsonHelmetBaseline;
 

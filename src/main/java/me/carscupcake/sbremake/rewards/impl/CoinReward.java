@@ -12,6 +12,6 @@ public record CoinReward(int amount) implements Reward {
 
     @Override
     public Lore lore() {
-        return new Lore(STR."§8+ §6\{amount} §7Coins");
+        return new Lore("§8+ §6" + (amount) + " §7Coins");
     }
 }

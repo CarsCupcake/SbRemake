@@ -6,7 +6,6 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
 import me.carscupcake.sbremake.item.impl.pets.Pet;
 import me.carscupcake.sbremake.item.impl.pets.PetItem;
-import me.carscupcake.sbremake.item.impl.rune.IRune;
 import me.carscupcake.sbremake.item.impl.rune.Rune;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
@@ -18,7 +17,6 @@ import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.player.potion.IPotion;
 import me.carscupcake.sbremake.player.potion.PotionType;
 import net.kyori.adventure.nbt.*;
-import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
@@ -46,6 +44,7 @@ public interface Modifier<T> {
     Modifier<Reforge> REFORGE = new Modifier<>() {
         @Override
         public Reforge getFromNbt(SbItemStack item) {
+            if (item == SbItemStack.AIR) return null;
             String id = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getString("reforge", "");
             if (id.isEmpty()) return null;
             return Reforge.reforges.get(id);
@@ -61,6 +60,7 @@ public interface Modifier<T> {
     Modifier<Map<SkyblockEnchantment, Integer>> ENCHANTMENTS = new Modifier<>() {
         @Override
         public Map<SkyblockEnchantment, Integer> getFromNbt(SbItemStack item) {
+            if (item == SbItemStack.AIR) return new HashMap<>();
             CompoundBinaryTag enchantments = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getCompound("enchantments");
             Map<SkyblockEnchantment, Integer> enchantmentMap = new HashMap<>();
             for (String key : enchantments.keySet()) {
@@ -83,6 +83,7 @@ public interface Modifier<T> {
     Modifier<List<String>> UNLOCKED_GEMSTONE_SLOTS = new Modifier<>() {
         @Override
         public List<String> getFromNbt(SbItemStack item) {
+            if (item == SbItemStack.AIR) return new ArrayList<>();
             if (!(item.sbItem() instanceof GemstoneSlots)) return new ArrayList<>();
             CompoundBinaryTag gems = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getCompound("gems");
             List<String> unlocked = new ArrayList<>();
@@ -105,6 +106,7 @@ public interface Modifier<T> {
     Modifier<GemstoneSlot[]> GEMSTONE_SLOTS = new Modifier<>() {
         @Override
         public @Nullable GemstoneSlot[] getFromNbt(SbItemStack item) {
+            if (item == SbItemStack.AIR) return new GemstoneSlot[0];
             if (!(item.sbItem() instanceof GemstoneSlots slots)) return new GemstoneSlot[0];
             GemstoneSlot[] gemstoneSlots = new GemstoneSlot[slots.getGemstoneSlots().length];
             CompoundBinaryTag gems = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getCompound("gems");
@@ -112,9 +114,9 @@ public interface Modifier<T> {
             int i = 0;
             boolean[] unlockedByDefault = slots.getUnlocked();
             for (GemstoneSlotType type : slots.getGemstoneSlots()) {
-                String slotId = STR."\{type.name().toUpperCase()}_\{i}";
+                String slotId =  (type.name().toUpperCase()) + "_" + (i) ;
                 boolean isUnlocked = unlocked.contains(slotId) || unlockedByDefault[i];
-                String gem = gems.getString(STR."\{slotId}_gem");
+                String gem = gems.getString( (slotId) + "_gem");
                 if (gem.isEmpty()) {
                     gemstoneSlots[i] = new GemstoneSlot(type, null, isUnlocked);
                     i++;
@@ -136,11 +138,11 @@ public interface Modifier<T> {
             List<String> unlocked = new ArrayList<>();
             int i = 0;
             for (GemstoneSlot slot : gemstoneSlots) {
-                String slotId = STR."\{slot.type().name().toUpperCase()}_\{i}";
+                String slotId =  (slot.type().name().toUpperCase()) + "_" + (i) ;
                 if (slot.unlocked() && !slots.getUnlocked()[i])
                     unlocked.add(slotId);
                 if (slot.gemstone() != null) {
-                    gems = gems.putString(slotId, slot.gemstone().quality().name()).putString(STR."\{slotId}_gem", slot.gemstone().type().name());
+                    gems = gems.putString(slotId, slot.gemstone().quality().name()).putString( (slotId) + "_gem", slot.gemstone().type().name());
                 }
                 i++;
             }

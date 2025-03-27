@@ -52,7 +52,7 @@ public class InventoryBuilder {
                 case 4 -> InventoryType.CHEST_4_ROW;
                 case 5 -> InventoryType.CHEST_5_ROW;
                 case 6 -> InventoryType.CHEST_6_ROW;
-                default -> throw new IllegalStateException(STR."\{rows} rows are illigal");
+                default -> throw new IllegalStateException( (rows) + " rows are illigal");
             };
             Inventory inventory = new Inventory(type, name);
             int i = 0;

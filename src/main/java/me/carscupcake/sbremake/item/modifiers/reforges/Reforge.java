@@ -54,15 +54,14 @@ public interface Reforge {
     Map<String, Reforge> reforges = new HashMap<>();
     EventNode<Event> LISTENER = EventNode.all("reforge").addListener(PlayerMeleeDamageEntityEvent.class, event -> {
         if (!event.isCrit()) return;
-        SbItemStack item = SbItemStack.from(event.getPlayer().getItemInHand(Player.Hand.MAIN));
+        SbItemStack item = event.getPlayer().getSbItemInHand(Player.Hand.MAIN);
         if (item == null) return;
         if (SwordReforge.Fabled.hasThisReforge(item)) {
             if (new Random().nextDouble() <= 0.075) event.addAdditiveMultiplier(0.15);
         }
     }).addListener(PlayerToEntityMageDamage.class, event -> {
         for (EquipmentSlot equipmentSlot : EquipmentSlot.armors()) {
-            ItemStack item = event.getPlayer().getEquipment(equipmentSlot);
-            SbItemStack itemStack = SbItemStack.from(item);
+            SbItemStack itemStack = event.getPlayer().getSbEquipment(equipmentSlot);
             if (itemStack != null && itemStack.getModifier(Modifier.REFORGE) == ArmorReforge.Loving)
                 event.addAdditiveMultiplier(0.05);
         }

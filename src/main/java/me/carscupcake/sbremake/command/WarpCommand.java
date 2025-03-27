@@ -4,7 +4,6 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.WarpLocation;
-import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.arguments.ArgumentWord;

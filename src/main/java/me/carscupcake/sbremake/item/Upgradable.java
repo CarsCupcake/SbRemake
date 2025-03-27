@@ -12,7 +12,7 @@ public interface Upgradable {
         String s = "";
         if(!(stars <= 0)) {
             if (stars <= 5) {
-                s = STR."§6\{Strings.repeat("✪", stars)}";
+                s = "§6" + (Strings.repeat("✪", stars)) ;
             } else if (stars <= 10) {
                 StringBuilder str = new StringBuilder();
                 for (int i = 0; i < 5; i++)

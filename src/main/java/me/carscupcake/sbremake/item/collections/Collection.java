@@ -6,7 +6,8 @@ import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.rewards.Reward;
-import me.carscupcake.sbremake.util.*;
+import me.carscupcake.sbremake.util.StringUtils;
+import me.carscupcake.sbremake.util.TemplateItems;
 import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.util.item.InventoryBuilder;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
@@ -56,10 +57,10 @@ public abstract class Collection {
     private static final int[][] slots = {{22}, {21, 23}, {21, 22, 23}, {20, 21, 23, 24}, {20, 21, 22, 23, 24}, {19, 20, 21, 23, 24, 25}, {19, 20, 21, 22, 23, 24, 25}, {18, 19, 20, 21, 23, 24, 25, 26}};
 
     public void showInventory() {
-        InventoryBuilder builder = new InventoryBuilder(6, STR."\{getName()} Collection")
+        InventoryBuilder builder = new InventoryBuilder(6,  (getName()) + " Collection")
                 .fill(TemplateItems.EmptySlot.getItem())
-                .setItem(new ItemBuilder(showItem()).setName(STR."§e\{getName()} \{StringUtils.toRoman(level)}")
-                        .addAllLore(STR."§7View all your \{getName()} Collection", "§7progress and rewards!", "§7 ", STR."§7Total Collected: §e\{StringUtils.toFormatedNumber(progress)}")
+                .setItem(new ItemBuilder(showItem()).setName("§e" + (getName()) + " " + (StringUtils.toRoman(level)) )
+                        .addAllLore("§7View all your " + (getName()) + " Collection", "§7progress and rewards!", "§7 ", "§7Total Collected: §e" + (StringUtils.toFormatedNumber(progress)) )
                         .build(), 4);
         if (maxLevel < slots.length) {
             for (int i = 0; i < maxLevel; i++) {
@@ -78,10 +79,10 @@ public abstract class Collection {
     public ItemStack getCollectionShowItem(int level) {
         String prefix = (level <= this.level) ? "§a" : "§e";
         return new ItemBuilder((level <= this.level) ? Material.LIME_STAINED_GLASS_PANE : (level == 1 + this.level) ? Material.YELLOW_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE)
-                .setName(STR."\{prefix}\{getName()} \{StringUtils.toRoman(level)}")
-                .addAllLore("§a ", STR."§7Progress: \{prefix}\{StringUtils.cleanDouble(100 * Math.min(1d, (double) progress / levelProgress[level - 1]))}%")
+                .setName( (prefix) +  (getName()) + " " + (StringUtils.toRoman(level)) )
+                .addAllLore("§a ", "§7Progress: " + (prefix) +  (StringUtils.cleanDouble(100 * Math.min(1d, (double) progress / levelProgress[level - 1]))) + "%")
                 .addLoreRow(StringUtils.makeProgressBar(20, progress, levelProgress[level - 1], NamedTextColor.WHITE, NamedTextColor.GREEN,
-                                "§m ").append(Component.text(STR." §e\{progress} §6/ §e\{StringUtils.toShortNumber(levelProgress[level - 1])}")))
+                                "§m ").append(Component.text(" §e" + (progress) + " §6/ §e" + (StringUtils.toShortNumber(levelProgress[level - 1])) )))
                 .addLoreRow("§e ")
                 .addLoreRow("§aRewards:")
                 .addAllLore(rewardsLore(level))
@@ -93,14 +94,14 @@ public abstract class Collection {
         List<Reward> rewards = getRewards().get(level - 1);
         for (Reward reward : rewards)
             reward.reward(player);
-        player.sendMessage(STR."§e▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-        player.sendMessage(Component.text(STR."  §6§lCOLLECTION LEVELED UP!§r §e\{getName()} §e\{StringUtils.toRoman(level)}").clickEvent(ClickEvent.runCommand(STR."/collectionmenu \{getId()}") ).hoverEvent(Component.text("§eClick to open")));
+        player.sendMessage("§e▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+        player.sendMessage(Component.text("  §6§lCOLLECTION LEVELED UP!§r §e" + (getName()) + " §e" + (StringUtils.toRoman(level)) ).clickEvent(ClickEvent.runCommand("/collectionmenu " + (getId()) ) ).hoverEvent(Component.text("§eClick to open")));
         player.sendMessage("  ");
         player.sendMessage("  §a§lREWARDS");
         for (String s : rewardsLore(level)) {
-            player.sendMessage(STR."   \{s}");
+            player.sendMessage("   " + (s) );
         }
-        player.sendMessage(STR."§e▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+        player.sendMessage("§e▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
     }
 
     public void save() {

@@ -10,7 +10,6 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.instance.Instance;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class SpiderJockey extends SkyblockEntity implements SkillXpDropper {

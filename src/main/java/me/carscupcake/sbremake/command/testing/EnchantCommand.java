@@ -17,7 +17,7 @@ public class EnchantCommand extends Command {
         addSyntax((commandSender, commandContext) -> {
             NormalEnchantment enchantment = commandContext.get(normalEnchantmentArgumentEnum);
             int level = commandContext.get(integerArgumentNumber);
-            SbItemStack item = SbItemStack.from(((SkyblockPlayer) commandSender).getItemInHand(Player.Hand.MAIN));
+            SbItemStack item = ((SkyblockPlayer) commandSender).getSbItemInHand(Player.Hand.MAIN);
             if (item == null) {
                 commandSender.sendMessage("§cNot a valid item!");
                 return;
@@ -29,7 +29,7 @@ public class EnchantCommand extends Command {
         addSyntax((commandSender, commandContext) -> {
             NormalEnchantment enchantment = commandContext.get(normalEnchantmentArgumentEnum);
             int level = enchantment.getMaxLevel();
-            SbItemStack item = SbItemStack.from(((SkyblockPlayer) commandSender).getItemInHand(Player.Hand.MAIN));
+            SbItemStack item = ((SkyblockPlayer) commandSender).getSbItemInHand(Player.Hand.MAIN);
             if (item == null) {
                 commandSender.sendMessage("§cNot a valid item!");
                 return;

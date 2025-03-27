@@ -66,7 +66,7 @@ public class JungleAxe implements ISbItem, Listener, GemstoneSlots {
     @Override
     public EventNode<Event> node() {
         return EventNode.all("jungle_axe").addListener(LogBreakEvent.class, event -> {
-            SbItemStack stack = SbItemStack.from(event.player().getItemInHand(Player.Hand.MAIN));
+            SbItemStack stack = event.player().getSbItemInHand(Player.Hand.MAIN);
             if (stack == null) return;
             ISbItem item = stack.sbItem();
             int blocks = item instanceof JungleAxe ? 10 : (item instanceof Treecapitator ? 35 : 0);

@@ -29,7 +29,7 @@ public class GoldOre extends MiningBlock {
 
     @Override
     public Set<SbItemStack> getDrops(SkyblockPlayer player) {
-        SbItemStack item = SbItemStack.from(player.getItemInHand(Player.Hand.MAIN));
+        SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
         return Set.of(withMiningFortune(ISbItem.get((item != null && item.getEnchantmentLevel(NormalEnchantment.SmeltingTouch) > 0) ? Material.GOLD_INGOT : Material.GOLD_ORE), 1, player));
     }
 

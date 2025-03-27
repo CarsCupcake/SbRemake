@@ -8,7 +8,6 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import org.jetbrains.annotations.NotNull;
 
 public class GravelSkeleton extends SkyblockEntity implements SkillXpDropper
 {

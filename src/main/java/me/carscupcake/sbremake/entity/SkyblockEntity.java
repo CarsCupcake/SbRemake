@@ -52,7 +52,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 @Getter
-@SuppressWarnings("preview")
 public abstract class SkyblockEntity extends EntityCreature {
     private float health = 1;
     @Getter
@@ -286,13 +285,13 @@ public abstract class SkyblockEntity extends EntityCreature {
         Basic() {
             @Override
             public String apply(SkyblockEntity skyblockEntity) {
-                return STR."§8[§7Lv\{skyblockEntity.getLevel()}§8] §c\{skyblockEntity.getName()} §a\{StringUtils.cleanDouble(skyblockEntity.getHealth(), 0)}§7/§a\{StringUtils.cleanDouble(skyblockEntity.getMaxHealth())}§c\{Stat.Health.getSymbol()}";
+                return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] §c" + (skyblockEntity.getName()) + " §a" + (StringUtils.cleanDouble(skyblockEntity.getHealth(), 0)) + "§7/§a" + (StringUtils.cleanDouble(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol()) ;
             }
         },
         Slayer() {
             @Override
             public String apply(SkyblockEntity entity) {
-                return STR."§c\{Characters.Skull} §f\{entity.getName()} §a\{StringUtils.toShortNumber(entity.getHealth())}§c\{Stat.Health.getSymbol()}";
+                return "§c" + (Characters.Skull) + " §f" + (entity.getName()) + " §a" + (StringUtils.toShortNumber(entity.getHealth())) + "§c" + (Stat.Health.getSymbol()) ;
             }
         }
     }

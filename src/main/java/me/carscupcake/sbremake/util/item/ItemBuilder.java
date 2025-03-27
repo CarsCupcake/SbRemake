@@ -15,7 +15,10 @@ import net.minestom.server.item.component.*;
 import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.registry.DynamicRegistry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @SuppressWarnings("unused")

@@ -5,7 +5,6 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.metadata.monster.EndermanMeta;
 import net.minestom.server.instance.block.Block;
-import org.jetbrains.annotations.NotNull;
 
 public class SpecialZealot extends SkyblockEntity {
     private final SkyblockPlayer owner;

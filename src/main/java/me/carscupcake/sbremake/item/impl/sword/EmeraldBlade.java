@@ -5,12 +5,9 @@ import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
-import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.Material;
-
-import java.util.Map;
 
 public class EmeraldBlade implements ISbItem, NpcSellable, Listener {
     @Override

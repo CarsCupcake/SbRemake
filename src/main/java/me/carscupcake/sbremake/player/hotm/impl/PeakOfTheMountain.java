@@ -106,13 +106,13 @@ public class PeakOfTheMountain extends HotmUpgrade {
             strings.add("§8+ §a+10% chance §7for §bGlacial Mineshafts §7to spawn");
         if (level > 9)
             tokens += 2;
-        strings.add(STR."§8+ §5\{tokens} Token of the Mountain");
+        strings.add("§8+ §5" + (tokens) + " Token of the Mountain");
         return strings;
     }
 
     @Override
     public ItemStack getItem() {
-        return new ItemBuilder((getPlayer().getHotm().getLevel() < 5) ? Material.BEDROCK : (level == getMaxLevel() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK)).setName(STR."\{level == 0 ? "§c" : (level == getMaxLevel() ? "§a" : "§e")}\{getName()}").addAllLore(STR."§7Level \{level == 0 ? STR."1§8/\{getMaxLevel()}" : (level == getMaxLevel()) ? String.valueOf(getMaxLevel()) : STR."\{level}§8/\{getMaxLevel()}"}", "§7 ").addAllLore(lore((level == 0) ? 1 : level).build(null, getPlayer())).addLoreRow("§8 ").addLoreIf(() -> level == 0, "§7Cost", "§51 Token of the Mountain").addLoreIf(() -> level != getMaxLevel() && level != 0, "§a=====[UPGRADE]=====").addLoreIf(() -> level != getMaxLevel() && level != 0, lore(level + 1).build(null, getPlayer())).addLoreIf(() -> level != getMaxLevel() && level != 0, " ", "§7Cost", STR."\{upgradeType(level).getColor()}\{StringUtils.toFormatedNumber(nextLevelCost(level))} \{upgradeType(level).getName()}").build();
+        return new ItemBuilder((getPlayer().getHotm().getLevel() < 5) ? Material.BEDROCK : (level == getMaxLevel() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK)).setName( (level == 0 ? "§c" : (level == getMaxLevel() ? "§a" : "§e")) +  (getName()) ).addAllLore("§7Level " + (level == 0 ? "1§8/" + (getMaxLevel())  : (level == getMaxLevel()) ? String.valueOf(getMaxLevel()) :  (level) + "§8/" + (getMaxLevel()) ) , "§7 ").addAllLore(lore((level == 0) ? 1 : level).build(null, getPlayer())).addLoreRow("§8 ").addLoreIf(() -> level == 0, "§7Cost", "§51 Token of the Mountain").addLoreIf(() -> level != getMaxLevel() && level != 0, "§a=====[UPGRADE]=====").addLoreIf(() -> level != getMaxLevel() && level != 0, lore(level + 1).build(null, getPlayer())).addLoreIf(() -> level != getMaxLevel() && level != 0, " ", "§7Cost",  (upgradeType(level).getColor()) +  (StringUtils.toFormatedNumber(nextLevelCost(level))) + " " + (upgradeType(level).getName()) ).build();
     }
 
     @Override

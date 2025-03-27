@@ -24,7 +24,7 @@ public record DropPoolLoot(List<ISbItem> items, int min, int max, double chance,
         ISbItem item = items.get(new Random().nextInt(items.size()));
         int amount = (min == max) ? max : (new Random().nextInt(max - min) + min);
         if (builder != null)
-            player.sendMessage(builder.message(player, STR."\{item.getRarity().getPrefix()}\{item.getName()}", amount, magicFind));
+            player.sendMessage(builder.message(player,  (item.getRarity().getPrefix()) +  (item.getName()) , amount, magicFind));
         return Set.of(Objects.requireNonNull(item.create().withAmount(amount)));
     }
 

@@ -6,7 +6,6 @@ import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.worlds.impl.SpidersDen;
 import net.minestom.server.entity.EntityType;
-import org.jetbrains.annotations.Range;
 
 import java.util.List;
 

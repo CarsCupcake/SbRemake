@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.item.impl.armor.crimsonIsle;
 
-import lombok.Data;
 import lombok.Getter;
 import me.carscupcake.sbremake.item.impl.other.crimsonIsle.HeavyPearl;
 import me.carscupcake.sbremake.player.Essence;

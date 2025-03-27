@@ -12,18 +12,17 @@ import java.util.*;
 
 public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result, int amount, int prioritySlot,
                            Grid grid, Requirement... requirements) implements Recipe {
-    public ShapedRecipe(ISbItem result, int amount, int prioritySlot, Map<Character, CraftingIngredient> ingredientMap, String... items) {
-        this(result, amount, prioritySlot, new Requirement[0], ingredientMap, items);
+    public static ShapedRecipe createShapedRecipe(ISbItem result, int amount, int prioritySlot, Map<Character, CraftingIngredient> ingredientMap, String... items) {
+        return createShapedRecipe(result, amount, prioritySlot, new Requirement[0], ingredientMap, items);
     }
 
-    public ShapedRecipe(ISbItem result, int amount, Map<Character, CraftingIngredient> ingredientMap, String... items) {
-        this(result, amount, -1, new Requirement[0], ingredientMap, items);
+    public static ShapedRecipe createShapedRecipe(ISbItem result, int amount, Map<Character, CraftingIngredient> ingredientMap, String... items) {
+        return createShapedRecipe(result, amount, -1, new Requirement[0], ingredientMap, items);
     }
 
-    public ShapedRecipe(ISbItem result, int amount, int prioritySlot, Requirement[] requirement, Map<Character, CraftingIngredient> ingredientMap, String... items) {
+    public static ShapedRecipe createShapedRecipe(ISbItem result, int amount, int prioritySlot, Requirement[] requirement, Map<Character, CraftingIngredient> ingredientMap, String... items) {
         assert items.length < 4 && items.length > 0;
         int length = items[0].length();
-        int with = length;
         List<CraftingIngredient> itemsList = new ArrayList<>();
         for (String s : items)
             assert length == s.length();
@@ -36,7 +35,7 @@ public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result,
                 }
             }
         int height = items.length;
-        this(itemsList, result, amount, prioritySlot, switch (with) {
+        return new ShapedRecipe(itemsList, result, amount, prioritySlot, switch (length) {
             case 1 -> {
                 switch (height) {
                     case 2 -> {

@@ -4,7 +4,10 @@ import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.modifiers.RarityStat;
 import net.minestom.server.item.Material;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public record GemstoneItem(Gemstone.Type type, Gemstone.Quality quality, RarityStat statBonus, String headTexture) implements ISbItem, HeadWithValue, Gemstone {
     static List<GemstoneItem> items = new ArrayList<>();
@@ -21,12 +24,12 @@ public record GemstoneItem(Gemstone.Type type, Gemstone.Quality quality, RarityS
 
     @Override
     public String getId() {
-        return STR."\{quality.name().toUpperCase()}_\{type.name().toUpperCase()}";
+        return  (quality.name().toUpperCase()) + "_" + (type.name().toUpperCase()) ;
     }
 
     @Override
     public String getName() {
-        return STR."\{type.getStat().getSymbol()} \{quality.name()} \{type.name()} Gemstone";
+        return  (type.getStat().getSymbol()) + " " + (quality.name()) + " " + (type.name()) + " Gemstone";
     }
 
     @Override

@@ -7,7 +7,6 @@ import me.carscupcake.sbremake.item.collections.Collection;
 import me.carscupcake.sbremake.item.impl.other.mining.resources.EnchantedBlockOfCoal;
 import me.carscupcake.sbremake.item.impl.other.mining.resources.EnchantedCoal;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.rewards.Reward;
 import me.carscupcake.sbremake.rewards.impl.RecipeReward;
 import me.carscupcake.sbremake.rewards.impl.SkyblockXpReward;
 import net.minestom.server.item.Material;

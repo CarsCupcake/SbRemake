@@ -1,7 +1,5 @@
 package me.carscupcake.sbremake.player;
 
-import me.carscupcake.sbremake.item.impl.pets.Pet;
-import me.carscupcake.sbremake.item.impl.pets.PetItem;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -60,7 +58,7 @@ public class PlayerPet extends TaskScheduler {
         setStandPosition(basePos);
         if (lastPetLevel != petInfo.getLevel()) {
             updateNameTag();
-            player.sendMessage(STR."§aYour pet leveled up \{lastPetLevel}.");
+            player.sendMessage("§aYour pet leveled up " + (lastPetLevel) + ".");
         }
     }
 
@@ -73,7 +71,7 @@ public class PlayerPet extends TaskScheduler {
 
     public void updateNameTag() {
         lastPetLevel = petInfo.getLevel();
-        nameTag.setCustomName(Component.text(STR."§7[Lvl \{petInfo.getLevel()}] \{petInfo.getRarity().getPrefix()}\{((TextComponent) player.getName()).content()}'s \{petInfo.getPet().getName()}"));
+        nameTag.setCustomName(Component.text("§7[Lvl " + (petInfo.getLevel()) + "] " + (petInfo.getRarity().getPrefix()) +  (((TextComponent) player.getName()).content()) + "'s " + (petInfo.getPet().getName()) ));
     }
 
     private double calculateYOffset() {

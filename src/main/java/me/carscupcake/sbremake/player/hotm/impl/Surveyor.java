@@ -41,7 +41,7 @@ public class Surveyor extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Increases your chance of finding a §bGlacite Mineshaft §7when mining in the §bGlacite Tunnels §7by §a%b%%§7.", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
+        return new Lore("§7Increases your chance of finding a §bGlacite Mineshaft §7when mining in the §bGlacite Tunnels §7by §a%b%%§7.", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
     }
 
     public double getBonus(int level) {

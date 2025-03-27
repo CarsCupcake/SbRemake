@@ -37,15 +37,15 @@ public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
                 }
             }
         }
-        if (manaCost > 0) list.add(STR."§8Mana Cost: §3\{manaCost}");
-        if (cooldown > 0) list.add(STR."§8Cooldown: §a\{cooldown}s");
+        if (manaCost > 0) list.add("§8Mana Cost: §3" + (manaCost) );
+        if (cooldown > 0) list.add("§8Cooldown: §a" + (cooldown) + "s");
         return list;
     }
 
     EventNode<Event> ABILITY_NODE = EventNode.all("items.abilities").addListener(PlayerInteractEvent.class, Ability::runAbility);
 
     static void runAbility(PlayerEvent event) {
-        SbItemStack item = SbItemStack.from(event.getPlayer().getItemInMainHand());
+        SbItemStack item = ((SkyblockPlayer) event.getPlayer()).getSbItemInMainHand();
         if (item == null) return;
         List<ItemAbility<?>> abilities = new ArrayList<>();
         boolean hasSneak = false;

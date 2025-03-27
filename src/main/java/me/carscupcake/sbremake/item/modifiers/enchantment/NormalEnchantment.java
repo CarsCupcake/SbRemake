@@ -5,10 +5,6 @@ import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.StringUtils;
-import net.minestom.server.item.ItemComponent;
-import net.minestom.server.item.ItemStack;
-import net.minestom.server.item.component.EnchantmentList;
-import net.minestom.server.item.enchant.Enchantment;
 
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +34,7 @@ public enum NormalEnchantment implements SkyblockEnchantment {
     Efficiency("Efficiency", "efficiency", 10, ItemType.Pickaxe, ItemType.Drill) {
         @Override
         public Lore description() {
-            return new Lore(STR."§7Grants §6+%a% \{Stat.MiningSpeed}", Map.of("%a%", (item, _) -> String.valueOf(10 + (item.getEnchantmentLevel(this) * 20))));
+            return new Lore("§7Grants §6+%a% " + (Stat.MiningSpeed) , Map.of("%a%", (item, _) -> String.valueOf(10 + (item.getEnchantmentLevel(this) * 20))));
         }
 
        /* @Override
@@ -53,13 +49,13 @@ public enum NormalEnchantment implements SkyblockEnchantment {
     Fortune("Fortune", "fortune", 4, ItemType.Pickaxe, ItemType.Drill) {
         @Override
         public Lore description() {
-            return new Lore(STR."§7Grants §6+%a% \{Stat.MiningFortune}", Map.of("%a%", (item, _) -> String.valueOf(EnchantmentUtils.getFortuneBonus(item.getEnchantmentLevel(this)))));
+            return new Lore("§7Grants §6+%a% " + (Stat.MiningFortune) , Map.of("%a%", (item, _) -> String.valueOf(EnchantmentUtils.getFortuneBonus(item.getEnchantmentLevel(this)))));
         }
     },
     Pristine("Pristine", "pristine", 5, ItemType.Pickaxe, ItemType.Drill) {
         @Override
         public Lore description() {
-            return new Lore(STR."§7Grants §5+%a% \{Stat.Pristine}§7, which increases the chance to improve the quality of dropped §dGemstones§7.", Map.of("%a%", (item, _) -> String.valueOf(item.getEnchantmentLevel(this))));
+            return new Lore("§7Grants §5+%a% " + (Stat.Pristine) + "§7, which increases the chance to improve the quality of dropped §dGemstones§7.", Map.of("%a%", (item, _) -> String.valueOf(item.getEnchantmentLevel(this))));
         }
     },
     SilkTouch("Silk Touch", "silk_touch", 1, ItemType.Pickaxe, ItemType.Drill) {

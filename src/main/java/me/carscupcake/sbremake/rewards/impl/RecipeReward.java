@@ -13,6 +13,6 @@ public record RecipeReward(Recipe recipe) implements Reward {
     @Override
     public Lore lore() {
         SbItemStack result = recipe.getResult(null);
-        return new Lore(STR."\{result.getRarity().getPrefix()}\{result.displayName()} §7Recipe");
+        return new Lore( (result.getRarity().getPrefix()) +  (result.displayName()) + " §7Recipe");
     }
 }

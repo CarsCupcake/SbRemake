@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.player.hotm.impl;
 
-import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
@@ -42,7 +41,7 @@ public class NoStoneUnturned extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Increases your chance of finding a §9Suspicious Scrap §7when mining in a §bGlacial Mineshaft §7by §a%b%%", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
+        return new Lore("§7Increases your chance of finding a §9Suspicious Scrap §7when mining in a §bGlacial Mineshaft §7by §a%b%%", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
     }
 
     public double getBonus(int level) {

@@ -32,7 +32,7 @@ public class ManiacMiner extends PickaxeAbility {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Spends all of your Mana and grants §a+1 \{Stat.MiningSpeed} §7for every 10 Mana spent, for §a15s.");
+        return new Lore("§7Spends all of your Mana and grants §a+1 " + (Stat.MiningSpeed) + " §7for every 10 Mana spent, for §a15s.");
     }
 
     @Override

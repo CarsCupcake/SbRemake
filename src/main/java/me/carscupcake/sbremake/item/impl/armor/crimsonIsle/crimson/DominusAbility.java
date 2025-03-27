@@ -82,7 +82,7 @@ public class DominusAbility extends FullSetBonus {
 
     @Override
     public Lore lore() {
-        return new Lore(STR."§7For every melee kill gain §c1§7 stack of §6Dominus ᝐ§7.\n \nEach §6Dominus ᝐ stack grants %b%\n \n§7At §c10§7 stacks also §bswipe§7 in a random direction hitting every enemy in the path of the swipe.\n §8\n§7Lose 1 stack after §c%s%s§7 of not gaining a stack.",
+        return new Lore("§7For every melee kill gain §c1§7 stack of §6Dominus ᝐ§7.\n \nEach §6Dominus ᝐ stack grants %b%\n \n§7At §c10§7 stacks also §bswipe§7 in a random direction hitting every enemy in the path of the swipe.\n §8\n§7Lose 1 stack after §c%s%s§7 of not gaining a stack.",
                 Map.of("%s%", (_, player) -> player == null ? "4" :
                 switch (player.getFullSetBonusPieceAmount(this)) {
                     case 3 -> "7";
@@ -90,19 +90,19 @@ public class DominusAbility extends FullSetBonus {
                     default -> "4";
                 },
                         "%b%", (s, _) -> switch (((KuudraArmor) s.sbItem()).armorTier()) {
-                            case Base -> STR."§e+0.05 \{Stat.SwingRange}";
-                            case Hot -> STR."§e+0.1 \{Stat.SwingRange}";
-                            case Burning -> STR."§e+0.1 \{Stat.SwingRange} §7and §c+1 \{Stat.Ferocity}";
-                            case Fiery -> STR."§e+0.1 \{Stat.SwingRange} §7and §c+2 \{Stat.Ferocity}";
-                            case Infernal -> STR."§e+0.2 \{Stat.SwingRange}§7, §c+2 \{Stat.Ferocity} \n§7and §c10% \{Stat.Strength.getSymbol()} \{Stat.Damage}";
+                            case Base -> "§e+0.05 " + (Stat.SwingRange) ;
+                            case Hot -> "§e+0.1 " + (Stat.SwingRange) ;
+                            case Burning -> "§e+0.1 " + (Stat.SwingRange) + " §7and §c+1 " + (Stat.Ferocity) ;
+                            case Fiery -> "§e+0.1 " + (Stat.SwingRange) + " §7and §c+2 " + (Stat.Ferocity) ;
+                            case Infernal -> "§e+0.2 " + (Stat.SwingRange) + "§7, §c+2 " + (Stat.Ferocity) + " \n§7and §c10% " + (Stat.Strength.getSymbol()) + " " + (Stat.Damage) ;
                         }));
     }
 
     private static KuudraArmorTier calculateTier(SkyblockPlayer player) {
         KuudraArmorTier tier = null;
         for (var slot : EquipmentSlot.armors()) {
-            var item = SbItemStack.from(player.getEquipment(slot));
-            if (item != null && item.sbItem() instanceof KuudraArmor kuudraArmor) {
+            var item = player.getSbEquipment(slot);
+            if (item.sbItem() instanceof KuudraArmor kuudraArmor) {
                 if (kuudraArmor.armorType() != KuudraArmorType.Crimson) continue;
                 if (tier == null) tier = kuudraArmor.armorTier();
                 else if (tier.ordinal() > kuudraArmor.armorTier().ordinal()) tier = kuudraArmor.armorTier();

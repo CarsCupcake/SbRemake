@@ -8,7 +8,6 @@ import me.carscupcake.sbremake.player.skill.ISkill;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.rewards.Reward;
 import me.carscupcake.sbremake.rewards.impl.SkyblockXpReward;
-import me.carscupcake.sbremake.util.StringUtils;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.Material;
@@ -88,7 +87,7 @@ public class Dungeoneering extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of(STR."§8+ §a2 \{Stat.Health}"));
+            return new Lore(List.of("§8+ §a2 " + (Stat.Health) ));
         }
     }
     public record DungeonStatReward(int level) implements Reward {
@@ -99,7 +98,7 @@ public class Dungeoneering extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(STR."§7Increases the base stats of your dungeon items from §8\{dungeonItemStatBonus(level - 1)}➜§c\{dungeonItemStatBonus(level)}% §7while in §cThe Catacombs§7.");
+            return new Lore("§7Increases the base stats of your dungeon items from §8" + (dungeonItemStatBonus(level - 1)) + "➜§c" + (dungeonItemStatBonus(level)) + "% §7while in §cThe Catacombs§7.");
         }
     }
 }

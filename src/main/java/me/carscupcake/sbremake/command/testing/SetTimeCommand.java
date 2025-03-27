@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.command.testing;
 
-import me.carscupcake.sbremake.worlds.*;
+import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.Time;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.number.ArgumentInteger;
 import net.minestom.server.command.builder.arguments.number.ArgumentNumber;

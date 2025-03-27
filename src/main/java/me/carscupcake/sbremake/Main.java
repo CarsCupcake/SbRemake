@@ -39,15 +39,25 @@ import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscript
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
 import net.minestom.server.timer.TaskSchedule;
 import org.reflections.Reflections;
+import org.slf4j.event.Level;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.*;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -74,8 +84,13 @@ public class Main {
         MinecraftServer server = MinecraftServer.init();
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
         LOGGER = new SkyblockSimpleLogger();
+        if (System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true")) {
+            LOGGER.setLogLevel(0);
+            LOGGER.isEnabledForLevel(Level.DEBUG);
+            LOGGER.debug("Debug logging enabled");
+        }
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-            System.out.println(STR."Error occured on thread \{t.getName()}");
+            System.out.println("Error occured on thread " + (t.getName()) );
             LOGGER.error("", e);
             if (t.getName().equals("main")) System.exit(1);
         });
@@ -84,7 +99,7 @@ public class Main {
         LOGGER.info("Loading Recipes");
         long time = System.currentTimeMillis();
         Recipe.init();
-        LOGGER.info(STR."Loaded \{Recipe.craftingRecipes.size()} Crafting Recipes in \{System.currentTimeMillis() - time}ms");
+        LOGGER.info("Loaded " + (Recipe.craftingRecipes.size()) + " Crafting Recipes in " + (System.currentTimeMillis() - time) + "ms");
         MiningBlock.init();
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockBreakEvent.class, new PlayerBlockBreakListener());
@@ -150,7 +165,7 @@ public class Main {
                 Command instance = constructor.newInstance();
                 commandManager.register(instance);
             } catch (Exception e) {
-                LOGGER.error(STR."Error while instantiating \{clazz}", e);
+                LOGGER.error("Error while instantiating " + (clazz) , e);
             }
         }
         for (var arg : args)
@@ -171,7 +186,7 @@ public class Main {
         } catch (Exception _) {
         }
         server.start("127.0.0.1", port);
-        System.out.println(STR."Started Server on port \{port}");
+        System.out.println("Started Server on port " + (port) );
         CONSOLE_THREAD = java.lang.Thread.ofPlatform().name("Console").start(() -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             ConsoleSender console = new ConsoleSender();
@@ -181,12 +196,12 @@ public class Main {
                     if (!running.get()) return;
                     LOGGER.debug(in);
                     if (MinecraftServer.getCommandManager().commandExists(in.split(" ")[0])) {
-                        LOGGER.info(STR."Executing \{in}");
+                        LOGGER.info("Executing " + (in) );
                         synchronized (_lock) {
                             MinecraftServer.getCommandManager().execute(console, in);
                         }
                     } else {
-                        System.out.println(STR."The command \{in.split(" ")[0]} is not existing!");
+                        System.out.println("The command " + (in.split(" ")[0]) + " is not existing!");
                     }
                 } catch (Exception e) {
                     if (!running.get()) return;
@@ -202,7 +217,7 @@ public class Main {
         SkyblockPlayer.tickLoop();
         Time.init();
         MinecraftServer.getSchedulerManager().scheduleTask(System::gc, TaskSchedule.seconds(5), TaskSchedule.minutes(5));
-        LOGGER.info(MessageFormat.format("Time to start took {0}ms", System.currentTimeMillis() - startTime));
+        LOGGER.info("Time to start took {}ms", System.currentTimeMillis() - startTime);
         if (isCracked)
             LOGGER.warn("------ Cracked Enabled - Note that this is not officially supported ------");
     }

@@ -67,7 +67,7 @@ public class SkyblockPlayerArrow extends EntityProjectile {
 
     public static void launchArrow(SkyblockPlayer player, Vec shootVec, long chargeTime, SkyblockArrow arrow, boolean critParticlesEnabled) {
         double chargingSeconds = Math.min(1d, chargeTime / 1000d);
-        SkyblockPlayerArrow projectile = new SkyblockPlayerArrow(player, arrow, chargingSeconds >= 1, critParticlesEnabled, SbItemStack.from(player.getItemInHand(Player.Hand.MAIN)));
+        SkyblockPlayerArrow projectile = new SkyblockPlayerArrow(player, arrow, chargingSeconds >= 1, critParticlesEnabled, player.getSbItemInHand(Player.Hand.MAIN));
         var pos = player.getPosition().add(0D, player.getEyeHeight(), 0D);
         projectile.setInstance(player.getInstance(), pos);
         projectile.setVelocity(shootVec.normalize().mul(60 * chargingSeconds));

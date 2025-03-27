@@ -44,9 +44,9 @@ public class MineshaftMayhem extends HotmUpgrade {
         return new Lore(List.of("§7Every time you enter a §bGlacite", "§bMineshaft§7, you receive a random buff.", " ",
                 "§7Possible Buffs",
                 "§8 ■ §a+5% §7chance to find a §9Suspicious Scrap§7.",
-                STR."§8 ■ §7Gain §a+100 \{Stat.MiningFortune}",
-                STR."§8 ■ §7Gain §a+200 \{Stat.MiningSpeed}",
-                STR."§8 ■ §7Gain +10 \{Stat.ColdResistance}",
+                "§8 ■ §7Gain §a+100 " + (Stat.MiningFortune) ,
+                "§8 ■ §7Gain §a+200 " + (Stat.MiningSpeed) ,
+                "§8 ■ §7Gain +10 " + (Stat.ColdResistance) ,
                 "§8 ■ §7Reduce Pickaxe Ability cooldown by §a25%"));
     }
 

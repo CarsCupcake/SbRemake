@@ -27,7 +27,6 @@ import net.minestom.server.entity.ai.EntityAIGroup;
 import net.minestom.server.entity.ai.goal.RandomStrollGoal;
 import net.minestom.server.entity.ai.target.ClosestEntityTarget;
 import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
-import net.minestom.server.entity.metadata.other.LightningBoltMeta;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;

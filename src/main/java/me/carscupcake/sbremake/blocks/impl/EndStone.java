@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.blocks.impl;
 
-import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.entity.impl.end.Endermite;
 import me.carscupcake.sbremake.item.ISbItem;

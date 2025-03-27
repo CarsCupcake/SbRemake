@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.player;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import kotlin.Pair;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +19,8 @@ import me.carscupcake.sbremake.entity.slayer.PlayerSlayer;
 import me.carscupcake.sbremake.entity.slayer.SlayerQuest;
 import me.carscupcake.sbremake.entity.slayer.Slayers;
 import me.carscupcake.sbremake.event.*;
-import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.*;
+import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.FullSetBonus;
 import me.carscupcake.sbremake.item.impl.arrows.SkyblockArrow;
@@ -66,6 +65,9 @@ import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.*;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.inventory.AbstractInventory;
+import net.minestom.server.inventory.Inventory;
+import net.minestom.server.inventory.PlayerInventory;
 import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
@@ -83,6 +85,7 @@ import net.minestom.server.scoreboard.Sidebar;
 import net.minestom.server.tag.Tag;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
+import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -98,7 +101,7 @@ import java.util.function.UnaryOperator;
 
 @Slf4j
 @Getter
-@SuppressWarnings({"unused", "preview", "UnstableApiUsage"})
+@SuppressWarnings({"unused", "UnstableApiUsage"})
 public class SkyblockPlayer extends Player {
     private static final UUID speedUUID = UUID.randomUUID();
     private static final Set<Class<? extends ISbItem>> COIN_ITEMS = Set.of(CoinItem1.class, CoinItem10.class, CoinItem100.class, CoinItem1000.class, CoinItem2000.class, CoinItem5000.class);
@@ -152,7 +155,7 @@ public class SkyblockPlayer extends Player {
                                 return;
                             }
                         }
-                        SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                        SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
                         if (item == null) return;
                         if (item.sbItem() instanceof Shortbow shortbow && player.shortbowTask == null) {
                             for (Requirement requirement : item.sbItem().requirements())
@@ -181,11 +184,11 @@ public class SkyblockPlayer extends Player {
                     if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
                         player.lastInteractPotion = false;
                         if (player.bowStartPull < 0) return;
-                        if (player.getItemInHand(Hand.MAIN).material() != Material.BOW) return;
+                        SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
+                        if (!(item.sbItem() instanceof BowItem)) return;
                         long chargingTime = System.currentTimeMillis() - player.bowStartPull;
                         player.bowStartPull = -1;
-                        SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
-                        if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem)) return;
+                        if (chargingTime < 0) return;
                         for (Requirement requirement : item.sbItem().requirements())
                             if (!requirement.canUse(player, item.item())) {
                                 player.sendMessage("§cYou cannot use this item!");
@@ -199,14 +202,13 @@ public class SkyblockPlayer extends Player {
                             Block block = player.getInstance().getBlock(packet.blockPosition());
                             double hardness = block.registry().hardness();
                             if (hardness > 0) {
-                                ItemStack item = player.getItemInHand(Hand.MAIN);
-                                Tool tool = item.get(ItemComponent.TOOL);
+                                SbItemStack sbItem = player.getSbItemInHand(Player.Hand.MAIN);
+                                Tool tool = sbItem.item().get(ItemComponent.TOOL);
                                 if (tool != null) {
                                     for (Tool.Rule rule : tool.rules()) {
                                         if (rule.blocks().test(block)) {
                                             if (rule.speed() == null) continue;
                                             double mult = rule.speed();
-                                            SbItemStack sbItem = SbItemStack.from(item);
                                             int lvl = sbItem.getEnchantmentLevel(NormalEnchantment.Efficiency);
                                             if (lvl > 0) mult += Math.pow(lvl, 2) + 1;
                                             me.carscupcake.sbremake.player.potion.PotionEffect effect = player.getPotionEffect(Potion.Haste);
@@ -241,8 +243,8 @@ public class SkyblockPlayer extends Player {
                 }
                 if (event.getPacket() instanceof ClientUseItemPacket packet) {
                     if (packet.hand() != Hand.MAIN) return;
-                    if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
-                        SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                    SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
+                    if (item.sbItem() instanceof BowItem) {
                         if (item.sbItem() instanceof Shortbow shortbow) {
                             for (Requirement requirement : item.sbItem().requirements())
                                 if (!requirement.canUse(player, item.item())) {
@@ -265,8 +267,6 @@ public class SkyblockPlayer extends Player {
                     if (delta < 100) return;
                     player.lastInteractPacket = now;
                     MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, PlayerInteractEvent.Interaction.Right));
-                    SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
-                    if (item == null) return;
                     if (item.sbItem().getType() == ItemType.Potion) {
                         if (!player.lastInteractPotion)
                             player.lastInteractPotion = true;
@@ -394,8 +394,9 @@ public class SkyblockPlayer extends Player {
                     event.setCancelled(true);
                 }
             }).addListener(InventoryClickEvent.class, event -> {
-                if (event.getInventory() != null || (event.getSlot() < 41 || event.getSlot() > 44)) return;
-                ((SkyblockPlayer) event.getPlayer()).recalculateArmor();
+                if (event.getInventory() == null && (event.getClickType() == ClickType.SHIFT_CLICK || (event.getSlot() >= 41 && event.getSlot() <= 44))) {
+                    MinecraftServer.getSchedulerManager().buildTask(() ->((SkyblockPlayer) event.getPlayer()).recalculateArmor()).delay(1, TimeUnit.SERVER_TICK).schedule();
+                }
             }).addListener(PlayerDisconnectEvent.class, event -> {
                 SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
                 player.save();
@@ -412,7 +413,6 @@ public class SkyblockPlayer extends Player {
                 if (stack.sbItem() instanceof SkyblockMenu) {
                     event.setCancelled(true);
                     ((SkyblockPlayer) event.getPlayer()).openSkyblockMenu();
-                    return;
                 }
                 //Todo make item drop
             }).addListener(PlayerMoveEvent.class, event -> {
@@ -448,11 +448,6 @@ public class SkyblockPlayer extends Player {
             case Boots -> EquipmentSlot.BOOTS.armorSlot();
             default -> -1;
         };
-    }
-
-    public SbItemStack getSbItemStack(Hand hand) {
-        //TODO Cache
-        return SbItemStack.from(getItemInHand(hand));
     }
 
     public static final Comparator<StoredPet> PET_COMPARATOR = (o1, o2) -> {
@@ -602,8 +597,12 @@ public class SkyblockPlayer extends Player {
     @Getter
     private final UUID configId;
 
+    @Getter
+    private final SkyblockPlayerInventory playerInventory = new SkyblockPlayerInventory(this);
+
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection, @NotNull UUID configId) {
         super(uuid, username, playerConnection);
+        this.inventory = playerInventory;
         this.configId = configId;
         ConfigFile file = new ConfigFile("defaults", this);
         zealotPity = file.get("zealotPity", ConfigSection.INTEGER, 0);
@@ -643,6 +642,17 @@ public class SkyblockPlayer extends Player {
             pet = pets.get(f.get("equipped", ConfigSection.INTEGER));
         }
 
+    }
+
+    /**
+     * Gets the player inventory
+     * @return the legacy inventory
+     * @deprecated Use SkyblockPlayer#getPlayerInventory()
+     */
+    @Override
+    @Deprecated
+    public @NotNull PlayerInventory getInventory() {
+        return getPlayerInventory();
     }
 
     public boolean hasPotionEffect(IPotion potion) {
@@ -727,7 +737,7 @@ public class SkyblockPlayer extends Player {
             if (SkyblockPlayer.this.pet == clickedPet) {
                 SkyblockPlayer.this.pet = null;
                 clickedPet.getPet().despawnPet(SkyblockPlayer.this, clickedPet);
-                sendMessage(STR."§cYou despawned your \{clickedPet.getPet().getName()}");
+                sendMessage("§cYou despawned your " + (clickedPet.getPet().getName()) );
                 closeGui();
                 return true;
             }
@@ -736,7 +746,7 @@ public class SkyblockPlayer extends Player {
             }
             SkyblockPlayer.this.pet = clickedPet;
             clickedPet.getPet().spawnPet(SkyblockPlayer.this, clickedPet);
-            sendMessage(STR."§aYou spawned your \{clickedPet.getPet().getName()}");
+            sendMessage("§aYou spawned your " + (clickedPet.getPet().getName()) );
             closeGui();
             return true;
         });
@@ -751,8 +761,8 @@ public class SkyblockPlayer extends Player {
             profileItem.setHeadTexture(s.textures());
         profileItem.setName("§aYour Skyblock Profile").addAllLore("§7View your equipment, stats,").addAllLore("§7and more!").addAllLore("§7 ");
         for (Stat stat : Stat.values())
-            profileItem.addLoreRow(STR."\{stat} §f\{getStat(stat)}\{stat.isPercentValue() ? "%" : ""}");
-        inventoryBuilder.setItem(profileItem.addAllLore("§7  ").addLoreRow("§eClick to view!").build(), 13).setItem(new ItemBuilder(Material.DIAMOND_SWORD).setName("§aYour Skills").addAllLore("§7View your skills progression", "§7and rewards.", "§7 ", STR."§6\{StringUtils.cleanDouble(skillsAverage())} Skill Avearage", "§e ", "§eClick to view!").build(), 19).setItem(new ItemBuilder(Material.PAINTING).setName("§aCollections §c§lWIP").build(), 20).setItem(new ItemBuilder(Material.BOOK).setName("§aRecipe Book §c§lWIP").build(), 21).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0=").setName("§aSkyblock Leveling §c§lWIP").build(), 22).setItem(new ItemBuilder(Material.WRITABLE_BOOK).setName("§aQuest Log §c§lWIP").build(), 23).setItem(new ItemBuilder(Material.CLOCK).setName("§aCalendar and Events §c§lWIP").build(), 24).setItem(new ItemBuilder(Material.CHEST).setName("§aStorage §c§lWIP").build(), 25).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0=").setName("§aYour Bags §c§lWIP").build(), 29).setItem(new ItemBuilder(Material.BONE).setName("§aPets §c§lWIP").build(), 30).setItem(new ItemBuilder(Material.CRAFTING_TABLE).setName("§aCrafting Table §c§lWIP").build(), 31).setItem(new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new DyedItemColor(0x3e05af)).setName("§aWardrobe §c§lWIP").build(), 32).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA5Mjk5YTExN2JlZTg4ZDMyNjJmNmFiOTgyMTFmYmEzNDRlY2FlMzliNDdlYzg0ODEyOTcwNmRlZGM4MWU0ZiJ9fX0=").setName("§aPersonal Bank §c§lWIP").build(), 33).setItem(new ItemBuilder(Material.BARRIER).setName("§cClose").build(), 49);
+            profileItem.addLoreRow( (stat) + " §f" + (getStat(stat)) +  (stat.isPercentValue() ? "%" : "") );
+        inventoryBuilder.setItem(profileItem.addAllLore("§7  ").addLoreRow("§eClick to view!").build(), 13).setItem(new ItemBuilder(Material.DIAMOND_SWORD).setName("§aYour Skills").addAllLore("§7View your skills progression", "§7and rewards.", "§7 ", "§6" + (StringUtils.cleanDouble(skillsAverage())) + " Skill Avearage", "§e ", "§eClick to view!").build(), 19).setItem(new ItemBuilder(Material.PAINTING).setName("§aCollections §c§lWIP").build(), 20).setItem(new ItemBuilder(Material.BOOK).setName("§aRecipe Book §c§lWIP").build(), 21).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0=").setName("§aSkyblock Leveling §c§lWIP").build(), 22).setItem(new ItemBuilder(Material.WRITABLE_BOOK).setName("§aQuest Log §c§lWIP").build(), 23).setItem(new ItemBuilder(Material.CLOCK).setName("§aCalendar and Events §c§lWIP").build(), 24).setItem(new ItemBuilder(Material.CHEST).setName("§aStorage §c§lWIP").build(), 25).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0=").setName("§aYour Bags §c§lWIP").build(), 29).setItem(new ItemBuilder(Material.BONE).setName("§aPets §c§lWIP").build(), 30).setItem(new ItemBuilder(Material.CRAFTING_TABLE).setName("§aCrafting Table §c§lWIP").build(), 31).setItem(new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new DyedItemColor(0x3e05af)).setName("§aWardrobe §c§lWIP").build(), 32).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA5Mjk5YTExN2JlZTg4ZDMyNjJmNmFiOTgyMTFmYmEzNDRlY2FlMzliNDdlYzg0ODEyOTcwNmRlZGM4MWU0ZiJ9fX0=").setName("§aPersonal Bank §c§lWIP").build(), 33).setItem(new ItemBuilder(Material.BARRIER).setName("§cClose").build(), 49);
         Gui gui = new Gui(inventoryBuilder.build());
         gui.setCancelled(true);
         gui.getClickEvents().add(31, clickType -> {
@@ -778,9 +788,9 @@ public class SkyblockPlayer extends Player {
         ConfigFile configFile = new ConfigFile("inventory", this);
         configFile.setRawElement(new JsonObject());
         for (int i = 0; i < this.getInventory().getSize(); i++) {
-            SbItemStack item = SbItemStack.from(this.getInventory().getItemStack(i));
-            if (item == null) continue;
-            configFile.set(STR."\{i}", item, ConfigSection.ITEM);
+            SbItemStack item = getPlayerInventory().getSbItemStack(i);
+            if (item == SbItemStack.AIR) continue;
+            configFile.set(i + "", item, ConfigSection.ITEM);
         }
         configFile.save();
         ConfigFile defaults = new ConfigFile("defaults", this);
@@ -805,7 +815,7 @@ public class SkyblockPlayer extends Player {
         petsFile.set("stored", pets, STORED_PET_LIST_DATA);
         petsFile.set("equipped", (pet == null) ? -1 : pets.indexOf(pet), ConfigSection.INTEGER);
         petsFile.save();
-        Main.LOGGER.info(STR."Saved profile from \{((TextComponent) this.getName()).content()}");
+        Main.LOGGER.info("Saved profile from " + (((TextComponent) this.getName()).content()) );
 
         ConfigFile file = new ConfigFile("slayer", this);
         for (PlayerSlayer s : slayers.values())
@@ -828,7 +838,7 @@ public class SkyblockPlayer extends Player {
     public void addPowder(Powder type, int amount) {
         int newAmount = powder.get(type) + amount;
         setPowder(type, newAmount);
-        powderString = STR."\{type.getColor()}᠅ §f\{type.getName()}: \{type.getColor()}\{StringUtils.toFormatedNumber(newAmount)}";
+        powderString =  (type.getColor()) + "᠅ §f" + (type.getName()) + ": " + (type.getColor()) +  (StringUtils.toFormatedNumber(newAmount)) ;
     }
 
     public void setPowder(Powder type, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
@@ -902,7 +912,7 @@ public class SkyblockPlayer extends Player {
         sendPacket(packet);
         sendPacket(new ClearTitlesPacket(true));
         getInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create().item());
-        SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
+        SbItemStack item = getSbItemInHand(Hand.MAIN);
         warping = false;
         if (item != null) setItemInHand(Hand.MAIN, item.update().item());
         clearEffects();
@@ -1047,13 +1057,13 @@ public class SkyblockPlayer extends Player {
                 String[] l = display.apply(player);
                 for (String s : l) {
                     Component text = Component.text(s);
-                    String id = STR."\{15 - lines}";
+                    String id =  Integer.toString(15 - lines);
                     if (lines >= lineCopie.size())
                         player.sidebar.createLine(new Sidebar.ScoreboardLine(id, text, 15 - lines));
                     else {
                         Sidebar.ScoreboardLine line = player.sidebar.getLine(id);
                         if (line == null) {
-                            System.err.println(STR."Warning! Line \{id} is null!");
+                            System.err.println("Warning! Line " + (id) + " is null!");
                             continue;
                         }
                         if (!line.getContent().equals(text)) player.sidebar.updateLineContent(id, text);
@@ -1062,7 +1072,7 @@ public class SkyblockPlayer extends Player {
                 }
             }
             for (int i = lines; i < lineCopie.size(); i++) {
-                String id = STR."\{15 - i}";
+                String id =  Integer.toString(15 - i);
                 player.sidebar.removeLine(id);
             }
         })).repeat(TaskSchedule.seconds(1)).schedule();
@@ -1079,11 +1089,87 @@ public class SkyblockPlayer extends Player {
         return value;
     }
 
+    @Deprecated
+    public @NotNull ItemStack getEquipment(@NotNull EquipmentSlot slot) {
+        return getSbEquipment(slot).item();
+    }
+
+    public SbItemStack getSbEquipment(EquipmentSlot slot) {
+        return getPlayerInventory().getSbEquipment(slot);
+    }
+
+    public SbItemStack getSbItemInMainHand() {
+        return getPlayerInventory().getSbEquipment(EquipmentSlot.MAIN_HAND);
+    }
+
+    @Deprecated
+    @Override
+    public @NotNull ItemStack getItemInMainHand() {
+        return getSbItemInMainHand().item();
+    }
+
+    public SbItemStack getSbItemInOffHand() {
+        return getPlayerInventory().getSbEquipment(EquipmentSlot.OFF_HAND);
+    }
+
+    @Deprecated
+    @Override
+    public @NotNull ItemStack getItemInOffHand() {
+        return getSbItemInOffHand().item();
+    }
+
+    public SbItemStack getSbItemInHand(Hand hand) {
+        SbItemStack var10000;
+        switch (hand) {
+            case MAIN -> var10000 = this.getSbItemInMainHand();
+            case OFF -> var10000 = this.getSbItemInOffHand();
+            default -> throw new MatchException(null, null);
+        }
+        return var10000;
+    }
+
+    @Override
+    @Deprecated
+    public @NotNull ItemStack getItemInHand(@NotNull Hand hand) {
+        return getSbItemInHand(hand).item();
+    }
+
+    @Deprecated
+    @Override
+    public void setItemInHand(@NotNull Hand hand, @NotNull ItemStack itemStack) {
+        setItemInHand(Hand.MAIN, SbItemStack.from(itemStack));
+    }
+
+    public void setItemInHand(@NotNull Hand hand, SbItemStack itemStack) {
+        switch (hand) {
+            case MAIN -> this.setItemInMainHand(itemStack);
+            case OFF -> this.setItemInOffHand(itemStack);
+        }
+    }
+
+    @Deprecated
+    public void setItemInMainHand(@NotNull ItemStack itemStack) {
+        setItemInMainHand(SbItemStack.from(itemStack));
+    }
+
+    public void setItemInMainHand(@NotNull SbItemStack itemStack) {
+        getPlayerInventory().setEquipment(EquipmentSlot.MAIN_HAND, itemStack);
+    }
+
+    @Deprecated
+    public void setItemInOffHand(@NotNull ItemStack itemStack) {
+        setItemInOffHand(SbItemStack.from(itemStack));
+    }
+
+    public void setItemInOffHand(@NotNull SbItemStack itemStack) {
+        getPlayerInventory().setEquipment(EquipmentSlot.OFF_HAND, itemStack);
+    }
+
     public PlayerStatEvent getStatModifiers(Stat stat, boolean isBow) {
         PlayerStatEvent event = new PlayerStatEvent(this, new ArrayList<>(), stat);
         event.modifiers().add(new PlayerStatEvent.BasicModifier("Base Value", stat.getBaseValue(), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Innate));
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
-            SbItemStack item = SbItemStack.from(getEquipment(slot));
+            SbItemStack item = getSbEquipment(slot);
             if (item == null) continue;
             double value = item.getStat(stat, this);
             if (value == 0) continue;
@@ -1094,7 +1180,7 @@ public class SkyblockPlayer extends Player {
                     break;
                 }
             if (canUse)
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{item.displayName()}", value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier( (item.displayName()) , value, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Armor));
         }
         if (pet != null) {
             double bonus = pet.getPet().getStat(stat, pet.toPetInfo());
@@ -1102,8 +1188,8 @@ public class SkyblockPlayer extends Player {
                 event.modifiers().add(new PlayerStatEvent.BasicModifier(pet.getPet().getName(), bonus, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.PetStats));
         }
         temporaryModifiers.forEachModifier(stat, modifier -> event.modifiers().add(modifier));
-        SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
-        if (item != null && (item.sbItem().getType().isStatsInMainhand() || (isBow && item.sbItem() instanceof BowItem))) {
+        SbItemStack item = getSbItemInHand(Hand.MAIN);
+        if (item != SbItemStack.AIR && (item.sbItem().getType().isStatsInMainhand() || (isBow && item.sbItem() instanceof BowItem))) {
             boolean canUse = true;
             for (Requirement requirement : item.sbItem().requirements())
                 if (!requirement.canUse(this, item.item())) {
@@ -1111,7 +1197,7 @@ public class SkyblockPlayer extends Player {
                     break;
                 }
             if (canUse)
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(STR."\{item.displayName()}", item.getStat(stat, this), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier( (item.displayName()) , item.getStat(stat, this), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.ItemHeld));
         }
         MinecraftServer.getGlobalEventHandler().call(event);
         return event;
@@ -1209,21 +1295,8 @@ public class SkyblockPlayer extends Player {
         EntityMeleeDamagePlayerEvent event = new EntityMeleeDamagePlayerEvent(entity, this);
         MinecraftServer.getGlobalEventHandler().call(event);
         if (event.isCancelled()) return;
-        double damage = event.calculateDamage();
-        double totalDamage = damage;
-        event.spawnDamageTag();
-        if (absorption > 0) {
-            if (absorption - damage <= 0) {
-                damage -= absorption;
-                absorption = 0;
-            } else {
-                absorption -= damage;
-                damage = 0;
-            }
-            updateHpBar();
-        }
-        setSbHealth(getSbHealth() - damage);
-        if (totalDamage >= 1) {
+        dealDamage(event);
+        if (event.getCachedDamage() >= 1) {
             sendPacket(new DamageEventPacket(getEntityId(), 0, entity.getEntityId(), 0, getPosition()));
             if (hasKb() && withKnockback) {
                 this.takeKnockback(0.4f, Math.sin(entity.getPosition().yaw() * 0.017453292), -Math.cos(entity.getPosition().yaw() * 0.017453292));
@@ -1236,19 +1309,7 @@ public class SkyblockPlayer extends Player {
         MinecraftServer.getGlobalEventHandler().call(event);
         if (event.isCancelled()) return;
         sendPacket(new DamageEventPacket(getEntityId(), 0, entity.getEntityId(), 0, getPosition()));
-        double damage = event.calculateDamage();
-        event.spawnDamageTag();
-        if (absorption > 0) {
-            if (absorption - damage <= 0) {
-                damage -= absorption;
-                absorption = 0;
-            } else {
-                absorption -= damage;
-                damage = 0;
-            }
-            updateHpBar();
-        }
-        setSbHealth(getSbHealth() - damage);
+        dealDamage(event);
         if (hasKb()) {
             this.takeKnockback(0.4f, Math.sin(entity.getPosition().yaw() * 0.017453292), -Math.cos(entity.getPosition().yaw() * 0.017453292));
         }
@@ -1259,6 +1320,10 @@ public class SkyblockPlayer extends Player {
         MinecraftServer.getGlobalEventHandler().call(event);
         if (event.isCancelled()) return;
         sendPacket(new DamageEventPacket(getEntityId(), 0, getEntityId(), 0, getPosition()));
+        dealDamage(event);
+    }
+
+    private void dealDamage(IDamageEvent event) {
         double finalDamage = event.calculateDamage();
         event.spawnDamageTag();
         if (absorption > 0) {
@@ -1284,10 +1349,14 @@ public class SkyblockPlayer extends Player {
     }
 
     public void recalculateArmor() {
+        recalculateArmor(getPlayerInventory());
+    }
+    public void recalculateArmor(SkyblockPlayerInventory inventory) {
+        Main.LOGGER.debug("Recalculate Armor");
         Map<FullSetBonus, Integer> copy = new HashMap<>(fullSetBonuses);
         fullSetBonuses.clear();
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
-            SbItemStack stack = SbItemStack.from(getInventory().getItemStack(slot.armorSlot()));
+            SbItemStack stack = inventory.getSbItemStack(slot.armorSlot());
             if (stack == null) continue;
             for (Ability ability : stack.getAbilities(this))
                 if (ability instanceof FullSetBonus fullSetBonus)
@@ -1301,21 +1370,24 @@ public class SkyblockPlayer extends Player {
             if (neu == old) continue;
             if (neu < bonus.getMinPieces() && old >= bonus.getMinPieces()) {
                 bonus.stop(this);
+                Main.LOGGER.debug("Stopping {}", bonus.toString());
                 continue;
             }
             if (old < bonus.getMinPieces() && neu >= bonus.getMinPieces()) {
                 bonus.start(this);
+                Main.LOGGER.debug("Starting {}", bonus.toString());
                 continue;
             }
             if (neu >= bonus.getMinPieces()) {
                 bonus.stop(this);
                 bonus.start(this);
+                Main.LOGGER.debug("Restarting {}", bonus.toString());
             }
         }
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
-            SbItemStack stack = SbItemStack.from(getInventory().getItemStack(slot.armorSlot()));
+            SbItemStack stack = inventory.getSbItemStack(slot.armorSlot());
             if (stack == null) continue;
-            getInventory().setItemStack(slot.armorSlot(), stack.update(this).item());
+            inventory.setItemStack(slot.armorSlot(), stack.update(this));
         }
     }
 
@@ -1326,6 +1398,8 @@ public class SkyblockPlayer extends Player {
     public void playSound(SoundType type, Sound.Source source, float volume, float pitch, Pos location) {
         playSound(Sound.sound(type.getKey(), source, volume, pitch), location);
     }
+
+
 
     private static float getMaxHearts(double maxHealth) {
         float health = 0;

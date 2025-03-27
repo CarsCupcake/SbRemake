@@ -4,8 +4,6 @@ import me.carscupcake.sbremake.item.BaseSbItem;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.Recipe;
 import me.carscupcake.sbremake.item.collections.Collection;
-import me.carscupcake.sbremake.item.impl.other.mining.resources.EnchantedBlockOfCoal;
-import me.carscupcake.sbremake.item.impl.other.mining.resources.EnchantedCoal;
 import me.carscupcake.sbremake.item.impl.other.mining.resources.EnchantedCobblestone;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.rewards.impl.RecipeReward;

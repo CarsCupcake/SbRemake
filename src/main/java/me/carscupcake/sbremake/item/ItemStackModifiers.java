@@ -2,20 +2,19 @@ package me.carscupcake.sbremake.item;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.NumberBinaryTag;
-import net.minestom.server.component.DataComponent;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.tag.Tag;
 
-import javax.swing.text.html.parser.Entity;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Builder
 @Getter

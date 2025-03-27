@@ -28,7 +28,7 @@ public record ItemAbility<TEvent extends PlayerEvent>(String name, AbilityType<T
 
     @Override
     public String headline(SbItemStack item, SkyblockPlayer player) {
-        return STR."§6Ability: \{name} §e§l\{abilityType.name()}";
+        return "§6Ability: " + (name) + " §e§l" + (abilityType.name()) ;
     }
 
     @Override
@@ -61,6 +61,6 @@ public record ItemAbility<TEvent extends PlayerEvent>(String name, AbilityType<T
         }
         executor.accept(event);
         if (manaRequirement != null)
-            ((SkyblockPlayer) o.getPlayer()).setDefenseString(STR."§b-\{manaRequirement.getManaCost()} Mana (§6\{name}§b)");
+            ((SkyblockPlayer) o.getPlayer()).setDefenseString("§b-" + (manaRequirement.getManaCost()) + " Mana (§6" + (name) + "§b)");
     }
 }

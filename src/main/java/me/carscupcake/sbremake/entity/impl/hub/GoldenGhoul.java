@@ -1,11 +1,7 @@
 package me.carscupcake.sbremake.entity.impl.hub;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
-import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.SbItemStack;
-import me.carscupcake.sbremake.item.impl.pets.Pet;
-import me.carscupcake.sbremake.item.impl.pets.Pets;
-import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;

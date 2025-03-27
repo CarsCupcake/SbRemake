@@ -6,7 +6,6 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.hotm.Powder;
 
-import java.util.List;
 import java.util.Map;
 
 public class StrongArm extends HotmUpgrade {
@@ -42,7 +41,7 @@ public class StrongArm extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Gain §a+%b% \{Stat.MiningSpeed} §7when mining Tungsten or Umber.", Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore("§7Gain §a+%b% " + (Stat.MiningSpeed) + " §7when mining Tungsten or Umber.", Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
     }
 
     public double getBonus(int level) {

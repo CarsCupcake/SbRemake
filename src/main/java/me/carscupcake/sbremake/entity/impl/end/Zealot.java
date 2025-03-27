@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.entity.impl.end;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.entity.EntityType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 

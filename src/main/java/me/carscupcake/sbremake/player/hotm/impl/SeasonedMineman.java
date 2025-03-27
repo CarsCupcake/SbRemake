@@ -41,7 +41,7 @@ public class SeasonedMineman extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore(STR."§7Grands §3+%a% \{Stat.MiningWisdom}", Map.of("%a%", (_, _) -> StringUtils.cleanDouble(bonus(level))));
+        return new Lore("§7Grands §3+%a% " + (Stat.MiningWisdom) , Map.of("%a%", (_, _) -> StringUtils.cleanDouble(bonus(level))));
     }
 
     public double bonus(int level) {

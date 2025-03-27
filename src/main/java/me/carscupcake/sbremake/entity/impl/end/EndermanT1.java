@@ -9,10 +9,8 @@ import me.carscupcake.sbremake.item.impl.armor.enderArmor.EnderHelmet;
 import me.carscupcake.sbremake.item.impl.armor.enderArmor.EnderLeggings;
 import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
-import me.carscupcake.sbremake.worlds.impl.Hub;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.item.Material;
-import org.jetbrains.annotations.NotNull;
 
 public class EndermanT1 extends SkyblockEntity {
     public EndermanT1() {

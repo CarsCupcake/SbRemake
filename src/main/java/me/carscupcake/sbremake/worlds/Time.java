@@ -57,7 +57,7 @@ public class Time {
     }
 
     public static String timeToString() {
-        return STR."\{hour > 12 ? (hour - 12) : hour}:\{minute < 10 ? "00" : minute}\{getTimeSuffix()}";
+        return  (hour > 12 ? (hour - 12) : hour) + ":" + (minute < 10 ? "00" : minute) +  (getTimeSuffix()) ;
     }
 
     public static void save() {

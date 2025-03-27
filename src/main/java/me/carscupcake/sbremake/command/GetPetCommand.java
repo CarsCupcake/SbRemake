@@ -5,8 +5,6 @@ import me.carscupcake.sbremake.item.impl.pets.Pets;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentEnum;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class GetPetCommand extends Command {
     public GetPetCommand() {

@@ -7,9 +7,6 @@ import net.minestom.server.command.builder.arguments.ArgumentEnum;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.arguments.number.ArgumentNumber;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 public class SkillXpCommand extends Command {
     public SkillXpCommand() {
         super("skillxp");

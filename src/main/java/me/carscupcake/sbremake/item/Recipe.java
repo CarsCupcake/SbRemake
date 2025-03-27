@@ -152,14 +152,14 @@ public interface Recipe {
         CraftingIngredient ENCHANTED_DIAMOND_BLOCK = new CraftingIngredient(1, ISbItem.get(EnchantedDiamondBlock.class));
         for (int i = 2; i < 13; i++) {
             String[] recipeShape = {" # ", "#!#", " # "};
-            String id = STR."perfect_boots_\{i}";
-            craftingRecipes.put(id, new ShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw(STR."PERFECT_BOOTS_\{i - 1}"))), recipeShape));
-            id = STR."perfect_leggings_\{i}";
-            craftingRecipes.put(id, new ShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw(STR."PERFECT_LEGGINGS_\{i - 1}"))), recipeShape));
-            id = STR."perfect_chestplate_\{i}";
-            craftingRecipes.put(id, new ShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw(STR."PERFECT_CHESTPLATE_\{i - 1}"))), recipeShape));
-            id = STR."perfect_helmet_\{i}";
-            craftingRecipes.put(id, new ShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw(STR."PERFECT_HELMET_\{i - 1}"))), recipeShape));
+            String id = "perfect_boots_" + (i) ;
+            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_BOOTS_" + (i - 1) ))), recipeShape));
+            id = "perfect_leggings_" + (i) ;
+            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_LEGGINGS_" + (i - 1) ))), recipeShape));
+            id = "perfect_chestplate_" + (i) ;
+            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_CHESTPLATE_" + (i - 1) ))), recipeShape));
+            id = "perfect_helmet_" + (i) ;
+            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_HELMET_" + (i - 1) ))), recipeShape));
         }
     }
 
@@ -216,7 +216,7 @@ public interface Recipe {
                     JsonObject resultObject = jsonObject.get("result").getAsJsonObject();
                     ISbItem result = Objects.requireNonNull(SbItemStack.from(resultObject.get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem();
                     int count = resultObject.has("count") ? resultObject.get("count").getAsInt() : 1;
-                    return new ShapedRecipe(result, count, resultObject.has("priority") ? resultObject.get("priority").getAsInt() : -1, requirements, ingredientHashMap, lines);
+                    return ShapedRecipe.createShapedRecipe(result, count, resultObject.has("priority") ? resultObject.get("priority").getAsInt() : -1, requirements, ingredientHashMap, lines);
                 } catch (Exception e) {
                     System.out.println(jsonObject.toString());
                     throw new RuntimeException(e);

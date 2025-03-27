@@ -8,10 +8,6 @@ import net.minestom.server.command.builder.arguments.number.ArgumentInteger;
 import net.minestom.server.command.builder.arguments.number.ArgumentNumber;
 import net.openhft.chronicle.wire.TriConsumer;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 public class PowderCommand extends Command {
     public PowderCommand() {
         super("powder");

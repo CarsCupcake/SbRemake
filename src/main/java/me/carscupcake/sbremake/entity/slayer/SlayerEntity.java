@@ -5,7 +5,6 @@ import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
-import me.carscupcake.sbremake.util.lootTable.LootTable;
 import net.minestom.server.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +31,7 @@ public abstract class SlayerEntity extends SkyblockEntity {
             int xp = getSlayer().getSlayerXp(getTier());
             playerSlayer.addXp(xp);
             playerSlayer.getMeter().setRngMeterXp(playerSlayer.getMeter().getRngMeterXp() + xp);
-            owner.sendMessage(STR."§dRng Meter Stored Xp: \{playerSlayer.getMeter().getRngMeterXp()}");
+            owner.sendMessage("§dRng Meter Stored Xp: " + (playerSlayer.getMeter().getRngMeterXp()) );
             owner.getSlayerQuest().setStage(SlayerQuest.SlayerQuestStage.Completed);
         }
     }

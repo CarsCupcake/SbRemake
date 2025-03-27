@@ -23,11 +23,11 @@ public non-sealed abstract class FullSetBonus implements Ability {
     public String headline(SbItemStack item, SkyblockPlayer player) {
         int pieces = (player == null) ? 0 : player.getFullSetBonusPieceAmount(this);
         if (isTiered()) {
-            return STR."§6Tiered Bonus: \{name} \{(pieces == minPieces) ? "§6" : "§7"}(\{pieces}/\{maxPieces})";
+            return "§6Tiered Bonus: " + (name) + " " + ((pieces == minPieces) ? "§6" : "§7") + "(" + (pieces) + "/" + (maxPieces) + ")";
         }
         if (maxPieces != minPieces) {
-            return STR."§6\{maxPieces}-Piece Set Bonus: \{name}";
+            return "§6" + (maxPieces) + "-Piece Set Bonus: " + (name) ;
         }
-        return STR."§6Full Set Bonus: \{name} \{(pieces == minPieces) ? "§6" : "§7"}(\{pieces}/\{maxPieces})";
+        return "§6Full Set Bonus: " + (name) + " " + ((pieces == minPieces) ? "§6" : "§7") + "(" + (pieces) + "/" + (maxPieces) + ")";
     }
 }

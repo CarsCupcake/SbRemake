@@ -16,7 +16,6 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.server.play.ParticlePacket;
 import net.minestom.server.particle.Particle;
-import net.minestom.server.tag.Tag;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +24,8 @@ import java.util.Random;
 
 public record FarmingCrystal(Pos location, TaskScheduler task, HashMap<BlockVec, Block> blocks) {
     public FarmingCrystal(String headTexture, Pos location, Instance instance) {
-        CrystalTask crystalTask = new CrystalTask(headTexture, location, instance);
-        this(location, crystalTask, new HashMap<>());
+        this(location, new CrystalTask(headTexture, location, instance), new HashMap<>());
+        CrystalTask crystalTask = (CrystalTask) task;
         crystalTask.farmingCrystal = this;
         crystalTask.repeatTask(1);
 

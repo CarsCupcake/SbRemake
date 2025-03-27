@@ -5,7 +5,6 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import net.minestom.server.entity.EntityType;
-import org.jetbrains.annotations.NotNull;
 
 public class Endermite extends SkyblockEntity implements SkillXpDropper {
     private final float maxHealth;
