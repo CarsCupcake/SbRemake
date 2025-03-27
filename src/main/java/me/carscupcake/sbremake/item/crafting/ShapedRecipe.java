@@ -91,8 +91,9 @@ public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result,
             boolean b = true;
             int i = 0;
             for (SbItemStack itemStack : current) {
+                if (itemStack == null) itemStack = SbItemStack.AIR;
                 CraftingIngredient ingredient = this.ingredients.get(i);
-                if ((ingredient == null && itemStack == null)) {
+                if ((ingredient == null && itemStack == SbItemStack.AIR)) {
                     i++;
                     continue;
                 }
@@ -100,11 +101,11 @@ public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result,
                     b = false;
                     break;
                 }
-                if (ingredient.items().length == 0 && itemStack == null) {
+                if (ingredient.items().length == 0 && itemStack == SbItemStack.AIR) {
                     i++;
                     continue;
                 }
-                if (itemStack == null) {
+                if (itemStack == SbItemStack.AIR) {
                     b = false;
                     break;
                 }
@@ -133,7 +134,7 @@ public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result,
             boolean bol = true;
             for (int i = 0; i < 9; i++) {
                 if (combi.contains(i)) b.add(i);
-                else if (items.get(i) != null) {
+                else if (items.get(i) != SbItemStack.AIR) {
                     bol = false;
                     break;
                 }
@@ -147,7 +148,7 @@ public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result,
         int i = 0;
         for (Integer slot : segments) {
             SbItemStack item = items.get(slot);
-            if (item != null)
+            if (item !=  SbItemStack.AIR)
                 items.set(slot, item.withAmount(item.item().amount() - this.ingredients.get(i).amount()));
             i++;
         }
@@ -161,7 +162,7 @@ public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result,
             boolean bol = true;
             for (int i = 0; i < 9; i++) {
                 if (combi.contains(i)) b.add(items.get(i));
-                else if (items.get(i) != null) {
+                else if (items.get(i) != SbItemStack.AIR) {
                     bol = false;
                     break;
                 }

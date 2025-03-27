@@ -27,7 +27,7 @@ public record ShapelessRecipe(ISbItem result, int amount, Requirement[] requirem
         List<CraftingIngredient> checked = new ArrayList<>();
         HashMap<CraftingIngredient, Integer> ammountMissing = new HashMap<>();
         for (SbItemStack itemStack : items) {
-            if (itemStack == null) continue;
+            if (itemStack == null || itemStack == SbItemStack.AIR) continue;
             CraftingIngredient ingredient = null;
             for (CraftingIngredient i : this.ingredients) if (i.contains(itemStack)) ingredient = i;
             if (ingredient == null)
@@ -51,7 +51,7 @@ public record ShapelessRecipe(ISbItem result, int amount, Requirement[] requirem
         HashMap<CraftingIngredient, Integer> ammountMissing = new HashMap<>();
         int index = 0;
         for (SbItemStack i : items) {
-            if (i == null) {
+            if (i == SbItemStack.AIR) {
                 index++;
                 continue;
             }
