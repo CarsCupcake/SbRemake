@@ -30,7 +30,7 @@ public record ItemCost(ISbItem item, int amount) implements Cost {
     public void pay(SkyblockPlayer player) {
         int remaining = amount;
         for (int i = 0; i < player.getInventory().getSize(); i++) {
-            SbItemStack stack = SbItemStack.from(player.getInventory().getItemStack(i));
+            SbItemStack stack = player.getPlayerInventory().getSbItemStack(i);
             if (stack == null || stack.sbItem() != this.item) continue;
             if (remaining - stack.item().amount() <= 0) {
                 int delta = stack.item().amount() - remaining;

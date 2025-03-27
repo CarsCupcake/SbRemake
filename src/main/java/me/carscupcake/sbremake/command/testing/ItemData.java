@@ -8,7 +8,7 @@ public class ItemData extends Command {
     public ItemData() {
         super("itemdata");
         addSyntax((commandSender, _) -> {
-            System.out.println(((SkyblockPlayer) commandSender).getItemInHand(Player.Hand.MAIN).toItemNBT());
+            System.out.println(((SkyblockPlayer) commandSender).getSbItemInHand(Player.Hand.MAIN).item().toItemNBT());
         });
     }
 

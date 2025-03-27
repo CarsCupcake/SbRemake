@@ -21,7 +21,7 @@ public class ReforgeCommand extends Command {
             String s = commandContext.get(word);
             if (s == null) return;
             SkyblockPlayer player = (SkyblockPlayer) commandSender;
-            SbItemStack item = SbItemStack.from(player.getItemInHand(Player.Hand.MAIN));
+            SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
             if (item == null) {
                 player.sendMessage("§cYou do not have a valid item");
                 return;

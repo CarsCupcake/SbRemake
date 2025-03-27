@@ -242,7 +242,7 @@ public class BlockLootTable implements ILootTable<SbItemStack> {
         @Override
         public boolean test(@NotNull BlockContext blockContext) {
             if (blockContext.player == null) return false;
-            var item = blockContext.player.getSbItemStack(Player.Hand.MAIN);
+            var item = blockContext.player.getSbItemInHand(Player.Hand.MAIN);
             if (item == null) return false;
             boolean result = false;
             for (String itemId : items) {
@@ -299,7 +299,7 @@ public class BlockLootTable implements ILootTable<SbItemStack> {
         public boolean test(@NotNull BlockContext blockContext) {
             int level = 0;
             if (blockContext.player != null) {
-                var item = blockContext.player.getSbItemStack(Player.Hand.MAIN);
+                var item = blockContext.player.getSbItemInHand(Player.Hand.MAIN);
                 if (item != null)
                     level = item.getEnchantmentLevel(enchantement);
             }

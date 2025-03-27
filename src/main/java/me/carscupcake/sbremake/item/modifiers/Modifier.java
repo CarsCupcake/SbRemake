@@ -44,6 +44,7 @@ public interface Modifier<T> {
     Modifier<Reforge> REFORGE = new Modifier<>() {
         @Override
         public Reforge getFromNbt(SbItemStack item) {
+            if (item == SbItemStack.AIR) return null;
             String id = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getString("reforge", "");
             if (id.isEmpty()) return null;
             return Reforge.reforges.get(id);
@@ -59,6 +60,7 @@ public interface Modifier<T> {
     Modifier<Map<SkyblockEnchantment, Integer>> ENCHANTMENTS = new Modifier<>() {
         @Override
         public Map<SkyblockEnchantment, Integer> getFromNbt(SbItemStack item) {
+            if (item == SbItemStack.AIR) return new HashMap<>();
             CompoundBinaryTag enchantments = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getCompound("enchantments");
             Map<SkyblockEnchantment, Integer> enchantmentMap = new HashMap<>();
             for (String key : enchantments.keySet()) {
@@ -81,6 +83,7 @@ public interface Modifier<T> {
     Modifier<List<String>> UNLOCKED_GEMSTONE_SLOTS = new Modifier<>() {
         @Override
         public List<String> getFromNbt(SbItemStack item) {
+            if (item == SbItemStack.AIR) return new ArrayList<>();
             if (!(item.sbItem() instanceof GemstoneSlots)) return new ArrayList<>();
             CompoundBinaryTag gems = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getCompound("gems");
             List<String> unlocked = new ArrayList<>();
@@ -103,6 +106,7 @@ public interface Modifier<T> {
     Modifier<GemstoneSlot[]> GEMSTONE_SLOTS = new Modifier<>() {
         @Override
         public @Nullable GemstoneSlot[] getFromNbt(SbItemStack item) {
+            if (item == SbItemStack.AIR) return new GemstoneSlot[0];
             if (!(item.sbItem() instanceof GemstoneSlots slots)) return new GemstoneSlot[0];
             GemstoneSlot[] gemstoneSlots = new GemstoneSlot[slots.getGemstoneSlots().length];
             CompoundBinaryTag gems = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getCompound("gems");

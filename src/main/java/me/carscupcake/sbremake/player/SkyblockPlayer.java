@@ -67,6 +67,7 @@ import net.minestom.server.event.player.*;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.inventory.AbstractInventory;
 import net.minestom.server.inventory.Inventory;
+import net.minestom.server.inventory.PlayerInventory;
 import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
@@ -154,7 +155,7 @@ public class SkyblockPlayer extends Player {
                                 return;
                             }
                         }
-                        SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                        SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
                         if (item == null) return;
                         if (item.sbItem() instanceof Shortbow shortbow && player.shortbowTask == null) {
                             for (Requirement requirement : item.sbItem().requirements())
@@ -183,11 +184,11 @@ public class SkyblockPlayer extends Player {
                     if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
                         player.lastInteractPotion = false;
                         if (player.bowStartPull < 0) return;
-                        if (player.getItemInHand(Hand.MAIN).material() != Material.BOW) return;
+                        SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
+                        if (!(item.sbItem() instanceof BowItem)) return;
                         long chargingTime = System.currentTimeMillis() - player.bowStartPull;
                         player.bowStartPull = -1;
-                        SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
-                        if (item == null || chargingTime < 0 || !(item.sbItem() instanceof BowItem)) return;
+                        if (chargingTime < 0) return;
                         for (Requirement requirement : item.sbItem().requirements())
                             if (!requirement.canUse(player, item.item())) {
                                 player.sendMessage("§cYou cannot use this item!");
@@ -201,14 +202,13 @@ public class SkyblockPlayer extends Player {
                             Block block = player.getInstance().getBlock(packet.blockPosition());
                             double hardness = block.registry().hardness();
                             if (hardness > 0) {
-                                ItemStack item = player.getItemInHand(Hand.MAIN);
-                                Tool tool = item.get(ItemComponent.TOOL);
+                                SbItemStack sbItem = player.getSbItemInHand(Player.Hand.MAIN);
+                                Tool tool = sbItem.item().get(ItemComponent.TOOL);
                                 if (tool != null) {
                                     for (Tool.Rule rule : tool.rules()) {
                                         if (rule.blocks().test(block)) {
                                             if (rule.speed() == null) continue;
                                             double mult = rule.speed();
-                                            SbItemStack sbItem = SbItemStack.from(item);
                                             int lvl = sbItem.getEnchantmentLevel(NormalEnchantment.Efficiency);
                                             if (lvl > 0) mult += Math.pow(lvl, 2) + 1;
                                             me.carscupcake.sbremake.player.potion.PotionEffect effect = player.getPotionEffect(Potion.Haste);
@@ -243,8 +243,8 @@ public class SkyblockPlayer extends Player {
                 }
                 if (event.getPacket() instanceof ClientUseItemPacket packet) {
                     if (packet.hand() != Hand.MAIN) return;
-                    if (player.getItemInHand(Hand.MAIN).material() == Material.BOW) {
-                        SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
+                    SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
+                    if (item.sbItem() instanceof BowItem) {
                         if (item.sbItem() instanceof Shortbow shortbow) {
                             for (Requirement requirement : item.sbItem().requirements())
                                 if (!requirement.canUse(player, item.item())) {
@@ -267,8 +267,6 @@ public class SkyblockPlayer extends Player {
                     if (delta < 100) return;
                     player.lastInteractPacket = now;
                     MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, PlayerInteractEvent.Interaction.Right));
-                    SbItemStack item = SbItemStack.from(player.getItemInHand(Hand.MAIN));
-                    if (item == null) return;
                     if (item.sbItem().getType() == ItemType.Potion) {
                         if (!player.lastInteractPotion)
                             player.lastInteractPotion = true;
@@ -452,11 +450,6 @@ public class SkyblockPlayer extends Player {
         };
     }
 
-    public SbItemStack getSbItemStack(Hand hand) {
-        //TODO Cache
-        return SbItemStack.from(getItemInHand(hand));
-    }
-
     public static final Comparator<StoredPet> PET_COMPARATOR = (o1, o2) -> {
         int rarity = o2.getRarity().ordinal() - o1.getRarity().ordinal();
         if (rarity != 0) return rarity;
@@ -604,8 +597,12 @@ public class SkyblockPlayer extends Player {
     @Getter
     private final UUID configId;
 
+    @Getter
+    private final SkyblockPlayerInventory playerInventory = new SkyblockPlayerInventory(this);
+
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection, @NotNull UUID configId) {
         super(uuid, username, playerConnection);
+        this.inventory = playerInventory;
         this.configId = configId;
         ConfigFile file = new ConfigFile("defaults", this);
         zealotPity = file.get("zealotPity", ConfigSection.INTEGER, 0);
@@ -645,6 +642,17 @@ public class SkyblockPlayer extends Player {
             pet = pets.get(f.get("equipped", ConfigSection.INTEGER));
         }
 
+    }
+
+    /**
+     * Gets the player inventory
+     * @return the legacy inventory
+     * @deprecated Use SkyblockPlayer#getPlayerInventory()
+     */
+    @Override
+    @Deprecated
+    public @NotNull PlayerInventory getInventory() {
+        return getPlayerInventory();
     }
 
     public boolean hasPotionEffect(IPotion potion) {
@@ -780,8 +788,8 @@ public class SkyblockPlayer extends Player {
         ConfigFile configFile = new ConfigFile("inventory", this);
         configFile.setRawElement(new JsonObject());
         for (int i = 0; i < this.getInventory().getSize(); i++) {
-            SbItemStack item = SbItemStack.from(this.getInventory().getItemStack(i));
-            if (item == null) continue;
+            SbItemStack item = getPlayerInventory().getSbItemStack(i);
+            if (item == SbItemStack.AIR) continue;
             configFile.set(i + "", item, ConfigSection.ITEM);
         }
         configFile.save();
@@ -904,7 +912,7 @@ public class SkyblockPlayer extends Player {
         sendPacket(packet);
         sendPacket(new ClearTitlesPacket(true));
         getInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create().item());
-        SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
+        SbItemStack item = getSbItemInHand(Hand.MAIN);
         warping = false;
         if (item != null) setItemInHand(Hand.MAIN, item.update().item());
         clearEffects();
@@ -1081,11 +1089,87 @@ public class SkyblockPlayer extends Player {
         return value;
     }
 
+    @Deprecated
+    public @NotNull ItemStack getEquipment(@NotNull EquipmentSlot slot) {
+        return getSbEquipment(slot).item();
+    }
+
+    public SbItemStack getSbEquipment(EquipmentSlot slot) {
+        return getPlayerInventory().getSbEquipment(slot);
+    }
+
+    public SbItemStack getSbItemInMainHand() {
+        return getPlayerInventory().getSbEquipment(EquipmentSlot.MAIN_HAND);
+    }
+
+    @Deprecated
+    @Override
+    public @NotNull ItemStack getItemInMainHand() {
+        return getSbItemInMainHand().item();
+    }
+
+    public SbItemStack getSbItemInOffHand() {
+        return getPlayerInventory().getSbEquipment(EquipmentSlot.OFF_HAND);
+    }
+
+    @Deprecated
+    @Override
+    public @NotNull ItemStack getItemInOffHand() {
+        return getSbItemInOffHand().item();
+    }
+
+    public SbItemStack getSbItemInHand(Hand hand) {
+        SbItemStack var10000;
+        switch (hand) {
+            case MAIN -> var10000 = this.getSbItemInMainHand();
+            case OFF -> var10000 = this.getSbItemInOffHand();
+            default -> throw new MatchException(null, null);
+        }
+        return var10000;
+    }
+
+    @Override
+    @Deprecated
+    public @NotNull ItemStack getItemInHand(@NotNull Hand hand) {
+        return getSbItemInHand(hand).item();
+    }
+
+    @Deprecated
+    @Override
+    public void setItemInHand(@NotNull Hand hand, @NotNull ItemStack itemStack) {
+        setItemInHand(Hand.MAIN, SbItemStack.from(itemStack));
+    }
+
+    public void setItemInHand(@NotNull Hand hand, SbItemStack itemStack) {
+        switch (hand) {
+            case MAIN -> this.setItemInMainHand(itemStack);
+            case OFF -> this.setItemInOffHand(itemStack);
+        }
+    }
+
+    @Deprecated
+    public void setItemInMainHand(@NotNull ItemStack itemStack) {
+        setItemInMainHand(SbItemStack.from(itemStack));
+    }
+
+    public void setItemInMainHand(@NotNull SbItemStack itemStack) {
+        getPlayerInventory().setEquipment(EquipmentSlot.MAIN_HAND, itemStack);
+    }
+
+    @Deprecated
+    public void setItemInOffHand(@NotNull ItemStack itemStack) {
+        setItemInOffHand(SbItemStack.from(itemStack));
+    }
+
+    public void setItemInOffHand(@NotNull SbItemStack itemStack) {
+        getPlayerInventory().setEquipment(EquipmentSlot.OFF_HAND, itemStack);
+    }
+
     public PlayerStatEvent getStatModifiers(Stat stat, boolean isBow) {
         PlayerStatEvent event = new PlayerStatEvent(this, new ArrayList<>(), stat);
         event.modifiers().add(new PlayerStatEvent.BasicModifier("Base Value", stat.getBaseValue(), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Innate));
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
-            SbItemStack item = SbItemStack.from(getEquipment(slot));
+            SbItemStack item = getSbEquipment(slot);
             if (item == null) continue;
             double value = item.getStat(stat, this);
             if (value == 0) continue;
@@ -1104,8 +1188,8 @@ public class SkyblockPlayer extends Player {
                 event.modifiers().add(new PlayerStatEvent.BasicModifier(pet.getPet().getName(), bonus, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.PetStats));
         }
         temporaryModifiers.forEachModifier(stat, modifier -> event.modifiers().add(modifier));
-        SbItemStack item = SbItemStack.from(getItemInHand(Hand.MAIN));
-        if (item != null && (item.sbItem().getType().isStatsInMainhand() || (isBow && item.sbItem() instanceof BowItem))) {
+        SbItemStack item = getSbItemInHand(Hand.MAIN);
+        if (item != SbItemStack.AIR && (item.sbItem().getType().isStatsInMainhand() || (isBow && item.sbItem() instanceof BowItem))) {
             boolean canUse = true;
             for (Requirement requirement : item.sbItem().requirements())
                 if (!requirement.canUse(this, item.item())) {
@@ -1265,14 +1349,14 @@ public class SkyblockPlayer extends Player {
     }
 
     public void recalculateArmor() {
-        recalculateArmor(getInventory());
+        recalculateArmor(getPlayerInventory());
     }
-    public void recalculateArmor(AbstractInventory inventory) {
+    public void recalculateArmor(SkyblockPlayerInventory inventory) {
         Main.LOGGER.debug("Recalculate Armor");
         Map<FullSetBonus, Integer> copy = new HashMap<>(fullSetBonuses);
         fullSetBonuses.clear();
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
-            SbItemStack stack = SbItemStack.from(inventory.getItemStack(slot.armorSlot()));
+            SbItemStack stack = inventory.getSbItemStack(slot.armorSlot());
             if (stack == null) continue;
             for (Ability ability : stack.getAbilities(this))
                 if (ability instanceof FullSetBonus fullSetBonus)
@@ -1301,9 +1385,9 @@ public class SkyblockPlayer extends Player {
             }
         }
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
-            SbItemStack stack = SbItemStack.from(inventory.getItemStack(slot.armorSlot()));
+            SbItemStack stack = inventory.getSbItemStack(slot.armorSlot());
             if (stack == null) continue;
-            inventory.setItemStack(slot.armorSlot(), stack.update(this).item());
+            inventory.setItemStack(slot.armorSlot(), stack.update(this));
         }
     }
 
@@ -1314,6 +1398,8 @@ public class SkyblockPlayer extends Player {
     public void playSound(SoundType type, Sound.Source source, float volume, float pitch, Pos location) {
         playSound(Sound.sound(type.getKey(), source, volume, pitch), location);
     }
+
+
 
     private static float getMaxHearts(double maxHealth) {
         float health = 0;

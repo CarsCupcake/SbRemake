@@ -28,4 +28,9 @@ public record BaseSbItem(Material material, String name) implements ISbItem {
     public ItemRarity getRarity() {
         return ItemRarity.COMMON;
     }
+
+    @Override
+    public boolean allowUpdates() {
+        return material != Material.AIR;
+    }
 }

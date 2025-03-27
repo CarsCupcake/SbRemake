@@ -57,7 +57,7 @@ public interface SkyblockEnchantment {
     EventNode<Event> LISTENER = EventNode.all("enchantments");
     static void initListener() {
         LISTENER.register(new PlayerDamageEntityListener(event -> {
-            SbItemStack item = SbItemStack.from(event.getPlayer().getItemInHand(Player.Hand.MAIN));
+            SbItemStack item = event.getPlayer().getSbItemInHand(Player.Hand.MAIN);
             if (item == null) return;
             Map<SkyblockEnchantment, Integer> enchantments = item.getEnchantments();
             if (enchantments.containsKey(NormalEnchantment.Sharpness))

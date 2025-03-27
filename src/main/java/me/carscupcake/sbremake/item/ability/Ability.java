@@ -45,7 +45,7 @@ public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
     EventNode<Event> ABILITY_NODE = EventNode.all("items.abilities").addListener(PlayerInteractEvent.class, Ability::runAbility);
 
     static void runAbility(PlayerEvent event) {
-        SbItemStack item = SbItemStack.from(event.getPlayer().getItemInMainHand());
+        SbItemStack item = ((SkyblockPlayer) event.getPlayer()).getSbItemInMainHand();
         if (item == null) return;
         List<ItemAbility<?>> abilities = new ArrayList<>();
         boolean hasSneak = false;

@@ -51,6 +51,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         this(item, sbItem, new HashMap<>());
     }
 
+    public static final SbItemStack AIR = new SbItemStack(ItemStack.AIR, new BaseSbItem(Material.AIR, "Air"));
+
     private static final Map<String, ISbItem> items = new HashMap<>();
 
     public static void initSbItem(ISbItem item) {
@@ -72,7 +74,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     }
 
     public static SbItemStack from(ItemStack stack) {
-        if (stack == null || stack.material() == Material.AIR) return null;
+        if (stack == null || stack.material() == Material.AIR) return AIR;
         CompoundBinaryTag compound = (CompoundBinaryTag) stack.getTag(Tag.NBT("ExtraAttributes"));
         if (compound == null || !compound.keySet().contains("id"))
             return base(stack.material()).withAmount(stack.amount());

@@ -36,7 +36,7 @@ public class PacketOutListener implements Consumer<PlayerPacketOutEvent> {
             if (b != 1) return;
             //Bow draw or eating animation is triggered
             SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-            if (player.getBowStartPull() < 0 && player.getItemInHand(Player.Hand.MAIN).material() == Material.BOW)
+            if (player.getBowStartPull() < 0 && player.getSbItemInHand(Player.Hand.MAIN).item().material() == Material.BOW)
                 event.setCancelled(true);
         }
         if (event.getPacket() instanceof EntityAttributesPacket(

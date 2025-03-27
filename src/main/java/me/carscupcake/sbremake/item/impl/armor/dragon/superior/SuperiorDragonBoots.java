@@ -85,8 +85,7 @@ public class SuperiorDragonBoots implements ISbItem, ISbItem.StatProvider, NpcSe
             if (event.player().getFullSetBonusPieceAmount(SuperiorBloodFullSetBonus.INSTANCE) >= 4)
                 event.modifiers().add(new PlayerStatEvent.BasicModifier("Superior Blood", 0.05, PlayerStatEvent.Type.AddativeMultiplier, PlayerStatEvent.StatsCategory.Ability));
             for (EquipmentSlot equipmentSlot : EquipmentSlot.armors()) {
-                ItemStack item = event.player().getEquipment(equipmentSlot);
-                SbItemStack itemStack = SbItemStack.from(item);
+                SbItemStack itemStack = event.player().getSbEquipment(equipmentSlot);
                 if (itemStack != null && itemStack.getModifier(Modifier.REFORGE) == ArmorReforge.Renowned)
                     event.modifiers().add(new PlayerStatEvent.BasicModifier("Renowned " + (itemStack.sbItem().getType()) , 0.01, PlayerStatEvent.Type.AddativeMultiplier, PlayerStatEvent.StatsCategory.Armor));
 

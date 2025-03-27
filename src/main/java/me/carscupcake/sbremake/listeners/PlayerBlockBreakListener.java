@@ -182,7 +182,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                 }
             }
             if (b) {
-                SbItemStack mainHand = player.getSbItemStack(Player.Hand.MAIN);
+                SbItemStack mainHand = player.getSbItemInHand(Player.Hand.MAIN);
                 if (mainHand == null || !(mainHand.sbItem() instanceof IVanillaPickaxe pick)) return;
                 switch (pick.getTier()) {
                     case Wood:
