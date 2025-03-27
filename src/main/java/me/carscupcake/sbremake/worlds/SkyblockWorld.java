@@ -233,8 +233,77 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             if (world.getId().equals(id)) return world;
         return null;
     }
+    protected File findWorldFolder() {
+        return new File("./worlds/" + (getId()));
+    }
 
-    @SuppressWarnings({"unused", "ignored", "preview", "UnusedReturnValue"})
+    public File updateFiles() throws IOException {
+        File f = findWorldFolder();
+        if (!f.exists()) {
+            Main.LOGGER.info("Downloading world!");
+            //Download the world from my SkyblockRemake Repo
+            GitHub gitHub = GitHub.connectAnonymously();
+            f.mkdirs();
+            File dir = new File("./worlds");
+            File tempFolder = new File("./temp");
+            tempFolder.mkdirs();
+            AtomicReference<File> file = new AtomicReference<>();
+            try {
+                file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent("resources/worlds/" + (getId()) + "." + (fileEnding.literal)).getDownloadUrl(), null, tempFolder));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                if (fileEnding == FileEnding.RAR) {
+                    for (InputStream stream : extract(file.get().getAbsolutePath()).keySet()) {
+                        BufferedInputStream in = new BufferedInputStream(stream);
+                        FileOutputStream fout = new FileOutputStream(f);
+                        final byte[] data = new byte[1024];
+                        int count;
+                        while ((count = in.read(data, 0, 1024)) != -1) {
+                            fout.write(data, 0, count);
+                        }
+                        fout.flush();
+                        fout.close();
+                        in.close();
+                    }
+                } else {
+                    f.delete();
+                    getZipFiles(file.get().getAbsolutePath(), dir.getAbsolutePath());
+                    new File(dir, "world").renameTo(findWorldFolder());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            File wrongFile = new File("./worlds/Unidentified_Server");
+            if (wrongFile.exists()) {
+                f.delete();
+                wrongFile.renameTo(findWorldFolder());
+            }
+            Arrays.stream(Objects.requireNonNull(tempFolder.listFiles())).forEach(file1 -> {
+                try {
+                    file1.delete();
+                } catch (Exception e) {
+                    e.printStackTrace(System.err);
+                }
+            });
+            tempFolder.delete();
+            File fakeFolder = new File(dir, "world");
+            if (fakeFolder.exists()) {
+                Arrays.stream(Objects.requireNonNull(fakeFolder.listFiles())).forEach(file1 -> {
+                    try {
+                        file1.delete();
+                    } catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
+                });
+            }
+            fakeFolder.delete();
+            return findWorldFolder();
+        }
+        return f;
+    }
+    @SuppressWarnings({"unused", "ignored", "UnusedReturnValue"})
     @Getter
     public static abstract class WorldProvider {
         private static final MiningBlock[] VANILLA_ORES = {new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre()};
@@ -292,9 +361,6 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             return true;
         }
 
-        protected File findWorldFolder() {
-            return new File("./worlds/" + (type().getId()));
-        }
 
         public void init(InstanceContainer container, @Nullable Runnable after) {
             init(container, after, true);
@@ -305,69 +371,9 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             if (after != null)
                 onStart.add(after);
             try {
-                File f = findWorldFolder();
-                if (!f.exists()) {
-                    Main.LOGGER.info("Downloading world!");
-                    //Download the world from my SkyblockRemake Repo
-                    GitHub gitHub = GitHub.connectAnonymously();
-                    f.mkdirs();
-                    File dir = new File("./worlds");
-                    File tempFolder = new File("./temp");
-                    tempFolder.mkdirs();
-                    AtomicReference<File> file = new AtomicReference<>();
-                    try {
-                        file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent("resources/worlds/" + (type().getId()) + "." + (type().fileEnding.literal)).getDownloadUrl(), null, tempFolder));
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                    try {
-                        if (type().fileEnding == FileEnding.RAR) {
-                            for (InputStream stream : extract(file.get().getAbsolutePath()).keySet()) {
-                                BufferedInputStream in = new BufferedInputStream(stream);
-                                FileOutputStream fout = new FileOutputStream(f);
-                                final byte[] data = new byte[1024];
-                                int count;
-                                while ((count = in.read(data, 0, 1024)) != -1) {
-                                    fout.write(data, 0, count);
-                                }
-                                fout.flush();
-                                fout.close();
-                                in.close();
-                            }
-                        } else {
-                            f.delete();
-                            getZipFiles(file.get().getAbsolutePath(), dir.getAbsolutePath());
-                            new File(dir, "world").renameTo(findWorldFolder());
-                        }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                    File wrongFile = new File("./worlds/Unidentified_Server");
-                    if (wrongFile.exists()) {
-                        f.delete();
-                        wrongFile.renameTo(findWorldFolder());
-                    }
-                    Arrays.stream(Objects.requireNonNull(tempFolder.listFiles())).forEach(file1 -> {
-                        try {
-                            file1.delete();
-                        } catch (Exception e) {
-                            e.printStackTrace(System.err);
-                        }
-                    });
-                    tempFolder.delete();
-                    File fakeFolder = new File(dir, "world");
-                    if (fakeFolder.exists()) {
-                        Arrays.stream(Objects.requireNonNull(fakeFolder.listFiles())).forEach(file1 -> {
-                            try {
-                                file1.delete();
-                            } catch (Exception e) {
-                                e.printStackTrace(System.err);
-                            }
-                        });
-                    }
-                    fakeFolder.delete();
-                    f = findWorldFolder();
-                }
+                File f = type().updateFiles();
+                if (this instanceof PrivateIsle pI)
+                    f = pI.findWorldFolder();
                 container.setChunkLoader(new AnvilLoader(f.toPath()));
                 container.loadChunk(spawn().chunkX(), spawn().chunkZ()).get();
                 var chunks = new ArrayList<CompletableFuture<Chunk>>();

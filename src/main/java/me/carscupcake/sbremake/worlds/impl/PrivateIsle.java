@@ -148,8 +148,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
         super.unregister();
     }
 
-    @Override
-    protected File findWorldFolder() {
+    public File findWorldFolder() {
         return new File(ConfigFile.getConfigFolder(owner), "/private_isle");
     }
 
