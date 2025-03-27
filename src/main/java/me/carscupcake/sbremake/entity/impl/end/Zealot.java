@@ -9,6 +9,7 @@ import java.util.Random;
 public class Zealot extends SkyblockEntity {
     private static final int BASE_SPAWN_RATE = 420;
     private static final Random RANDOM = new Random();
+
     public Zealot() {
         super(EntityType.ENDERMAN);
     }
@@ -35,13 +36,11 @@ public class Zealot extends SkyblockEntity {
             SkyblockPlayer player = getLastDamager();
             player.setZealotPity(player.getZealotPity() + 1);
             var spawnRate = BASE_SPAWN_RATE;
-            if (player.getZealotPity() > BASE_SPAWN_RATE * 2){
+            if (player.getZealotPity() > BASE_SPAWN_RATE * 2) {
                 spawnRate /= 4;
-            } else
-            if (player.getZealotPity() > BASE_SPAWN_RATE * 1.50){
+            } else if (player.getZealotPity() > BASE_SPAWN_RATE * 1.50) {
                 spawnRate /= 3;
-            } else
-            if (player.getZealotPity() > BASE_SPAWN_RATE){
+            } else if (player.getZealotPity() > BASE_SPAWN_RATE) {
                 spawnRate /= 2;
             }
             if (RANDOM.nextDouble() <= 1d / spawnRate) {

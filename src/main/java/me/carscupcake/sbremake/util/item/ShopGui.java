@@ -5,10 +5,10 @@ import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.Cost;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.util.TemplateItems;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import me.carscupcake.sbremake.util.Pair;
 
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +44,7 @@ public class ShopGui extends Gui {
                     Pair<SbItemStack, Integer> i = player.getSellHistory().pop();
                     if (player.addItem(i.getFirst(), false)) {
                         player.removeCoins(i.getSecond());
-                        player.sendMessage("§aYou bought back " + (i.getFirst().displayName()) );
+                        player.sendMessage("§aYou bought back " + (i.getFirst().displayName()));
                         updateSellHistory(player);
                     } else {
                         player.getSellHistory().push(i);
@@ -69,7 +69,7 @@ public class ShopGui extends Gui {
                             return true;
                         }
                     if (player.addItem(pair.getFirst().update(player), false)) {
-                        player.sendMessage("§aYou bought " + (pair.getFirst().displayName()) +  (pair.getFirst().item().amount() > 1 ? "§8x" + (pair.getSecond()) + " " : "") + "§a for " + (pair.getSecond()) + "§a!");
+                        player.sendMessage("§aYou bought " + (pair.getFirst().displayName()) + (pair.getFirst().item().amount() > 1 ? "§8x" + (pair.getSecond()) + " " : "") + "§a for " + (pair.getSecond()) + "§a!");
                         pair.getSecond().pay(player);
                     }
 

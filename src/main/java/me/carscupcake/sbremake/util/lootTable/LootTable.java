@@ -26,7 +26,7 @@ public class LootTable<T> implements ILootTable<T> {
     public Set<T> loot(SkyblockPlayer player) {
         Set<T> set = new HashSet<>();
         Random r = new Random();
-         if (singleLoot) {
+        if (singleLoot) {
             double sum = 0;
             HashMap<Loot<T>, Double> table = new HashMap<>();
             for (Loot<T> l : loot) {

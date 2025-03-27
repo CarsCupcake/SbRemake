@@ -40,13 +40,13 @@ public class CrimsonBoots extends CrimsonBootsBaseline implements Listener {
     @Override
     public EventNode<Event> node() {
         return EventNode.all("ability.dominus").addListener(PlayerStatEvent.class, event -> {
-            if (event.stat() == Stat.SwingRange || event.stat() == Stat.Ferocity ||event.stat() == Stat.Damage) {
-                DominusAbility.DominusCounter counter = DominusAbility.task.get(event.player());
-                if (counter != null) {
-                    DominusAbility.applyStatBonus(event.player(), counter.getTier(), event);
-                }
-            }
-        })
+                    if (event.stat() == Stat.SwingRange || event.stat() == Stat.Ferocity || event.stat() == Stat.Damage) {
+                        DominusAbility.DominusCounter counter = DominusAbility.task.get(event.player());
+                        if (counter != null) {
+                            DominusAbility.applyStatBonus(event.player(), counter.getTier(), event);
+                        }
+                    }
+                })
                 .addListener(PlayerMeleeDamageEntityEvent.class, event -> {
                     int pieces = event.getPlayer().getFullSetBonusPieceAmount(DominusAbility.INSTANCE);
                     if (pieces < 2) return;
@@ -57,7 +57,7 @@ public class CrimsonBoots extends CrimsonBootsBaseline implements Listener {
                         player.playSound(SoundType.BLOCK_PISTON_EXTEND, Sound.Source.PLAYER, 1, 1);
                         if (DominusAbility.task.get(player).cooldown == 0) {
                             DominusAbility.task.get(player).cooldown = 10;
-                            Vec v = new Vec(3, 0 ,0).rotateAroundY(Math.toRadians(new Random().nextInt(360)));
+                            Vec v = new Vec(3, 0, 0).rotateAroundY(Math.toRadians(new Random().nextInt(360)));
                             Vec supportVec = event.getTarget().getPosition().asVec().add(v);
                             Vec dir = v.mul(-1).mul(2).withY(2);
                             Set<Entity> es = EntityUtils.getEntitiesInLine(supportVec.asPosition(), supportVec.add(dir).asPosition(), player.getInstance(), 2);

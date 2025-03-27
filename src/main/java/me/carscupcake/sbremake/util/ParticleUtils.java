@@ -9,7 +9,7 @@ import net.minestom.server.network.packet.server.play.ParticlePacket;
 import net.minestom.server.particle.Particle;
 
 public class ParticleUtils {
-private static final int RENDER_DISTANCE = (8 * 16) * (8 * 16);
+    private static final int RENDER_DISTANCE = (8 * 16) * (8 * 16);
 
     public static void spawnParticle(Instance instance, Point point, Particle particle, int count) {
         ParticlePacket packet = new ParticlePacket(particle, point, Pos.ZERO, 0, count);

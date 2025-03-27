@@ -22,14 +22,15 @@ public abstract class CrimsonChestplateBaseline implements ISbItem, ISbItem.Stat
     public KuudraArmorType armorType() {
         return KuudraArmorType.Crimson;
     }
+
     @Override
     public String getId() {
-        return  (armorTier().getId()) + "CRIMSON_CHESTPLATE";
+        return (armorTier().getId()) + "CRIMSON_CHESTPLATE";
     }
 
     @Override
     public String getName() {
-        return  (armorTier().getName()) + " Crimson Chestplate";
+        return (armorTier().getName()) + " Crimson Chestplate";
     }
 
     @Override

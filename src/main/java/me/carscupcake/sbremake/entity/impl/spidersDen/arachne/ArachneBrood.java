@@ -9,6 +9,7 @@ public class ArachneBrood extends SkyblockEntity {
     private final int level;
     private final float maxHealth;
     private final double damage;
+
     public ArachneBrood(Arachne parent) {
         super(EntityType.CAVE_SPIDER);
         this.parent = parent;

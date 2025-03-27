@@ -128,7 +128,7 @@ public enum Potion implements IPotion {
         public net.minestom.server.potion.PotionEffect getVanillaEffect() {
             return net.minestom.server.potion.PotionEffect.BLINDNESS;
         }
-    }, ColdResistance("Cold Resistance", "§b", new Color(0x7F8392), new PotionLore("§7Gain §b+%b% " + (Stat.ColdResistance) , "%b%", integer -> StringUtils.cleanDouble(2.5 * integer)), 4) {
+    }, ColdResistance("Cold Resistance", "§b", new Color(0x7F8392), new PotionLore("§7Gain §b+%b% " + (Stat.ColdResistance), "%b%", integer -> StringUtils.cleanDouble(2.5 * integer)), 4) {
         @Override
         public Map<Stat, PlayerStatEvent.PlayerStatModifier> getStatModifiers(byte level) {
             return Map.of(Stat.ColdResistance, new PlayerStatEvent.BasicModifier("Cold Resistance", level * 2.5, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Potion));
@@ -196,7 +196,7 @@ public enum Potion implements IPotion {
                 player.sendPacket(new RemoveEntityEffectPacket(player.getEntityId(), net.minestom.server.potion.PotionEffect.HASTE));
 
         }
-    }, Healing("Healing", "§c", new Color(16262179), new PotionLore("§7Instantly heals §c%d% " + (Stat.Health) , "%d%", integer -> switch (integer) {
+    }, Healing("Healing", "§c", new Color(16262179), new PotionLore("§7Instantly heals §c%d% " + (Stat.Health), "%d%", integer -> switch (integer) {
         case 1 -> "20";
         case 2 -> "50";
         case 3 -> "100";

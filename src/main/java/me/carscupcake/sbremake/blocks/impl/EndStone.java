@@ -15,6 +15,7 @@ import java.util.Set;
 
 public class EndStone extends MiningBlock {
     private static final Random RANDOM = new Random();
+
     public EndStone() {
         super(Block.END_STONE);
     }

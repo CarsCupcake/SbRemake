@@ -26,10 +26,10 @@ public class ResetPrivateIsle extends Command {
         addSyntax((e, c) -> {
             HttpClient client = HttpClient.newHttpClient();
             try {
-                var response = client.send(HttpRequest.newBuilder(URI.create("https://api.mojang.com/users/profiles/minecraft/" + (c.get(arg)) )).GET().build(), HttpResponse.BodyHandlers.ofString());
+                var response = client.send(HttpRequest.newBuilder(URI.create("https://api.mojang.com/users/profiles/minecraft/" + (c.get(arg)))).GET().build(), HttpResponse.BodyHandlers.ofString());
                 client.close();
                 if (response.statusCode() == 204) {
-                    e.sendMessage("No player with the name " + (c.get(arg)) );
+                    e.sendMessage("No player with the name " + (c.get(arg)));
                     return;
                 }
                 if (response.statusCode() != 200) {

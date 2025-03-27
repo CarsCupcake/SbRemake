@@ -37,7 +37,7 @@ public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
                 }
             }
         }
-        if (manaCost > 0) list.add("§8Mana Cost: §3" + (manaCost) );
+        if (manaCost > 0) list.add("§8Mana Cost: §3" + (manaCost));
         if (cooldown > 0) list.add("§8Cooldown: §a" + (cooldown) + "s");
         return list;
     }

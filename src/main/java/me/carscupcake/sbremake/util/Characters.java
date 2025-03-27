@@ -8,7 +8,7 @@ public enum Characters {
 
     private final char character;
 
-    Characters(char character){
+    Characters(char character) {
         this.character = character;
     }
 

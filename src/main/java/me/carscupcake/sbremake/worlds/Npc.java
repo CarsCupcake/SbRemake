@@ -26,6 +26,7 @@ public class Npc extends AbstractNpc {
     private Interaction interaction = null;
     private final int entityId;
     private final PlayerInfoUpdatePacket.Entry entry;
+
     public Npc(Pos pos, Instance instance, String name, PlayerSkin playerSkin) {
         super(pos, instance, name);
         entityId = Entity.generateId();
@@ -52,7 +53,9 @@ public class Npc extends AbstractNpc {
     public Dialog buildDialog() {
         return new Dialog("§e[NPC] " + (StringUtils.stripeColorCodes(entry.username())) + "§f:", 20);
     }
+
     private static char[] chars = {'a', 'a', 'a', 'a', 'a', 'a'};
+
     private static String makeName() {
         String s = new String(chars);
         for (int i = 0; i < chars.length; i++) {

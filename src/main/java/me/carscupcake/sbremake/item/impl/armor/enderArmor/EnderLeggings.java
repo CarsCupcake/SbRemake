@@ -14,6 +14,7 @@ public class EnderLeggings implements ISbItem, NpcSellable, ISbItem.StatProvider
     public SoulboundType getSoulboundType() {
         return SoulboundType.Coop;
     }
+
     @Override
     public String getId() {
         return "ENDER_LEGGINGS";

@@ -75,7 +75,8 @@ public class RevenantHorrorV extends SlayerEntity {
     public boolean thunder = false;
 
     public RevenantHorrorV(SkyblockPlayer owner) {
-        super(EntityType.ZOMBIE, lootTable, owner);;
+        super(EntityType.ZOMBIE, lootTable, owner);
+        ;
         EntityAIGroup aiGroup = new EntityAIGroup();
         aiGroup.getGoalSelectors().addAll(List.of(new RevenantAttackGoal(this, 1.3, 3.2, Duration.ofMillis(3200), Duration.ofSeconds(1)), new RandomStrollGoal(this, 5) // Walk around
         ));
@@ -179,7 +180,7 @@ public class RevenantHorrorV extends SlayerEntity {
                                 thunder = false;
                                 i = 0;
                             }).delay(TaskSchedule.seconds(1)).schedule();
-                        } else if(i < 7) {
+                        } else if (i < 7) {
                             Set<BlockVec> clone = new HashSet<>(checkingBlocks);
                             checkingBlocks.clear();
                             for (BlockVec b : clone) {
@@ -202,7 +203,7 @@ public class RevenantHorrorV extends SlayerEntity {
                 checkingBlocks.add(surface);
                 blocks.add(new FakeBlock(surface, instance, Block.BEDROCK).show());
                 checkingBlocks.add(block);
-                ParticleUtils.spawnParticle(instance, surface.add(0.5, 1,0.5), Particle.SMOKE, 1);
+                ParticleUtils.spawnParticle(instance, surface.add(0.5, 1, 0.5), Particle.SMOKE, 1);
             }
 
             @Override

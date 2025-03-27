@@ -6,7 +6,7 @@ import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.ItemType;
 import net.minestom.server.item.Material;
 
-public class Bow implements ISbItem, BowItem{
+public class Bow implements ISbItem, BowItem {
     @Override
     public String getId() {
         return "BOW";

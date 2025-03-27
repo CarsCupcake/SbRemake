@@ -11,13 +11,15 @@ import java.time.temporal.TemporalUnit;
 import java.util.HashMap;
 import java.util.Map;
 
-public record CooldownRequirement<T extends PlayerEvent>(long cooldown, TemporalUnit timeUnit) implements Requirement<T> {
+public record CooldownRequirement<T extends PlayerEvent>(long cooldown,
+                                                         TemporalUnit timeUnit) implements Requirement<T> {
 
     public CooldownRequirement(long seconds) {
         this(seconds, TimeUnit.SECOND);
     }
 
     public static Map<SkyblockPlayer, Long> cooldowns = new HashMap<>();
+
     @Override
     public boolean requirement(T t) {
         if (ToggleCommand.Toggles.IgnoreCooldown.toggled) return true;
@@ -29,7 +31,7 @@ public record CooldownRequirement<T extends PlayerEvent>(long cooldown, Temporal
                 return true;
             }
             int seconds = (int) ((delta * -1) / 1000d);
-             t.getPlayer().sendMessage("§cThe ability is on Cooldown for " + (seconds) + "s.");
+            t.getPlayer().sendMessage("§cThe ability is on Cooldown for " + (seconds) + "s.");
             return false;
         }
         return true;

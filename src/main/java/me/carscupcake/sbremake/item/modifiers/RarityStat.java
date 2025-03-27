@@ -2,13 +2,16 @@ package me.carscupcake.sbremake.item.modifiers;
 
 import me.carscupcake.sbremake.item.ItemRarity;
 
-public record RarityStat(double common, double uncommon, double rare, double epic, double legendary, double mythic, double divine) {
+public record RarityStat(double common, double uncommon, double rare, double epic, double legendary, double mythic,
+                         double divine) {
     public RarityStat(double common, double uncommon, double rare, double epic, double legendary, double mythic) {
         this(common, uncommon, rare, epic, legendary, mythic, mythic);
     }
+
     public RarityStat(double common, double uncommon, double rare, double epic, double legendary) {
-        this(common, uncommon, rare,epic, legendary, legendary);
+        this(common, uncommon, rare, epic, legendary, legendary);
     }
+
     public RarityStat(double common, double uncommon, double rare, double epic) {
         this(common, uncommon, rare, epic, epic);
     }
@@ -29,7 +32,7 @@ public record RarityStat(double common, double uncommon, double rare, double epi
         return switch (rarity) {
             case null -> 0;
             case COMMON -> common;
-            case UNCOMMON ->  uncommon;
+            case UNCOMMON -> uncommon;
             case RARE -> rare;
             case EPIC -> epic;
             case LEGENDARY -> legendary;

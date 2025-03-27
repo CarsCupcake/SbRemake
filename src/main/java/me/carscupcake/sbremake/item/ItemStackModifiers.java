@@ -28,6 +28,7 @@ public class ItemStackModifiers {
     private Map<String, BinaryTag> baseTags = new HashMap<>();
     @Builder.Default
     private Map<SkyblockEnchantment, Integer> enchantments = new HashMap<>();
+
     public ItemStack.Builder apply(ItemStack.Builder builder) {
         if (glint || !baseEnchantments.isEmpty())
             builder.set(ItemComponent.ENCHANTMENTS, new EnchantmentList(Enchantment.PROTECTION, 1).withTooltip(false));
@@ -41,7 +42,7 @@ public class ItemStackModifiers {
         CompoundBinaryTag tag = (CompoundBinaryTag) item.getTag(Tag.NBT("ExtraAttributes"));
         CompoundBinaryTag enchantments = tag.getCompound("enchantments");
         for (Map.Entry<SkyblockEnchantment, Integer> entry : this.enchantments.entrySet())
-            enchantments= enchantments.putInt(entry.getKey().getId(), (entry.getValue()));
+            enchantments = enchantments.putInt(entry.getKey().getId(), (entry.getValue()));
         return item.withTag(Tag.NBT("ExtraAttributes"), tag.put("enchantments", enchantments));
     }
 }

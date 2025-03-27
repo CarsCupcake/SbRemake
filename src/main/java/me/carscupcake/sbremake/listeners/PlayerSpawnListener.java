@@ -29,8 +29,8 @@ public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
             if (file.getRawElement().getAsJsonObject().isEmpty()) return;
             player.getInventory().clear();
             for (int i = 0; i < player.getInventory().getSize(); i++) {
-                if (file.has( Integer.toString(i) ))
-                    player.getInventory().setItemStack(i, file.get( Integer.toString(i) , ConfigSection.ITEM).update(player).item());
+                if (file.has(Integer.toString(i)))
+                    player.getInventory().setItemStack(i, file.get(Integer.toString(i), ConfigSection.ITEM).update(player).item());
             }
             player.getInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create().item());
             player.updateHpBar();

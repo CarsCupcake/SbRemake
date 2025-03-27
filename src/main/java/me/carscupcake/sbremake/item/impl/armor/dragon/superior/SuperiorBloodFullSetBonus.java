@@ -6,12 +6,14 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 
 public class SuperiorBloodFullSetBonus extends FullSetBonus {
     public static final SuperiorBloodFullSetBonus INSTANCE = new SuperiorBloodFullSetBonus();
+
     public SuperiorBloodFullSetBonus() {
         super("Superior Blood", 4, 4, false);
     }
 
     @Override
-    public void start(SkyblockPlayer player) {}
+    public void start(SkyblockPlayer player) {
+    }
 
     @Override
     public void stop(SkyblockPlayer player) {

@@ -5,5 +5,6 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 
 public interface Reward {
     void reward(SkyblockPlayer player);
+
     Lore lore();
 }

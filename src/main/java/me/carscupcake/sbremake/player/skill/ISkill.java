@@ -75,8 +75,9 @@ public abstract class ISkill {
             levelUp(level);
         }
         if (getLevel() >= getMaxLevel())
-            player.setDefenseString("§3+" + (StringUtils.cleanDouble(amount)) + " " + (getName()) );
-        else player.setDefenseString("§3+" + (StringUtils.cleanDouble(amount)) + " " + (getName()) + " (" + (StringUtils.toFormatedNumber((int) xp)) + "/" + (StringUtils.toShortNumber(nextLevelXp[level])) + ")");
+            player.setDefenseString("§3+" + (StringUtils.cleanDouble(amount)) + " " + (getName()));
+        else
+            player.setDefenseString("§3+" + (StringUtils.cleanDouble(amount)) + " " + (getName()) + " (" + (StringUtils.toFormatedNumber((int) xp)) + "/" + (StringUtils.toShortNumber(nextLevelXp[level])) + ")");
         player.playSound(SoundType.ENTITY_EXPERIENCE_ORB_PICKUP.create(0.5f, 2f));
     }
 
@@ -94,11 +95,11 @@ public abstract class ISkill {
         for (Reward reward : rewards)
             reward.reward(player);
         player.sendMessage("§3▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-        player.sendMessage("  §b§lSKILL LEVELED UP!§r §3" + (getName()) + " §8" + (StringUtils.toRoman(level - 1)) + "➜§3" + (StringUtils.toRoman(level)) );
+        player.sendMessage("  §b§lSKILL LEVELED UP!§r §3" + (getName()) + " §8" + (StringUtils.toRoman(level - 1)) + "➜§3" + (StringUtils.toRoman(level)));
         player.sendMessage("  ");
         player.sendMessage("  §a§lREWARDS");
         for (String s : rewardsLore(level, player)) {
-            player.sendMessage("   " + (s) );
+            player.sendMessage("   " + (s));
         }
         player.sendMessage("§3▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
     }
@@ -146,18 +147,18 @@ public abstract class ISkill {
     private static final int[] levelSlots = {9, 18, 27, 28, 29, 20, 11, 2, 3, 4, 13, 22, 31, 32, 33, 24, 15, 6, 7, 8, 17, 26, 35, 44, 53};
 
     public void openInventory(int page, SkyblockPlayer player) {
-        InventoryBuilder builder = new InventoryBuilder(6,  (getName()) + " Skill")
+        InventoryBuilder builder = new InventoryBuilder(6, (getName()) + " Skill")
                 .fill(TemplateItems.EmptySlot.getItem());
         for (int i = 0; i < levelSlots.length; i++) {
             int level = ((page - 1) * 25) + i + 1;
             if (level > getMaxLevel() || level > nextLevelXp.length) break;
             builder.setItem(new ItemBuilder(((i + 1) % 5 == 0) ? fiveLevelItem : (this.level >= level) ? Material.LIME_STAINED_GLASS_PANE : ((this.level + 1 == level) ? Material.YELLOW_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE))
-                    .setName( ((this.level >= level) ? "§a" : (this.level + 1 == level) ? "§e" : "§c") +  (getName()) + " Level " + (StringUtils.toRoman(level)) )
+                    .setName(((this.level >= level) ? "§a" : (this.level + 1 == level) ? "§e" : "§c") + (getName()) + " Level " + (StringUtils.toRoman(level)))
                     .addLoreRow("§7Rewards:")
                     .addAllLore(rewardsLore(level, player))
                     .addLoreIf(() -> this.level >= level, "§7  ", "§a§lUNLOCKED")
                     .addLoreIf(() -> this.level + 1 == level && level != 60, Component.text("§7  "), Component.text().append(StringUtils.makeProgressBar(10, xp, nextLevelXp[this.level], NamedTextColor.WHITE, NamedTextColor.GREEN,
-                            "§m "), Component.text("§r §e" + (StringUtils.cleanDouble(xp)) + "§6/§e" + (StringUtils.cleanDouble(nextLevelXp[level == nextLevelXp.length ? 0 : this.level])) )).build())
+                            "§m "), Component.text("§r §e" + (StringUtils.cleanDouble(xp)) + "§6/§e" + (StringUtils.cleanDouble(nextLevelXp[level == nextLevelXp.length ? 0 : this.level])))).build())
                     .build(), levelSlots[i]);
         }
         builder.setItem(0, new ItemBuilder(showItem)
@@ -167,7 +168,7 @@ public abstract class ISkill {
         int status;
         if ((page * 25) <= this.level) {
             status = page + 1;
-            builder.setItem(50, new ItemBuilder(Material.ARROW).setName("§aLevels " + ((page * 25) + 1) + " - " + (Math.min((page + 1) * 25, getMaxLevel())) ).addLoreRow("§eClick to view!").build());
+            builder.setItem(50, new ItemBuilder(Material.ARROW).setName("§aLevels " + ((page * 25) + 1) + " - " + (Math.min((page + 1) * 25, getMaxLevel()))).addLoreRow("§eClick to view!").build());
         } else if (page != 1) {
             status = 1;
             builder.setItem(50, new ItemBuilder(Material.ARROW).setName("§aLevels 1 - 25").addLoreRow("§eClick to view!").build());

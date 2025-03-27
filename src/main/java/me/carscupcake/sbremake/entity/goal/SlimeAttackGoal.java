@@ -23,6 +23,7 @@ public class SlimeAttackGoal extends GoalSelector {
     private Cooldown jumpCooldown;
     private final Random random = new Random();
     private boolean jumped = false;
+
     public SlimeAttackGoal(@NotNull SkyblockEntity entity, Duration delay, double jumpHeight) {
         super(entity);
         this.entity = entity;

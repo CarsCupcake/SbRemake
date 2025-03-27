@@ -28,9 +28,11 @@ public enum ItemType {
     private final boolean reforgable;
     private final boolean statsInMainhand;
     private final String display;
+
     ItemType(String display) {
         this(false, true, display);
     }
+
     ItemType(boolean reforgable, boolean statInMainHand, String display) {
         this.statsInMainhand = statInMainHand;
         this.reforgable = reforgable;

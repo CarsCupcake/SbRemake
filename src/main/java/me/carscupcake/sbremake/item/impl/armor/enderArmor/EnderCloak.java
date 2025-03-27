@@ -14,6 +14,7 @@ public class EnderCloak implements ISbItem, NpcSellable, ISbItem.StatProvider, I
     public SoulboundType getSoulboundType() {
         return SoulboundType.Coop;
     }
+
     @Override
     public String getId() {
         return "ENDER_CLOAK";

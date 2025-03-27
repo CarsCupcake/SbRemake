@@ -50,6 +50,7 @@ public record FarmingCrystal(Pos location, TaskScheduler task, HashMap<BlockVec,
             entity = e;
             packet = new ParticlePacket(Particle.FIREWORK, base.add(0, 2, 0), new Pos(0.5, 0.5, 0.5), 0f, 1);
         }
+
         private static final int RENDER_DISTANCE = (8 * 16) * (8 * 16);
 
         @Override
@@ -73,7 +74,7 @@ public record FarmingCrystal(Pos location, TaskScheduler task, HashMap<BlockVec,
                     instance.setBlock(entry.getKey(), entry.getValue());
                     Vec dis = entry.getKey().asVec().add(0.5).sub(base.add(0, 2, 0));
                     Vec dir = dis.normalize().mul(1);
-                    int iterations = (int) (dis.length() );
+                    int iterations = (int) (dis.length());
                     Pos p = base.add(0, 2, 0);
                     for (int i = 0; i < iterations; i++) {
                         p = p.add(dir);

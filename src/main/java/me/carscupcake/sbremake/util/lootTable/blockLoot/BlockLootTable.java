@@ -132,7 +132,8 @@ public class BlockLootTable implements ILootTable<SbItemStack> {
                     case "minecraft:any_of" -> new Or(parsePredicates(entry.getAsJsonObject().get("terms")));
                     case "minecraft:random_chance" -> new Chance(entry.getAsJsonObject().get("chance").getAsDouble());
                     case "minecraft:location_check" -> null; //TODO Implement later
-                    case "minecraft:entity_properties" -> null; //I don't get this one lol. Here is the json {"condition":"minecraft:entity_properties","entity":"this","predicate":{}}
+                    case "minecraft:entity_properties" ->
+                            null; //I don't get this one lol. Here is the json {"condition":"minecraft:entity_properties","entity":"this","predicate":{}}
                     default -> {
                         Main.LOGGER.warn("Invalid condition '{}'", condition);
                         yield null;
@@ -150,7 +151,7 @@ public class BlockLootTable implements ILootTable<SbItemStack> {
         for (Pool pool : pools) {
             boolean allowed = true;
             for (Predicate<BlockContext> b : pool.conditions)
-                if (b.test(new BlockContext(1, player, block))){
+                if (b.test(new BlockContext(1, player, block))) {
                     allowed = false;
                     break;
                 }

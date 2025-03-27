@@ -28,7 +28,7 @@ public record ItemAbility<TEvent extends PlayerEvent>(String name, AbilityType<T
 
     @Override
     public String headline(SbItemStack item, SkyblockPlayer player) {
-        return "§6Ability: " + (name) + " §e§l" + (abilityType.name()) ;
+        return "§6Ability: " + (name) + " §e§l" + (abilityType.name());
     }
 
     @Override

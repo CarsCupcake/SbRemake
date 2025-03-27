@@ -15,6 +15,7 @@ public class Arachne extends SkyblockEntity {
     private final float maxHealth;
     private final int level;
     private final double damage;
+
     public Arachne(boolean cristal) {
         super(EntityType.SPIDER);
         this.cristal = cristal;
@@ -44,6 +45,7 @@ public class Arachne extends SkyblockEntity {
     public String getName() {
         return "Arachne";
     }
+
     private int stage = 0;
     private float threashhold;
     private final Set<ArachneBrood> arachneBroods = new HashSet<>();
@@ -63,8 +65,7 @@ public class Arachne extends SkyblockEntity {
         return amount;
     }
 
-    public void killMini(ArachneBrood arachneBrood)
-    {
+    public void killMini(ArachneBrood arachneBrood) {
         arachneBroods.remove(arachneBrood);
         if (arachneBroods.size() == 1) {
             arachneBrood = arachneBroods.iterator().next();
@@ -72,8 +73,7 @@ public class Arachne extends SkyblockEntity {
             setInstance(arachneBrood.getInstance(), arachneBrood.getPosition());
             setHealth(health);
             arachneBrood.remove();
-            if (stage == 1)
-            {
+            if (stage == 1) {
                 threashhold = maxHealth * 0.2f;
             }
         }

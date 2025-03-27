@@ -46,6 +46,7 @@ public class EfficientMiner extends HotmUpgrade {
     public double getPercentage(int level) {
         return 10 + (level * 0.4);
     }
+
     public int getBlocks(int level) {
         return (int) (1 + (level / 20d));
     }

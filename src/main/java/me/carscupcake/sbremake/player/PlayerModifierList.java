@@ -1,4 +1,5 @@
 package me.carscupcake.sbremake.player;
+
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.util.MapList;
@@ -8,11 +9,11 @@ import net.minestom.server.timer.Task;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.function.Consumer;
 
 public class PlayerModifierList {
     private final MapList<Stat, Pair<PlayerStatEvent.PlayerStatModifier, Task>> modifiers = new MapList<>();
+
     public void add(Stat stat, PlayerStatEvent.PlayerStatModifier modifier, Duration duration) {
         Pair<PlayerStatEvent.PlayerStatModifier, Task> pre = null;
         for (Pair<PlayerStatEvent.PlayerStatModifier, Task> pair : modifiers.get(stat)) {

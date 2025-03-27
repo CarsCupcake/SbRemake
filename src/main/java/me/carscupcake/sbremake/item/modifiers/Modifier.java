@@ -114,9 +114,9 @@ public interface Modifier<T> {
             int i = 0;
             boolean[] unlockedByDefault = slots.getUnlocked();
             for (GemstoneSlotType type : slots.getGemstoneSlots()) {
-                String slotId =  (type.name().toUpperCase()) + "_" + (i) ;
+                String slotId = (type.name().toUpperCase()) + "_" + (i);
                 boolean isUnlocked = unlocked.contains(slotId) || unlockedByDefault[i];
-                String gem = gems.getString( (slotId) + "_gem");
+                String gem = gems.getString((slotId) + "_gem");
                 if (gem.isEmpty()) {
                     gemstoneSlots[i] = new GemstoneSlot(type, null, isUnlocked);
                     i++;
@@ -138,11 +138,11 @@ public interface Modifier<T> {
             List<String> unlocked = new ArrayList<>();
             int i = 0;
             for (GemstoneSlot slot : gemstoneSlots) {
-                String slotId =  (slot.type().name().toUpperCase()) + "_" + (i) ;
+                String slotId = (slot.type().name().toUpperCase()) + "_" + (i);
                 if (slot.unlocked() && !slots.getUnlocked()[i])
                     unlocked.add(slotId);
                 if (slot.gemstone() != null) {
-                    gems = gems.putString(slotId, slot.gemstone().quality().name()).putString( (slotId) + "_gem", slot.gemstone().type().name());
+                    gems = gems.putString(slotId, slot.gemstone().quality().name()).putString((slotId) + "_gem", slot.gemstone().type().name());
                 }
                 i++;
             }
@@ -156,7 +156,8 @@ public interface Modifier<T> {
         public Pet.PetInfo getFromNbt(SbItemStack item) {
             CompoundBinaryTag extraAttributes = (CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"));
             CompoundBinaryTag petInfoTag = extraAttributes.getCompound("petInfo");
-            if (CompoundBinaryTag.empty() == petInfoTag) return new Pet.PetInfo(null, ItemRarity.SPECIAL, 0, 0, null, 0);
+            if (CompoundBinaryTag.empty() == petInfoTag)
+                return new Pet.PetInfo(null, ItemRarity.SPECIAL, 0, 0, null, 0);
             IPet pet = IPet.pets.get(petInfoTag.getString("type"));
             ISbItem petItemId = SbItemStack.raw(petInfoTag.getString("heldItem"));
             PetItem petItem = (petItemId == null) ? null : (PetItem) petItemId;
@@ -214,7 +215,8 @@ public interface Modifier<T> {
         public SbItemStack toNbt(PotionInfo potionInfo, SbItemStack itemStack) {
             itemStack = itemStack.withModifier(POTION_EFFECTS, potionInfo.effects());
             CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES);
-            if (potionInfo.customPotionName() != null) extraAttributes = extraAttributes.putString("potion_name", potionInfo.customPotionName());
+            if (potionInfo.customPotionName() != null)
+                extraAttributes = extraAttributes.putString("potion_name", potionInfo.customPotionName());
             return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, extraAttributes.putString("potion", potionInfo.potion().getId())
                     .putBoolean("enhanced", potionInfo.enhanced()).putBoolean("extended", potionInfo.extended()).putByte("potion_level", potionInfo.potionLevel()).putString("potion_type", potionInfo.potionType().name())));
         }
@@ -227,7 +229,7 @@ public interface Modifier<T> {
             CompoundBinaryTag tag = extraAttributes.getCompound("runes");
             Iterator<Map.Entry<String, ? extends BinaryTag>> it = tag.iterator();
             if (!it.hasNext()) return null;
-            Map.Entry<String, ? extends  BinaryTag> entry = it.next();
+            Map.Entry<String, ? extends BinaryTag> entry = it.next();
             return new RuneModifier(Rune.runes.get(entry.getKey()), ((IntBinaryTag) entry.getValue()).value());
         }
 

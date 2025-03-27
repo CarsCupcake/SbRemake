@@ -9,7 +9,8 @@ import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 import java.util.*;
 
-public record ItemLoot(SbItemStack item, int min, int max, double chance, boolean magicFind, boolean petLuck, MessageBuilder builder) implements LootTable.Loot<SbItemStack> {
+public record ItemLoot(SbItemStack item, int min, int max, double chance, boolean magicFind, boolean petLuck,
+                       MessageBuilder builder) implements LootTable.Loot<SbItemStack> {
     public ItemLoot(SbItemStack item, int min, int max, double chance) {
         this(item, min, max, chance, chance <= 0.05, false, NormalMessages.messageBuilder(chance));
     }
@@ -33,17 +34,19 @@ public record ItemLoot(SbItemStack item, int min, int max, double chance, boolea
     public ItemLoot(Class<? extends ISbItem> item, int amount, double chance) {
         this(item, amount, amount, chance);
     }
+
     public ItemLoot(Class<? extends ISbItem> clazz) {
         this(clazz, 1, 1);
     }
+
     @Override
     public Set<SbItemStack> loot(SkyblockPlayer player) {
         int amount = (min == max) ? max : (new Random().nextInt(max - min) + min);
-        SbItemStack item = (this.item.sbItem().isUnstackable()) ? SbItemStack.from(this.item.item().withTag(Modifier.EXTRA_ATTRIBUTES,((CompoundBinaryTag) this.item.item().getTag(Modifier.EXTRA_ATTRIBUTES)).putString("uuid", UUID.randomUUID().toString()))) : this.item;
+        SbItemStack item = (this.item.sbItem().isUnstackable()) ? SbItemStack.from(this.item.item().withTag(Modifier.EXTRA_ATTRIBUTES, ((CompoundBinaryTag) this.item.item().getTag(Modifier.EXTRA_ATTRIBUTES)).putString("uuid", UUID.randomUUID().toString()))) : this.item;
         item = item.withAmount(amount);
         if (item == null) return new HashSet<>(0);
         if (builder != null)
-            player.sendMessage(builder.message(player,  (item.getRarity().getPrefix()) +  (item.displayName()) , amount, magicFind));
+            player.sendMessage(builder.message(player, (item.getRarity().getPrefix()) + (item.displayName()), amount, magicFind));
         return Set.of(Objects.requireNonNull(item));
     }
 
@@ -60,19 +63,19 @@ public record ItemLoot(SbItemStack item, int min, int max, double chance, boolea
         Rare {
             @Override
             public String message(SkyblockPlayer player, String itemName, int amount, boolean magicFind) {
-                return "§6§lRARE DROP! " + (itemName) + " " + ((amount != 1) ? "§8" + (amount) + "x " : "") +  (magicFind ? "§b(+" + (player.getStat(Stat.MagicFind)) + " " + (Stat.MagicFind) + ")" : "") ;
+                return "§6§lRARE DROP! " + (itemName) + " " + ((amount != 1) ? "§8" + (amount) + "x " : "") + (magicFind ? "§b(+" + (player.getStat(Stat.MagicFind)) + " " + (Stat.MagicFind) + ")" : "");
             }
         },
         Legendary {
             @Override
             public String message(SkyblockPlayer player, String itemName, int amount, boolean magicFind) {
-                return "§6§lLEGENDARY DROP! " + (itemName) + " " + ((amount != 1) ? "§8" + (amount) + "x " : "") +  (magicFind ? "§b(+" + (player.getStat(Stat.MagicFind)) + " " + (Stat.MagicFind) + ")" : "") ;
+                return "§6§lLEGENDARY DROP! " + (itemName) + " " + ((amount != 1) ? "§8" + (amount) + "x " : "") + (magicFind ? "§b(+" + (player.getStat(Stat.MagicFind)) + " " + (Stat.MagicFind) + ")" : "");
             }
         },
         RNGesus {
             @Override
             public String message(SkyblockPlayer player, String itemName, int amount, boolean magicFind) {
-                return "§d§lRNGesus DROP! " + (itemName) + " " + ((amount != 1) ? "§8" + (amount) + "x " : "") +  (magicFind ? "§b(+" + (player.getStat(Stat.MagicFind)) + " " + (Stat.MagicFind) + ")" : "") ;
+                return "§d§lRNGesus DROP! " + (itemName) + " " + ((amount != 1) ? "§8" + (amount) + "x " : "") + (magicFind ? "§b(+" + (player.getStat(Stat.MagicFind)) + " " + (Stat.MagicFind) + ")" : "");
             }
         };
 

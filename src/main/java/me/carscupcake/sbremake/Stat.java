@@ -60,6 +60,7 @@ public enum Stat {
     private final double baseValue;
     private final double maxValue;
     private boolean hiddenStat;
+
     Stat(String name, String symbol, String prefix, boolean percentValue, double baseValue, double maxValue) {
         this.name = name;
         this.symbol = symbol;
@@ -69,16 +70,18 @@ public enum Stat {
         this.maxValue = maxValue;
         hiddenStat = false;
     }
+
     Stat(boolean hiddenStat, String name, String symbol, String prefix) {
         this(name, symbol, prefix, false);
         this.hiddenStat = hiddenStat;
     }
+
     Stat(String name, String symbol, String prefix, boolean isPercentValue) {
         this(name, symbol, prefix, isPercentValue, 0, -1);
     }
 
     @Override
     public String toString() {
-        return  (prefix) +  (symbol) + " " + (name) ;
+        return (prefix) + (symbol) + " " + (name);
     }
 }

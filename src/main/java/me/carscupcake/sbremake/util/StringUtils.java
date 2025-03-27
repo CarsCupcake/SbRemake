@@ -151,26 +151,26 @@ public class StringUtils {
                 if (num > 999999) {
                     if (num > 9999999) {
                         if (num > 999999999d) {
-                            if (num > 9999999999d) str =  ((int) ((num / 1000000000))) + "b";
-                            else str =  (NumberUtil.round(num / 1000000000, 1)) + "b";
-                        } else str =  ((int) ((num / 1000000))) + "M";
+                            if (num > 9999999999d) str = ((int) ((num / 1000000000))) + "b";
+                            else str = (NumberUtil.round(num / 1000000000, 1)) + "b";
+                        } else str = ((int) ((num / 1000000))) + "M";
 
-                    } else str =  (NumberUtil.round(num / 1000000, 1)) + "M";
-                } else str =  ((int) ((num / 1000))) + "k";
-            } else str =  (NumberUtil.round(num / 1000, 1)) + "k";
-        } else str =  (cleanDouble(num)) ;
+                    } else str = (NumberUtil.round(num / 1000000, 1)) + "M";
+                } else str = ((int) ((num / 1000))) + "k";
+            } else str = (NumberUtil.round(num / 1000, 1)) + "k";
+        } else str = (cleanDouble(num));
         return str;
     }
 
     public static String timeToString(int seconds) {
         int minutes = (int) (seconds / 60d);
-        return  (minutes) + ":" + ((int) (seconds - (minutes * 60))) ;
+        return (minutes) + ":" + ((int) (seconds - (minutes * 60)));
     }
 
     public static String ticksToString(long l) {
         double seconds = (double) l / 20d;
         int minutes = (int) (seconds / 60d);
         int displaySeconds = (int) (seconds - (minutes * 60));
-        return  (minutes) + ":" + (displaySeconds < 10 ? "0" : "") +  (displaySeconds) ;
+        return (minutes) + ":" + (displaySeconds < 10 ? "0" : "") + (displaySeconds);
     }
 }

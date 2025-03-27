@@ -12,12 +12,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> modifiers, Stat stat) implements PlayerEvent {
+public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> modifiers,
+                              Stat stat) implements PlayerEvent {
     @Override
     public @NotNull Player getPlayer() {
         return player;
     }
-    public record BasicModifier(String name, double value, Type type, ItemStack showItem, StatsCategory category) implements PlayerStatModifier {
+
+    public record BasicModifier(String name, double value, Type type, ItemStack showItem,
+                                StatsCategory category) implements PlayerStatModifier {
         public BasicModifier(String name, double value, Type type, StatsCategory category) {
             this(name, value, type, category == null ? null : category.item, category);
         }
@@ -51,16 +54,22 @@ public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> mo
 
     public interface PlayerStatModifier {
         Type type();
+
         double value();
+
         String name();
+
         @Nullable ItemStack showItem();
+
         StatsCategory category();
     }
+
     public enum Type {
         Value,
         AddativeMultiplier,
         MultiplicativeMultiplier;
     }
+
     public enum StatsCategory {
         Innate("Innate"),
         Armor("Armor"),
@@ -73,9 +82,11 @@ public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> mo
         Uncategorized("Uncategorized");
         private final String name;
         private final ItemStack item;
+
         StatsCategory(String item) {
             this(item, null);
         }
+
         StatsCategory(String name, ItemStack item) {
             this.name = name;
             this.item = item;

@@ -8,11 +8,12 @@ import me.carscupcake.sbremake.rewards.Reward;
 
 public record RecipeReward(Recipe recipe) implements Reward {
     @Override
-    public void reward(SkyblockPlayer player) {}
+    public void reward(SkyblockPlayer player) {
+    }
 
     @Override
     public Lore lore() {
         SbItemStack result = recipe.getResult(null);
-        return new Lore( (result.getRarity().getPrefix()) +  (result.displayName()) + " §7Recipe");
+        return new Lore((result.getRarity().getPrefix()) + (result.displayName()) + " §7Recipe");
     }
 }

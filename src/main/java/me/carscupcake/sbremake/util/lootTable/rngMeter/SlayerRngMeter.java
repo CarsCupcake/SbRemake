@@ -27,7 +27,7 @@ public class SlayerRngMeter {
         lootTableGoals = lootTableGoal;
         ConfigFile file = new ConfigFile("rngmeters", player);
         rngMeterXp = file.get(slayer.getId(), ConfigSection.DOUBLE, 0d);
-        String selected = file.get( (slayer.getId()) + "_SELECTED", ConfigSection.STRING);
+        String selected = file.get((slayer.getId()) + "_SELECTED", ConfigSection.STRING);
         if (selected != null) {
             for (RngMeterEntry entry : lootTableGoals.keySet())
                 if (entry.id().equals(selected)) {
@@ -40,7 +40,7 @@ public class SlayerRngMeter {
     public void save() {
         ConfigFile file = new ConfigFile("rngmeters", player);
         file.set(slayer.getId(), rngMeterXp, ConfigSection.DOUBLE);
-        file.set( (slayer.getId()) + "_SELECTED", selected == null ? null : selected.id(), ConfigSection.STRING);
+        file.set((slayer.getId()) + "_SELECTED", selected == null ? null : selected.id(), ConfigSection.STRING);
         file.save();
     }
 

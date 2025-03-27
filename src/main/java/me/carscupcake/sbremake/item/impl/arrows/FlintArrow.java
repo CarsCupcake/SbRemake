@@ -5,7 +5,7 @@ import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 
-public class FlintArrow implements SkyblockArrow{
+public class FlintArrow implements SkyblockArrow {
     @Override
     public void onEntityHit(SkyblockEntity entity, SkyblockPlayer shooter) {
 

@@ -28,6 +28,7 @@ public class EnchantmentUtils {
                         event.setValue(event.getValue() + level);
                 }
             });
+
     public static double getSharpnessBonus(int level) {
         return (level > 4 && level < 8) ? switch (level) {
             case 5 -> 0.3;

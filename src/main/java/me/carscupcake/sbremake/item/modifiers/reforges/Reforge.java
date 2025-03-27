@@ -12,7 +12,6 @@ import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
-import net.minestom.server.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -74,6 +73,7 @@ public interface Reforge {
             reforges.put(reforge.getId(), reforge);
         MinecraftServer.getGlobalEventHandler().addChild(LISTENER);
     }
+
     RarityStat LINEAR_ONE = new RarityStat(1, 2, 3, 4, 5, 6);
     RarityStat LINEAR_TWO = new RarityStat(2, 4, 6, 8, 10, 12);
 }

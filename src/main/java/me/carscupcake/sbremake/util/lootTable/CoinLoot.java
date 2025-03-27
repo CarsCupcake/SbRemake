@@ -13,6 +13,7 @@ public record CoinLoot(double min, double max) implements LootTable.Loot<SbItemS
     public CoinLoot(double amount) {
         this(amount, amount);
     }
+
     @Override
     public Set<SbItemStack> loot(SkyblockPlayer player) {
         ISbItem item;

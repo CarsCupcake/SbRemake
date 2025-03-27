@@ -6,6 +6,7 @@ public class NumberUtil {
 
         return Math.round(num * d) / d;
     }
+
     public static boolean inRange(double num, int min, int max) {
         return num >= min && num <= max;
     }

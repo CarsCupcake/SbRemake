@@ -4,5 +4,6 @@ import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.KuudraArmorTy
 
 public interface KuudraArmor {
     KuudraArmorTier armorTier();
+
     KuudraArmorType armorType();
 }

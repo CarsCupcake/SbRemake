@@ -8,6 +8,7 @@ import net.minestom.server.instance.block.Block;
 
 public class SpecialZealot extends SkyblockEntity {
     private final SkyblockPlayer owner;
+
     public SpecialZealot(SkyblockPlayer owner) {
         super(EntityType.ENDERMAN);
         this.owner = owner;

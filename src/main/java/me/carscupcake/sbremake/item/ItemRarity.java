@@ -16,16 +16,20 @@ public enum ItemRarity {
     ADMIN('4', "Admin");
     private final char prefix;
     private final String display;
+
     ItemRarity(char prefix, String display) {
         this.prefix = prefix;
         this.display = display;
     }
+
     public String getPrefix() {
         return "§" + prefix;
     }
+
     public ItemRarity next() {
         return next(this);
     }
+
     public static ItemRarity next(ItemRarity rarity) {
         boolean found = false;
         for (ItemRarity r : ItemRarity.values()) {

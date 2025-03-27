@@ -45,6 +45,7 @@ public enum Pets implements IPet {
     Pets(String name, PetType petType, String skullValue, Map<Stat, PetStat> petStats, PetAbility... ability) {
         this(name, name.toUpperCase().replace(' ', '_'), petType, skullValue, petStats, ability);
     }
+
     Pets(String name, String id, PetType petType, String skullValue, Map<Stat, PetStat> petStats, PetAbility... ability) {
         this.name = name;
         this.id = id;

@@ -4,7 +4,7 @@ import me.carscupcake.sbremake.player.Essence;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 
-public record EssenceCost(Essence essence, int amount) implements Cost{
+public record EssenceCost(Essence essence, int amount) implements Cost {
     @Override
     public boolean canPay(SkyblockPlayer player) {
         return player.getEssence().get(essence) >= amount;

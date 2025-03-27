@@ -27,27 +27,26 @@ public abstract class HotmUpgrade {
         if (event.stat() == Stat.MiningSpeed) {
             MiningSpeed upgrade = event.player().getHotm().getUpgrade(MiningSpeed.class);
             if (upgrade.level > 0 && upgrade.isEnabled())
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(upgrade.getName(), upgrade.getBonus(upgrade.level), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm ));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(upgrade.getName(), upgrade.getBonus(upgrade.level), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm));
             HotmUpgrade u = event.player().getHotm().getUpgrades().get(9);
             if (u.level >= 1 && u.isEnabled())
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(u.getName(), 50, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm ));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(u.getName(), 50, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm));
             MiningSpeed2 miningSpeed2 = (MiningSpeed2) event.player().getHotm().getUpgrades().get(26);
             if (miningSpeed2.level > 0 && miningSpeed2.isEnabled())
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(miningSpeed2.getName(), miningSpeed2.getBonus(upgrade.level), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm ));
-
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(miningSpeed2.getName(), miningSpeed2.getBonus(upgrade.level), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm));
 
 
         }
         if (event.stat() == Stat.MiningFortune) {
             MiningFortune upgrade = event.player().getHotm().getUpgrade(MiningFortune.class);
             if (upgrade.level > 0 && upgrade.isEnabled())
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(upgrade.getName(), upgrade.getBonus(upgrade.level), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm ));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(upgrade.getName(), upgrade.getBonus(upgrade.level), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm));
             HotmUpgrade u = event.player().getHotm().getUpgrades().get(9);
             if (u.level >= 1 && u.isEnabled())
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(upgrade.getName(), 50, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm ));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(upgrade.getName(), 50, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm));
             MiningFortune2 miningFortune2 = (MiningFortune2) event.player().getHotm().getUpgrades().get(28);
             if (miningFortune2.level > 0 && miningFortune2.isEnabled())
-                event.modifiers().add(new PlayerStatEvent.BasicModifier(miningFortune2.getName(), miningFortune2.getBonus(upgrade.level), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm ));
+                event.modifiers().add(new PlayerStatEvent.BasicModifier(miningFortune2.getName(), miningFortune2.getBonus(upgrade.level), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Hotm));
 
 
         }
@@ -77,13 +76,13 @@ public abstract class HotmUpgrade {
     }
 
     public ItemStack getItem() {
-        return new ItemBuilder((level == 0) ? Material.COAL : (level == getMaxLevel() ? Material.DIAMOND : Material.EMERALD)).setName( (level == 0 ? "§c" : (level == getMaxLevel() ? "§a" : "§e")) +  (getName()) ).addAllLore("§7Level " + (level == 0 ? "1§8/" + (getMaxLevel())  : (level == getMaxLevel()) ? String.valueOf(getMaxLevel()) :  (level) + "§8/" + (getMaxLevel()) ) , "§7 ").addAllLore(lore((level == 0) ? 1 : level).build(null, player))
+        return new ItemBuilder((level == 0) ? Material.COAL : (level == getMaxLevel() ? Material.DIAMOND : Material.EMERALD)).setName((level == 0 ? "§c" : (level == getMaxLevel() ? "§a" : "§e")) + (getName())).addAllLore("§7Level " + (level == 0 ? "1§8/" + (getMaxLevel()) : (level == getMaxLevel()) ? String.valueOf(getMaxLevel()) : (level) + "§8/" + (getMaxLevel())), "§7 ").addAllLore(lore((level == 0) ? 1 : level).build(null, player))
                 .addLoreIf(() -> level != getMaxLevel(), " ")
                 .addLoreIf(() -> level == 0, "§7Cost", "§51 Token of the Mountain")
                 .addLoreIf(() -> level != getMaxLevel() && level != 0, "§a=====[UPGRADE]=====")
                 .addLoreIf(() -> level != getMaxLevel() && level != 0, lore(level + 1).build(null, player))
-                .addLoreIf(() -> level != getMaxLevel() && level != 0, " ", "§7Cost",  (upgradeType(level).getColor()) +  (StringUtils.toFormatedNumber(nextLevelCost(level))) + " " + (upgradeType(level).getName()) )
-                .addAllLore(" ",  enabled ? "§a§lENABLED" : "§c§lDISABLED")
+                .addLoreIf(() -> level != getMaxLevel() && level != 0, " ", "§7Cost", (upgradeType(level).getColor()) + (StringUtils.toFormatedNumber(nextLevelCost(level))) + " " + (upgradeType(level).getName()))
+                .addAllLore(" ", enabled ? "§a§lENABLED" : "§c§lDISABLED")
                 .build();
     }
 

@@ -14,6 +14,7 @@ public enum Skill {
     Alchemy(AlchemySkill.class),
     Dungeneering(Dungeoneering.class);
     private final Class<? extends ISkill> clazz;
+
     Skill(Class<? extends ISkill> clazz) {
         this.clazz = clazz;
     }

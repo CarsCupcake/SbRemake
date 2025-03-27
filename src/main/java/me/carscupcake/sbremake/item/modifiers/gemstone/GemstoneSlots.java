@@ -7,6 +7,8 @@ import me.carscupcake.sbremake.util.Cost;
  */
 public interface GemstoneSlots {
     GemstoneSlotType[] getGemstoneSlots();
+
     boolean[] getUnlocked();
+
     Cost[][] getLockedSlotCost();
 }

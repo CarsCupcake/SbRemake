@@ -5,15 +5,8 @@ import lombok.Setter;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.StringUtils;
-import net.kyori.adventure.text.Component;
 import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.LivingEntity;
-import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.event.trait.CancellableEvent;
-
-import java.time.Duration;
 
 @Getter
 @Setter
@@ -23,12 +16,14 @@ public class EntityMeleeDamagePlayerEvent implements CancellableEvent, IDamageEv
     private double normalDamage;
     private double trueDamage;
     private boolean cancelled = false;
+
     public EntityMeleeDamagePlayerEvent(SkyblockEntity entity, SkyblockPlayer player) {
         this.player = player;
         this.entity = entity;
         normalDamage = entity.getDamage();
         trueDamage = entity.getTrueDamage();
     }
+
     private double cachedDamage;
 
     @Override

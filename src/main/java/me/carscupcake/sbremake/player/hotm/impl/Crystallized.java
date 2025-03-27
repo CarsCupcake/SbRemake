@@ -47,6 +47,7 @@ public class Crystallized extends HotmUpgrade {
     public int miningSpeed(int level) {
         return 20 + ((level - 1) * 6);
     }
+
     public int miningFortune(int level) {
         return 20 + ((level - 1) * 5);
     }

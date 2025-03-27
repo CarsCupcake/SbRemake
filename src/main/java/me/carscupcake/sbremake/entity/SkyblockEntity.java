@@ -261,6 +261,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         setCustomName(Component.text(name));
         setCustomNameVisible(true);
     }
+
     public void assignTask(TaskScheduler task) {
         assignedTask.add(task);
         task.setEntity(this);
@@ -285,13 +286,13 @@ public abstract class SkyblockEntity extends EntityCreature {
         Basic() {
             @Override
             public String apply(SkyblockEntity skyblockEntity) {
-                return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] §c" + (skyblockEntity.getName()) + " §a" + (StringUtils.cleanDouble(skyblockEntity.getHealth(), 0)) + "§7/§a" + (StringUtils.cleanDouble(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol()) ;
+                return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] §c" + (skyblockEntity.getName()) + " §a" + (StringUtils.cleanDouble(skyblockEntity.getHealth(), 0)) + "§7/§a" + (StringUtils.cleanDouble(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol());
             }
         },
         Slayer() {
             @Override
             public String apply(SkyblockEntity entity) {
-                return "§c" + (Characters.Skull) + " §f" + (entity.getName()) + " §a" + (StringUtils.toShortNumber(entity.getHealth())) + "§c" + (Stat.Health.getSymbol()) ;
+                return "§c" + (Characters.Skull) + " §f" + (entity.getName()) + " §a" + (StringUtils.toShortNumber(entity.getHealth())) + "§c" + (Stat.Health.getSymbol());
             }
         }
     }

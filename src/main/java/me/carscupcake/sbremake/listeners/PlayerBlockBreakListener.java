@@ -36,6 +36,7 @@ import java.util.function.Consumer;
 public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent> {
     private final String[] pickaxesBlocks;
     private final Map<VanillaPickaxeTier, String[]> needToolTierBlocks = new HashMap<>();
+
     public PlayerBlockBreakListener() {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         try (InputStream resource = classloader.getResourceAsStream("assets/tags/blocks/pickaxe.json")) {
@@ -176,7 +177,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
         if (((SkyblockPlayer) event.getPlayer()).getWorldProvider().type() == SkyblockWorld.PrivateIsle) {
             boolean b = false;
             for (String s : pickaxesBlocks) {
-                if (s.equalsIgnoreCase(event.getBlock().registry().namespace().asString())){
+                if (s.equalsIgnoreCase(event.getBlock().registry().namespace().asString())) {
                     b = true;
                     break;
                 }

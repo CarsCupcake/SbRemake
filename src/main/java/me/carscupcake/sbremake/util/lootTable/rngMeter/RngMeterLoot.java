@@ -7,9 +7,13 @@ import me.carscupcake.sbremake.util.lootTable.LootTable;
 
 public interface RngMeterLoot extends LootTable.Loot<SbItemStack> {
     SbItemStack previewItem();
+
     SlayerLootTable.LootTableType type();
+
     boolean isGuaranteed(SkyblockPlayer player);
+
     double weight();
+
     ISlayer slayer();
 
 }

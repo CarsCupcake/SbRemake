@@ -28,9 +28,13 @@ public interface SkyblockEnchantment {
     Map<String, SkyblockEnchantment> enchantments = new HashMap<>();
 
     int getMaxLevel();
+
     String getName();
+
     String getId();
+
     Lore description();
+
     ItemType[] types();
 
     default Set<SkyblockEnchantment> conflicts() {
@@ -55,6 +59,7 @@ public interface SkyblockEnchantment {
     }
 
     EventNode<Event> LISTENER = EventNode.all("enchantments");
+
     static void initListener() {
         LISTENER.register(new PlayerDamageEntityListener(event -> {
             SbItemStack item = event.getPlayer().getSbItemInHand(Player.Hand.MAIN);

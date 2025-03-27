@@ -45,7 +45,7 @@ public class RevivedHeart implements ISbItem, HeadWithValue, ISbItem.StatProvide
 
     @Override
     public Map<Stat, Number> stats() {
-        return Map.of(Stat.Health, 100, Stat.Defense, 35,  Stat.Intelligence, 100);
+        return Map.of(Stat.Health, 100, Stat.Defense, 35, Stat.Intelligence, 100);
     }
 
     @Override

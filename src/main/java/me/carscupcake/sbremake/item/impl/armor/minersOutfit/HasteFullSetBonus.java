@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 
 public class HasteFullSetBonus extends FullSetBonus {
     public static final FullSetBonus instance = new HasteFullSetBonus();
+
     public HasteFullSetBonus() {
         super("Haste", 4, 4, false);
     }

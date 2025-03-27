@@ -67,7 +67,7 @@ public class CombatSkill extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of("§eWarrior " + (StringUtils.toRoman(level)) , " §fDeal " + ((level == 0) ? "" : "§8" + (4 * (level - 1)) + "%➜") + "§a" + (4 * level) + "% §fmore damage to mobs.", "§8+ §a0.5% " + (Stat.CritChance) ));
+            return new Lore(List.of("§eWarrior " + (StringUtils.toRoman(level)), " §fDeal " + ((level == 0) ? "" : "§8" + (4 * (level - 1)) + "%➜") + "§a" + (4 * level) + "% §fmore damage to mobs.", "§8+ §a0.5% " + (Stat.CritChance)));
         }
     }
 }

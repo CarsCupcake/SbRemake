@@ -75,6 +75,7 @@ public class DasherSpider extends SkyblockEntity implements MeleeAttackGoalEntit
             }
             jumpTask = new TaskScheduler() {
                 private int jumpCounter = new Random().nextInt(2) + 2;
+
                 @Override
                 public void run() {
                     jumpCounter--;

@@ -1,11 +1,11 @@
 package me.carscupcake.sbremake.worlds.impl;
 
 
-import me.carscupcake.sbremake.util.Pair;
 import lombok.Getter;
 import me.carscupcake.sbremake.blocks.FarmingCrystal;
 import me.carscupcake.sbremake.entity.impl.farmingIsles.*;
 import me.carscupcake.sbremake.util.MapList;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
 import me.carscupcake.sbremake.worlds.Launchpad;
@@ -63,12 +63,12 @@ public class FarmingIsles extends SkyblockWorld.WorldProvider {
                 new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(121.5, 82, -270.5), container), new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(168.5, 87, -264.5), container),
                 new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(174.5, 90, -244.5), container), new FarmingCrystal(FARMING_CRYSTAL_SKIN, new Pos(172.5, 85, -218.5), container));
         sugarCaneRespawn.repeatTask(200);
-        spawners.add(new EntitySpawner(new Pos[]{new Pos(162.0, 73.0, -232.0),new Pos(166.0, 74.0, -236.0),new Pos(172.0, 75.0, -239.0),new Pos(95.0, 70.0, -240.0),new Pos(106.0, 71.0, -239.0),new Pos(113.0, 72.0, -245.0),new Pos(116.0, 73.0, -257.0),new Pos(150.0, 71.0, -217.0),new Pos(149.0, 72.0, -223.0)}, 20*5, new EntitySpawner.BasicConstructor(Cow::new), container));
-        spawners.add(new EntitySpawner(new Pos[]{new Pos(181.0, 78.0, -246.0),new Pos(171.0, 75.0, -243.0),new Pos(158.0, 73.0, -232.0),new Pos(156.0, 72.0, -223.0),new Pos(153.0, 71.0, -214.0),new Pos(148.0, 71.0, -220.0),new Pos(124.0, 72.0, -244.0),new Pos(123.0, 73.0, -255.0),new Pos(110.0, 72.0, -253.0),new Pos(143.0, 73.0, -250.0)}, 20*5, new EntitySpawner.BasicConstructor(Pig::new), container));
-        spawners.add(new EntitySpawner(new Pos[]{new Pos(164.0, 74.0, -240.0),new Pos(180.0, 77.0, -244.0),new Pos(156.0, 72.0, -223.0),new Pos(152.0, 72.0, -225.0),new Pos(147.0, 71.0, -215.0),new Pos(141.0, 73.0, -250.0),new Pos(145.0, 73.0, -250.0),new Pos(143.0, 80.0, -246.0),new Pos(142.0, 74.0, -257.0),new Pos(123.0, 73.0, -253.0),new Pos(124.0, 72.0, -244.0),new Pos(106.0, 71.0, -239.0)}, 20*5, new EntitySpawner.BasicConstructor(Chicken::new), container));
-        spawners.add(new EntitySpawner(new Pos[]{new Pos(112.0, 64.0, -422.0),new Pos(118.0, 64.0, -418.0),new Pos(121.0, 64.0, -426.0),new Pos(100.0, 64.0, -431.0),new Pos(103.0, 64.0, -455.0),new Pos(116.0, 64.0, -476.0),new Pos(168.0, 76.0, -467.0),new Pos(180.0, 76.0, -469.0),new Pos(182.0, 76.0, -465.0),new Pos(178.0, 76.0, -486.0),new Pos(140.0, 75.0, -508.0),new Pos(135.0, 75.0, -498.0),new Pos(105.0, 75.0, -512.0)},
-                20*5, new EntitySpawner.BasicConstructor(Sheep::new), container));
-        spawners.add(new EntitySpawner(new Pos[]{new Pos(123.0, 64.0, -470.0),new Pos(118.0, 64.0, -476.0),new Pos(117.0, 64.0, -470.0),new Pos(108.0, 64.0, -475.0),new Pos(110.0, 64.0, -467.0),new Pos(114.0, 64.0, -447.0),new Pos(106.0, 64.0, -448.0),new Pos(99.0, 64.0, -449.0),new Pos(93.0, 64.0, -442.0),new Pos(101.0, 64.0, -430.0),new Pos(114.0, 64.0, -427.0),new Pos(113.0, 64.0, -420.0),new Pos(119.0, 64.0, -427.0),new Pos(123.0, 64.0, -421.0),new Pos(179.0, 76.0, -445.0),new Pos(182.0, 76.0, -448.0),new Pos(182.0, 76.0, -453.0),new Pos(180.0, 76.0, -468.0),new Pos(168.0, 76.0, -467.0)},
+        spawners.add(new EntitySpawner(new Pos[]{new Pos(162.0, 73.0, -232.0), new Pos(166.0, 74.0, -236.0), new Pos(172.0, 75.0, -239.0), new Pos(95.0, 70.0, -240.0), new Pos(106.0, 71.0, -239.0), new Pos(113.0, 72.0, -245.0), new Pos(116.0, 73.0, -257.0), new Pos(150.0, 71.0, -217.0), new Pos(149.0, 72.0, -223.0)}, 20 * 5, new EntitySpawner.BasicConstructor(Cow::new), container));
+        spawners.add(new EntitySpawner(new Pos[]{new Pos(181.0, 78.0, -246.0), new Pos(171.0, 75.0, -243.0), new Pos(158.0, 73.0, -232.0), new Pos(156.0, 72.0, -223.0), new Pos(153.0, 71.0, -214.0), new Pos(148.0, 71.0, -220.0), new Pos(124.0, 72.0, -244.0), new Pos(123.0, 73.0, -255.0), new Pos(110.0, 72.0, -253.0), new Pos(143.0, 73.0, -250.0)}, 20 * 5, new EntitySpawner.BasicConstructor(Pig::new), container));
+        spawners.add(new EntitySpawner(new Pos[]{new Pos(164.0, 74.0, -240.0), new Pos(180.0, 77.0, -244.0), new Pos(156.0, 72.0, -223.0), new Pos(152.0, 72.0, -225.0), new Pos(147.0, 71.0, -215.0), new Pos(141.0, 73.0, -250.0), new Pos(145.0, 73.0, -250.0), new Pos(143.0, 80.0, -246.0), new Pos(142.0, 74.0, -257.0), new Pos(123.0, 73.0, -253.0), new Pos(124.0, 72.0, -244.0), new Pos(106.0, 71.0, -239.0)}, 20 * 5, new EntitySpawner.BasicConstructor(Chicken::new), container));
+        spawners.add(new EntitySpawner(new Pos[]{new Pos(112.0, 64.0, -422.0), new Pos(118.0, 64.0, -418.0), new Pos(121.0, 64.0, -426.0), new Pos(100.0, 64.0, -431.0), new Pos(103.0, 64.0, -455.0), new Pos(116.0, 64.0, -476.0), new Pos(168.0, 76.0, -467.0), new Pos(180.0, 76.0, -469.0), new Pos(182.0, 76.0, -465.0), new Pos(178.0, 76.0, -486.0), new Pos(140.0, 75.0, -508.0), new Pos(135.0, 75.0, -498.0), new Pos(105.0, 75.0, -512.0)},
+                20 * 5, new EntitySpawner.BasicConstructor(Sheep::new), container));
+        spawners.add(new EntitySpawner(new Pos[]{new Pos(123.0, 64.0, -470.0), new Pos(118.0, 64.0, -476.0), new Pos(117.0, 64.0, -470.0), new Pos(108.0, 64.0, -475.0), new Pos(110.0, 64.0, -467.0), new Pos(114.0, 64.0, -447.0), new Pos(106.0, 64.0, -448.0), new Pos(99.0, 64.0, -449.0), new Pos(93.0, 64.0, -442.0), new Pos(101.0, 64.0, -430.0), new Pos(114.0, 64.0, -427.0), new Pos(113.0, 64.0, -420.0), new Pos(119.0, 64.0, -427.0), new Pos(123.0, 64.0, -421.0), new Pos(179.0, 76.0, -445.0), new Pos(182.0, 76.0, -448.0), new Pos(182.0, 76.0, -453.0), new Pos(180.0, 76.0, -468.0), new Pos(168.0, 76.0, -467.0)},
                 200, new EntitySpawner.BasicConstructor(Rabbit::new), container));
     }
 

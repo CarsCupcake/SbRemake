@@ -9,8 +9,7 @@ public class MaxProfile extends Command {
         super("maxprofile");
         addSyntax((e, _) -> {
             SkyblockPlayer player = (SkyblockPlayer) e;
-            for (Skill skill : Skill.values())
-            {
+            for (Skill skill : Skill.values()) {
                 player.getSkill(skill).addXp(112_000_000);
             }
             GodPotionCommand.startPotion(player, 604_800_000);

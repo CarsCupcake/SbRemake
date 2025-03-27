@@ -63,7 +63,7 @@ public class Mining extends TaskScheduler {
         if (ticks <= 0) {
             cancel();
             miningBlock.breakBlock(pos, player, face);
-             make(player, pos, face);
+            make(player, pos, face);
             return;
         }
         byte newBreakStage = getBlockBreakStage();

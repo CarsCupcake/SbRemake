@@ -36,10 +36,11 @@ public class SlayerQuest {
             Pos finalEntityLocation = entityLocation.add(0, 0.5, 0);
             new TaskScheduler() {
                 int i = 0;
+
                 @Override
                 public void run() {
-                    ParticleUtils.spawnParticle(slayer.getPlayer().getInstance(), finalEntityLocation, Particle.WITCH, 10, Vec.ZERO,  2);
-                    ParticleUtils.spawnParticle(slayer.getPlayer().getInstance(), finalEntityLocation, Particle.INSTANT_EFFECT, 10, Vec.ZERO,  2f);
+                    ParticleUtils.spawnParticle(slayer.getPlayer().getInstance(), finalEntityLocation, Particle.WITCH, 10, Vec.ZERO, 2);
+                    ParticleUtils.spawnParticle(slayer.getPlayer().getInstance(), finalEntityLocation, Particle.INSTANT_EFFECT, 10, Vec.ZERO, 2f);
                     slayer.getPlayer().getInstance().playSound(SoundType.ENTITY_WITHER_SHOOT.create(0.5f, 0.5f + (i / 40f)), finalEntityLocation);
                     if (i == 40) {
                         cancel();

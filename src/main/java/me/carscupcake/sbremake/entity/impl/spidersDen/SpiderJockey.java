@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class SpiderJockey extends SkyblockEntity implements SkillXpDropper {
     private final boolean inSpidersMound;
+
     public SpiderJockey(boolean inSpidersMound) {
         super(EntityType.SPIDER);
         this.inSpidersMound = inSpidersMound;

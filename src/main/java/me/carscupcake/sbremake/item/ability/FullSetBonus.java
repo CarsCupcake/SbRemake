@@ -10,14 +10,19 @@ public non-sealed abstract class FullSetBonus implements Ability {
     private final int minPieces;
     private final boolean tiered;
     private final String name;
+
     public FullSetBonus(String name, int maxPieces, int minPieces, boolean tiered) {
         this.maxPieces = maxPieces;
         this.minPieces = minPieces;
         this.tiered = tiered;
         this.name = name;
     }
+
     public abstract void start(SkyblockPlayer player);
-    public abstract void stop(SkyblockPlayer player);;
+
+    public abstract void stop(SkyblockPlayer player);
+
+    ;
 
     @Override
     public String headline(SbItemStack item, SkyblockPlayer player) {
@@ -26,7 +31,7 @@ public non-sealed abstract class FullSetBonus implements Ability {
             return "§6Tiered Bonus: " + (name) + " " + ((pieces == minPieces) ? "§6" : "§7") + "(" + (pieces) + "/" + (maxPieces) + ")";
         }
         if (maxPieces != minPieces) {
-            return "§6" + (maxPieces) + "-Piece Set Bonus: " + (name) ;
+            return "§6" + (maxPieces) + "-Piece Set Bonus: " + (name);
         }
         return "§6Full Set Bonus: " + (name) + " " + ((pieces == minPieces) ? "§6" : "§7") + "(" + (pieces) + "/" + (maxPieces) + ")";
     }

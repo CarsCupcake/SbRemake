@@ -22,7 +22,7 @@ public class DownloadUtil {
 
     private static File saveUrl(final String urlString, String sufix, File parent) throws Exception {
         System.out.println("Downloading...");
-        String filename =  (urlString.substring(urlString.lastIndexOf("/") + 1, urlString.lastIndexOf("."))) +  ((sufix == null) ? "" : ("_" + (sufix) )) +  (urlString.substring(urlString.lastIndexOf("."))) ;
+        String filename = (urlString.substring(urlString.lastIndexOf("/") + 1, urlString.lastIndexOf("."))) + ((sufix == null) ? "" : ("_" + (sufix))) + (urlString.substring(urlString.lastIndexOf(".")));
         File fileOut = new File(parent, filename);
         try (BufferedInputStream in = new BufferedInputStream(new URL(urlString).openStream()); FileOutputStream fout = new FileOutputStream(fileOut)) {
 

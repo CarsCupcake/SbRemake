@@ -21,6 +21,7 @@ public class AlchemySkill extends ISkill {
                     boost(event.player().getSkill(Skill.Farming).getLevel()), PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Skills));
         }
     });
+
     public static int boost(int level) {
         int i = 14;
         if (level <= 14) return level;
@@ -60,9 +61,10 @@ public class AlchemySkill extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of("§8+ §a" + (level <= 14 ? 1 : 2) + " " + (Stat.Intelligence) ));
+            return new Lore(List.of("§8+ §a" + (level <= 14 ? 1 : 2) + " " + (Stat.Intelligence)));
         }
     }
+
     public record DungeonStatReward(int level) implements Reward {
 
         @Override

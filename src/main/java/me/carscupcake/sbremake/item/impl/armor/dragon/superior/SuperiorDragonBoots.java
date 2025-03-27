@@ -18,7 +18,6 @@ import net.minestom.server.color.Color;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
-import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
 import java.util.List;
@@ -87,7 +86,7 @@ public class SuperiorDragonBoots implements ISbItem, ISbItem.StatProvider, NpcSe
             for (EquipmentSlot equipmentSlot : EquipmentSlot.armors()) {
                 SbItemStack itemStack = event.player().getSbEquipment(equipmentSlot);
                 if (itemStack != null && itemStack.getModifier(Modifier.REFORGE) == ArmorReforge.Renowned)
-                    event.modifiers().add(new PlayerStatEvent.BasicModifier("Renowned " + (itemStack.sbItem().getType()) , 0.01, PlayerStatEvent.Type.AddativeMultiplier, PlayerStatEvent.StatsCategory.Armor));
+                    event.modifiers().add(new PlayerStatEvent.BasicModifier("Renowned " + (itemStack.sbItem().getType()), 0.01, PlayerStatEvent.Type.AddativeMultiplier, PlayerStatEvent.StatsCategory.Armor));
 
             }
         });

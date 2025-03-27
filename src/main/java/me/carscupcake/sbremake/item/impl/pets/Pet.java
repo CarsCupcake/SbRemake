@@ -3,7 +3,6 @@ package me.carscupcake.sbremake.item.impl.pets;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.ItemType;
-import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.AbilityType;
 import me.carscupcake.sbremake.item.ability.ItemAbility;
@@ -52,6 +51,7 @@ public class Pet implements ISbItem {
         public PetInfo(IPet pet, ItemRarity rarity, double exp, @Nullable PetItem petItem, int petCandyUsed) {
             this(pet, rarity, pet.getLevel(rarity, exp), exp, petItem, petCandyUsed);
         }
+
         public PetInfo(IPet pet, ItemRarity rarity, double exp) {
             this(pet, rarity, exp, null, 0);
         }

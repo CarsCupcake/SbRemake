@@ -17,7 +17,7 @@ import java.util.Map;
 
 public enum ArmorReforge implements Reforge {
     Clean(Map.of(Stat.Health, new RarityStat(5, 7, 10, 15, 20, 25)
-    ,Stat.Defense, new RarityStat(5, 7, 10, 15, 20, 25), Stat.CritChance, LINEAR_TWO)),
+            , Stat.Defense, new RarityStat(5, 7, 10, 15, 20, 25), Stat.CritChance, LINEAR_TWO)),
     Fierce(Map.of(Stat.Strength, LINEAR_TWO,
             Stat.CritChance, new RarityStat(2, 3, 4, 5, 6, 8),
             Stat.CritDamage, new RarityStat(4, 7, 10, 14, 18, 24))),
@@ -27,7 +27,7 @@ public enum ArmorReforge implements Reforge {
     Light(Map.of(Stat.Health, new RarityStat(5, 7, 10, 15, 20, 25),
             Stat.Defense, LINEAR_ONE,
             Stat.CritChance, new RarityStat(1, 1, 2, 2, 3, 3),
-            Stat.CritDamage,  LINEAR_ONE,
+            Stat.CritDamage, LINEAR_ONE,
             Stat.Speed, LINEAR_ONE,
             Stat.AttackSpeed, LINEAR_ONE)),
     Mythic(Map.of(Stat.Health, new RarityStat(2, 3, 4, 6, 8, 10),

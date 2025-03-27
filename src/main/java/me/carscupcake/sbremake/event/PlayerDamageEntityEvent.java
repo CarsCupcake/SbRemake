@@ -11,6 +11,7 @@ import net.minestom.server.event.EventFilter;
 @Setter
 public class PlayerDamageEntityEvent extends PlayerToEntityDamageEvent {
     private double damage;
+
     public PlayerDamageEntityEvent(SkyblockPlayer player, SkyblockEntity target, double damage) {
         super(player, target, 0, 0, 0, 0, 0);
         this.damage = damage;
@@ -30,5 +31,6 @@ public class PlayerDamageEntityEvent extends PlayerToEntityDamageEvent {
     public EntityDeathEvent.Type damageType() {
         return EntityDeathEvent.Type.Undefined;
     }
+
     public static final EventFilter<PlayerDamageEntityEvent, Player> DAMAGE_EVENT = EventFilter.from(PlayerDamageEntityEvent.class, Player.class, PlayerToEntityDamageEvent::getPlayer);
 }

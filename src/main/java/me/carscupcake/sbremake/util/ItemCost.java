@@ -11,9 +11,11 @@ public record ItemCost(ISbItem item, int amount) implements Cost {
     public ItemCost(Class<? extends ISbItem> clazz, int amount) {
         this(ISbItem.get(clazz), amount);
     }
+
     public ItemCost(Class<? extends ISbItem> clazz) {
         this(ISbItem.get(clazz), 1);
     }
+
     @Override
     public boolean canPay(SkyblockPlayer player) {
         int remaining = amount;
@@ -49,11 +51,11 @@ public record ItemCost(ISbItem item, int amount) implements Cost {
 
     @Override
     public ItemBuilder appendToLore(ItemBuilder builder) {
-        return builder.addLoreRow( (item.getRarity().getPrefix()) +  (item.getName()) + " §8x" + (amount) );
+        return builder.addLoreRow((item.getRarity().getPrefix()) + (item.getName()) + " §8x" + (amount));
     }
 
     @Override
     public String toString() {
-        return  (item.getRarity().getPrefix()) +  (item.getName()) + " §8x" + (amount) ;
+        return (item.getRarity().getPrefix()) + (item.getName()) + " §8x" + (amount);
     }
 }

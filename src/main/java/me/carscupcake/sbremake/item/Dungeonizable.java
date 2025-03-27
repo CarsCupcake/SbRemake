@@ -12,6 +12,7 @@ public interface Dungeonizable extends Upgradable {
     }
 
     int getCost(int star);
+
     Essence getEssence();
 
     @Override

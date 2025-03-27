@@ -35,6 +35,7 @@ public class RevenantHorrorIV extends RevenantHorrorIII {
         lootTable.addLoot(RevenantHorrorIV.SNAKE_RUNE.loots()[0]);
         lootTable.addLoot(RevenantHorrorIV.SCYTHE_BLADE.loots()[0]);
     }
+
     public RevenantHorrorIV(SkyblockPlayer owner) {
         super(owner, lootTable);
     }

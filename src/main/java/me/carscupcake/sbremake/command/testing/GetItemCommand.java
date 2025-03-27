@@ -27,7 +27,7 @@ public class GetItemCommand extends Command {
         num = new ArgumentInteger("amount").min(1);
         addSyntax(this::execute, argument);
         addSyntax(this::execute, argument, num);
-        setDefaultExecutor((source, args) -> source.sendMessage("§cThe item with the id " +(args.get(argument)) + " was not found"));
+        setDefaultExecutor((source, args) -> source.sendMessage("§cThe item with the id " + (args.get(argument)) + " was not found"));
         setCondition(Conditions::playerOnly);
     }
 
@@ -41,7 +41,7 @@ public class GetItemCommand extends Command {
         item.update((SkyblockPlayer) sender);
         var maxStackSize = Objects.requireNonNull(item.withAmount(item.sbItem().getMaxStackSize()));
         var amount = context.getOrDefault(num, 1);
-        while (amount > maxStackSize.item().amount()){
+        while (amount > maxStackSize.item().amount()) {
             if (!player.addItem(maxStackSize)) return;
             amount -= maxStackSize.item().amount();
         }

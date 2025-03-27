@@ -42,11 +42,11 @@ public class EntitySpawner {
     }
 
     public void respawnMissing() {
-         for (int i = 0; i < positions.length; i++) {
-             if (!entities.get(i).isDead()) continue;
-             SkyblockEntity entity = constructor.construct(positions[i], instance);
-             entities.set(i, entity);
-         }
+        for (int i = 0; i < positions.length; i++) {
+            if (!entities.get(i).isDead()) continue;
+            SkyblockEntity entity = constructor.construct(positions[i], instance);
+            entities.set(i, entity);
+        }
     }
 
     public void stop() {
@@ -56,6 +56,7 @@ public class EntitySpawner {
     public interface EntityConstructor {
         SkyblockEntity construct(Pos pos, Instance instance);
     }
+
     public record BasicConstructor(Returnable<SkyblockEntity> entityReturnable) implements EntityConstructor {
         @Override
         public SkyblockEntity construct(Pos pos, Instance instance) {

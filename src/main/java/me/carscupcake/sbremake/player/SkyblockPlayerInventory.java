@@ -4,9 +4,7 @@ import me.carscupcake.sbremake.event.SbEntityEquipEvent;
 import me.carscupcake.sbremake.item.SbItemStack;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.event.EventDispatcher;
-import net.minestom.server.event.inventory.InventoryItemChangeEvent;
 import net.minestom.server.event.inventory.PlayerInventoryItemChangeEvent;
-import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.PlayerInventory;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.utils.MathUtils;
@@ -65,9 +63,9 @@ public class SkyblockPlayerInventory extends PlayerInventory {
     }
 
     /**
-     * @deprecated Try using getSbItemStack instead
      * @param slot the slot for the item
      * @return the item at the slot
+     * @deprecated Try using getSbItemStack instead
      */
     @Deprecated
     public @NotNull ItemStack getItemStack(int slot) {
@@ -79,9 +77,9 @@ public class SkyblockPlayerInventory extends PlayerInventory {
     }
 
     /**
-     * @deprecated Try using getSbItemStack instead
      * @param slot the slot for the item
      * @return the item at the slot
+     * @deprecated Try using getSbItemStack instead
      */
     @Deprecated
     public @NotNull ItemStack getEquipment(@NotNull EquipmentSlot slot) {
@@ -128,7 +126,7 @@ public class SkyblockPlayerInventory extends PlayerInventory {
 
     protected final void safeItemInsert(int slot, @NotNull SbItemStack itemStack, boolean sendPacket) {
         SbItemStack previous;
-        synchronized(this) {
+        synchronized (this) {
             Check.argCondition(!MathUtils.isBetween(slot, 0, this.getSize()), "The slot {0} does not exist in this inventory", new Object[]{slot});
             previous = this.itemStacks[slot];
             if (itemStack.equals(previous)) {

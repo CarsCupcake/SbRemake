@@ -26,7 +26,7 @@ public class DailyGrind extends HotmUpgrade {
 
     @Override
     public int nextLevelCost(int current) {
-        return (int) 200 + ((level  - 1) * 18);
+        return (int) 200 + ((level - 1) * 18);
     }
 
     @Override

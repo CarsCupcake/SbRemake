@@ -30,8 +30,7 @@ public class StartSlayerQuestCommand extends Command {
             }
             switch (context.get(word)) {
                 case "claim" -> {
-                    if (player.getSlayerQuest().getStage() != SlayerQuest.SlayerQuestStage.Completed)
-                    {
+                    if (player.getSlayerQuest().getStage() != SlayerQuest.SlayerQuestStage.Completed) {
                         player.sendMessage("§cYou did not complete the slayer quest!");
                         return;
                     }
@@ -40,8 +39,7 @@ public class StartSlayerQuestCommand extends Command {
 
                 }
                 case "cancle" -> {
-                    if (player.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.Completed)
-                    {
+                    if (player.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.Completed) {
                         player.sendMessage("§aTo claim your slayer quest use /slayerquest claim");
                         return;
                     }

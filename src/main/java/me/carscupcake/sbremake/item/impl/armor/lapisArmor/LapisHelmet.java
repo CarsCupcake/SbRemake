@@ -44,6 +44,7 @@ public class LapisHelmet implements ISbItem, Listener {
         if (stat == Stat.Defense) return 25;
         return ISbItem.super.getStat(stat);
     }
+
     @Override
     public List<Ability> getDefaultAbilities() {
         return List.of(HealthFullSetBonus.INSTANCE);

@@ -45,8 +45,8 @@ public abstract class PickaxeAbility extends HotmUpgrade {
     public ItemStack getItem() {
         return new ItemBuilder(level == 0 ? Material.COAL_BLOCK : Material.EMERALD_BLOCK)
                 .setGlint(getPlayer().getHotm().getActiveAbility() == this)
-                .setName( (level == 0 ? "§c" : "§a") +  (getName()) )
-                .addAllLore(" ", "§6Pickaxe Ability: " + (getName()) )
+                .setName((level == 0 ? "§c" : "§a") + (getName()))
+                .addAllLore(" ", "§6Pickaxe Ability: " + (getName()))
                 .addAllLore(lore(level == 0 ? 1 : level).build(null, getPlayer()))
                 .addLoreRow("§8Cooldown: §a" + (cooldown()) + "s")
                 .addLoreRow("  ")

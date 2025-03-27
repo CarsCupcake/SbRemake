@@ -75,9 +75,9 @@ public record Lore(List<String> base, Map<String, IPlaceHolder> placeHolderHashM
                 color = false;
                 if (chars.contains(c)) {
                     if (c == 'r') lastFormat = "";
-                    else lastFormat += "§" + (c) ;
+                    else lastFormat += "§" + (c);
                 } else {
-                    lastColorCode = "§" + (c) ;
+                    lastColorCode = "§" + (c);
                     lastFormat = "";
                 }
             } else if (c == '§') {

@@ -9,14 +9,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public record GemstoneItem(Gemstone.Type type, Gemstone.Quality quality, RarityStat statBonus, String headTexture) implements ISbItem, HeadWithValue, Gemstone {
+public record GemstoneItem(Gemstone.Type type, Gemstone.Quality quality, RarityStat statBonus,
+                           String headTexture) implements ISbItem, HeadWithValue, Gemstone {
     static List<GemstoneItem> items = new ArrayList<>();
-    public GemstoneItem{
+
+    public GemstoneItem {
         items.add(this);
         Map<Quality, Gemstone> map = gemstones.getOrDefault(type, new HashMap<>());
         map.put(quality, this);
         gemstones.put(type, map);
     }
+
     @Override
     public String value() {
         return headTexture;
@@ -24,12 +27,12 @@ public record GemstoneItem(Gemstone.Type type, Gemstone.Quality quality, RarityS
 
     @Override
     public String getId() {
-        return  (quality.name().toUpperCase()) + "_" + (type.name().toUpperCase()) ;
+        return (quality.name().toUpperCase()) + "_" + (type.name().toUpperCase());
     }
 
     @Override
     public String getName() {
-        return  (type.getStat().getSymbol()) + " " + (quality.name()) + " " + (type.name()) + " Gemstone";
+        return (type.getStat().getSymbol()) + " " + (quality.name()) + " " + (type.name()) + " Gemstone";
     }
 
     @Override
@@ -59,7 +62,7 @@ public record GemstoneItem(Gemstone.Type type, Gemstone.Quality quality, RarityS
 
     @Override
     public boolean isUnstackable() {
-        return quality == Quality.Flawless ||  quality == Quality.Perfect;
+        return quality == Quality.Flawless || quality == Quality.Perfect;
     }
 
     public static void init() {

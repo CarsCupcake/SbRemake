@@ -152,14 +152,14 @@ public interface Recipe {
         CraftingIngredient ENCHANTED_DIAMOND_BLOCK = new CraftingIngredient(1, ISbItem.get(EnchantedDiamondBlock.class));
         for (int i = 2; i < 13; i++) {
             String[] recipeShape = {" # ", "#!#", " # "};
-            String id = "perfect_boots_" + (i) ;
-            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_BOOTS_" + (i - 1) ))), recipeShape));
-            id = "perfect_leggings_" + (i) ;
-            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_LEGGINGS_" + (i - 1) ))), recipeShape));
-            id = "perfect_chestplate_" + (i) ;
-            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_CHESTPLATE_" + (i - 1) ))), recipeShape));
-            id = "perfect_helmet_" + (i) ;
-            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_HELMET_" + (i - 1) ))), recipeShape));
+            String id = "perfect_boots_" + (i);
+            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_BOOTS_" + (i - 1)))), recipeShape));
+            id = "perfect_leggings_" + (i);
+            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_LEGGINGS_" + (i - 1)))), recipeShape));
+            id = "perfect_chestplate_" + (i);
+            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_CHESTPLATE_" + (i - 1)))), recipeShape));
+            id = "perfect_helmet_" + (i);
+            craftingRecipes.put(id, ShapedRecipe.createShapedRecipe(SbItemStack.raw(id.toUpperCase()), 1, 4, Map.of('#', ENCHANTED_DIAMOND_BLOCK, '!', new CraftingIngredient(1, SbItemStack.raw("PERFECT_HELMET_" + (i - 1)))), recipeShape));
         }
     }
 

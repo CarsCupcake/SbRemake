@@ -45,7 +45,7 @@ public class Mole extends HotmUpgrade {
     }
 
     public int getBlocks(int level) {
-        return (int) (((50 + ((level-1) * 5)) / 100d) + 1);
+        return (int) (((50 + ((level - 1) * 5)) / 100d) + 1);
     }
 
     public int getChance(int level) {

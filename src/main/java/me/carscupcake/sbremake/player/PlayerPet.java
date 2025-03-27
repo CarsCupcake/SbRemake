@@ -71,7 +71,7 @@ public class PlayerPet extends TaskScheduler {
 
     public void updateNameTag() {
         lastPetLevel = petInfo.getLevel();
-        nameTag.setCustomName(Component.text("§7[Lvl " + (petInfo.getLevel()) + "] " + (petInfo.getRarity().getPrefix()) +  (((TextComponent) player.getName()).content()) + "'s " + (petInfo.getPet().getName()) ));
+        nameTag.setCustomName(Component.text("§7[Lvl " + (petInfo.getLevel()) + "] " + (petInfo.getRarity().getPrefix()) + (((TextComponent) player.getName()).content()) + "'s " + (petInfo.getPet().getName())));
     }
 
     private double calculateYOffset() {

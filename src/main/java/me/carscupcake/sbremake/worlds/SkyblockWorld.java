@@ -233,6 +233,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             if (world.getId().equals(id)) return world;
         return null;
     }
+
     protected File findWorldFolder() {
         return new File("./worlds/" + (getId()));
     }
@@ -303,6 +304,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         }
         return f;
     }
+
     @SuppressWarnings({"unused", "ignored", "UnusedReturnValue"})
     @Getter
     public static abstract class WorldProvider {
@@ -505,9 +507,8 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         Map<InputStream, String> extractedMap = new HashMap<>();
 
         RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
-        try (RandomAccessFileInStream randomAccessFileStream = new RandomAccessFileInStream(randomAccessFile))
-        {
-            try(IInArchive inArchive = SevenZip.openInArchive(null, randomAccessFileStream)) {
+        try (RandomAccessFileInStream randomAccessFileStream = new RandomAccessFileInStream(randomAccessFile)) {
+            try (IInArchive inArchive = SevenZip.openInArchive(null, randomAccessFileStream)) {
                 for (ISimpleInArchiveItem item : inArchive.getSimpleInterface().getArchiveItems()) {
                     if (!item.isFolder()) {
                         ExtractOperationResult result = item.extractSlow(data -> {
@@ -545,8 +546,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                         new File((destFolder) + "/" + (entry.getName().substring(0, di))).mkdirs();
                     }
                 }
-                try (FileOutputStream fos = new FileOutputStream((destFolder) + "/" + (entry.getName())))
-                {
+                try (FileOutputStream fos = new FileOutputStream((destFolder) + "/" + (entry.getName()))) {
                     dest = new BufferedOutputStream(fos);
                     while ((count = zis.read(data)) != -1) dest.write(data, 0, count);
                     dest.flush();

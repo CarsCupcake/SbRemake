@@ -18,6 +18,7 @@ public class Park extends SkyblockWorld.WorldProvider {
             brokenLogs.clear();
         }
     };
+
     @Override
     public SkyblockWorld type() {
         return SkyblockWorld.Park;

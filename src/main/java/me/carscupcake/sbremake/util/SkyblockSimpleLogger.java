@@ -26,7 +26,7 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
             throw new RuntimeException(e);
         }
     }
-    
+
     public SkyblockSimpleLogger() {
         super("Skyblock");
     }
@@ -38,9 +38,9 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
     @Override
     public void trace(String msg, Throwable throwable) {
         if (throwable != null) {
-            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (throwable) ));
+            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (throwable)));
             for (StackTraceElement element : throwable.getStackTrace()) {
-                Audiences.players().sendMessage(Component.text("§cat " + (element) ));
+                Audiences.players().sendMessage(Component.text("§cat " + (element)));
             }
         }
         super.trace(msg, throwable);
@@ -49,9 +49,9 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
     @Override
     public void trace(Marker marker, String msg, Throwable t) {
         if (t != null) {
-            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (t) ));
+            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (t)));
             for (StackTraceElement element : t.getStackTrace()) {
-                Audiences.players().sendMessage(Component.text("§cat " + (element) ));
+                Audiences.players().sendMessage(Component.text("§cat " + (element)));
             }
         }
         super.trace(marker, msg, t);
@@ -60,9 +60,9 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
     @Override
     public void error(String msg, Throwable t) {
         if (t != null) {
-            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (t) ));
+            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (t)));
             for (StackTraceElement element : t.getStackTrace()) {
-                Audiences.players().sendMessage(Component.text("§cat " + (element) ));
+                Audiences.players().sendMessage(Component.text("§cat " + (element)));
             }
         }
         super.error(msg, t);
@@ -71,9 +71,9 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
     @Override
     public void error(Marker marker, String msg, Throwable t) {
         if (t != null) {
-            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (t) ));
+            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (t)));
             for (StackTraceElement element : t.getStackTrace()) {
-                Audiences.players().sendMessage(Component.text("§cat " + (element) ));
+                Audiences.players().sendMessage(Component.text("§cat " + (element)));
             }
         }
         super.error(marker, msg, t);
@@ -191,7 +191,7 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
 
     @Override
     public void info(@NotNull Component format, @Nullable Object arg) {
-        info( SERIALIZER.serialize(format), arg);
+        info(SERIALIZER.serialize(format), arg);
     }
 
     @Override
@@ -243,7 +243,7 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
 
     @Override
     public void warn(@NotNull Component format, @Nullable Object arg) {
-        warn( SERIALIZER.serialize(format), arg);
+        warn(SERIALIZER.serialize(format), arg);
     }
 
     @Override
@@ -295,7 +295,7 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
 
     @Override
     public void error(@NotNull Component format, @Nullable Object arg) {
-        error( SERIALIZER.serialize(format), arg);
+        error(SERIALIZER.serialize(format), arg);
     }
 
     @Override

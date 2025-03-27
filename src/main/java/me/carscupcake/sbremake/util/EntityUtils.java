@@ -17,7 +17,7 @@ import static java.lang.Math.min;
 
 public class EntityUtils {
     public static Set<Entity> getEntitiesInLine(Pos first, Pos second, Instance instance) {
-        return getEntitiesInLine(first,second, instance, 1d);
+        return getEntitiesInLine(first, second, instance, 1d);
     }
 
     public static Set<Entity> getEntitiesInLine(Pos first, Pos second, Instance instance, double boundingBoxMultiplier) {

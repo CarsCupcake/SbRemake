@@ -50,7 +50,8 @@ public class UndeadSword implements ISbItem, Listener, NpcSellable {
     @Override
     public EventNode<Event> node() {
         return EventNode.all("undead_sword").addListener(PlayerMeleeDamageEntityEvent.class, event -> {
-            if (!(event.getTarget().getEntityType() == EntityType.ZOMBIFIED_PIGLIN || event.getTarget().getEntityType() == EntityType.SKELETON || event.getTarget().getEntityType() == EntityType.WITHER || event.getTarget().getEntityType() == EntityType.ZOMBIE)) return;
+            if (!(event.getTarget().getEntityType() == EntityType.ZOMBIFIED_PIGLIN || event.getTarget().getEntityType() == EntityType.SKELETON || event.getTarget().getEntityType() == EntityType.WITHER || event.getTarget().getEntityType() == EntityType.ZOMBIE))
+                return;
             SbItemStack stack = event.getPlayer().getSbItemInHand(Player.Hand.MAIN);
             if (stack == null) return;
             if ((stack.sbItem() instanceof UndeadSword)) {

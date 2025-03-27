@@ -44,7 +44,7 @@ public class Orbiter extends HotmUpgrade {
     }
 
     public double bonus(int level) {
-        return 0.2 + (level  * 0.01);
+        return 0.2 + (level * 0.01);
     }
 
     @Override

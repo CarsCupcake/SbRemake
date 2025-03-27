@@ -9,8 +9,7 @@ import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
-public class GravelSkeleton extends SkyblockEntity implements SkillXpDropper
-{
+public class GravelSkeleton extends SkyblockEntity implements SkillXpDropper {
     public GravelSkeleton() {
         super(EntityType.SKELETON);
         setEquipment(EquipmentSlot.MAIN_HAND, ItemStack.builder(Material.BOW).build());

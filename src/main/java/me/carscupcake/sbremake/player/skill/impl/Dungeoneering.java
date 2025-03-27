@@ -23,7 +23,7 @@ public class Dungeoneering extends ISkill {
     });
 
     public static int boost(int level) {
-       return 2 * level;
+        return 2 * level;
     }
 
     public static int dungeonItemStatBonus(int level) {
@@ -87,9 +87,10 @@ public class Dungeoneering extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of("§8+ §a2 " + (Stat.Health) ));
+            return new Lore(List.of("§8+ §a2 " + (Stat.Health)));
         }
     }
+
     public record DungeonStatReward(int level) implements Reward {
 
         @Override

@@ -9,7 +9,8 @@ import java.util.function.Consumer;
 public class PlayerBlockPlaceListener implements Consumer<PlayerBlockPlaceEvent> {
     @Override
     public void accept(PlayerBlockPlaceEvent playerBlockPlaceEvent) {
-        if (((SkyblockPlayer) playerBlockPlaceEvent.getPlayer()).getWorldProvider().type() == SkyblockWorld.PrivateIsle) return;
+        if (((SkyblockPlayer) playerBlockPlaceEvent.getPlayer()).getWorldProvider().type() == SkyblockWorld.PrivateIsle)
+            return;
         playerBlockPlaceEvent.setCancelled(true);
     }
 }

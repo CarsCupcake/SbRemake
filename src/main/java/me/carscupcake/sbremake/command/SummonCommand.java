@@ -50,7 +50,7 @@ public class SummonCommand extends Command {
         }
     }
 
-    enum EntityClass implements EntityFactory{
+    enum EntityClass implements EntityFactory {
         GraveyardZombie(GraveyardZombie.class),
         GravelSkeleton(GravelSkeleton.class),
         SneakyCreeper(me.carscupcake.sbremake.entity.impl.deepCaverns.SneakyCreeper.class),
@@ -78,13 +78,12 @@ public class SummonCommand extends Command {
                 return new DasherSpider(4);
             }
         },
-        Arachne(me.carscupcake.sbremake.entity.impl.spidersDen.arachne.Arachne.class)
-                {
-                    @Override
-                    public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-                        return new Arachne(true);
-                    }
-                };
+        Arachne(me.carscupcake.sbremake.entity.impl.spidersDen.arachne.Arachne.class) {
+            @Override
+            public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+                return new Arachne(true);
+            }
+        };
         private final Class<? extends SkyblockEntity> entityClazz;
 
         EntityClass(Class<? extends SkyblockEntity> entityClazz) {

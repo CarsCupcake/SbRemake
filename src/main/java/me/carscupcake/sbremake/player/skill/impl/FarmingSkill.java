@@ -81,8 +81,8 @@ public class FarmingSkill extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of("§eFarmhand " + (StringUtils.toRoman(level)) , " §fGrants " + ((level == 0) ? "" : "§8" + (4 * (level - 1)) + "➜") + "§a" + (4 * level) + " " + (Stat.FarmingFortune) + "§f, which",
-                    " §fincreases your chance for", " §fmultiple crops", "§8+ §a" + ((level < 15) ? 2 : (level < 20) ? 3 : (level <= 25) ? 4 : 5) + " " + (Stat.Health) ));
+            return new Lore(List.of("§eFarmhand " + (StringUtils.toRoman(level)), " §fGrants " + ((level == 0) ? "" : "§8" + (4 * (level - 1)) + "➜") + "§a" + (4 * level) + " " + (Stat.FarmingFortune) + "§f, which",
+                    " §fincreases your chance for", " §fmultiple crops", "§8+ §a" + ((level < 15) ? 2 : (level < 20) ? 3 : (level <= 25) ? 4 : 5) + " " + (Stat.Health)));
         }
     }
 }

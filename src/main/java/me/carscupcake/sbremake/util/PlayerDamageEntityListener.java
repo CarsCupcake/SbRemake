@@ -12,7 +12,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-public record PlayerDamageEntityListener(Consumer<PlayerToEntityDamageEvent> consumer) implements EventBinding<PlayerToEntityDamageEvent> {
+public record PlayerDamageEntityListener(
+        Consumer<PlayerToEntityDamageEvent> consumer) implements EventBinding<PlayerToEntityDamageEvent> {
     @Override
     public @NotNull Collection<Class<? extends Event>> eventTypes() {
         return List.of(PlayerToEntityDamageEvent.class, PlayerMeleeDamageEntityEvent.class, PlayerProjectileDamageEntityEvent.class, PlayerDamageEntityEvent.class);

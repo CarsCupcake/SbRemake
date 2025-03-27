@@ -29,6 +29,7 @@ public abstract class Collection {
     private final List<List<Reward>> rewards;
     private final int maxLevel;
     private int level;
+
     public Collection(SkyblockPlayer player, int[] levels, List<List<Reward>> rewards) {
         this.player = player;
         this.levelProgress = levels;
@@ -57,10 +58,10 @@ public abstract class Collection {
     private static final int[][] slots = {{22}, {21, 23}, {21, 22, 23}, {20, 21, 23, 24}, {20, 21, 22, 23, 24}, {19, 20, 21, 23, 24, 25}, {19, 20, 21, 22, 23, 24, 25}, {18, 19, 20, 21, 23, 24, 25, 26}};
 
     public void showInventory() {
-        InventoryBuilder builder = new InventoryBuilder(6,  (getName()) + " Collection")
+        InventoryBuilder builder = new InventoryBuilder(6, (getName()) + " Collection")
                 .fill(TemplateItems.EmptySlot.getItem())
-                .setItem(new ItemBuilder(showItem()).setName("§e" + (getName()) + " " + (StringUtils.toRoman(level)) )
-                        .addAllLore("§7View all your " + (getName()) + " Collection", "§7progress and rewards!", "§7 ", "§7Total Collected: §e" + (StringUtils.toFormatedNumber(progress)) )
+                .setItem(new ItemBuilder(showItem()).setName("§e" + (getName()) + " " + (StringUtils.toRoman(level)))
+                        .addAllLore("§7View all your " + (getName()) + " Collection", "§7progress and rewards!", "§7 ", "§7Total Collected: §e" + (StringUtils.toFormatedNumber(progress)))
                         .build(), 4);
         if (maxLevel < slots.length) {
             for (int i = 0; i < maxLevel; i++) {
@@ -79,10 +80,10 @@ public abstract class Collection {
     public ItemStack getCollectionShowItem(int level) {
         String prefix = (level <= this.level) ? "§a" : "§e";
         return new ItemBuilder((level <= this.level) ? Material.LIME_STAINED_GLASS_PANE : (level == 1 + this.level) ? Material.YELLOW_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE)
-                .setName( (prefix) +  (getName()) + " " + (StringUtils.toRoman(level)) )
-                .addAllLore("§a ", "§7Progress: " + (prefix) +  (StringUtils.cleanDouble(100 * Math.min(1d, (double) progress / levelProgress[level - 1]))) + "%")
+                .setName((prefix) + (getName()) + " " + (StringUtils.toRoman(level)))
+                .addAllLore("§a ", "§7Progress: " + (prefix) + (StringUtils.cleanDouble(100 * Math.min(1d, (double) progress / levelProgress[level - 1]))) + "%")
                 .addLoreRow(StringUtils.makeProgressBar(20, progress, levelProgress[level - 1], NamedTextColor.WHITE, NamedTextColor.GREEN,
-                                "§m ").append(Component.text(" §e" + (progress) + " §6/ §e" + (StringUtils.toShortNumber(levelProgress[level - 1])) )))
+                        "§m ").append(Component.text(" §e" + (progress) + " §6/ §e" + (StringUtils.toShortNumber(levelProgress[level - 1])))))
                 .addLoreRow("§e ")
                 .addLoreRow("§aRewards:")
                 .addAllLore(rewardsLore(level))
@@ -95,11 +96,11 @@ public abstract class Collection {
         for (Reward reward : rewards)
             reward.reward(player);
         player.sendMessage("§e▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-        player.sendMessage(Component.text("  §6§lCOLLECTION LEVELED UP!§r §e" + (getName()) + " §e" + (StringUtils.toRoman(level)) ).clickEvent(ClickEvent.runCommand("/collectionmenu " + (getId()) ) ).hoverEvent(Component.text("§eClick to open")));
+        player.sendMessage(Component.text("  §6§lCOLLECTION LEVELED UP!§r §e" + (getName()) + " §e" + (StringUtils.toRoman(level))).clickEvent(ClickEvent.runCommand("/collectionmenu " + (getId()))).hoverEvent(Component.text("§eClick to open")));
         player.sendMessage("  ");
         player.sendMessage("  §a§lREWARDS");
         for (String s : rewardsLore(level)) {
-            player.sendMessage("   " + (s) );
+            player.sendMessage("   " + (s));
         }
         player.sendMessage("§e▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
     }
@@ -122,6 +123,7 @@ public abstract class Collection {
 
     /**
      * Progress for this collection
+     *
      * @param item the item
      * @return the amount of progress 0 = not in the collection
      */

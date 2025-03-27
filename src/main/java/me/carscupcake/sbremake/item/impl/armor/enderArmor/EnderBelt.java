@@ -14,6 +14,7 @@ public class EnderBelt implements ISbItem, NpcSellable, ISbItem.StatProvider, IS
     public SoulboundType getSoulboundType() {
         return SoulboundType.Coop;
     }
+
     @Override
     public String getId() {
         return "ENDER_BELT";

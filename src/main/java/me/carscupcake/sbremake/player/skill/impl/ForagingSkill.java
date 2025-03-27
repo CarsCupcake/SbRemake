@@ -83,7 +83,7 @@ public class ForagingSkill extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of("§eLogger " + (StringUtils.toRoman(level)) , " §fGrants " + ((level == 0) ? "" : "§8" + (4 * (level - 1)) + "➜") + "§a" + (4 * level) + " " + (Stat.ForagingFortune) + "§f, which", " §fincreases your chance for", " §fmultiple logs.", "§8+ §a" + ((level < 15) ? 1 : 2) + " " + (Stat.Strength) ));
+            return new Lore(List.of("§eLogger " + (StringUtils.toRoman(level)), " §fGrants " + ((level == 0) ? "" : "§8" + (4 * (level - 1)) + "➜") + "§a" + (4 * level) + " " + (Stat.ForagingFortune) + "§f, which", " §fincreases your chance for", " §fmultiple logs.", "§8+ §a" + ((level < 15) ? 1 : 2) + " " + (Stat.Strength)));
         }
     }
 }

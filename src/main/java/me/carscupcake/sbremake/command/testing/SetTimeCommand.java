@@ -10,8 +10,8 @@ import net.minestom.server.command.builder.arguments.number.ArgumentNumber;
 public class SetTimeCommand extends Command {
     public SetTimeCommand() {
         super("settime");
-        ArgumentNumber<Integer> hour = new  ArgumentInteger("hour").min(0).max(23);
-        ArgumentNumber<Integer> minute = new  ArgumentInteger("minute").min(0).max(5);
+        ArgumentNumber<Integer> hour = new ArgumentInteger("hour").min(0).max(23);
+        ArgumentNumber<Integer> minute = new ArgumentInteger("minute").min(0).max(5);
         addSyntax((_, context) -> {
             Time.hour = context.get(hour);
             Time.minute = context.get(minute) * 10;

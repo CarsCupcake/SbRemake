@@ -13,7 +13,7 @@ public record Plane(Vec supportVec, Vec dirA, Vec dirB) {
         if (normalVec.dot(line.direction()) == 0) return null;
         double d = normalVec.x() * supportVec.x() + normalVec.y() * supportVec.y() + normalVec.z() * supportVec.z();
         double r = (line.supportVec().x() * normalVec.x() + line.supportVec().y() * normalVec.y() + line.supportVec().z() * normalVec.z() - d) /
-                (- line.direction().x() * normalVec.x() - line.direction().y() * normalVec.y() - line.direction().z() * normalVec.z());
+                (-line.direction().x() * normalVec.x() - line.direction().y() * normalVec.y() - line.direction().z() * normalVec.z());
         if (onlyInFront && r < 0) return null;
         return line.point(r);
     }

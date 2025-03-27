@@ -25,6 +25,7 @@ import java.util.Map;
 
 public class SpiderJockeySkeleton extends SkyblockEntity implements SkillXpDropper {
     private final boolean inSpidersMound;
+
     public SpiderJockeySkeleton(boolean inSpidersMound) {
         super(EntityType.SKELETON);
         this.inSpidersMound = inSpidersMound;
@@ -65,6 +66,7 @@ public class SpiderJockeySkeleton extends SkyblockEntity implements SkillXpDropp
     public int getLevel() {
         return inSpidersMound ? 3 : 42;
     }
+
     public static class RangedSilverfishAttackGoal extends GoalSelector {
         @Getter
         private final Cooldown cooldown = new Cooldown(Duration.of(5, TimeUnit.SERVER_TICK));
@@ -101,7 +103,9 @@ public class SpiderJockeySkeleton extends SkyblockEntity implements SkillXpDropp
         public void start() {
             this.entityCreature.getNavigator().setPathTo(this.cachedTarget.getPosition());
         }
+
         private boolean isPulling = false;
+
         @Override
         public void tick(long time) {
             Entity target;

@@ -10,6 +10,7 @@ public class Endermite extends SkyblockEntity implements SkillXpDropper {
     private final float maxHealth;
     private final double damage;
     private final int level;
+
     public Endermite(boolean hard) {
         super(EntityType.ENDERMITE);
         maxHealth = (hard) ? 2_300 : 2_000;

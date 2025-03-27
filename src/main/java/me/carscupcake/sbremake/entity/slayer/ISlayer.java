@@ -23,6 +23,7 @@ public interface ISlayer {
     default int getMaxLevel() {
         return 9;
     }
+
     default int getSlayerXp(int bossTier) {
         return switch (bossTier) {
             case 1 -> 5;

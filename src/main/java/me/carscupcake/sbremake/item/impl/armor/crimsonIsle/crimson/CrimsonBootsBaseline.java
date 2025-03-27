@@ -22,14 +22,15 @@ public abstract class CrimsonBootsBaseline implements ISbItem, ISbItem.StatProvi
     public KuudraArmorType armorType() {
         return KuudraArmorType.Crimson;
     }
+
     @Override
     public String getId() {
-        return  (armorTier().getId()) + "CRIMSON_BOOTS";
+        return (armorTier().getId()) + "CRIMSON_BOOTS";
     }
 
     @Override
     public String getName() {
-        return  (armorTier().getName()) + " Crimson Boots";
+        return (armorTier().getName()) + " Crimson Boots";
     }
 
     @Override

@@ -76,7 +76,7 @@ public class MiningSkill extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of("§eSpelunker " + (StringUtils.toRoman(level)) , " §fGrants " + ((level == 0) ? "" : "§8" + (4 * (level - 1)) + "➜") + "§a" + (4 * level) + " " + (Stat.MiningFortune) + "§f, which", " §fincreases your chance for", " §fmultiple ore drops", "§8+ §a" + ((level < 15) ? 1 : 2) + " " + (Stat.Defense) ));
+            return new Lore(List.of("§eSpelunker " + (StringUtils.toRoman(level)), " §fGrants " + ((level == 0) ? "" : "§8" + (4 * (level - 1)) + "➜") + "§a" + (4 * level) + " " + (Stat.MiningFortune) + "§f, which", " §fincreases your chance for", " §fmultiple ore drops", "§8+ §a" + ((level < 15) ? 1 : 2) + " " + (Stat.Defense)));
         }
     }
 }

@@ -40,7 +40,7 @@ public class MiningSpeed2 extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Grants §a+%a% " + (Stat.MiningSpeed) , Map.of("%a%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore("§7Grants §a+%a% " + (Stat.MiningSpeed), Map.of("%a%", (_, _) -> String.valueOf(getBonus(level))));
     }
 
     public int getBonus(int level) {

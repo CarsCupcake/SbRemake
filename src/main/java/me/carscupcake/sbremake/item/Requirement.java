@@ -5,5 +5,6 @@ import net.minestom.server.item.ItemStack;
 
 public interface Requirement {
     boolean canUse(SkyblockPlayer player, ItemStack item);
+
     String display();
 }

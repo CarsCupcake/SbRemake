@@ -25,12 +25,12 @@ public abstract class CrimsonLeggingsBaseline implements ISbItem, ISbItem.StatPr
 
     @Override
     public String getId() {
-        return  (armorTier().getId()) + "CRIMSON_LEGGINGS";
+        return (armorTier().getId()) + "CRIMSON_LEGGINGS";
     }
 
     @Override
     public String getName() {
-        return  (armorTier().getName()) + " Crimson Leggings";
+        return (armorTier().getName()) + " Crimson Leggings";
     }
 
     @Override

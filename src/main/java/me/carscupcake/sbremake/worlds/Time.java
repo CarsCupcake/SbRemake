@@ -30,7 +30,7 @@ public class Time {
             @Override
             public void run() {
                 tick++;
-                if (tick % 166 == 0){
+                if (tick % 166 == 0) {
                     if (minute == 50) {
                         if (hour == 23) {
                             hour = 0;
@@ -57,7 +57,7 @@ public class Time {
     }
 
     public static String timeToString() {
-        return  (hour > 12 ? (hour - 12) : hour) + ":" + (minute < 10 ? "00" : minute) +  (getTimeSuffix()) ;
+        return (hour > 12 ? (hour - 12) : hour) + ":" + (minute < 10 ? "00" : minute) + (getTimeSuffix());
     }
 
     public static void save() {

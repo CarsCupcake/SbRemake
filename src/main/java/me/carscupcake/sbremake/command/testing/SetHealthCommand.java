@@ -8,8 +8,9 @@ import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.arguments.number.ArgumentFloat;
 import net.minestom.server.command.builder.condition.Conditions;
 
-public class SetHealthCommand  extends Command {
+public class SetHealthCommand extends Command {
     private static final ArgumentFloat argument = ArgumentType.Float("amount");
+
     public SetHealthCommand() {
         super("sethealth");
 

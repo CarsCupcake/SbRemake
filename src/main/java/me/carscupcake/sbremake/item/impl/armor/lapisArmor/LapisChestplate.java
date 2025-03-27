@@ -47,6 +47,7 @@ public class LapisChestplate implements ISbItem, ColoredLeather {
     public Color color() {
         return new Color(0x0000ff);
     }
+
     @Override
     public List<Ability> getDefaultAbilities() {
         return List.of(HealthFullSetBonus.INSTANCE);

@@ -15,6 +15,7 @@ import java.util.Map;
 
 public class Rune implements ISbItem {
     public static final Map<String, IRune<? extends Entity>> runes = new HashMap<>();
+
     static {
         Reflections reflections = new Reflections("me.carscupcake.sbremake.item.impl.rune.impl");
         for (Class<? extends IRune> clazz : reflections.getSubTypesOf(IRune.class)) {
@@ -33,6 +34,7 @@ public class Rune implements ISbItem {
             }
         }
     }
+
     @Override
     public String getId() {
         return "RUNE";

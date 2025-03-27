@@ -4,7 +4,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 
 @SuppressWarnings("preview")
-public record CoinsCost(int coins) implements Cost{
+public record CoinsCost(int coins) implements Cost {
     @Override
     public boolean canPay(SkyblockPlayer player) {
         return player.getCoins() >= coins;

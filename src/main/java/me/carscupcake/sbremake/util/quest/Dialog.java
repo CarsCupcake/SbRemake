@@ -26,7 +26,7 @@ public class Dialog {
     }
 
     public Dialog addLine(String text, boolean prefix) {
-        return this.addDialogElement(new TextDialogElement( (prefix ? this.prefix : "") + " " + (text) ));
+        return this.addDialogElement(new TextDialogElement((prefix ? this.prefix : "") + " " + (text)));
     }
 
     public DialogScheduler build(SkyblockPlayer player) {

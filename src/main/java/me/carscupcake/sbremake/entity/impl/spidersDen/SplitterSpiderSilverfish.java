@@ -12,6 +12,7 @@ import java.util.List;
 
 public class SplitterSpiderSilverfish extends SkyblockEntity implements SkillXpDropper {
     private final int level;
+
     public SplitterSpiderSilverfish(@Range(from = 1, to = 4) int tier) {
         super(EntityType.SILVERFISH);
         level = switch (tier) {

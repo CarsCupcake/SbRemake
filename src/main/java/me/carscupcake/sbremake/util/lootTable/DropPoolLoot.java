@@ -10,7 +10,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
-public record DropPoolLoot(List<ISbItem> items, int min, int max, double chance, boolean magicFind, boolean petLuck, ItemLoot.MessageBuilder builder) implements LootTable.Loot<SbItemStack> {
+public record DropPoolLoot(List<ISbItem> items, int min, int max, double chance, boolean magicFind, boolean petLuck,
+                           ItemLoot.MessageBuilder builder) implements LootTable.Loot<SbItemStack> {
     public DropPoolLoot(List<ISbItem> items, int min, int max, double chance) {
         this(items, min, max, chance, chance <= 0.05, false, ItemLoot.NormalMessages.messageBuilder(chance));
     }
@@ -24,7 +25,7 @@ public record DropPoolLoot(List<ISbItem> items, int min, int max, double chance,
         ISbItem item = items.get(new Random().nextInt(items.size()));
         int amount = (min == max) ? max : (new Random().nextInt(max - min) + min);
         if (builder != null)
-            player.sendMessage(builder.message(player,  (item.getRarity().getPrefix()) +  (item.getName()) , amount, magicFind));
+            player.sendMessage(builder.message(player, (item.getRarity().getPrefix()) + (item.getName()), amount, magicFind));
         return Set.of(Objects.requireNonNull(item.create().withAmount(amount)));
     }
 

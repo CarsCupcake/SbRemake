@@ -72,6 +72,7 @@ public abstract class PlayerToEntityDamageEvent implements PlayerEvent, Cancella
     public void addMultiplicativeMultiplier(double d) {
         multiplicativeMultiplier *= d;
     }
+
     public void addAdditiveMultiplier(double d) {
         additiveMultiplier += d;
     }

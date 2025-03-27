@@ -11,6 +11,7 @@ import java.util.List;
 
 public class SpiderJockeySilverfish extends SkyblockEntity implements SkillXpDropper {
     private final boolean inSpidersMound;
+
     public SpiderJockeySilverfish(boolean inSpidersMound) {
         super(EntityType.SILVERFISH);
         this.inSpidersMound = inSpidersMound;

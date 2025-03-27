@@ -21,14 +21,15 @@ public abstract class CrimsonHelmetBaseline implements ISbItem, ISbItem.StatProv
     public KuudraArmorType armorType() {
         return KuudraArmorType.Crimson;
     }
+
     @Override
     public String getId() {
-        return  (armorTier().getId()) + "CRIMSON_HELMET";
+        return (armorTier().getId()) + "CRIMSON_HELMET";
     }
 
     @Override
     public String getName() {
-        return  (armorTier().getName()) + " Crimson Helmet";
+        return (armorTier().getName()) + " Crimson Helmet";
     }
 
     @Override

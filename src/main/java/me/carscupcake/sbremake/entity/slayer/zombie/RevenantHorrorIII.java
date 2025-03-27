@@ -55,6 +55,7 @@ public class RevenantHorrorIII extends SlayerEntity implements SkillXpDropper {
         lootTable.addLoot(RevenantHorrorIII.BEHEADED_HORROR.loots()[0]);
         lootTable.addLoot(RevenantHorrorIII.SMITE_VI.loots()[0]);
     }
+
     private boolean enraged = false;
 
     public RevenantHorrorIII(SkyblockPlayer owner) {
@@ -77,6 +78,7 @@ public class RevenantHorrorIII extends SlayerEntity implements SkillXpDropper {
         /*8.5^2*/
         TaskScheduler aoeTask = new TaskScheduler() {
             int i = 0;
+
             @Override
             public void run() {
                 if (isDead || isRemoved()) {

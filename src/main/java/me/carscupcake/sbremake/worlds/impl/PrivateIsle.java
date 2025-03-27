@@ -59,7 +59,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
                 tempFolder.mkdirs();
                 AtomicReference<File> file = new AtomicReference<>();
                 try {
-                    file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent("resources/worlds/" + (type().getId()) + "." + (type().getFileEnding().getLiteral()) ).getDownloadUrl(), null, tempFolder));
+                    file.set(DownloadUtil.navigate(gitHub.getUser("CarsCupcake").getRepository("SbRemake").getFileContent("resources/worlds/" + (type().getId()) + "." + (type().getFileEnding().getLiteral())).getDownloadUrl(), null, tempFolder));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

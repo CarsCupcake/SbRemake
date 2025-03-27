@@ -6,6 +6,7 @@ public enum MiningType {
     Pickaxe(new ItemType[]{ItemType.Pickaxe, ItemType.Drill}),
     Shovel(new ItemType[]{ItemType.Shovel});
     private final ItemType[] allowed;
+
     MiningType(ItemType[] allowed) {
         this.allowed = allowed;
     }

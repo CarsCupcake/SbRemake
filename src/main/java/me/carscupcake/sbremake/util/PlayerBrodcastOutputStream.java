@@ -10,6 +10,7 @@ import java.io.PrintStream;
 public class PlayerBrodcastOutputStream extends OutputStream {
     private StringBuilder builder = new StringBuilder();
     private final PrintStream wrapped;
+
     public PlayerBrodcastOutputStream(PrintStream wrapped) {
         this.wrapped = wrapped;
     }
@@ -20,7 +21,7 @@ public class PlayerBrodcastOutputStream extends OutputStream {
         char c = (char) b;
         if (c == '\r') return;
         if (c == '\n') {
-            Audiences.players().sendMessage(Component.text("§c" + (builder.toString()) ));
+            Audiences.players().sendMessage(Component.text("§c" + (builder.toString())));
             builder = new StringBuilder();
         } else {
             if (c == '\t') {

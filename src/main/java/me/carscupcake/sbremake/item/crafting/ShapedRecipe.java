@@ -148,7 +148,7 @@ public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result,
         int i = 0;
         for (Integer slot : segments) {
             SbItemStack item = items.get(slot);
-            if (item !=  SbItemStack.AIR)
+            if (item != SbItemStack.AIR)
                 items.set(slot, item.withAmount(item.item().amount() - this.ingredients.get(i).amount()));
             i++;
         }

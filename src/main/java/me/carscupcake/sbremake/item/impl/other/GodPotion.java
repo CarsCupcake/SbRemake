@@ -33,6 +33,7 @@ public class GodPotion implements ISbItem, HeadWithValue {
         event.player().setItemInHand(Player.Hand.MAIN, ItemStack.AIR);
         new TaskScheduler() {
             int i = 0;
+
             @Override
             public void run() {
                 event.player().playSound(SoundType.ENTITY_GENERIC_DRINK, Sound.Source.PLAYER, 1, (float) (1 + i / 10d));
@@ -42,6 +43,7 @@ public class GodPotion implements ISbItem, HeadWithValue {
         }.repeatTask(2);
 
     });
+
     @Override
     public String getId() {
         return "GOD_POTION_2";

@@ -44,6 +44,7 @@ public class RevenantHorrorII extends SlayerEntity implements SkillXpDropper {
     public static final RngMeterEntry PESTILENCE_RUNE = new RngMeterEntry("PESTILENCE_RUNE", new RngMeterItemLoot(SbItemStack.from(Rune.class).withModifier(Modifier.RUNE, new RuneModifier(new PestilenceRune(), 1)), SlayerLootTable.LootTableType.Extra, Slayers.Zombie, 83), new RngMeterItemLoot(SbItemStack.from(Rune.class).withModifier(Modifier.RUNE, new RuneModifier(new PestilenceRune(), 1)), SlayerLootTable.LootTableType.Extra, Slayers.Zombie, 333), new RngMeterItemLoot(SbItemStack.from(Rune.class).withModifier(Modifier.RUNE, new RuneModifier(new PestilenceRune(), 1)), SlayerLootTable.LootTableType.Extra, Slayers.Zombie, 833));
     public static final RngMeterEntry UNDEAD_CATALYST = new RngMeterEntry("UNDEAD_CATALYST", new RngMeterItemLoot(SbItemStack.from(UndeadCatalyst.class), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 250), new RngMeterItemLoot(SbItemStack.from(UndeadCatalyst.class), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 75));
     public static final RngMeterEntry REVENANT_CATALYST = new RngMeterEntry("REVENANT_CATALYST", new RngMeterItemLoot(SbItemStack.from(RevenantCatalyst.class), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 125));
+
     static {
         lootTable = new SlayerLootTable();
         lootTable.addLoot(REVENANT_FLESH.loots()[1]);

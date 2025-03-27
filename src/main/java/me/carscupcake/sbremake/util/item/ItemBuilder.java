@@ -33,13 +33,15 @@ public class ItemBuilder {
     private ArrayList<BannerPatterns.Layer> bannerPatterns;
     private final HashMap<DynamicRegistry.Key<Enchantment>, Integer> enchants = new HashMap<>();
     private boolean glint = false;
+
     public ItemBuilder(ItemStack itemStack) {
         this.material = itemStack.material();
         this.name = ((TextComponent) Objects.requireNonNull(itemStack.get(ItemComponent.CUSTOM_NAME))).content();
         lore.addAll(itemStack.get(ItemComponent.LORE));
         count = itemStack.amount();
         isHead = material == Material.PLAYER_HEAD && itemStack.get(ItemComponent.PROFILE) != null;
-        if (isHead) headTexture = Objects.requireNonNull(Objects.requireNonNull(itemStack.get(ItemComponent.PROFILE)).skin()).textures();
+        if (isHead)
+            headTexture = Objects.requireNonNull(Objects.requireNonNull(itemStack.get(ItemComponent.PROFILE)).skin()).textures();
         leatherColor = itemStack.get(ItemComponent.DYED_COLOR);
         BannerPatterns patterns = itemStack.get(ItemComponent.BANNER_PATTERNS);
         if (patterns != null) {
@@ -51,51 +53,57 @@ public class ItemBuilder {
             enchants.putAll(list.enchantments());
         }
     }
-    public ItemBuilder(Material material){
+
+    public ItemBuilder(Material material) {
         this.material = material;
     }
-    public ItemBuilder setName(String str){
+
+    public ItemBuilder setName(String str) {
         this.name = str;
         return this;
     }
+
     public ItemBuilder clearLore() {
         lore.clear();
         return this;
     }
-    public ItemBuilder addLoreRow(String str){
+
+    public ItemBuilder addLoreRow(String str) {
         return setLoreRow(lore.size(), str);
     }
-    public ItemBuilder setLoreRow(int i, String str){
-        if(i == lore.size())
+
+    public ItemBuilder setLoreRow(int i, String str) {
+        if (i == lore.size())
             lore.add(Component.text(str));
         else
-            lore.set(i,Component.text(str));
+            lore.set(i, Component.text(str));
 
         return this;
     }
-    public ItemBuilder addAllLore(List<String> lore){
-        for(String l : lore)
+
+    public ItemBuilder addAllLore(List<String> lore) {
+        for (String l : lore)
             addLoreRow(l);
         return this;
     }
 
     public ItemBuilder addLoreIf(Returnable<Boolean> predicate, String... lore) {
         if (!predicate.get()) return this;
-        for(String l : lore)
+        for (String l : lore)
             addLoreRow(l);
         return this;
     }
 
     public ItemBuilder addLoreIf(Returnable<Boolean> predicate, List<String> lore) {
         if (!predicate.get()) return this;
-        for(String l : lore)
+        for (String l : lore)
             addLoreRow(l);
         return this;
     }
 
     public ItemBuilder addLoreIf(Returnable<Boolean> predicate, TextComponent... lore) {
         if (!predicate.get()) return this;
-        for(TextComponent l : lore)
+        for (TextComponent l : lore)
             addLoreRow(l);
         return this;
     }
@@ -105,14 +113,14 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addAllLore(String... lore){
-        for(String l : lore)
+    public ItemBuilder addAllLore(String... lore) {
+        for (String l : lore)
             addLoreRow(l);
         return this;
     }
 
-    public ItemBuilder addAllLore(TextColor base, String... lore){
-        for(String l : lore)
+    public ItemBuilder addAllLore(TextColor base, String... lore) {
+        for (String l : lore)
             addLoreRow(Component.text(l, base));
         return this;
     }
@@ -121,24 +129,26 @@ public class ItemBuilder {
         addAllLore(Lore.refactorLore(s));
         return this;
     }
-    public ItemBuilder setAmount(int i){
+
+    public ItemBuilder setAmount(int i) {
         count = i;
         return this;
     }
-    public ItemStack build(){
+
+    public ItemStack build() {
         ItemStack.Builder item = ItemStack.builder(material);
         if (!name.equals("N/A"))
             item.set(ItemComponent.CUSTOM_NAME, Component.text(name));
         item.set(ItemComponent.LORE, lore);
         item.set(ItemComponent.ATTRIBUTE_MODIFIERS, AttributeList.EMPTY.withTooltip(false));
         EnchantmentList enchantmentList = new EnchantmentList(enchants, false);
-        if(glint && enchantmentList.enchantments().isEmpty())
+        if (glint && enchantmentList.enchantments().isEmpty())
             enchantmentList = enchantmentList.with(Enchantment.PROTECTION, 1).withTooltip(false);
         item.set(ItemComponent.ENCHANTMENTS, enchantmentList);
-        if(leatherColor != null){
+        if (leatherColor != null) {
             item.set(ItemComponent.DYED_COLOR, leatherColor.withTooltip(false));
         }
-        if(bannerPatterns != null){
+        if (bannerPatterns != null) {
             item.set(ItemComponent.BANNER_PATTERNS, new BannerPatterns(bannerPatterns));
         }
         if (isHead) {
@@ -148,27 +158,32 @@ public class ItemBuilder {
         return item.build();
     }
 
-    public ItemBuilder setHeadTexture(String value){
+    public ItemBuilder setHeadTexture(String value) {
         isHead = true;
         headTexture = value;
         return this;
     }
-    public ItemBuilder setLeatherColor(DyedItemColor color){
+
+    public ItemBuilder setLeatherColor(DyedItemColor color) {
         this.leatherColor = color;
         return this;
     }
-    public ItemBuilder setLeatherColor(RGBLike color){
+
+    public ItemBuilder setLeatherColor(RGBLike color) {
         this.leatherColor = new DyedItemColor(color, false);
         return this;
     }
-    public ItemBuilder setBannerPatterns(ArrayList<BannerPatterns.Layer> patterns){
+
+    public ItemBuilder setBannerPatterns(ArrayList<BannerPatterns.Layer> patterns) {
         bannerPatterns = patterns;
         return this;
     }
-    public ItemBuilder setGlint(boolean b){
+
+    public ItemBuilder setGlint(boolean b) {
         glint = b;
         return this;
     }
+
     public ItemBuilder addEnchant(Enchantment enchantment, int level) {
         enchants.put(DynamicRegistry.Key.of(Objects.requireNonNull(enchantment.registry()).namespace()), level);
         return this;

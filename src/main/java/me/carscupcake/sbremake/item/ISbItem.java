@@ -110,7 +110,7 @@ public interface ISbItem {
             builder.set(ItemComponent.DYED_COLOR, new DyedItemColor(leather.color().asRGB(), false));
         }
         ItemStackModifiers modifiers = modifierBuilder();
-        CompoundBinaryTag.Builder b =  CompoundBinaryTag.builder().putString("id", getId());
+        CompoundBinaryTag.Builder b = CompoundBinaryTag.builder().putString("id", getId());
         if (isUnstackable()) b = b.putString("uuid", UUID.randomUUID().toString());
         ItemStack item = build(modifiers.apply(builder.set(ItemComponent.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE).set(Tag.NBT("ExtraAttributes"), b.build()))).build();
         SbItemStack itemStack = SbItemStack.from(modifiers.apply(item));
@@ -157,7 +157,7 @@ public interface ISbItem {
             Map<Character, CraftingIngredient> items = Map.of('#', new CraftingIngredient(32, recipe.getValue().base()));
             Requirement[] requirements = new Requirement[]{new CollectionRequirement(recipe.getValue().collection(), recipe.getValue().level())};
             Recipe.craftingRecipes.put(recipe.getKey().getId().toLowerCase(), ShapedRecipe.createShapedRecipe(recipe.getKey(), 1, -1, requirements, items, "###", "## "));
-            Recipe.craftingRecipes.put( (recipe.getKey().getId().toLowerCase()) + "_star", ShapedRecipe.createShapedRecipe(recipe.getKey(), 1, -1, requirements, items, " # ", "###", " # "));
+            Recipe.craftingRecipes.put((recipe.getKey().getId().toLowerCase()) + "_star", ShapedRecipe.createShapedRecipe(recipe.getKey(), 1, -1, requirements, items, " # ", "###", " # "));
         }
         SkyblockEnchantment.initListener();
         MinecraftServer.getGlobalEventHandler().addChild(SkyblockEnchantment.LISTENER);

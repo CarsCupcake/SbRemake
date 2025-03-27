@@ -76,7 +76,7 @@ public class FishingSkill extends ISkill {
 
         @Override
         public Lore lore() {
-            return new Lore(List.of("§eTreasure Hunter " + (StringUtils.toRoman(level)) , "§f Increases the chance to find", "§f treasures when fishing by §a" + (level * 0.2) + "%§f.", "§8+ §a" + ((level < 15) ? 2 : (level < 20) ? 3 : (level <= 25) ? 4 : 5) + " " + (Stat.Health) ));
+            return new Lore(List.of("§eTreasure Hunter " + (StringUtils.toRoman(level)), "§f Increases the chance to find", "§f treasures when fishing by §a" + (level * 0.2) + "%§f.", "§8+ §a" + ((level < 15) ? 2 : (level < 20) ? 3 : (level <= 25) ? 4 : 5) + " " + (Stat.Health)));
         }
     }
 }

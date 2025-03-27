@@ -13,9 +13,10 @@ import net.minestom.server.item.Material;
 
 public record PerfectArmor(String id, String name, int level, ItemType type) implements ISbItem, GemstoneSlots {
     public PerfectArmor(int level, ItemType type) {
-        this("PERFECT_" + (type.name().toUpperCase()) + "_" + (level) , "Perfect " + (type.name()) + " - Tier " + (StringUtils.toRoman(level)) , level, type);
+        this("PERFECT_" + (type.name().toUpperCase()) + "_" + (level), "Perfect " + (type.name()) + " - Tier " + (StringUtils.toRoman(level)), level, type);
         SbItemStack.initSbItem(this);
     }
+
     @Override
     public String getId() {
         return id;
@@ -62,6 +63,7 @@ public record PerfectArmor(String id, String name, int level, ItemType type) imp
         }
         return ISbItem.super.getStat(stat);
     }
+
     public static void init() {
         for (int i = 1; i < 13; i++) {
             new PerfectArmor(i, ItemType.Helmet);

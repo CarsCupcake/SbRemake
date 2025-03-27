@@ -34,7 +34,7 @@ public enum NormalEnchantment implements SkyblockEnchantment {
     Efficiency("Efficiency", "efficiency", 10, ItemType.Pickaxe, ItemType.Drill) {
         @Override
         public Lore description() {
-            return new Lore("§7Grants §6+%a% " + (Stat.MiningSpeed) , Map.of("%a%", (item, _) -> String.valueOf(10 + (item.getEnchantmentLevel(this) * 20))));
+            return new Lore("§7Grants §6+%a% " + (Stat.MiningSpeed), Map.of("%a%", (item, _) -> String.valueOf(10 + (item.getEnchantmentLevel(this) * 20))));
         }
 
        /* @Override
@@ -49,7 +49,7 @@ public enum NormalEnchantment implements SkyblockEnchantment {
     Fortune("Fortune", "fortune", 4, ItemType.Pickaxe, ItemType.Drill) {
         @Override
         public Lore description() {
-            return new Lore("§7Grants §6+%a% " + (Stat.MiningFortune) , Map.of("%a%", (item, _) -> String.valueOf(EnchantmentUtils.getFortuneBonus(item.getEnchantmentLevel(this)))));
+            return new Lore("§7Grants §6+%a% " + (Stat.MiningFortune), Map.of("%a%", (item, _) -> String.valueOf(EnchantmentUtils.getFortuneBonus(item.getEnchantmentLevel(this)))));
         }
     },
     Pristine("Pristine", "pristine", 5, ItemType.Pickaxe, ItemType.Drill) {
@@ -85,6 +85,7 @@ public enum NormalEnchantment implements SkyblockEnchantment {
     private final String id;
     private final int maxLevel;
     private final ItemType[] types;
+
     NormalEnchantment(String name, String id, int maxLevel, ItemType... types) {
         this.name = name;
         this.id = id;

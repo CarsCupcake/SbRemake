@@ -12,19 +12,24 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-public record RngMeterItemLoot(SbItemStack item, int min, int max, SlayerLootTable.LootTableType type, ISlayer slayer, double weight) implements RngMeterLoot {
+public record RngMeterItemLoot(SbItemStack item, int min, int max, SlayerLootTable.LootTableType type, ISlayer slayer,
+                               double weight) implements RngMeterLoot {
     public RngMeterItemLoot(SbItemStack item, int amount, SlayerLootTable.LootTableType type, ISlayer slayer, double weight) {
         this(item, amount, amount, type, slayer, weight);
     }
+
     public RngMeterItemLoot(SbItemStack item, SlayerLootTable.LootTableType type, ISlayer slayer, double weight) {
         this(item, 1, 1, type, slayer, weight);
     }
+
     public RngMeterItemLoot(Class<? extends ISbItem> item, int amount, SlayerLootTable.LootTableType type, ISlayer slayer, double weight) {
         this(SbItemStack.from(item), amount, amount, type, slayer, weight);
     }
+
     public RngMeterItemLoot(Class<? extends ISbItem> item, SlayerLootTable.LootTableType type, ISlayer slayer, double weight) {
         this(SbItemStack.from(item), 1, 1, type, slayer, weight);
     }
+
     @Override
     public SbItemStack previewItem() {
         return item.update();

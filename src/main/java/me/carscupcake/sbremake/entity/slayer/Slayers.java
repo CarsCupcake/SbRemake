@@ -24,13 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public enum Slayers implements ISlayer{
+public enum Slayers implements ISlayer {
     Zombie("Zombie Slayer", "Revenant Horror") {
         private static double rngXp(RngMeterEntry entry) {
 
             lootChancesEntries.put(entry, entry.calculateHighestChance(RevenantHorrorI.lootTable, RevenantHorrorII.lootTable, RevenantHorrorIII.lootTable, RevenantHorrorIV.lootTable, RevenantHorrorV.lootTable));
             return entry.calculateRequiredXp(50_000, RevenantHorrorI.lootTable, RevenantHorrorII.lootTable, RevenantHorrorIII.lootTable, RevenantHorrorIV.lootTable, RevenantHorrorV.lootTable);
         }
+
         @Override
         public SlayerEntity getEntity(int tier, SkyblockPlayer player) {
             return switch (tier) {
@@ -52,7 +53,7 @@ public enum Slayers implements ISlayer{
 
         @Override
         public String getTitle(int level) {
-            return switch (level)  {
+            return switch (level) {
                 case 1 -> "Noob";
                 case 2 -> "Novice";
                 case 3 -> "Skilled";
@@ -89,6 +90,7 @@ public enum Slayers implements ISlayer{
         private void spawnMiniBoss(SkyblockEntity entity, Instance instance, Pos pos) {
             new TaskScheduler() {
                 int i = 0;
+
                 @Override
                 public void run() {
                     ParticleUtils.spawnParticle(instance, pos.add(0, 0.5, 0), Particle.EXPLOSION, 1);
@@ -108,15 +110,20 @@ public enum Slayers implements ISlayer{
                 double random = new Random().nextDouble();
                 switch (tier) {
                     case 3 -> {
-                        if (random <= 0.1) spawnMiniBoss(new RevenantSycophant(), entity.getInstance(), entity.getPosition());
+                        if (random <= 0.1)
+                            spawnMiniBoss(new RevenantSycophant(), entity.getInstance(), entity.getPosition());
                     }
                     case 4 -> {
-                        if (random <= 0.1) spawnMiniBoss(new RevenantChampion(), entity.getInstance(), entity.getPosition());
-                        else if (random <= 0.2) spawnMiniBoss(new DeformedRevenant(), entity.getInstance(), entity.getPosition());
+                        if (random <= 0.1)
+                            spawnMiniBoss(new RevenantChampion(), entity.getInstance(), entity.getPosition());
+                        else if (random <= 0.2)
+                            spawnMiniBoss(new DeformedRevenant(), entity.getInstance(), entity.getPosition());
                     }
                     case 5 -> {
-                        if (random <= 0.1) spawnMiniBoss(new AtonedChampion(), entity.getInstance(), entity.getPosition());
-                        else if (random <= 0.2) spawnMiniBoss(new AtonedRevenant(), entity.getInstance(), entity.getPosition());
+                        if (random <= 0.1)
+                            spawnMiniBoss(new AtonedChampion(), entity.getInstance(), entity.getPosition());
+                        else if (random <= 0.2)
+                            spawnMiniBoss(new AtonedRevenant(), entity.getInstance(), entity.getPosition());
                     }
                 }
                 return true;
@@ -170,6 +177,7 @@ public enum Slayers implements ISlayer{
     private final String name;
     private final String mobName;
     private final String id;
+
     Slayers(String name, String mobName) {
         this.name = name;
         this.id = name.toLowerCase().replace(' ', '_');

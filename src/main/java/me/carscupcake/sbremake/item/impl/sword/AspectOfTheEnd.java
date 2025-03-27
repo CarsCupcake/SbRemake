@@ -43,6 +43,7 @@ public class AspectOfTheEnd implements ISbItem, ISbItem.StatProvider, GemstoneSl
         playerInteractEvent.player().teleport(pos);
     }, new Lore("§7Teleport §a8 blocks §7ahead of you and gain §a+50 " + (Stat.Speed.toString()) + " for §a3 seconds§7"), new ManaRequirement<>(50)));
     private static final PlayerStatEvent.PlayerStatModifier modifier = new PlayerStatEvent.BasicModifier("Transmission", 50, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Ability);
+
     @Override
     public String getId() {
         return "ASPECT_OF_THE_END";

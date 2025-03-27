@@ -49,7 +49,7 @@ public class LocationsStick implements ISbItem {
         return List.of(new ItemAbility<>("Mark Location", AbilityType.RIGHT_CLICK, event -> {
                     if (event.block() == null) return;
                     positions.add(Pos.fromPoint(event.block()));
-                    event.player().sendMessage("§aAdded Block " + (event.block().x()) + " " + (event.block().y()) + " " + (event.block().z()) );
+                    event.player().sendMessage("§aAdded Block " + (event.block().x()) + " " + (event.block().y()) + " " + (event.block().z()));
                     StringBuilder builder = new StringBuilder("new Pos[]{");
                     Iterator<Pos> iterator = positions.iterator();
                     while (iterator.hasNext()) {

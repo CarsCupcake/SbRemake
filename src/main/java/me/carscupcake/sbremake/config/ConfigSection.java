@@ -97,6 +97,7 @@ public class ConfigSection {
     public static ConfigSection empty() {
         return new ConfigSection(new JsonObject());
     }
+
     public static ConfigSection emptyArray() {
         return new ConfigSection(new JsonArray());
     }
@@ -137,7 +138,7 @@ public class ConfigSection {
                     array.add(new JsonPrimitive(tag));
                 yield array;
             }
-            default -> throw new IllegalStateException("Unexpected value: " + (binaryTag.getClass().getSimpleName()) );
+            default -> throw new IllegalStateException("Unexpected value: " + (binaryTag.getClass().getSimpleName()));
         };
     }
 
@@ -175,7 +176,7 @@ public class ConfigSection {
                         }
                     }
                     default ->
-                            throw new IllegalStateException("Unexpected value: " + (primitive.getAsNumber().getClass()) );
+                            throw new IllegalStateException("Unexpected value: " + (primitive.getAsNumber().getClass()));
                 }
             } else if (primitive.isString()) return StringBinaryTag.stringBinaryTag(primitive.getAsString());
         }
@@ -264,7 +265,7 @@ public class ConfigSection {
     }
 
     public void forEntries(BiConsumer<String, ConfigSection> entryConsumer) {
-        for (Map.Entry<String, JsonElement> entry :  element.getAsJsonObject().asMap().entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().asMap().entrySet()) {
             entryConsumer.accept(entry.getKey(), new ConfigSection(entry.getValue()));
         }
     }

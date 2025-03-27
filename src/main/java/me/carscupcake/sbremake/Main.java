@@ -53,7 +53,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -90,7 +89,7 @@ public class Main {
             LOGGER.debug("Debug logging enabled");
         }
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-            System.out.println("Error occured on thread " + (t.getName()) );
+            System.out.println("Error occured on thread " + (t.getName()));
             LOGGER.error("", e);
             if (t.getName().equals("main")) System.exit(1);
         });
@@ -165,7 +164,7 @@ public class Main {
                 Command instance = constructor.newInstance();
                 commandManager.register(instance);
             } catch (Exception e) {
-                LOGGER.error("Error while instantiating " + (clazz) , e);
+                LOGGER.error("Error while instantiating " + (clazz), e);
             }
         }
         for (var arg : args)
@@ -186,7 +185,7 @@ public class Main {
         } catch (Exception _) {
         }
         server.start("127.0.0.1", port);
-        System.out.println("Started Server on port " + (port) );
+        System.out.println("Started Server on port " + (port));
         CONSOLE_THREAD = java.lang.Thread.ofPlatform().name("Console").start(() -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             ConsoleSender console = new ConsoleSender();
@@ -196,7 +195,7 @@ public class Main {
                     if (!running.get()) return;
                     LOGGER.debug(in);
                     if (MinecraftServer.getCommandManager().commandExists(in.split(" ")[0])) {
-                        LOGGER.info("Executing " + (in) );
+                        LOGGER.info("Executing " + (in));
                         synchronized (_lock) {
                             MinecraftServer.getCommandManager().execute(console, in);
                         }

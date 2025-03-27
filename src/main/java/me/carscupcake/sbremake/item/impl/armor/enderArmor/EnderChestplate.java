@@ -14,6 +14,7 @@ public class EnderChestplate implements ISbItem, NpcSellable, ISbItem.StatProvid
     public SoulboundType getSoulboundType() {
         return SoulboundType.Coop;
     }
+
     @Override
     public String getId() {
         return "ENDER_CHESTPLATE";

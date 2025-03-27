@@ -8,6 +8,7 @@ public class VoraciousSpider extends SkyblockEntity {
     private final float maxHealth;
     private final int level;
     private final double damage;
+
     public VoraciousSpider(int tier) {
         super(EntityType.SPIDER);
         maxHealth = switch (tier) {

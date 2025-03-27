@@ -13,6 +13,7 @@ import java.util.function.Function;
 @Getter
 public abstract class SlayerEntity extends SkyblockEntity {
     protected final SkyblockPlayer owner;
+
     public SlayerEntity(@NotNull EntityType entityType, ILootTable<SbItemStack> lootTable, SkyblockPlayer owner) {
         super(entityType, lootTable);
         this.owner = owner;
@@ -31,7 +32,7 @@ public abstract class SlayerEntity extends SkyblockEntity {
             int xp = getSlayer().getSlayerXp(getTier());
             playerSlayer.addXp(xp);
             playerSlayer.getMeter().setRngMeterXp(playerSlayer.getMeter().getRngMeterXp() + xp);
-            owner.sendMessage("§dRng Meter Stored Xp: " + (playerSlayer.getMeter().getRngMeterXp()) );
+            owner.sendMessage("§dRng Meter Stored Xp: " + (playerSlayer.getMeter().getRngMeterXp()));
             owner.getSlayerQuest().setStage(SlayerQuest.SlayerQuestStage.Completed);
         }
     }

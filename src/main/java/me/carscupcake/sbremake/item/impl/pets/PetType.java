@@ -47,9 +47,11 @@ public enum PetType implements BiFunction<Double, Skill, Double> {
         }
     };
     private final String name;
+
     PetType(String name) {
         this.name = name;
     }
+
     PetType() {
         this.name = name();
     }

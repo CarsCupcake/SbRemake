@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 @Setter
 public class SbEntityEquipEvent extends EntityEquipEvent {
     private SbItemStack sbItemStack;
+
     public SbEntityEquipEvent(@NotNull Entity entity, @NotNull SbItemStack equippedItem, @NotNull EquipmentSlot slot) {
         super(entity, equippedItem.item(), slot);
         sbItemStack = equippedItem;

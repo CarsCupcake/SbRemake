@@ -32,13 +32,14 @@ public class InkWand implements ISbItem {
         final Vec dir = Vec.fromPoint(finish.sub(item.getPosition())).normalize().mul(item.getPosition().distance(finish) / 40);
         movement.move(item, item::remove, 40, 0, item.getPosition(), event.getPlayer().getPosition().add(finish), new Runnable() {
             int i = 0;
+
             @Override
             public void run() {
                 i++;
                 Pos old = item.getPosition().sub(dir).sub(0, movement.calculateOffset(i, 40) - movement.calculateOffset(i - 1, 40), 0);
                 List<Entity> list = EntityUtils.getEntitiesInLine(old, item.getPosition(), item.getInstance())
                         .stream().filter(entity -> entity instanceof SkyblockEntity).toList();
-                ParticleUtils.spawnParticle(item.getInstance(),item.getPosition(), Particle.SQUID_INK, 1);
+                ParticleUtils.spawnParticle(item.getInstance(), item.getPosition(), Particle.SQUID_INK, 1);
                 if (list.isEmpty()) return;
                 item.remove();
                 for (Entity e : list) {

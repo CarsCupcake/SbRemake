@@ -88,6 +88,7 @@ public class ReaperMask implements ISbItem, ISbItem.StatProvider, GemstoneSlots,
             if (helmet == null) return;
             if (helmet.sbItem() instanceof ReaperMask && hasRequirements(event.player(), helmet.item())) {
                 event.modifiers().add(new PlayerStatEvent.BasicModifier("Evil Incarnate", 2, PlayerStatEvent.Type.MultiplicativeMultiplier, PlayerStatEvent.StatsCategory.Ability));
-            }});
+            }
+        });
     }
 }

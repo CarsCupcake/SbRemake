@@ -12,6 +12,7 @@ public class CountMap<T> extends HashMap<T, Integer> {
             super.replace(type, super.get(type) + amount);
         else put(type, amount);
     }
+
     public void subtract(T type, int amount) {
         add(type, -amount);
     }

@@ -8,7 +8,8 @@ import net.minestom.server.potion.Potion;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings({"unused", "UnstableApiUsage"})
-public record SetEntityEffectPacket(int entity, int effectId, int amplifier, int duration, byte flags) implements ServerPacket.Play {
+public record SetEntityEffectPacket(int entity, int effectId, int amplifier, int duration,
+                                    byte flags) implements ServerPacket.Play {
 
     public SetEntityEffectPacket(Entity entity, Potion effect) {
         this(entity.getEntityId(), effect.effect().id(), effect.amplifier(), effect.duration(), effect.flags());

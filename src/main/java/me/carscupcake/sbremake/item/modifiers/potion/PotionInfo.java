@@ -6,7 +6,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public record PotionInfo(IPotion potion, boolean enhanced, boolean extended, byte potionLevel, PotionType potionType, @Nullable String customPotionName, List<PotionEffect> effects) {
+public record PotionInfo(IPotion potion, boolean enhanced, boolean extended, byte potionLevel, PotionType potionType,
+                         @Nullable String customPotionName, List<PotionEffect> effects) {
     public record PotionEffect(IPotion potion, byte level, long durationTicks) {
 
     }
