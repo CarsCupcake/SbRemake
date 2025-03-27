@@ -84,6 +84,10 @@ public interface ISbItem {
         return new ArrayList<>();
     }
 
+    default int getMaxStackSize() {
+        return isUnstackable() ? 1 : getMaterial().maxStackSize();
+    }
+
     default boolean isUnstackable() {
         return getMaterial().maxStackSize() == 1;
     }
