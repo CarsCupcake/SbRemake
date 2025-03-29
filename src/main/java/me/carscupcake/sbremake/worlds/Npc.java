@@ -22,15 +22,12 @@ import java.util.Map;
 @Setter
 @Getter
 public class Npc extends AbstractNpc {
-    public static final HashMap<Integer, Npc> npcs = new HashMap<>();
-    private Interaction interaction = null;
     private final int entityId;
     private final PlayerInfoUpdatePacket.Entry entry;
 
     public Npc(Pos pos, Instance instance, String name, PlayerSkin playerSkin) {
         super(pos, instance, name);
         entityId = Entity.generateId();
-        npcs.put(entityId, this);
         PlayerInfoUpdatePacket.Property property = new PlayerInfoUpdatePacket.Property("textures", playerSkin.textures(), playerSkin.signature());
         this.entry = new PlayerInfoUpdatePacket.Entry(UuidCreator.getDceSecurity(UuidCreator.LOCAL_DOMAIN_PERSON, entityId),
                 name, List.of(property),

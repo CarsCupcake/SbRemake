@@ -7,8 +7,11 @@ import me.carscupcake.sbremake.util.quest.Dialog;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 
+import java.util.HashMap;
+
 @Getter
 public abstract class AbstractNpc {
+    public static final HashMap<Integer, AbstractNpc> npcs = new HashMap<>();
     private final String name;
     private final Pos pos;
     private final Instance instance;

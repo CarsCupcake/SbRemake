@@ -419,8 +419,18 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                 return;
             }
             this.container = container;
-            if (async) Thread.ofVirtual().factory().newThread(() -> init0(container, after, true)).start();
-            else init0(container, after, false);
+            if (async) Thread.ofVirtual().factory().newThread(() -> {
+                init0(container, after, true);
+                synchronized (_lock) {
+                    for (AbstractNpc npc : npcs)
+                        AbstractNpc.npcs.put(npc.getEntityId(), npc);
+                }
+            }).start();
+            else {
+                init0(container, after, false);
+                for (AbstractNpc npc : npcs)
+                    AbstractNpc.npcs.put(npc.getEntityId(), npc);
+            }
         }
 
         protected void register() {

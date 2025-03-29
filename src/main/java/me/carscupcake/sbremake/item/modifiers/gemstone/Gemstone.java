@@ -20,6 +20,7 @@ import net.minestom.server.item.Material;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public interface Gemstone {
     double value(SbItemStack item);
@@ -43,17 +44,17 @@ public interface Gemstone {
             if (event.getInventory() == null) {
                 SbItemStack item = SbItemStack.from(event.getClickedItem());
                 SbItemStack cursor = SbItemStack.from(event.getCursorItem());
-                if (item == null && cursor != null && cursor.sbItem() instanceof GemstoneSlots) return false;
-                if (item == null) return false;
+                if (item == SbItemStack.AIR && cursor != SbItemStack.AIR && cursor.sbItem() instanceof GemstoneSlots) return false;
+                if (item == SbItemStack.AIR) return false;
                 if ((!(item.sbItem() instanceof GemstoneSlots) && !(item.sbItem() instanceof Gemstone))) {
                     player.sendMessage("§cOnly items that can have Gemstones applied to them can be put in the Grinder!");
                     return true;
                 }
                 if (item.sbItem() instanceof GemstoneSlots) return false;
-                if (cursor != null) return true;
+                if (cursor != SbItemStack.AIR) return true;
                 Gemstone gemstone = (Gemstone) item.sbItem();
                 SbItemStack selected = SbItemStack.from(gui.getInventory().getItemStack(13));
-                if (selected == null) return true;
+                if (selected == SbItemStack.AIR) return true;
                 GemstoneSlot[] slots = selected.getModifier(Modifier.GEMSTONE_SLOTS);
                 GemstoneSlot s = null;
                 int index = 0;
@@ -73,14 +74,14 @@ public interface Gemstone {
                     slots[index] = new GemstoneSlot(s.type(), gemstone, true);
                     gui.getInventory().setItemStack(13, selected.withModifier(Modifier.GEMSTONE_SLOTS, slots).update(player).item());
                     item = item.withAmount(item.item().amount() - 1);
-                    event.setCursorItem((item == null) ? ItemStack.AIR : item.item());
+                    event.setCursorItem((item == SbItemStack.AIR) ? ItemStack.AIR : Objects.requireNonNull(item).item());
                     event.setClickedItem(ItemStack.AIR);
                     return false;
                 }
 
             } else {
                 SbItemStack item = SbItemStack.from(gui.getInventory().getItemStack(13));
-                if (item != null) {
+                if (item != null && item != SbItemStack.AIR) {
                     int i = 0;
                     for (int slot : slots[((GemstoneSlots) item.sbItem()).getGemstoneSlots().length - 1]) {
                         if (slot == event.getSlot()) {

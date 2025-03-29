@@ -297,7 +297,7 @@ public class SkyblockPlayer extends Player {
                 if (event.getPacket() instanceof ClientInteractEntityPacket packet) {
                     if (packet.type() instanceof ClientInteractEntityPacket.Attack) {
                         if (player.getDialog() != null) return;
-                        Npc npc = Npc.npcs.get(packet.targetId());
+                        AbstractNpc npc = AbstractNpc.npcs.get(packet.targetId());
                         if (npc != null) {
                             if (npc.getInteraction() != null)
                                 npc.getInteraction().interact(player, PlayerInteractEvent.Interaction.Left);
@@ -307,7 +307,7 @@ public class SkyblockPlayer extends Player {
                     long now = System.currentTimeMillis();
                     if (now - player.lastInteractPacket < 100) return;
                     player.lastInteractPacket = now;
-                    Npc npc = Npc.npcs.get(packet.targetId());
+                    AbstractNpc npc = AbstractNpc.npcs.get(packet.targetId());
                     if (npc != null) {
                         if (player.getDialog() != null) return;
                         if (npc.getInteraction() != null)

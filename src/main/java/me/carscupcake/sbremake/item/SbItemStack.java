@@ -73,11 +73,12 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         return item.create();
     }
 
+    @NotNull
     public static SbItemStack from(ItemStack stack) {
         if (stack == null || stack.material() == Material.AIR) return AIR;
         CompoundBinaryTag compound = (CompoundBinaryTag) stack.getTag(Tag.NBT("ExtraAttributes"));
         if (compound == null || !compound.keySet().contains("id"))
-            return base(stack.material()).withAmount(stack.amount());
+            return Objects.requireNonNull(base(stack.material()).withAmount(stack.amount()));
         ISbItem iSbItem = items.get(compound.getString("id"));
         if (iSbItem == null) return base(stack.material());
         return new SbItemStack(stack, iSbItem);
