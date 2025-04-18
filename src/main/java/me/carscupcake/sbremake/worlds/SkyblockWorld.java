@@ -14,6 +14,7 @@ import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
 import me.carscupcake.sbremake.worlds.impl.*;
 import me.carscupcake.sbremake.worlds.region.Region;
+import net.hollowcube.polar.PolarLoader;
 import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
@@ -124,6 +125,11 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         public WorldProvider get() {
             return new CrimsonIsle();
         }
+
+        @Override
+        public DynamicRegistry.Key<DimensionType> getDimension() {
+            return DimensionType.THE_NETHER;
+        }
     };
     private static final Object _lock = new Object();
     @Getter
@@ -136,6 +142,10 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         this.id = id;
         this.fileEnding = fileEnding;
         this.ores = (ores == null) ? new MiningBlock[0] : ores;
+    }
+
+    public DynamicRegistry.Key<DimensionType> getDimension() {
+        return DimensionType.OVERWORLD;
     }
 
     public static void addWorld(WorldProvider provider) {
@@ -340,7 +350,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         public abstract SkyblockWorld type();
 
         public DynamicRegistry.Key<DimensionType> getDimension() {
-            return DimensionType.OVERWORLD;
+            return type().getDimension();
         }
 
 
@@ -358,7 +368,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         }
 
         public void init() {
-            init(MinecraftServer.getInstanceManager().createInstanceContainer());
+            init(MinecraftServer.getInstanceManager().createInstanceContainer(getDimension()));
         }
 
         public void init(InstanceContainer container) {
@@ -375,6 +385,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         }
 
         private void init0(InstanceContainer container, @Nullable Runnable after, boolean async) {
+            Main.LOGGER.debug("Loading in dimension {}", getDimension().key().value());
             container.setChunkSupplier(LightingChunk::new);
             if (after != null)
                 onStart.add(after);
@@ -382,7 +393,9 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                 File f = type().updateFiles();
                 if (this instanceof PrivateIsle pI)
                     f = pI.findWorldFolder();
-                container.setChunkLoader(new AnvilLoader(f.toPath()));
+
+                var loader = new AnvilLoader(f.toPath());
+                container.setChunkLoader(loader);
                 container.loadChunk(spawn().chunkX(), spawn().chunkZ()).get();
                 var chunks = new ArrayList<CompletableFuture<Chunk>>();
                 ChunkUtils.forChunksInRange(0, 0, 8, (x, z) -> chunks.add(container.loadChunk(x, z)));
