@@ -53,13 +53,13 @@ import java.util.function.Function;
 
 @Getter
 public abstract class SkyblockEntity extends EntityCreature {
+    @Getter
+    private final ILootTable<SbItemStack> lootTable;
+    private final Set<TaskScheduler> assignedTask = new HashSet<>();
     private float health = 1;
     @Getter
     @Setter
     private SkyblockPlayer lastDamager;
-    @Getter
-    private final ILootTable<SbItemStack> lootTable;
-    private final Set<TaskScheduler> assignedTask = new HashSet<>();
 
     public SkyblockEntity(@NotNull EntityType entityType) {
         this(entityType, null);
@@ -69,6 +69,102 @@ public abstract class SkyblockEntity extends EntityCreature {
         super(entityType, UUID.randomUUID());
         this.lootTable = lootTable == null ? new LootTable<>() : lootTable;
         getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+    }
+
+    public static void spawnDamageTag(SkyblockEntity entity, String tag) {
+        //in case the entity got removed in the damage process
+        if (entity.instance == null) return;
+        EntityCreature creature = new EntityCreature(EntityType.ARMOR_STAND, UUID.randomUUID());
+        creature.setCustomName(Component.text(tag));
+        creature.setCustomNameVisible(true);
+        creature.setInvisible(true);
+        creature.setNoGravity(true);
+        creature.setInvulnerable(true);
+        ArmorStandMeta meta = (ArmorStandMeta) creature.getEntityMeta();
+        meta.setHasNoBasePlate(true);
+        meta.setMarker(true);
+        BoundingBox bb = entity.getBoundingBox();
+        int random = new Random().nextInt(4);
+        double x = switch (random) {
+            case 0 -> bb.maxX() + 0.5;
+            case 2 -> bb.minX() - 0.5;
+            default -> 0;
+        };
+        double z = switch (random) {
+            case 1 -> bb.maxZ() + 0.5;
+            case 3 -> bb.minZ() - 0.5;
+            default -> 0;
+        };
+        Pos pos = entity.getPosition().add(x, 0.7d, z);
+        creature.setInstance(entity.getInstance(), pos.add(0, new Random().nextDouble(0.5) - 0.25, 0));
+        creature.scheduler().buildTask(creature::remove).delay(Duration.ofSeconds(1)).schedule();
+    }
+
+    public static void init() {
+
+    }
+
+    protected static EntityAIGroup randomStroll(SkyblockEntity entity, int range) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().add(new RandomStrollGoal(entity, range));
+        aiGroup.getGoalSelectors().add(new DoNothingGoal(entity, 3000, 0.5f));
+        return aiGroup;
+    }
+
+    protected static EntityAIGroup randomStroll(SkyblockEntity entity, Region region, int range) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().add(new RandomStrollInRegion(entity, range, region));
+        return aiGroup;
+    }
+
+    protected static EntityAIGroup regionTarget(SkyblockEntity entity, Region region, int range) {
+        return regionTarget(entity, List.of(region), range);
+    }
+
+    protected static EntityAIGroup regionTarget(SkyblockEntity entity, List<Region> region, int range) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p.getRegion() != null && region.contains(p.getRegion()) && !entity.isDead)));
+        return aiGroup;
+    }
+
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 5) // Walk around
+        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && !entity.isDead)));
+        return aiGroup;
+    }
+
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region) {
+        return zombieAiGroup(entity, List.of(region));
+    }
+
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, List<Region> region) {
+        EntityAIGroup aiGroup = regionTarget(entity, region, 8);
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 10, region) // Walk around
+        ));
+        return aiGroup;
+    }
+
+    protected static RangedAttackGoal createRangedAttackGoal(SkyblockEntity entity) {
+        RangedAttackGoal rangedAttackGoal = new RangedAttackGoal(entity, 80, 25, 15, false, 1, 0.2, TimeUnit.SERVER_TICK);
+        rangedAttackGoal.setProjectileGenerator(_ -> new SkyblockEntityProjectile(entity, EntityType.ARROW));
+        return rangedAttackGoal;
+    }
+
+    protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollGoal(entity, 5) // Walk around
+        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player && !entity.isDead)));
+        return aiGroup;
+    }
+
+    protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity, Region region) {
+        EntityAIGroup aiGroup = regionTarget(entity, region, 20);
+        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollInRegion(entity, 10, region) // Walk around
+        ));
+        return aiGroup;
     }
 
     public abstract float getMaxHealth();
@@ -160,8 +256,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         if (canTakeKnockback()) {
             double mult = 1;
             PotionEffect effect = event.getPlayer().getPotionEffect(Potion.Knockback);
-            if (effect != null)
-                mult = 1 + (0.2 * effect.amplifier());
+            if (effect != null) mult = 1 + (0.2 * effect.amplifier());
             this.takeKnockback((float) (0.4 * mult), Math.sin(event.damagerPos().yaw() * 0.017453292), -Math.cos(event.damagerPos().yaw() * 0.017453292));
         }
     }
@@ -174,8 +269,7 @@ public abstract class SkyblockEntity extends EntityCreature {
                 dropper.apply(lastDamager);
                 if (dropper.type() == Skill.Combat && lastDamager.getSlayerQuest() != null && lastDamager.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.XpGathering) {
                     if (lastDamager.getSlayerQuest().getSlayer().getSlayer().addXp(this, lastDamager.getSlayerQuest().getTier()))
-                        lastDamager.getSlayerQuest()
-                                .addXp(lastDamager.getSkill(Skill.Combat).calculateXp(dropper.amount(lastDamager)), getPosition());
+                        lastDamager.getSlayerQuest().addXp(lastDamager.getSkill(Skill.Combat).calculateXp(dropper.amount(lastDamager)), getPosition());
                 }
             }
             Set<SbItemStack> items = lootTable.loot(lastDamager);
@@ -209,38 +303,14 @@ public abstract class SkyblockEntity extends EntityCreature {
         runnable.setSelf(task);
     }
 
-    public static void spawnDamageTag(SkyblockEntity entity, String tag) {
-        //in case the entity got removed in the damage process
-        if (entity.instance == null) return;
-        EntityCreature creature = new EntityCreature(EntityType.ARMOR_STAND, UUID.randomUUID());
-        creature.setCustomName(Component.text(tag));
-        creature.setCustomNameVisible(true);
-        creature.setInvisible(true);
-        creature.setNoGravity(true);
-        creature.setInvulnerable(true);
-        ArmorStandMeta meta = (ArmorStandMeta) creature.getEntityMeta();
-        meta.setHasNoBasePlate(true);
-        meta.setMarker(true);
-        BoundingBox bb = entity.getBoundingBox();
-        int random = new Random().nextInt(4);
-        double x = switch (random) {
-            case 0 -> bb.maxX() + 0.5;
-            case 2 -> bb.minX() - 0.5;
-            default -> 0;
-        };
-        double z = switch (random) {
-            case 1 -> bb.maxZ() + 0.5;
-            case 3 -> bb.minZ() - 0.5;
-            default -> 0;
-        };
-        Pos pos = entity.getPosition().add(x, 0.7d, z);
-        creature.setInstance(entity.getInstance(), pos.add(0, new Random().nextDouble(0.5) - 0.25, 0));
-        creature.scheduler().buildTask(creature::remove).delay(Duration.ofSeconds(1)).schedule();
-    }
-
     public void damage(double amount) {
         lastDamager = null;
         damage(DamageType.GENERIC, (float) amount);
+    }
+
+    @Override
+    public float getHealth() {
+        return health;
     }
 
     @Override
@@ -248,11 +318,6 @@ public abstract class SkyblockEntity extends EntityCreature {
         this.health = Math.max(0, Math.min(getMaxHealth(), health));
         super.setHealth((float) (getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * (health / getMaxHealth())));
         update();
-    }
-
-    @Override
-    public float getHealth() {
-        return health;
     }
 
     public void update() {
@@ -271,7 +336,6 @@ public abstract class SkyblockEntity extends EntityCreature {
         assignedTask.remove(task);
     }
 
-
     /**
      * Is called to modifier and execute on damage
      *
@@ -288,141 +352,11 @@ public abstract class SkyblockEntity extends EntityCreature {
             public String apply(SkyblockEntity skyblockEntity) {
                 return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] §c" + (skyblockEntity.getName()) + " §a" + (StringUtils.cleanDouble(skyblockEntity.getHealth(), 0)) + "§7/§a" + (StringUtils.cleanDouble(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol());
             }
-        },
-        Slayer() {
+        }, Slayer() {
             @Override
             public String apply(SkyblockEntity entity) {
                 return "§c" + (Characters.Skull) + " §f" + (entity.getName()) + " §a" + (StringUtils.toShortNumber(entity.getHealth())) + "§c" + (Stat.Health.getSymbol());
             }
-        }
-    }
-
-    public static void init() {
-
-    }
-
-    protected static EntityAIGroup randomStroll(SkyblockEntity entity, int range) {
-        EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().add(new RandomStrollGoal(entity, range));
-        aiGroup.getGoalSelectors().add(new DoNothingGoal(entity, 3000, 0.5f));
-        return aiGroup;
-    }
-
-    protected static EntityAIGroup randomStroll(SkyblockEntity entity, Region region, int range) {
-        EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().add(new RandomStrollInRegion(entity, range, region));
-        return aiGroup;
-    }
-
-    protected static EntityAIGroup regionTarget(SkyblockEntity entity, Region region, int range) {
-        return regionTarget(entity, List.of(region), range);
-    }
-
-    protected static EntityAIGroup regionTarget(SkyblockEntity entity, List<Region> region, int range) {
-        EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range),
-                new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p
-                        && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL
-                        && p.getRegion() != null
-                        && region.contains(p.getRegion())
-                        && !entity.isDead)));
-        return aiGroup;
-    }
-
-    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity) {
-        EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 5) // Walk around
-        ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && !entity.isDead)));
-        return aiGroup;
-    }
-
-    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region) {
-        return zombieAiGroup(entity, List.of(region));
-    }
-
-    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, List<Region> region) {
-        EntityAIGroup aiGroup = regionTarget(entity, region, 8);
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 10, region) // Walk around
-        ));
-        return aiGroup;
-    }
-
-    protected static RangedAttackGoal createRangedAttackGoal(SkyblockEntity entity) {
-        RangedAttackGoal rangedAttackGoal = new RangedAttackGoal(entity, 80, 25, 15, false, 1, 0.2, TimeUnit.SERVER_TICK);
-        rangedAttackGoal.setProjectileGenerator(_ -> new SkyblockEntityProjectile(entity, EntityType.ARROW));
-        return rangedAttackGoal;
-    }
-
-    protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity) {
-        EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollGoal(entity, 5) // Walk around
-        ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player && !entity.isDead)));
-        return aiGroup;
-    }
-
-    protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity, Region region) {
-        EntityAIGroup aiGroup = regionTarget(entity, region, 20);
-        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollInRegion(entity, 10, region) // Walk around
-        ));
-        return aiGroup;
-    }
-
-    public class FerocityRunnable implements Runnable {
-
-        @Setter
-        public Task self = null;
-
-        private int ticks;
-        private final SkyblockPlayer player;
-
-        public FerocityRunnable(int ticks, SkyblockPlayer player) {
-            this.ticks = ticks;
-            this.player = player;
-        }
-
-        @Override
-        public void run() {
-            ticks--;
-            damage(player, false);
-            Particle.Dust dust = Particle.Dust.DUST.withColor(new Color(0xFF0000));
-            Pos manage = getPosition();
-
-            Vec a;
-            Vec b;
-            Pos start;
-            if (manage.yaw() >= -45 && manage.yaw() <= 45) {
-                start = manage.add(-1, 0.5, 0);
-                a = start.asVec();
-                b = start.add(2, 1.5, 0).asVec();
-            } else {
-                if (manage.yaw() >= 135 || manage.yaw() <= -135) {
-                    start = manage.add(1, 0.5, 0);
-                    a = start.asVec();
-                    b = start.add(-2, 1.5, 0).asVec();
-                } else {
-                    if (manage.yaw() >= 45) {
-                        start = manage.add(0, 0.5, -1);
-                        a = start.asVec();
-                        b = start.add(0, 1.5, 2).asVec();
-                    } else {
-                        start = manage.add(0, 0.5, 1);
-                        a = start.asVec();
-                        b = start.add(0, 1.5, -2).asVec();
-                    }
-                }
-            }
-            Vec between = b.sub(a);
-            double length = between.length();
-            between = between.normalize().mul(0.3);
-            double steps = length / 0.3D;
-            for (int i = 0; i < steps; i++) {
-                a = a.add(between);
-                ParticleUtils.spawnParticle(instance, a, dust, 1);
-            }
-            player.getInstance().playSound(SoundType.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR.create(0.1f, 2f), getPosition());
-            if (ticks <= 0) self.cancel();
         }
     }
 
@@ -432,9 +366,9 @@ public abstract class SkyblockEntity extends EntityCreature {
         private final int radius;
         private final List<Vec> closePositions;
         private final Random random = new Random();
-        private long lastStroll;
         private final List<Region> regions;
         private final long randomDelay = new Random().nextLong(5000);
+        private long lastStroll;
 
         public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, Region region) {
             super(entityCreature);
@@ -472,6 +406,7 @@ public abstract class SkyblockEntity extends EntityCreature {
                         }
                     }
                 } catch (NullPointerException e) {
+                    //Could not care less
                     if (e.getMessage().startsWith("Unloaded chunk")) return;
                     throw new RuntimeException(e);
                 }
@@ -508,11 +443,9 @@ public abstract class SkyblockEntity extends EntityCreature {
     public static class MeleeAttackGoal extends GoalSelector {
 
         private final Cooldown cooldown = new Cooldown(Duration.of(5, TimeUnit.SERVER_TICK));
-
-        private long lastHit;
         private final double range;
         private final Duration delay;
-
+        private long lastHit;
         private boolean stop;
         private Entity cachedTarget;
 
@@ -535,6 +468,17 @@ public abstract class SkyblockEntity extends EntityCreature {
             super(entityCreature);
             this.range = range;
             this.delay = delay;
+        }
+
+        public static void navigator(long time, Entity target, Navigator navigator, Cooldown cooldown) {
+            final var pathPosition = navigator.getPathPosition();
+            final var targetPosition = target.getPosition();
+            if (pathPosition == null || !pathPosition.samePoint(targetPosition)) {
+                if (cooldown.isReady(time)) {
+                    cooldown.refreshLastUpdate(time);
+                    navigator.setPathTo(targetPosition);
+                }
+            }
         }
 
         public @NotNull Cooldown getCooldown() {
@@ -584,17 +528,6 @@ public abstract class SkyblockEntity extends EntityCreature {
             }
         }
 
-        public static void navigator(long time, Entity target, Navigator navigator, Cooldown cooldown) {
-            final var pathPosition = navigator.getPathPosition();
-            final var targetPosition = target.getPosition();
-            if (pathPosition == null || !pathPosition.samePoint(targetPosition)) {
-                if (cooldown.isReady(time)) {
-                    cooldown.refreshLastUpdate(time);
-                    navigator.setPathTo(targetPosition);
-                }
-            }
-        }
-
         @Override
         public boolean shouldEnd() {
             return stop;
@@ -604,6 +537,62 @@ public abstract class SkyblockEntity extends EntityCreature {
         public void end() {
             // Stop following the target
             entityCreature.getNavigator().setPathTo(null);
+        }
+    }
+
+    public class FerocityRunnable implements Runnable {
+
+        private final SkyblockPlayer player;
+        @Setter
+        public Task self = null;
+        private int ticks;
+
+        public FerocityRunnable(int ticks, SkyblockPlayer player) {
+            this.ticks = ticks;
+            this.player = player;
+        }
+
+        @Override
+        public void run() {
+            ticks--;
+            damage(player, false);
+            Particle.Dust dust = Particle.Dust.DUST.withColor(new Color(0xFF0000));
+            Pos manage = getPosition();
+
+            Vec a;
+            Vec b;
+            Pos start;
+            if (manage.yaw() >= -45 && manage.yaw() <= 45) {
+                start = manage.add(-1, 0.5, 0);
+                a = start.asVec();
+                b = start.add(2, 1.5, 0).asVec();
+            } else {
+                if (manage.yaw() >= 135 || manage.yaw() <= -135) {
+                    start = manage.add(1, 0.5, 0);
+                    a = start.asVec();
+                    b = start.add(-2, 1.5, 0).asVec();
+                } else {
+                    if (manage.yaw() >= 45) {
+                        start = manage.add(0, 0.5, -1);
+                        a = start.asVec();
+                        b = start.add(0, 1.5, 2).asVec();
+                    } else {
+                        start = manage.add(0, 0.5, 1);
+                        a = start.asVec();
+                        b = start.add(0, 1.5, -2).asVec();
+                    }
+                }
+            }
+            Vec between = b.sub(a);
+            double length = between.length();
+            between = between.normalize().mul(0.3);
+            double steps = length / 0.3D;
+            for (int i = 0; i < steps; i++) {
+                a = a.add(between);
+                ParticleUtils.spawnParticle(instance, a, dust, 1);
+            }
+            player.getInstance().playSound(SoundType.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR.create(0.1f, 2f), getPosition());
+            if (ticks <= 0) self.cancel();
         }
     }
 }

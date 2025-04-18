@@ -5,6 +5,8 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.intellij.lang.annotations.Subst;
 
+import java.util.Random;
+
 @SuppressWarnings("unused")
 @Getter
 public enum SoundType {
@@ -1492,6 +1494,10 @@ public enum SoundType {
 
     public Sound create(float volume, float pitch) {
         return create(Sound.Source.AMBIENT, volume, pitch);
+    }
+
+    public Sound create(float volume) {
+        return create(Sound.Source.AMBIENT, volume, 0.8f + new Random().nextFloat(0.4f));
     }
 
     public Sound create(Sound.Source source, float volume, float pitch) {

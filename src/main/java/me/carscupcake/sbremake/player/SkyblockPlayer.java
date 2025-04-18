@@ -53,6 +53,7 @@ import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
+import net.minestom.server.entity.metadata.other.FishingHookMeta;
 import net.minestom.server.entity.metadata.projectile.ProjectileMeta;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -153,7 +154,7 @@ public class SkyblockPlayer extends Player {
                                 return;
                             }
                         }
-                        SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
+                        SbItemStack item = player.getSbItemInHand(Hand.MAIN);
                         if (item == null) return;
                         if (item.sbItem() instanceof Shortbow shortbow && player.shortbowTask == null) {
                             for (Requirement requirement : item.sbItem().requirements())
@@ -182,7 +183,7 @@ public class SkyblockPlayer extends Player {
                     if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
                         player.lastInteractPotion = false;
                         if (player.bowStartPull < 0) return;
-                        SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
+                        SbItemStack item = player.getSbItemInHand(Hand.MAIN);
                         if (!(item.sbItem() instanceof BowItem)) return;
                         long chargingTime = System.currentTimeMillis() - player.bowStartPull;
                         player.bowStartPull = -1;
@@ -200,7 +201,7 @@ public class SkyblockPlayer extends Player {
                             Block block = player.getInstance().getBlock(packet.blockPosition());
                             double hardness = block.registry().hardness();
                             if (hardness > 0) {
-                                SbItemStack sbItem = player.getSbItemInHand(Player.Hand.MAIN);
+                                SbItemStack sbItem = player.getSbItemInHand(Hand.MAIN);
                                 Tool tool = sbItem.item().get(ItemComponent.TOOL);
                                 if (tool != null) {
                                     for (Tool.Rule rule : tool.rules()) {
@@ -241,7 +242,7 @@ public class SkyblockPlayer extends Player {
                 }
                 if (event.getPacket() instanceof ClientUseItemPacket packet) {
                     if (packet.hand() != Hand.MAIN) return;
-                    SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
+                    SbItemStack item = player.getSbItemInHand(Hand.MAIN);
                     if (item.sbItem() instanceof BowItem) {
                         if (item.sbItem() instanceof Shortbow shortbow) {
                             for (Requirement requirement : item.sbItem().requirements())
@@ -313,40 +314,48 @@ public class SkyblockPlayer extends Player {
                         if (npc.getInteraction() != null)
                             npc.getInteraction().interact(player, PlayerInteractEvent.Interaction.Right);
                     } else
-                        MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, player.getInstance().getEntities().stream().filter(entity -> entity.getEntityId() == packet.targetId()).findFirst().orElse(null), PlayerInteractEvent.Interaction.Right));
+                        if (((SkyblockPlayer) event.getPlayer()).getSbItemInMainHand().item().material() != Material.FISHING_ROD)
+                            MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, player.getInstance().getEntities().stream().filter(entity -> entity.getEntityId() == packet.targetId()).findFirst().orElse(null), PlayerInteractEvent.Interaction.Right));
                 }
 
             }).addListener(ProjectileCollideWithBlockEvent.class, event -> {
+                if (event.getEntity() instanceof SkyblockPlayerFishingBobber && event.getBlock() == Block.WATER) return;
                 event.getEntity().remove();
                 event.setCancelled(true);
             }).addListener(ProjectileCollideWithEntityEvent.class, event -> {
-                Entity shooter = ((ProjectileMeta) event.getEntity().getEntityMeta()).getShooter();
-                Entity target = event.getTarget();
-                event.getEntity().remove();
+                if (event.getEntity().getEntityMeta() instanceof ProjectileMeta projectileMeta) {
 
-                if (!(target instanceof SkyblockEntity) && !(target instanceof SkyblockPlayer)) {
-                    event.setCancelled(true);
-                    return;
-                }
+                    Entity shooter = projectileMeta.getShooter();
+                    Entity target = event.getTarget();
+                    event.getEntity().remove();
 
-                if (shooter instanceof SkyblockPlayer && target instanceof SkyblockPlayer) return;
-
-                if (shooter instanceof SkyblockPlayer) {
-                    if (!(event.getEntity() instanceof SkyblockPlayerArrow projectile)) {
-                        Main.LOGGER.warn("Illegal Arrow Found!");
-                        event.getEntity().remove();
-                        return;
-                    }
-                    ((SkyblockEntity) target).damage(projectile);
-                    return;
-                }
-
-                if (target instanceof SkyblockPlayer player) {
-                    if (!(event.getEntity() instanceof SkyblockEntityProjectile projectile)) {
+                    if (!(target instanceof SkyblockEntity) && !(target instanceof SkyblockPlayer)) {
                         event.setCancelled(true);
                         return;
                     }
-                    player.damage(projectile);
+
+                    if (shooter instanceof SkyblockPlayer && target instanceof SkyblockPlayer) return;
+
+                    if (shooter instanceof SkyblockPlayer) {
+                        if (!(event.getEntity() instanceof SkyblockPlayerArrow projectile)) {
+                            Main.LOGGER.warn("Illegal Arrow Found!");
+                            event.getEntity().remove();
+                            return;
+                        }
+                        ((SkyblockEntity) target).damage(projectile);
+                        return;
+                    }
+
+                    if (target instanceof SkyblockPlayer player) {
+                        if (!(event.getEntity() instanceof SkyblockEntityProjectile projectile)) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                        player.damage(projectile);
+                    }
+                } else if (event.getEntity() instanceof SkyblockPlayerFishingBobber fishingBobber) {
+                    var meta = (FishingHookMeta) fishingBobber.getEntityMeta();
+                    //TODO Fish
                 }
 
             }).addListener(PickupItemEvent.class, event -> {
@@ -368,7 +377,7 @@ public class SkyblockPlayer extends Player {
                 if (event.getSlot() < 41 || event.getSlot() > 44) {
                     if (event.getClickType() == ClickType.START_SHIFT_CLICK) {
                         SbItemStack clicked = SbItemStack.from(event.getClickedItem());
-                        if (clicked == null) return;
+                        if (clicked == SbItemStack.AIR) return;
                         int slot = getSlot(clicked.sbItem().getType());
                         if (slot < 0) {
                             event.setCancelled(event.getClickedItem().material().isArmor());
@@ -385,7 +394,7 @@ public class SkyblockPlayer extends Player {
                     return;
                 }
                 SbItemStack cursor = SbItemStack.from(event.getCursorItem());
-                if (cursor == null) {
+                if (cursor == SbItemStack.AIR) {
                     return;
                 }
                 if (getSlot(cursor.sbItem().getType()) != event.getSlot()) {
@@ -432,6 +441,22 @@ public class SkyblockPlayer extends Player {
                 if (event.player().instance.getBlock(event.block()).registry().material() == Material.CRAFTING_TABLE) {
                     Recipe.openCraftingGui(event.player());
                 }
+            })
+            .addListener(PlayerInteractEvent.class, event -> {
+                if (event.interaction() != PlayerInteractEvent.Interaction.Right) return;
+                if (event.player().playerFishingBobber != null) {
+                    event.player().playerFishingBobber.remove();
+                    event.player().playerFishingBobber = null;
+                    event.player().playSound(SoundType.ENTITY_FISHING_BOBBER_RETRIEVE.create(1));
+                    return;
+                }
+                var item = event.player().getSbItemInHand(Hand.MAIN);
+                if (!(item.sbItem() instanceof IFishingRod fishingRod)) return;
+                var bobber = new SkyblockPlayerFishingBobber(event.player());
+                bobber.setInstance(event.player().instance, event.player().position.add(0, event.player().getEyeHeight(), 0).add(event.player().position.direction().normalize().mul(0.3)));
+                bobber.setVelocity(event.player().getPosition().direction().normalize().mul(20));
+                event.player().playerFishingBobber = bobber;
+                event.player().playSound(SoundType.ENTITY_FISHING_BOBBER_THROW.create(1));
             })
             .addListener(PlayerDeathEvent.class, event -> {
                 event.setChatMessage(Component.text("§c%s §7You Died!".formatted(Characters.Skull)));
@@ -597,6 +622,10 @@ public class SkyblockPlayer extends Player {
 
     @Getter
     private final SkyblockPlayerInventory playerInventory = new SkyblockPlayerInventory(this);
+
+    @Getter
+    @Setter
+    private SkyblockPlayerFishingBobber playerFishingBobber = null;
 
     public SkyblockPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection, @NotNull UUID configId) {
         super(uuid, username, playerConnection);
