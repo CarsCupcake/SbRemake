@@ -10,6 +10,7 @@ import net.minestom.server.command.builder.arguments.ArgumentWord;
 import net.minestom.server.command.builder.condition.Conditions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class WarpCommand extends Command {
@@ -19,8 +20,10 @@ public class WarpCommand extends Command {
         super("warp");
         setCondition(Conditions::playerOnly);
         List<String> strings = new ArrayList<>();
-        for (WarpLocation world : WarpLocation.values())
+        for (WarpLocation world : WarpLocation.values()) {
             strings.add(world.getId());
+            strings.addAll(Arrays.asList(world.getAlias()));
+        }
         strings.sort(String::compareTo);
         word = ArgumentType.Word("warp").from(strings.toArray(new String[0]));
         addSyntax((commandSender, commandContext) -> {

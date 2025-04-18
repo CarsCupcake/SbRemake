@@ -118,6 +118,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         public WorldProvider get() {
             return new End();
         }
+    },
+    CrimsonIsle("crimson_isle", FileEnding.ZIP) {
+        @Override
+        public WorldProvider get() {
+            return new CrimsonIsle();
+        }
     };
     private static final Object _lock = new Object();
     @Getter
