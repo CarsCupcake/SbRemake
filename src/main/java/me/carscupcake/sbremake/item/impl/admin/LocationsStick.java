@@ -63,4 +63,9 @@ public class LocationsStick implements ISbItem {
                     event.player().sendMessage("§aCleared!");
                 }, new Lore("Reset the marked blocks")));
     }
+
+    @Override
+    public boolean isUnstackable() {
+        return true;
+    }
 }

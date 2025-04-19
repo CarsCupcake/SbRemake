@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.command;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
+import me.carscupcake.sbremake.entity.impl.crimsonIsle.WitherSpectre;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
 import me.carscupcake.sbremake.entity.impl.spidersDen.*;
 import me.carscupcake.sbremake.entity.impl.spidersDen.arachne.Arachne;
@@ -83,7 +84,8 @@ public class SummonCommand extends Command {
             public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
                 return new Arachne(true);
             }
-        };
+        },
+        WitherSpectre(WitherSpectre.class);
         private final Class<? extends SkyblockEntity> entityClazz;
 
         EntityClass(Class<? extends SkyblockEntity> entityClazz) {

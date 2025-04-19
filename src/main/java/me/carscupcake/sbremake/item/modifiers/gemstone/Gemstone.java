@@ -74,14 +74,14 @@ public interface Gemstone {
                     slots[index] = new GemstoneSlot(s.type(), gemstone, true);
                     gui.getInventory().setItemStack(13, selected.withModifier(Modifier.GEMSTONE_SLOTS, slots).update(player).item());
                     item = item.withAmount(item.item().amount() - 1);
-                    event.setCursorItem((item == SbItemStack.AIR) ? ItemStack.AIR : Objects.requireNonNull(item).item());
+                    event.setCursorItem((item == null || item == SbItemStack.AIR) ? ItemStack.AIR : Objects.requireNonNull(item).item());
                     event.setClickedItem(ItemStack.AIR);
                     return false;
                 }
 
             } else {
                 SbItemStack item = SbItemStack.from(gui.getInventory().getItemStack(13));
-                if (item != null && item != SbItemStack.AIR) {
+                if (item != SbItemStack.AIR) {
                     int i = 0;
                     for (int slot : slots[((GemstoneSlots) item.sbItem()).getGemstoneSlots().length - 1]) {
                         if (slot == event.getSlot()) {
@@ -123,7 +123,7 @@ public interface Gemstone {
         });
         gui.setCloseEvent(() -> {
             SbItemStack item = SbItemStack.from(gui.getInventory().getItemStack(13));
-            if (item != null)
+            if (item != SbItemStack.AIR)
                 player.addItem(item, false);
             return false;
         });
@@ -134,7 +134,7 @@ public interface Gemstone {
         for (int i : slots[slots.length - 1])
             inventory.setItemStack(i, TemplateItems.EmptySlot.getItem());
         SbItemStack item = SbItemStack.from(inventory.getItemStack(13));
-        if (item == null || !(item.sbItem() instanceof GemstoneSlots gemstoneSlot)) {
+        if (item == SbItemStack.AIR || !(item.sbItem() instanceof GemstoneSlots gemstoneSlot)) {
             ItemStack gemstoneSlot = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setName("§dGemstone Slot").addLore("§7Add an item above to apply Gemstones to it!").build();
             for (int i = 28; i < 35; i++) {
                 inventory.setItemStack(i, gemstoneSlot);

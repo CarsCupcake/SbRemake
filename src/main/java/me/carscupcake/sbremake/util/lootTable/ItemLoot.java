@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.minestom.server.item.Material;
 
 import java.util.*;
 
@@ -37,6 +38,10 @@ public record ItemLoot(SbItemStack item, int min, int max, double chance, boolea
 
     public ItemLoot(Class<? extends ISbItem> clazz) {
         this(clazz, 1, 1);
+    }
+
+    public ItemLoot(Material material) {
+        this(SbItemStack.base(material), 1, 1);
     }
 
     @Override

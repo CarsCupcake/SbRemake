@@ -108,6 +108,12 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder addLoreIf(Returnable<Boolean> predicate, Returnable<String> l) {
+        if (!predicate.get()) return this;
+        addLoreRow(l.get());
+        return this;
+    }
+
     public ItemBuilder addLoreRow(TextComponent component) {
         lore.add(component);
         return this;

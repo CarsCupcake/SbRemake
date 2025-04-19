@@ -1351,6 +1351,51 @@ public class SkyblockPlayer extends Player {
         dealDamage(event);
     }
 
+    public void forceDamage(double amount) {
+        sendPacket(new DamageEventPacket(getEntityId(), 0, getEntityId(), 0, getPosition()));
+        dealDamage(new IDamageEvent() {
+            @Override
+            public double getCachedDamage() {
+                return amount;
+            }
+
+            @Override
+            public void setCachedDamage(double damage) {
+
+            }
+
+            @Override
+            public Entity getTarget() {
+                return SkyblockPlayer.this;
+            }
+
+            @Override
+            public Entity getSource() {
+                return SkyblockPlayer.this;
+            }
+
+            @Override
+            public double getTrueDamage() {
+                return 0;
+            }
+
+            @Override
+            public double getNormalDamage() {
+                return 0;
+            }
+
+            @Override
+            public double getTargetDefense() {
+                return 0;
+            }
+
+            @Override
+            public double getTargetTrueDefense() {
+                return 0;
+            }
+        });
+    }
+
     private void dealDamage(IDamageEvent event) {
         double finalDamage = event.calculateDamage();
         event.spawnDamageTag();

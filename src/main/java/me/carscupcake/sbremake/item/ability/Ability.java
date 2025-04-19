@@ -1,9 +1,11 @@
 package me.carscupcake.sbremake.item.ability;
 
+import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerInteractEvent;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.StringUtils;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.PlayerEvent;
@@ -26,18 +28,25 @@ public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
         list.add(headline(itemStack, player));
         list.addAll(lore().build(itemStack, player));
         long manaCost = -1;
+        double healthCost = -1;
         long cooldown = -1;
         if (this instanceof ItemAbility<?> itemAbility) {
             for (Requirement<?> requirement : itemAbility.requirements()) {
                 if (requirement instanceof ManaRequirement<?> manaRequirement) {
                     manaCost = manaRequirement.getManaCost();
                 }
-                if (requirement instanceof CooldownRequirement<?> cooldownRequirement) {
-                    cooldown = cooldownRequirement.timeUnit().getDuration().getSeconds() * cooldownRequirement.cooldown();
+                if (requirement instanceof CooldownRequirement<?>(
+                        long cooldown1, java.time.temporal.TemporalUnit timeUnit
+                )) {
+                    cooldown = timeUnit.getDuration().getSeconds() * cooldown1;
+                }
+                if (requirement instanceof HealthRequirement<?>(double maxHealthPercentage)) {
+                    healthCost = player == null ? (maxHealthPercentage * 100) : (player.getStat(Stat.Health) * maxHealthPercentage);
                 }
             }
         }
         if (manaCost > 0) list.add("§8Mana Cost: §3" + (manaCost));
+        if (healthCost > 0) list.add("§8Health Cost: §c" + StringUtils.cleanDouble(healthCost) + (player == null ? "%" : ""));
         if (cooldown > 0) list.add("§8Cooldown: §a" + (cooldown) + "s");
         return list;
     }

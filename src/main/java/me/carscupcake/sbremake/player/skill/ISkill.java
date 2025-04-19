@@ -152,13 +152,15 @@ public abstract class ISkill {
         for (int i = 0; i < levelSlots.length; i++) {
             int level = ((page - 1) * 25) + i + 1;
             if (level > getMaxLevel() || level > nextLevelXp.length) break;
-            builder.setItem(new ItemBuilder(((i + 1) % 5 == 0) ? fiveLevelItem : (this.level >= level) ? Material.LIME_STAINED_GLASS_PANE : ((this.level + 1 == level) ? Material.YELLOW_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE))
+            var material = ((i + 1) % 5 == 0) ? fiveLevelItem : (this.level >= level) ? Material.LIME_STAINED_GLASS_PANE : ((this.level + 1 == level) ? Material.YELLOW_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE);
+            builder.setItem(new ItemBuilder(material)
+                            .setAmount(level > material.maxStackSize() ? 1 : level)
                     .setName(((this.level >= level) ? "§a" : (this.level + 1 == level) ? "§e" : "§c") + (getName()) + " Level " + (StringUtils.toRoman(level)))
                     .addLoreRow("§7Rewards:")
                     .addAllLore(rewardsLore(level, player))
                     .addLoreIf(() -> this.level >= level, "§7  ", "§a§lUNLOCKED")
-                    .addLoreIf(() -> this.level + 1 == level && level != 60, Component.text("§7  "), Component.text().append(StringUtils.makeProgressBar(10, xp, nextLevelXp[this.level], NamedTextColor.WHITE, NamedTextColor.GREEN,
-                            "§m "), Component.text("§r §e" + (StringUtils.cleanDouble(xp)) + "§6/§e" + (StringUtils.cleanDouble(nextLevelXp[level == nextLevelXp.length ? 0 : this.level])))).build())
+                    .addLoreIf(() -> this.level + 1 == level && level != 60, Component.text("§7  "), Component.text().append(StringUtils.makeProgressBar(10, xp, this.level == 60 ? -1 : nextLevelXp[this.level], NamedTextColor.WHITE, NamedTextColor.GREEN,
+                            "§m "), Component.text("§r §e" + (StringUtils.cleanDouble(xp)) + "§6/§e" + (StringUtils.cleanDouble(nextLevelXp[level == nextLevelXp.length ? 0 : this.level == 60 ? 0 : this.level])))).build())
                     .build(), levelSlots[i]);
         }
         builder.setItem(0, new ItemBuilder(showItem)

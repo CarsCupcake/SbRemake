@@ -98,7 +98,7 @@ public class Main {
         LOGGER.info("Loading Recipes");
         long time = System.currentTimeMillis();
         Recipe.init();
-        LOGGER.info("Loaded " + (Recipe.craftingRecipes.size()) + " Crafting Recipes in " + (System.currentTimeMillis() - time) + "ms");
+        LOGGER.info("Loaded {} Crafting Recipes in {}ms", Recipe.craftingRecipes.size(), System.currentTimeMillis() - time);
         MiningBlock.init();
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockBreakEvent.class, new PlayerBlockBreakListener());

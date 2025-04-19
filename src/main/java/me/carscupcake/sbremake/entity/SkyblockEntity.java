@@ -121,27 +121,39 @@ public abstract class SkyblockEntity extends EntityCreature {
         return regionTarget(entity, List.of(region), range);
     }
 
-    protected static EntityAIGroup regionTarget(SkyblockEntity entity, List<Region> region, int range) {
+    protected static EntityAIGroup regionTarget(SkyblockEntity entity, List<Region> region, int range, boolean isHidden) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p.getRegion() != null && region.contains(p.getRegion()) && !entity.isDead)));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p.getRegion() != null &&
+                ((!isHidden && region.contains(p.getRegion())) || (isHidden && region.stream().map(region1 -> region1.isInRegion(p.getPosition())).reduce(false, Boolean::logicalOr)))
+                && !entity.isDead)));
         return aiGroup;
+    }
+
+    protected static EntityAIGroup regionTarget(SkyblockEntity entity, List<Region> region, int range) {
+        return regionTarget(entity, region, range, false);
     }
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 5) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 16) // Walk around
         ));
         aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && !entity.isDead)));
         return aiGroup;
     }
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region) {
-        return zombieAiGroup(entity, List.of(region));
+        return zombieAiGroup(entity, region, false);
+    }protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region, boolean isHidden) {
+        return zombieAiGroup(entity, List.of(region), isHidden);
     }
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, List<Region> region) {
-        EntityAIGroup aiGroup = regionTarget(entity, region, 8);
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 10, region) // Walk around
+        return zombieAiGroup(entity, region, false);
+    }
+
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, List<Region> region, boolean isHidden) {
+        EntityAIGroup aiGroup = regionTarget(entity, region, 8, isHidden);
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 10, region, isHidden) // Walk around
         ));
         return aiGroup;
     }
@@ -369,19 +381,22 @@ public abstract class SkyblockEntity extends EntityCreature {
         private final List<Region> regions;
         private final long randomDelay = new Random().nextLong(5000);
         private long lastStroll;
+        private final boolean isHiddenRegion;
 
         public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, Region region) {
             super(entityCreature);
             this.regions = List.of(region);
             this.radius = radius;
             this.closePositions = getNearbyBlocks(radius);
+            isHiddenRegion = false;
         }
 
-        public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, List<Region> region) {
+        public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, List<Region> region, boolean isHidden) {
             super(entityCreature);
             this.regions = region;
             this.radius = radius;
             this.closePositions = getNearbyBlocks(radius);
+            this.isHiddenRegion = isHidden;
         }
 
         public boolean shouldStart() {
