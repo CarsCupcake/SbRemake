@@ -125,11 +125,6 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         public WorldProvider get() {
             return new CrimsonIsle();
         }
-
-        @Override
-        public DynamicRegistry.Key<DimensionType> getDimension() {
-            return DimensionType.THE_NETHER;
-        }
     };
     private static final Object _lock = new Object();
     @Getter

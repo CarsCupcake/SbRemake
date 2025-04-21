@@ -18,6 +18,7 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.item.Material;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.utils.time.TimeUnit;
@@ -27,7 +28,7 @@ import java.util.Set;
 public class WitherSpectre extends SkyblockEntity implements SkillXpDropper {
     private static final String HEAD_VALUE = "ewogICJ0aW1lc3RhbXAiIDogMTYzOTUxMjkwNTczNywKICAicHJvZmlsZUlkIiA6ICI3MzgyZGRmYmU0ODU0NTVjODI1ZjkwMGY4OGZkMzJmOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJCdUlJZXQiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjZhYTVhY2ZkOTczZjY3YmE4ZTI0OWFlMDdhMTFhZTdjYTcxM2M5MDBkOTBkMDljZTA5MDNjNzlkZGQ3ZGQ5ZSIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9";
     private static final Color CHESTPLATE_COLOR = new Color(921622);
-    private static final Region WITHER_SPECTRE_REGION = new CuboidRegion(null, Set.of(new BoundingBox(new Vec(-432, 113, -533), new Vec(-384, 86, -483))));
+    private static final Region WITHER_SPECTRE_REGION = new CuboidRegion("null", Set.of(new BoundingBox(new Vec(-432, 85, -533), new Vec(-384, 113, -483))));
 
     public WitherSpectre() {
         super(EntityType.WITHER_SKELETON, new LootTable<SbItemStack>().addLoot(new ItemLoot(Material.GUNPOWDER)).addLoot(new CoinLoot(20)));
@@ -35,8 +36,12 @@ public class WitherSpectre extends SkyblockEntity implements SkillXpDropper {
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(CHESTPLATE_COLOR).build());
         setItemInHand(Player.Hand.MAIN, new ItemBuilder(Material.STONE_SWORD).build());
         setInvisible(true);
-        scheduler().buildTask(() -> ParticleUtils.spawnParticle(getInstance(), getPosition(), Particle.WITCH, 5, Vec.ZERO, 0.2f)).repeat(TimeUnit.SERVER_TICK.getDuration()).schedule();
+        scheduler().buildTask(() -> {
+            if (instance != null)
+                ParticleUtils.spawnParticle(getInstance(), getPosition(), Particle.WITCH, 5, Vec.ZERO, 0.2f);
+        }).repeat(TimeUnit.SERVER_TICK.getDuration()).schedule();
         addAIGroup(SkyblockEntity.zombieAiGroup(this, WITHER_SPECTRE_REGION, true));
+        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
     }
 
     @Override

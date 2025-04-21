@@ -21,7 +21,15 @@ public record CuboidRegion(String name, Set<BoundingBox> cuboids, Consumer<Skybl
     }
 
     public static boolean containsBB(BoundingBox bb, Point point) {
-        return bb.minX() < point.x() && bb.maxX() > point.x() && bb.minY() < point.y() && bb.maxY() > point.y() && bb.minZ() < point.z() && bb.maxZ() > point.z();
+        var minY = bb.minY();
+        var a = bb.minX() <= point.x();
+        var b = bb.minY() <= point.y();
+        var c = bb.minZ() <= point.z();
+        var d = bb.maxX() >= point.x();
+        var f = bb.maxY() >= point.y();
+        var g = bb.maxZ() >= point.z();
+
+        return bb.minX() <= point.x() && bb.maxX() >= point.x() && bb.minY() <= point.y() && bb.maxY() >= point.y() && bb.minZ() <= point.z() && bb.maxZ() >= point.z();
     }
 
     @Override
