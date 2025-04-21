@@ -71,7 +71,7 @@ public enum ArmorReforge implements Reforge {
     Necrotic(Map.of(Stat.Intelligence, new RarityStat(30, 60, 90, 120, 150, 200))),
     Loving(Map.of(Stat.Health, new RarityStat(4, 5, 6, 8, 10, 14),
             Stat.Defense, new RarityStat(4, 5, 6, 7, 10, 14),
-            Stat.Intelligence, new RarityStat(20, 40, 60, 80, 100, 120)), new Lore("Increases ability damage by §a+5%§7."));
+            Stat.Intelligence, new RarityStat(20, 40, 60, 80, 100, 120)), new Lore("§7Increases ability damage by §a+5%§7."));
     private static final ItemType[] ARMOR = new ItemType[]{ItemType.Helmet, ItemType.Chestplate, ItemType.Leggings, ItemType.Boots};
     private final String name;
     private final String id;

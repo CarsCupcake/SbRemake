@@ -25,7 +25,7 @@ import java.util.Objects;
 public class ItemBuilder {
     private final Material material;
     private String name = "N/A";
-    private final ArrayList<Component> lore = new ArrayList<>();
+    private List<Component> lore = new ArrayList<>();
     private int count = 1;
     private boolean isHead;
     private String headTexture;
@@ -37,7 +37,7 @@ public class ItemBuilder {
     public ItemBuilder(ItemStack itemStack) {
         this.material = itemStack.material();
         this.name = ((TextComponent) Objects.requireNonNull(itemStack.get(ItemComponent.CUSTOM_NAME))).content();
-        lore.addAll(itemStack.get(ItemComponent.LORE));
+        lore.addAll(Objects.requireNonNull(itemStack.get(ItemComponent.LORE)));
         count = itemStack.amount();
         isHead = material == Material.PLAYER_HEAD && itemStack.get(ItemComponent.PROFILE) != null;
         if (isHead)
@@ -65,6 +65,11 @@ public class ItemBuilder {
 
     public ItemBuilder clearLore() {
         lore.clear();
+        return this;
+    }
+
+    public ItemBuilder setLore(Lore lore) {
+        this.lore = lore.build(null, null).stream().map(s -> (Component) Component.text(s)).toList();
         return this;
     }
 

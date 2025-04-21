@@ -109,7 +109,6 @@ public interface Gemstone {
                                     cost.pay(player);
                                 }
                                 gemstoneSlots[i] = new GemstoneSlot(gemstoneSlot.type(), null, true);
-                                System.out.println(Arrays.toString(gemstoneSlots));
                                 gui.getInventory().setItemStack(13, item.withModifier(Modifier.GEMSTONE_SLOTS, gemstoneSlots).update(player).item());
                             }
                             return true;

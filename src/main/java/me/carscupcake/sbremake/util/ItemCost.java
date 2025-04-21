@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import net.minestom.server.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("preview")
 public record ItemCost(ISbItem item, int amount) implements Cost {
@@ -51,11 +52,11 @@ public record ItemCost(ISbItem item, int amount) implements Cost {
 
     @Override
     public ItemBuilder appendToLore(ItemBuilder builder) {
-        return builder.addLoreRow((item.getRarity().getPrefix()) + (item.getName()) + " §8x" + (amount));
+        return builder.addLoreRow(toString());
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return (item.getRarity().getPrefix()) + (item.getName()) + " §8x" + (amount);
     }
 }

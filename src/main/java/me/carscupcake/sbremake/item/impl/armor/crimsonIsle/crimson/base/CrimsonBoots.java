@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.event.PlayerDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.Listener;
+import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmorAbilityCounter;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmorTier;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.CrimsonBootsBaseline;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility;
@@ -41,7 +42,7 @@ public class CrimsonBoots extends CrimsonBootsBaseline implements Listener {
     public EventNode<Event> node() {
         return EventNode.all("ability.dominus").addListener(PlayerStatEvent.class, event -> {
                     if (event.stat() == Stat.SwingRange || event.stat() == Stat.Ferocity || event.stat() == Stat.Damage) {
-                        DominusAbility.DominusCounter counter = DominusAbility.task.get(event.player());
+                        KuudraArmorAbilityCounter counter = DominusAbility.task.get(event.player());
                         if (counter != null) {
                             DominusAbility.applyStatBonus(event.player(), counter.getTier(), event);
                         }
@@ -53,10 +54,11 @@ public class CrimsonBoots extends CrimsonBootsBaseline implements Listener {
                     SkyblockPlayer player = event.getPlayer();
                     var ability = DominusAbility.task.get(player);
                     ability.add();
-                    if (DominusAbility.DOMINUS_STACKS.get(player) == 10) {
+                    var counter = DominusAbility.task.get(player);
+                    if (counter.getStacks() == 10) {
                         player.playSound(SoundType.BLOCK_PISTON_EXTEND, Sound.Source.PLAYER, 1, 1);
-                        if (DominusAbility.task.get(player).cooldown == 0) {
-                            DominusAbility.task.get(player).cooldown = 10;
+                        if (counter.cooldown == 0) {
+                            counter.cooldown = 10;
                             Vec v = new Vec(3, 0, 0).rotateAroundY(Math.toRadians(new Random().nextInt(360)));
                             Vec supportVec = event.getTarget().getPosition().asVec().add(v);
                             Vec dir = v.mul(-1).mul(2).withY(2);

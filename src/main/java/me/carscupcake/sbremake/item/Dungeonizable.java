@@ -4,11 +4,11 @@ import me.carscupcake.sbremake.player.Essence;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.Cost;
 
-public interface Dungeonizable extends Upgradable {
+public interface Dungeonizable extends StarUpgradable {
     @Override
     default double getBonus(SkyblockPlayer player, int stars) {
         //TODO Dungeon
-        return Upgradable.super.getBonus(player, stars);
+        return StarUpgradable.super.getBonus(player, stars);
     }
 
     int getCost(int star);

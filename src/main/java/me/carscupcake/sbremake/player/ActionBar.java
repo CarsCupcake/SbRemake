@@ -1,13 +1,14 @@
 package me.carscupcake.sbremake.player;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.aurora.ArcaneEnergy;
 import me.carscupcake.sbremake.util.StringUtils;
 
 import java.util.Iterator;
 import java.util.List;
 
 public class ActionBar {
-    private static final List<ActionBarSection> actionbar = List.of(new Health(), new DominusAbility(), new Defense(), new Mana());
+    private static final List<ActionBarSection> actionbar = List.of(new Health(), new DominusAbility(), new ArcaneEnergyAbility(), new Defense(), new Mana());
     private final SkyblockPlayer player;
 
     public ActionBar(SkyblockPlayer player) {
@@ -52,13 +53,30 @@ public class ActionBar {
         @Override
         public boolean show(SkyblockPlayer player) {
             if (player.getFullSetBonusPieceAmount(me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.INSTANCE) >= 2)
-                return me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.DOMINUS_STACKS.get(player) != 0;
+                return me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.task.get(player).getStacks() != 0;
             return false;
         }
 
         @Override
         public String get(SkyblockPlayer player) {
-            return "§6" + (me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.DOMINUS_STACKS.get(player) == 10 ? "§l" : "") + "ᝐ" + (String.valueOf(me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.DOMINUS_STACKS.get(player)));
+            var stacks = me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson.DominusAbility.task.get(player).getStacks();
+            return "§6" + (stacks == 10 ? "§l" : "") + "ᝐ" + stacks;
+        }
+    }
+
+    private static class ArcaneEnergyAbility implements ActionBarSection {
+
+        @Override
+        public boolean show(SkyblockPlayer player) {
+            if (player.getFullSetBonusPieceAmount(ArcaneEnergy.INSTANCE) >= 2)
+                return ArcaneEnergy.ARCANE_ENERGY_MAP.get(player).getStacks() != 0;
+            return false;
+        }
+
+        @Override
+        public String get(SkyblockPlayer player) {
+            var stacks = ArcaneEnergy.ARCANE_ENERGY_MAP.get(player).getStacks();
+            return "§6" + (stacks == 10 ? "§l" : "") + "Ѫ" + stacks;
         }
     }
 
@@ -84,8 +102,7 @@ public class ActionBar {
 
         @Override
         public String get(SkyblockPlayer player) {
-            if (player.isNotEnoughMana())
-                return "§c§lNOT ENOUGH MANA";
+            if (player.isNotEnoughMana()) return "§c§lNOT ENOUGH MANA";
             return (Stat.Intelligence.getPrefix()) + (StringUtils.cleanDouble(player.getMana(), 1)) + "/" + (StringUtils.cleanDouble(player.getManaPool(), 1)) + " " + (Stat.Intelligence.getSymbol()) + " Mana";
         }
     }

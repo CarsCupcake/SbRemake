@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.item.impl.armor.crimsonIsle.crimson;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmor;
+import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraChestplateBaseline;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneItem;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlotType;
@@ -17,7 +18,7 @@ import net.minestom.server.item.Material;
 
 import java.util.List;
 
-public abstract class CrimsonChestplateBaseline implements ISbItem, ISbItem.StatProvider, Upgradable, GemstoneSlots, ColoredLeather, KuudraArmor {
+public abstract class CrimsonChestplateBaseline extends KuudraChestplateBaseline {
     @Override
     public KuudraArmorType armorType() {
         return KuudraArmorType.Crimson;
@@ -34,57 +35,8 @@ public abstract class CrimsonChestplateBaseline implements ISbItem, ISbItem.Stat
     }
 
     @Override
-    public Material getMaterial() {
-        return Material.LEATHER_CHESTPLATE;
-    }
-
-    @Override
-    public ItemType getType() {
-        return ItemType.Chestplate;
-    }
-
-    @Override
-    public ItemRarity getRarity() {
-        return ItemRarity.LEGENDARY;
-    }
-
-    @Override
-    public int getMaxStars() {
-        return 10;
-    }
-
-    @Override
-    public GemstoneSlotType[] getGemstoneSlots() {
-        return new GemstoneSlotType[]{GemstoneSlotType.Combat, GemstoneSlotType.Combat};
-    }
-
-    @Override
-    public boolean[] getUnlocked() {
-        return new boolean[]{false, false};
-    }
-
-    @Override
-    public Cost[][] getLockedSlotCost() {
-        return new Cost[][]{{new CoinsCost(250_000), new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Jasper).get(Gemstone.Quality.Flawless).asItem(), 1)
-                , new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Sapphire).get(Gemstone.Quality.Flawless).asItem(), 1), new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Ruby).get(Gemstone.Quality.Flawless).asItem(), 1)
-                , new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Amethyst).get(Gemstone.Quality.Flawless).asItem(), 1)}, {new CoinsCost(250_000), new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Jasper).get(Gemstone.Quality.Flawless).asItem(), 1)
-                , new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Sapphire).get(Gemstone.Quality.Flawless).asItem(), 1), new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Ruby).get(Gemstone.Quality.Flawless).asItem(), 1)
-                , new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Amethyst).get(Gemstone.Quality.Flawless).asItem(), 1)}};
-    }
-
-    @Override
     public Color color() {
         return new Color(0xff6f0c);
-    }
-
-    @Override
-    public Cost[] upgradeCost(SbItemStack item, int star) {
-        return armorTier().getCosts()[star];
-    }
-
-    @Override
-    public List<Requirement> requirements() {
-        return List.of(new SkillRequirement(Skill.Combat, 22));
     }
 
     @Override

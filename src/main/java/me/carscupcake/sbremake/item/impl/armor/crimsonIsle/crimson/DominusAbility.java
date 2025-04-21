@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.ability.FullSetBonus;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmor;
+import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmorAbilityCounter;
 import me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmorTier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.CountMap;
@@ -15,72 +16,37 @@ import net.minestom.server.entity.EquipmentSlot;
 import java.util.HashMap;
 import java.util.Map;
 
+import static me.carscupcake.sbremake.item.impl.armor.crimsonIsle.KuudraArmorCommons.calculateTier;
+
+@Getter
 public class DominusAbility extends FullSetBonus {
     public static final DominusAbility INSTANCE = new DominusAbility();
-    public static final CountMap<SkyblockPlayer> DOMINUS_STACKS = new CountMap<>();
 
     public DominusAbility() {
         super("Dominus", 4, 2, true);
     }
 
-    public static final Map<SkyblockPlayer, DominusCounter> task = new HashMap<>();
+    public static final Map<SkyblockPlayer, KuudraArmorAbilityCounter> task = new HashMap<>();
 
     @Override
     public void start(SkyblockPlayer player) {
-        DOMINUS_STACKS.put(player, 0);
-        task.put(player, new DominusCounter(player, player.getFullSetBonusPieceAmount(this), calculateTier(player)));
+        var pieces = player.getFullSetBonusPieceAmount(this);
+        var resetTime = 20 * switch (pieces) {
+            case 3 -> 7;
+            case 4 -> 10;
+            default -> 4;
+        };
+        var cooldownTicks = switch (pieces) {
+            case 3 -> 30;
+            case 4 -> 20;
+            default -> 10;
+        };
+        task.put(player, new KuudraArmorAbilityCounter(player, resetTime, cooldownTicks, calculateTier(player, KuudraArmorType.Crimson)));
     }
 
     @Override
     public void stop(SkyblockPlayer player) {
         task.remove(player).cancel();
-        DOMINUS_STACKS.remove(player);
-    }
-
-    @Getter
-    public static class DominusCounter extends TaskScheduler {
-        private final SkyblockPlayer player;
-        private final int resetTime;
-        int i;
-        public int cooldown = 10;
-        private final KuudraArmorTier tier;
-        private final int cooldownTicks;
-        private long lastGain = System.currentTimeMillis();
-
-        public DominusCounter(SkyblockPlayer player, int pieces, KuudraArmorTier tier) {
-            this.resetTime = 20 * switch (pieces) {
-                case 3 -> 7;
-                case 4 -> 10;
-                default -> 4;
-            };
-            this.cooldownTicks = switch (pieces) {
-                case 3 -> 30;
-                case 4 -> 20;
-                default -> 10;
-            };
-            this.tier = tier;
-            i = resetTime;
-            this.player = player;
-            repeatTask(1, 1);
-        }
-
-        @Override
-        public void run() {
-            if (cooldown != 0) cooldown--;
-            if (i == 0) {
-                i = resetTime;
-                if (DOMINUS_STACKS.get(player) > 0) DOMINUS_STACKS.subtract(player, 1);
-            } else i--;
-        }
-
-        public void add() {
-            if (System.currentTimeMillis() - lastGain > cooldownTicks * 50L) {
-                lastGain = System.currentTimeMillis();
-                if (DOMINUS_STACKS.getOrDefault(player, 0) != 10)
-                    DOMINUS_STACKS.add(player, 1);
-                i = resetTime;
-            }
-        }
     }
 
     @Override
@@ -98,25 +64,12 @@ public class DominusAbility extends FullSetBonus {
                             case Burning -> "§e+0.1 " + (Stat.SwingRange) + " §7and §c+1 " + (Stat.Ferocity);
                             case Fiery -> "§e+0.1 " + (Stat.SwingRange) + " §7and §c+2 " + (Stat.Ferocity);
                             case Infernal ->
-                                    "§e+0.2 " + (Stat.SwingRange) + "§7, §c+2 " + (Stat.Ferocity) + " \n§7and §c10% " + (Stat.Strength.getSymbol()) + " " + (Stat.Damage);
+                                    "§e+0.2 " + (Stat.SwingRange) + "§7, §c+2 " + (Stat.Ferocity) + " §7and §c10% " + (Stat.Strength.getSymbol()) + " " + (Stat.Damage);
                         }));
     }
 
-    private static KuudraArmorTier calculateTier(SkyblockPlayer player) {
-        KuudraArmorTier tier = null;
-        for (var slot : EquipmentSlot.armors()) {
-            var item = player.getSbEquipment(slot);
-            if (item.sbItem() instanceof KuudraArmor kuudraArmor) {
-                if (kuudraArmor.armorType() != KuudraArmorType.Crimson) continue;
-                if (tier == null) tier = kuudraArmor.armorTier();
-                else if (tier.ordinal() > kuudraArmor.armorTier().ordinal()) tier = kuudraArmor.armorTier();
-            }
-        }
-        return tier;
-    }
-
     public static void applyStatBonus(SkyblockPlayer player, KuudraArmorTier tier, PlayerStatEvent event) {
-        int stacks = DOMINUS_STACKS.getOrDefault(player, 0);
+        int stacks = task.get(player).getStacks();
         if (stacks == 0) return;
         switch (tier) {
             case Base -> {

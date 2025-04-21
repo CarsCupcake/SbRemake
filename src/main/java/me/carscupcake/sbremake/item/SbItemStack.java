@@ -134,20 +134,28 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     }
 
     public String displayName() {
+        var suffix = new StringBuilder();
+
+        if (sbItem instanceof StarUpgradable u) {
+            var stars = getModifier(Modifier.STARS);
+            if (stars > 0)
+                suffix.append(" ").append(u.getStarDisplay(stars));
+        }
+
         if (sbItem.getType() == ItemType.Potion) {
             PotionInfo potionInfo = getModifier(Modifier.POTION);
             if (potionInfo != null) {
-                return potionInfo.customPotionName() != null ? potionInfo.customPotionName() : (potionInfo.potion().getName()) + " " + (StringUtils.toRoman(potionInfo.potionLevel())) + " Potion";
+                return potionInfo.customPotionName() != null ? potionInfo.customPotionName() : (potionInfo.potion().getName()) + " " + (StringUtils.toRoman(potionInfo.potionLevel())) + " Potion" + suffix;
             }
         }
         if (sbItem.getType() == ItemType.Rune) {
             RuneModifier runeModifier = getModifier(Modifier.RUNE);
             if (runeModifier != null)
-                return (runeModifier.rune().getName()) + " Rune " + (StringUtils.toRoman(runeModifier.level()));
+                return (runeModifier.rune().getName()) + " Rune " + (StringUtils.toRoman(runeModifier.level())) + suffix;
         }
         Reforge reforge = getModifier(Modifier.REFORGE);
         Pet.PetInfo petInfo = getModifier(Modifier.PET_INFO);
-        return (sbItem().getType() == ItemType.Pet ? "§7[Lvl " + (petInfo.level()) + "] " : "") + (reforge != null ? (reforge.getName()) + " " : "") + (petInfo.pet() == null ? sbItem.getName() : (petInfo.rarity().getPrefix()) + (petInfo.pet().getName()));
+        return (sbItem().getType() == ItemType.Pet ? "§7[Lvl " + (petInfo.level()) + "] " : "") + (reforge != null ? (reforge.getName()) + " " : "") + (petInfo.pet() == null ? sbItem.getName() : (petInfo.rarity().getPrefix()) + (petInfo.pet().getName())) + suffix;
     }
 
     /*
@@ -371,8 +379,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             if (petInfo.pet() != null) baseStat += petInfo.pet().getStat(stat, petInfo);
         }
         GetItemStatEvent event = new GetItemStatEvent(this, stat, baseStat, player);
-        if (sbItem instanceof Upgradable upgradable)
-            event.setMultiplier(event.getMultiplier() + upgradable.getBonus(player, getModifier(Modifier.STARS)));
+        if (sbItem instanceof StarUpgradable starUpgradable)
+            event.setMultiplier(event.getMultiplier() + starUpgradable.getBonus(player, getModifier(Modifier.STARS)));
         MinecraftServer.getGlobalEventHandler().call(event);
         return event.getValue() * event.getMultiplier();
     }

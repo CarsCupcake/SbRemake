@@ -2,8 +2,8 @@ package me.carscupcake.sbremake.util;
 
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
+import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("preview")
 public record CoinsCost(int coins) implements Cost {
     @Override
     public boolean canPay(SkyblockPlayer player) {
@@ -17,11 +17,11 @@ public record CoinsCost(int coins) implements Cost {
 
     @Override
     public ItemBuilder appendToLore(ItemBuilder builder) {
-        return builder.addLoreRow("§6" + (StringUtils.toFormatedNumber(coins)) + " Coins");
+        return builder.addLoreRow(toString());
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "§6" + (StringUtils.toFormatedNumber(coins)) + " Coins";
     }
 }

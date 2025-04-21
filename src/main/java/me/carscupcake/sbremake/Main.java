@@ -35,9 +35,12 @@ import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.block.BlockHandler;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
 import net.minestom.server.timer.TaskSchedule;
+import net.minestom.server.utils.NamespaceID;
+import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import org.slf4j.event.Level;
 
@@ -79,9 +82,14 @@ public class Main {
     public static volatile boolean isCracked = false;
     private volatile static ConfigFile crackedRegistry;
 
+    private static final String[] registerDefaultManagers = new String[] {"banner", "trapped_chest", "skull", "chest", "sign", "brewing_stand", "enchanting_table",
+    "furnace", "dispenser", "daylight_detector", "jukebox", "beacon"};
+
     public static void main(String[] args) throws Exception {
         MinecraftServer server = MinecraftServer.init();
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
+        for (var s : registerDefaultManagers)
+            MinecraftServer.getBlockManager().registerHandler("minecraft:" + s, () -> () -> NamespaceID.from(s));
         LOGGER = new SkyblockSimpleLogger();
         if (System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true")) {
             LOGGER.setLogLevel(0);
