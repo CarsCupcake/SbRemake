@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:GIANT_FRAGMENT_LASER"
+    },
+    "/": {
+      "tag": "minecraft:necron_sword"
+    }
+  },
+  "pattern": [
+    "###",
+    "#/#",
+    "###"
+  ],
+  "result": {
+    "item": "skyblock:hyperion",
+    "priority": 4
+  }
+}

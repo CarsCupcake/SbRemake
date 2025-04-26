@@ -13,6 +13,7 @@ import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlot;
 import me.carscupcake.sbremake.item.modifiers.potion.PotionInfo;
 import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
+import me.carscupcake.sbremake.item.smithing.SmithingItem;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
 import me.carscupcake.sbremake.util.StringUtils;
@@ -190,6 +191,10 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             lore.addAll(sbItem.getLore().build(this, player));
 
         }
+        if (sbItem instanceof SmithingItem) {
+            lore.add("§8Combinable in Anvil");
+            lore.add("§2 ");
+        }
         if (sbItem.statsReplacement() != null) {
             lore.addAll(Objects.requireNonNull(sbItem.statsReplacement()).build(this, player));
             space = true;
@@ -239,7 +244,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                 StringBuilder builder = new StringBuilder("§9");
                 int i = 0;
                 for (Map.Entry<SkyblockEnchantment, Integer> entry : enchantmentIntegerMap.entrySet()) {
-                    builder.append((entry.getKey().getName()) + " " + (StringUtils.toRoman(entry.getValue())));
+                    builder.append(entry.getKey().getName()).append(" ").append(StringUtils.toRoman(entry.getValue()));
                     i++;
                     if (i == 3) {
                         i = 0;
@@ -318,8 +323,12 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         }
         for (Requirement requirement : sbItem.requirements())
             if (!requirement.canUse(player, item)) lore.add(requirement.display());
-        lore.add((rarity.getPrefix()) + "§l" + (rarity.getDisplay().toUpperCase()) + " " + (sbItem.getType().getDisplay().toUpperCase()));
+        lore.add((rarity.getPrefix()) + "§l" + (rarity.getDisplay().toUpperCase()) + (isDungeonItem() ? "DUNGEON " : "") + " " + (sbItem.getType().getDisplay().toUpperCase()));
         return lore;
+    }
+
+    public boolean isDungeonItem() {
+        return sbItem.isDungeonItem();
     }
 
     private String statLine(Stat stat, double value, SkyblockPlayer player) {
@@ -327,15 +336,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         double reforgeValue = reforge == null ? 0 : reforge.getStat(stat, getRarity(), player);
         GemstoneSlot[] gemstoneSlots = getModifier(Modifier.GEMSTONE_SLOTS);
         double gemstoneValue = 0;
-        if (gemstoneSlots != null) {
-            for (GemstoneSlot slot : gemstoneSlots) {
-                if (!slot.unlocked()) continue;
-                if (slot.gemstone() == null) continue;
-                if (slot.gemstone().type().getStat() == stat) {
-                    gemstoneValue += slot.gemstone().value(this);
-                }
-            }
-        }
+        gemstoneValue = getGemstoneStat(stat, gemstoneValue, gemstoneSlots);
         return ((value < 0) ? "" : "+") + (StringUtils.cleanDouble(value, 1)) + ((stat.isPercentValue()) ? "%" : "") + (reforgeValue != 0 ? " §9(" + (value < 0 ? "" : "+") + (StringUtils.cleanDouble(reforgeValue, 1)) + (stat.isPercentValue() ? "%" : "") + ")" : "") + (gemstoneValue != 0 ? " §d(+" + (StringUtils.cleanDouble(gemstoneValue, 1)) + ")" : "");
     }
 
@@ -365,15 +366,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         Reforge reforge = getModifier(Modifier.REFORGE);
         if (reforge != null) baseStat += reforge.getStat(stat, getRarity(), player);
         GemstoneSlot[] gemstoneSlots = getModifier(Modifier.GEMSTONE_SLOTS);
-        if (gemstoneSlots != null) {
-            for (GemstoneSlot slot : gemstoneSlots) {
-                if (!slot.unlocked()) continue;
-                if (slot.gemstone() == null) continue;
-                if (slot.gemstone().type().getStat() == stat) {
-                    baseStat += slot.gemstone().value(this);
-                }
-            }
-        }
+        baseStat = getGemstoneStat(stat, baseStat, gemstoneSlots);
         if (sbItem().getType() == ItemType.Pet) {
             Pet.PetInfo petInfo = getModifier(Modifier.PET_INFO);
             if (petInfo.pet() != null) baseStat += petInfo.pet().getStat(stat, petInfo);
@@ -383,6 +376,19 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             event.setMultiplier(event.getMultiplier() + starUpgradable.getBonus(player, getModifier(Modifier.STARS)));
         MinecraftServer.getGlobalEventHandler().call(event);
         return event.getValue() * event.getMultiplier();
+    }
+
+    private double getGemstoneStat(Stat stat, double baseStat, GemstoneSlot[] gemstoneSlots) {
+        if (gemstoneSlots != null) {
+            for (GemstoneSlot slot : gemstoneSlots) {
+                if (!slot.unlocked()) continue;
+                if (slot.gemstone() == null) continue;
+                if (slot.gemstone().type().getStat() == stat) {
+                    baseStat += slot.gemstone().value(this);
+                }
+            }
+        }
+        return baseStat;
     }
 
     public static Set<String> getIds() {
@@ -400,12 +406,14 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             Pet.PetInfo petInfo = getModifier(Modifier.PET_INFO);
             if (petInfo.pet() != null) abilities.addAll(List.of(petInfo.pet().getAbility(getRarity())));
         }
+        if (sbItem instanceof IContextAbilities contextAbilities)
+            abilities.addAll(contextAbilities.getAbilities(player, this));
         return abilities;
     }
 
 
     public SbItemStack withAmount(int i) {
-        if (i <= 0) return null;
+        if (i <= 0) return AIR;
         if (i == item.amount()) return this;
         return new SbItemStack(item.withAmount(i), sbItem);
     }

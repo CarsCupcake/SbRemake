@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:GIANT_FRAGMENT_BOULDER"
+    },
+    "/": {
+      "tag": "minecraft:necron_sword"
+    }
+  },
+  "pattern": [
+    "###",
+    "#/#",
+    "###"
+  ],
+  "result": {
+    "item": "skyblock:astraea",
+    "priority": 4
+  }
+}

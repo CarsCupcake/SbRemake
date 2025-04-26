@@ -20,6 +20,7 @@ import java.util.Map;
 @Getter
 public class ItemStackModifiers {
     public static final ItemStackModifiers BASE_MODIFIERS = new ItemStackModifiersBuilder().build();
+    public static final ItemStackModifiers ENCHANT_GLINT_MODIFIERS = new ItemStackModifiersBuilder().glint(true).build();
     @Builder.Default
     private boolean glint = false;
     @Builder.Default

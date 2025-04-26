@@ -69,6 +69,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         super(entityType, UUID.randomUUID());
         this.lootTable = lootTable == null ? new LootTable<>() : lootTable;
         getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        setCustomNameVisible(true);
     }
 
     public static void spawnDamageTag(SkyblockEntity entity, String tag) {
@@ -123,8 +124,8 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     protected static EntityAIGroup regionTarget(SkyblockEntity entity, List<Region> region, int range, boolean isHidden) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p.getRegion() != null &&
-                ((!isHidden && region.contains(p.getRegion())) || (isHidden && region.stream().map(region1 -> region1.isInRegion(p.getPosition())).reduce(false, Boolean::logicalOr)))
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL &&
+                ((!isHidden && p.getRegion() != null && region.contains(p.getRegion())) || (isHidden && region.stream().map(region1 -> region1.isInRegion(p.getPosition())).reduce(false, Boolean::logicalOr)))
                 && !entity.isDead)));
         return aiGroup;
     }
@@ -231,19 +232,24 @@ public abstract class SkyblockEntity extends EntityCreature {
             doFerocity(player, event.getFerocity());
         }
     }
-
-    public void mageDamage(SkyblockPlayer player, double baseAbilityDamage, double abilityScaling) {
-        PlayerToEntityMageDamage event = new PlayerToEntityMageDamage(player, this, baseAbilityDamage, player.getStat(Stat.Intelligence), abilityScaling);
+    public double mageDamage(SkyblockPlayer player, double intelligence, double baseAbilityDamage, double abilityScaling) {
+        PlayerToEntityMageDamage event = new PlayerToEntityMageDamage(player, this, baseAbilityDamage, intelligence, abilityScaling);
         EventDispatcher.call(event);
-        if (event.isCancelled()) return;
+        if (event.isCancelled()) return 0;
         float damage = (float) (event.calculateHit() * abilityDamageMultiplier());
         damage = onDamage(event.getPlayer(), damage);
-        if (damage <= 0) return;
+        if (damage <= 0) return 9;
         spawnDamageTag(this, event.getDamageTag());
-        damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
+        var finalDamage = damage * (1 - (getDefense() / (getDefense() + 100)));
+        damage(DamageType.PLAYER_ATTACK, finalDamage);
         if (isDead) {
             EventDispatcher.call(new EntityDeathEvent(this, EntityDeathEvent.Type.Magic));
         }
+        return damage;
+    }
+
+    public double mageDamage(SkyblockPlayer player, double baseAbilityDamage, double abilityScaling) {
+        return mageDamage(player, player.getStat(Stat.Intelligence), baseAbilityDamage, abilityScaling);
     }
 
     public void damage(SkyblockPlayerArrow projectile) {
@@ -362,7 +368,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         Basic() {
             @Override
             public String apply(SkyblockEntity skyblockEntity) {
-                return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] §c" + (skyblockEntity.getName()) + " §a" + (StringUtils.cleanDouble(skyblockEntity.getHealth(), 0)) + "§7/§a" + (StringUtils.cleanDouble(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol());
+                return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] §c" + (skyblockEntity.getName()) + " §a" + ((skyblockEntity.getHealth() >= 100_000 ?  StringUtils.toFormatedNumber(skyblockEntity.getHealth()) : StringUtils.cleanDouble(skyblockEntity.getHealth()))) + "§7/§a" + (skyblockEntity.getMaxHealth() >= 100_000 ?  StringUtils.toFormatedNumber(skyblockEntity.getMaxHealth()) : StringUtils.cleanDouble(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol());
             }
         }, Slayer() {
             @Override

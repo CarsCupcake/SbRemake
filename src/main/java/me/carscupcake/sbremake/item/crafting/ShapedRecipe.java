@@ -5,10 +5,13 @@ import me.carscupcake.sbremake.item.Recipe;
 import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.util.Returnable;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.inventory.Inventory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+
+import static me.carscupcake.sbremake.item.modifiers.Modifier.EXTRA_ATTRIBUTES;
 
 public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result, int amount, int prioritySlot,
                            Grid grid, Requirement... requirements) implements Recipe {
@@ -81,8 +84,17 @@ public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result,
 
     @Override
     public SbItemStack getResult(@Nullable List<SbItemStack> items) {
-        //TODO copy the modifiers
-        return result.create().withAmount(amount);
+        //TODO: Invalid Gemstone Handling
+        var item = result.create().withAmount(amount);
+        if (prioritySlot == -1 || items == null)
+            return item;
+        var component = (CompoundBinaryTag) items.get(prioritySlot).item().getTag(EXTRA_ATTRIBUTES);
+        var resC = (CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES);
+        for (var entry : component) {
+            if (entry.getKey().equalsIgnoreCase("id")) continue;
+            resC = resC.put(entry.getKey(), entry.getValue());
+        }
+        return SbItemStack.from(item.item().withTag(EXTRA_ATTRIBUTES, resC)).update();
     }
 
     @Override

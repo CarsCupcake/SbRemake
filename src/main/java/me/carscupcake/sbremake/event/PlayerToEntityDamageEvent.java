@@ -115,7 +115,7 @@ public abstract class PlayerToEntityDamageEvent implements PlayerEvent, Cancella
             builder.append(newString.reverse());
             builder.append(new StringBuilder(prefixes[prefixCounter]).reverse());
         } else {
-            builder.append(StringUtils.toFormatedNumber((int) calculateHit()));
+            builder.append(StringUtils.toFormatedNumber(calculateHit()));
         }
         return builder.append(damageTagSuffix).toString();
     }

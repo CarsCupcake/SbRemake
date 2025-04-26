@@ -52,7 +52,7 @@ public enum Stat {
     RunecraftingWisdom("Runecrafting Wisdom", "☯", "§3", false, 0, -1),
     SocialWisdom("Social Wisdom", "☯", "§3", false, 0, -1),
     TamingWisdom("Taming Wisdom", "☯", "§3", false, 0, -1),
-    Damage(true, "Damage", "", "§c");
+    Damage(true, "Damage", "❁", "§c");
     private final String name;
     private final String symbol;
     private final String prefix;

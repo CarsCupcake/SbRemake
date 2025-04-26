@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.ParticleUtils;
+import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.CoinLoot;
 import me.carscupcake.sbremake.util.lootTable.ItemLoot;
@@ -20,8 +21,12 @@ import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.item.Material;
+import net.minestom.server.network.packet.server.play.EntityEffectPacket;
 import net.minestom.server.particle.Particle;
+import net.minestom.server.potion.Potion;
+import net.minestom.server.potion.PotionEffect;
 import net.minestom.server.utils.time.TimeUnit;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -35,13 +40,29 @@ public class WitherSpectre extends SkyblockEntity implements SkillXpDropper {
         setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture(HEAD_VALUE).build());
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(CHESTPLATE_COLOR).build());
         setItemInHand(Player.Hand.MAIN, new ItemBuilder(Material.STONE_SWORD).build());
-        setInvisible(true);
         scheduler().buildTask(() -> {
             if (instance != null)
                 ParticleUtils.spawnParticle(getInstance(), getPosition(), Particle.WITCH, 5, Vec.ZERO, 0.2f);
         }).repeat(TimeUnit.SERVER_TICK.getDuration()).schedule();
         addAIGroup(SkyblockEntity.zombieAiGroup(this, WITHER_SPECTRE_REGION, true));
         getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+    }
+
+    @Override
+    public void spawn() {
+        super.spawn();
+        addEffect(new Potion(PotionEffect.INVISIBILITY, (byte) 1, -1, 0));
+    }
+
+    @Override
+    public void updateNewViewer(@NotNull Player player) {
+        super.updateNewViewer(player);
+        new TaskScheduler() {
+            @Override
+            public void run() {
+                player.sendPacket(new EntityEffectPacket(getEntityId(), new Potion(PotionEffect.INVISIBILITY, (byte) 1, Integer.MAX_VALUE, 0)));
+            }
+        }.delayTask(10);
     }
 
     @Override
@@ -66,6 +87,11 @@ public class WitherSpectre extends SkyblockEntity implements SkillXpDropper {
 
     @Override
     public double amount(SkyblockPlayer target) {
+        return 70;
+    }
+
+    @Override
+    public int getLevel() {
         return 70;
     }
 }

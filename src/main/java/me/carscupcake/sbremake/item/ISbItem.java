@@ -41,6 +41,10 @@ public interface ISbItem {
 
     ItemRarity getRarity();
 
+    default boolean isDungeonItem() {
+        return false;
+    }
+
     default ItemStack.Builder build(ItemStack.Builder builder) {
         return builder;
     }

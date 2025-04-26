@@ -12,20 +12,24 @@ public class StringUtils {
     }
 
     public static String cleanDouble(double d, int digits) {
-        int dg = countDigitsAfterDecimal(d);
-        if (dg == 0 || digits == 0) return String.valueOf((long) d);
-        if (dg <= digits) return String.valueOf(d);
-        return String.format("%." + (digits) + "f", d);
+        int dg = countDigitsAfterDecimal(d, digits);
+        return String.format("%." + (Math.min(dg, digits)) + "f", d);
     }
 
-    private static int countDigitsAfterDecimal(double number) {
+    private static int countDigitsAfterDecimal(double number, int digits) {
         if (number % 1 == 0) return 0;
         String numberStr = Double.toString(number);
         int decimalIndex = numberStr.indexOf('.');
         if (decimalIndex == -1) {
             return 0;
         }
-        return numberStr.length() - decimalIndex - 1;
+        int trailingZeros = 0;
+        for (int i = Math.min(numberStr.length(), decimalIndex + digits); i > decimalIndex; i--) {
+            var char_ = numberStr.charAt(i);
+            if (char_ == '0') trailingZeros++;
+            else break;
+        }
+        return numberStr.length() - decimalIndex - 1 - trailingZeros;
     }
 
     public static String cleanDouble(double d) {
@@ -52,7 +56,7 @@ public class StringUtils {
     public static String toFormatedNumber(double number) {
         long asLong = (long) number;
         String s = toFormatedNumber(asLong);
-        return s + ((number % 1 == 0) ? "" : String.valueOf(number - asLong).substring(2));
+        return s + ((number % 1 == 0) ? "" : String.valueOf(cleanDouble(number - asLong)).substring(1));
     }
 
     public static String toFormatedNumber(int number) {

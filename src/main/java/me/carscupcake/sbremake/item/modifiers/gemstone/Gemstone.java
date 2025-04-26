@@ -8,6 +8,7 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.Cost;
+import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.StringUtils;
 import me.carscupcake.sbremake.util.TemplateItems;
 import me.carscupcake.sbremake.util.item.Gui;
@@ -108,6 +109,7 @@ public interface Gemstone {
                                 for (Cost cost : ((GemstoneSlots) item.sbItem()).getLockedSlotCost()[i]) {
                                     cost.pay(player);
                                 }
+                                player.playSound(SoundType.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                                 gemstoneSlots[i] = new GemstoneSlot(gemstoneSlot.type(), null, true);
                                 gui.getInventory().setItemStack(13, item.withModifier(Modifier.GEMSTONE_SLOTS, gemstoneSlots).update(player).item());
                             }

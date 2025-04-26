@@ -20,4 +20,8 @@ public class GetItemStatEvent extends SbItemStackEvent {
         this.stat = stat;
         this.player = player;
     }
+
+    public void addValue(double value) {
+        this.value += value;
+    }
 }

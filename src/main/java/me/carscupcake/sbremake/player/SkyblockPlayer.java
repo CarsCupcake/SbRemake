@@ -1529,6 +1529,10 @@ public class SkyblockPlayer extends Player {
         kick(s);
     }
 
+    public void playSound(SoundType soundType, float volume, float pitch) {
+        playSound(soundType.create(volume, pitch));
+    }
+
     public record DisguisedChatMessage(Component message, ChatType chatType, Component senderName,
                                        boolean hasTargetName,
                                        @Nullable Component targetname) implements ServerPacket.Play, ServerPacket.ComponentHolding {

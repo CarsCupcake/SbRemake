@@ -19,9 +19,5 @@ public interface Dungeonizable extends StarUpgradable {
     default Cost[] upgradeCost(SbItemStack item, int star) {
         return new Cost[0];
     }
-
-    default boolean isDungeonItem() {
-        return false;
-    }
 }
 

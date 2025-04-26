@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.item;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.event.PlayerToEntityMageDamage;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -34,8 +35,9 @@ public record Lore(List<String> base, Map<String, IPlaceHolder> placeHolderHashM
             for (Map.Entry<String, IPlaceHolder> placeHolderEntry : placeHolderHashMap.entrySet()) {
                 if (line.contains(placeHolderEntry.getKey()))
                     line = line.replace(placeHolderEntry.getKey(), placeHolderEntry.getValue().replace(item, player));
+
             }
-            lore.add(line);
+            lore.addAll(List.of(line.split("\n")));
         }
         return lore;
     }
@@ -48,10 +50,9 @@ public record Lore(List<String> base, Map<String, IPlaceHolder> placeHolderHashM
 
         @Override
         public String replace(SbItemStack item, @Nullable SkyblockPlayer player) {
-            if (player == null) {
-                return StringUtils.toFormatedNumber((int) baseAbilityDamage);
-            }
-            return StringUtils.toFormatedNumber((int) (baseAbilityDamage * (1 + abilityScaling * (player.getStat(Stat.Intelligence) / 100d))));
+            if (player == null) return StringUtils.toFormatedNumber((int) baseAbilityDamage);
+            var intelligence = player.getStat(Stat.Intelligence);
+            return StringUtils.toFormatedNumber(PlayerToEntityMageDamage.calculateHit(baseAbilityDamage, abilityScaling, intelligence));
         }
     }
 

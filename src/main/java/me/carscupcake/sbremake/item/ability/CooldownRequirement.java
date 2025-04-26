@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public record CooldownRequirement<T extends PlayerEvent>(long cooldown,
-                                                         TemporalUnit timeUnit) implements Requirement<T> {
+                                                         ChronoUnit timeUnit) implements Requirement<T> {
 
-    public CooldownRequirement(long seconds) {
-        this(seconds, TimeUnit.SECOND);
+    public CooldownRequirement(double seconds) {
+        this((long) (seconds * 1000), ChronoUnit.MILLIS);
     }
 
     public static Map<SkyblockPlayer, Long> cooldowns = new HashMap<>();
@@ -41,6 +41,6 @@ public record CooldownRequirement<T extends PlayerEvent>(long cooldown,
     public void execute(T t) {
         if (ToggleCommand.Toggles.IgnoreCooldown.toggled) return;
         cooldowns.put((SkyblockPlayer) t.getPlayer(), System.currentTimeMillis() + timeUnit.getDuration().toMillis() * cooldown);
-        MinecraftServer.getSchedulerManager().buildTask(() -> cooldowns.remove((SkyblockPlayer) t.getPlayer())).delay(cooldown, ChronoUnit.SECONDS).schedule();
+        MinecraftServer.getSchedulerManager().buildTask(() -> cooldowns.remove((SkyblockPlayer) t.getPlayer())).delay(cooldown, timeUnit).schedule();
     }
 }

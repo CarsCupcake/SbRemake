@@ -10,9 +10,12 @@ import me.carscupcake.sbremake.item.crafting.CraftingIngredient;
 import me.carscupcake.sbremake.item.crafting.ShapedRecipe;
 import me.carscupcake.sbremake.item.crafting.ShapelessRecipe;
 import me.carscupcake.sbremake.item.impl.other.mining.resources.EnchantedDiamondBlock;
+import me.carscupcake.sbremake.item.impl.sword.dungeons.NecronBlade;
 import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
 import me.carscupcake.sbremake.item.requirements.SkillRequirement;
+import me.carscupcake.sbremake.item.smithing.SmithingItem;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TemplateItems;
 import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.util.item.InventoryBuilder;
@@ -33,6 +36,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -304,6 +308,35 @@ public interface Recipe {
     //Result: Slot 22
     ItemStack noRecipeFound = new ItemBuilder(Material.BARRIER).setName("§cRecipe Required").addLore("§7Add the items for a valid recipe in the crafting grid to the left!").build();
     InventoryBuilder craftingTable = new InventoryBuilder(6, "Crafting Table").fill(TemplateItems.EmptySlot.getItem()).fill(ItemStack.AIR, 10, 12).fill(ItemStack.AIR, 19, 21).fill(ItemStack.AIR, 28, 30).setItem(noRecipeFound, 23);
+    List<String> itemToUpgradeLore = List.of("§7The item you want to upgrade", "§7should be place in the slot on this side.");
+    List<String> itemToSacrificeLore = List.of("§7The item you are sacrificing in order", "§7to upgrade the item on the left", "§7should be place in the slot on this", "§7side.");
+    ItemStack anvilNoItem = new ItemBuilder(Material.BARRIER)
+            .setName("§cAnvil")
+            .addAllLore("§7Place a target item in the left slot",
+                    "§7and sacrifice item in the right slot",
+                    "§7to combine them!")
+            .build();
+    InventoryBuilder anvil = new InventoryBuilder(6, "Anvil")
+            .fill(TemplateItems.EmptySlot.getItem())
+            .setItems(ItemStack.AIR, 29, 33).fill(new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
+                    .setName("§6 ")
+                    .build(), 45, 53)
+            .setItem(new ItemBuilder(Material.ANVIL)
+                    .setName("§aCombine Items")
+                    .addAllLore("§7Combine the items in the slots to the", "§7left and right below.")
+                    .build(), 22)
+            .setItems(new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
+                    .setName("§6Item to Upgrade")
+                    .addAllLore(itemToUpgradeLore)
+                    .build(), 11, 12, 20)
+            .setItems(new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
+                    .setName("§6Item to Sacrifice")
+                    .addAllLore(itemToSacrificeLore)
+                    .build(), 14, 15, 24)
+            .setItem(new ItemBuilder(Material.BARRIER)
+                    .setName("§cClose")
+                    .build(), 49)
+            .setItem(anvilNoItem, 13);
     List<Integer> craftingGrid = List.of(10, 11, 12, 19, 20, 21, 28, 29, 30);
 
     static void openCraftingGui(SkyblockPlayer player) {
@@ -378,9 +411,77 @@ public interface Recipe {
         gui.setCloseEvent(() -> {
             for (int i : craftingGrid) {
                 SbItemStack item = SbItemStack.from(gui.getInventory().getItemStack(i));
-                if (item != null) {
-                    if (!player.addItem(item, false)) item.drop(player.getInstance(), player.getPosition());
+                if (!player.addItem(item, false)) item.drop(player.getInstance(), player.getPosition());
+            }
+            return false;
+        });
+        gui.showGui(player);
+    }
+
+    static void openAnvilGui(SkyblockPlayer player) {
+        AtomicBoolean craftable = new AtomicBoolean(false);
+        AtomicBoolean crafted = new AtomicBoolean(false);
+        Gui gui = new Gui(anvil.build());
+        gui.setGeneralClickEvent(inventoryPreClickEvent -> {
+            if (inventoryPreClickEvent.getClickType() == ClickType.START_SHIFT_CLICK) return true;
+            if (inventoryPreClickEvent.getInventory() == null) return false;
+            if (inventoryPreClickEvent.getSlot() == 22) {
+                if (craftable.get()) {
+                    player.playSound(SoundType.BLOCK_ANVIL_USE.create(1));
+                    crafted.set(true);
+                    gui.getInventory().setItemStack(29, ItemStack.AIR);
+                    gui.getInventory().setItemStack(33, ItemStack.AIR);
                 }
+                return true;
+            }
+            if (crafted.get() && inventoryPreClickEvent.getSlot() == 13) {
+                craftable.set(false);
+                return false;
+            }
+            return inventoryPreClickEvent.getSlot() != 29 && inventoryPreClickEvent.getSlot() != 33;
+        });
+        gui.setPostClickEvent(inventoryPreClickEvent -> {
+            if (inventoryPreClickEvent.getInventory() == null) return;
+            var left = SbItemStack.from(inventoryPreClickEvent.getInventory().getItemStack(29));
+            var right = SbItemStack.from(inventoryPreClickEvent.getInventory().getItemStack(33));
+            if (inventoryPreClickEvent.getSlot() == 29 && right != SbItemStack.AIR) {
+                if (crafted.get()) {
+                    player.addItem(gui.getInventory().getItemStack(13));
+                    crafted.set(false);
+                }
+                var material = left == SbItemStack.AIR ? Material.RED_STAINED_GLASS_PANE : Material.GREEN_STAINED_GLASS_PANE;
+                gui.getInventory().setItemStack(11, gui.getInventory().getItemStack(11).withMaterial(material));
+                gui.getInventory().setItemStack(12, gui.getInventory().getItemStack(11).withMaterial(material));
+                gui.getInventory().setItemStack(20, gui.getInventory().getItemStack(11).withMaterial(material));
+                craftable.set(false);
+                gui.getInventory().setItemStack(13, anvilNoItem);
+            }
+            if (inventoryPreClickEvent.getSlot() == 33 && left != SbItemStack.AIR) {
+                if (crafted.get()) {
+                    player.addItem(gui.getInventory().getItemStack(13));
+                    crafted.set(false);
+                }
+                var material = right == SbItemStack.AIR ? Material.RED_STAINED_GLASS_PANE : Material.GREEN_STAINED_GLASS_PANE;
+                gui.getInventory().setItemStack(14, gui.getInventory().getItemStack(14).withMaterial(material));
+                gui.getInventory().setItemStack(15, gui.getInventory().getItemStack(14).withMaterial(material));
+                gui.getInventory().setItemStack(24, gui.getInventory().getItemStack(14).withMaterial(material));
+                craftable.set(false);
+                gui.getInventory().setItemStack(13, anvilNoItem);
+            }
+            if (!(right.sbItem() instanceof SmithingItem rightSmithingItem)) return;
+            if (rightSmithingItem.canBeApplied(left)) {
+                gui.getInventory().setItemStack(13, rightSmithingItem.onApply(left, right).update(player).item());
+                craftable.set(true);
+                return;
+            }
+            craftable.set(false);
+            gui.getInventory().setItemStack(13, new ItemBuilder(Material.BARRIER).setName("§cError").addLoreRow("§cYou cannot combine those items!").build());
+        });
+        gui.setCloseEvent(() -> {
+            if (crafted.get()) player.addItem(gui.getInventory().getItemStack(13));
+            else {
+                if (gui.getInventory().getItemStack(29) != ItemStack.AIR) player.addItem(gui.getInventory().getItemStack(29));
+                if (gui.getInventory().getItemStack(33) != ItemStack.AIR) player.addItem(gui.getInventory().getItemStack(33));
             }
             return false;
         });

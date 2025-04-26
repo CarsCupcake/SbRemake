@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:GIANT_FRAGMENT_BIGFOOT"
+    },
+    "/": {
+      "tag": "minecraft:necron_sword"
+    }
+  },
+  "pattern": [
+    "###",
+    "#/#",
+    "###"
+  ],
+  "result": {
+    "item": "skyblock:scylla",
+    "priority": 4
+  }
+}

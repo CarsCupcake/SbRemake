@@ -11,15 +11,15 @@ public record PotionLore(List<String> base, Map<String, Function<Integer, String
     }
 
     public PotionLore(String lore) {
-        this(refactorLore(lore));
+        this(Lore.refactorLore(lore));
     }
 
     public PotionLore(String lore, Map<String, Function<Integer, String>> placeHolderHashMap) {
-        this(refactorLore(lore), placeHolderHashMap);
+        this(Lore.refactorLore(lore), placeHolderHashMap);
     }
 
     public PotionLore(String lore, String key, Function<Integer, String> function) {
-        this(refactorLore(lore), Map.of(key, function));
+        this(Lore.refactorLore(lore), Map.of(key, function));
     }
 
     public static final Lore EMPTY = new Lore(new ArrayList<>(0), new HashMap<>(0));
@@ -38,37 +38,4 @@ public record PotionLore(List<String> base, Map<String, Function<Integer, String
     }
 
     private static final Set<Character> chars = Set.of('o', 'r', 'k', 'm', 'l', 'n');
-
-    public static List<String> refactorLore(String string) {
-        List<String> lore = new ArrayList<>();
-        StringBuilder worker = new StringBuilder();
-        String lastColorCode = "";
-        String lastFormat = "";
-        boolean color = false;
-        int i = 0;
-        for (char c : string.toCharArray()) {
-            if (c == '\n' || (i++ > 30 && c == ' ')) {
-                lore.add(worker.toString());
-                worker = new StringBuilder(lastColorCode).append(lastFormat);
-                i = 0;
-                continue;
-            }
-            if (color) {
-                color = false;
-                if (chars.contains(c)) {
-                    if (c == 'r') lastFormat = "";
-                    else lastFormat += "§" + (c);
-                } else {
-                    lastColorCode = "§" + (c);
-                    lastFormat = "";
-                }
-            } else if (c == '§') {
-                i -= 2;
-                color = true;
-            }
-            worker.append(c);
-        }
-        if (!worker.isEmpty()) lore.add(worker.toString());
-        return lore;
-    }
 }

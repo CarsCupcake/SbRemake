@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Getter
 @Setter
-public class PlayerToEntityMageDamage implements PlayerEvent, CancellableEvent {
+public class PlayerToEntityMageDamage extends PlayerToEntityDamageEvent implements PlayerEvent, CancellableEvent {
     public String damageTagPrefix = "§7";
     public String damageTagSuffix = "";
     private double additiveMultiplier = 1;
@@ -25,6 +25,7 @@ public class PlayerToEntityMageDamage implements PlayerEvent, CancellableEvent {
     private double abilityScaling;
 
     public PlayerToEntityMageDamage(SkyblockPlayer player, SkyblockEntity target, double baseAbilityDamage, double intelligence, double abilityScaling) {
+        super(player, target, 0, 0, 0, 0,0);
         this.player = player;
         this.target = target;
         this.baseAbilityDamage = baseAbilityDamage;
@@ -57,7 +58,16 @@ public class PlayerToEntityMageDamage implements PlayerEvent, CancellableEvent {
     }
 
     public double calculateHit() {
-        return baseAbilityDamage * (1 + (intelligence / 100) * abilityScaling) * additiveMultiplier * multiplicativeMultiplier + bonusModifier;
+        return calculateHit(baseAbilityDamage, intelligence, abilityScaling) * additiveMultiplier * multiplicativeMultiplier + bonusModifier;
+    }
+
+    public static double calculateHit(double baseAbilityDamage, double intelligence, double abilityScaling) {
+        return baseAbilityDamage * (1 + (intelligence / 100) * abilityScaling);
+    }
+
+    @Override
+    public double calculateCritHit() {
+        return calculateHit();
     }
 
     private static final String[] prefixes = {"f§", "e§", "6§", "c§", "f§"};
@@ -65,5 +75,10 @@ public class PlayerToEntityMageDamage implements PlayerEvent, CancellableEvent {
     public String getDamageTag() {
         return damageTagPrefix + StringUtils.toFormatedNumber((int) calculateHit()) +
                 damageTagSuffix;
+    }
+
+    @Override
+    public EntityDeathEvent.Type damageType() {
+        return EntityDeathEvent.Type.Magic;
     }
 }

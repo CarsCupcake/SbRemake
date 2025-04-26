@@ -11,6 +11,7 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.PlayerEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +26,11 @@ public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
 
     default List<String> buildLore(SbItemStack itemStack, @Nullable SkyblockPlayer player) {
         List<String> list = new ArrayList<>();
-        list.add(headline(itemStack, player));
+        list.add(headline(itemStack, player) + "§7");
         list.addAll(lore().build(itemStack, player));
         long manaCost = -1;
         double healthCost = -1;
-        long cooldown = -1;
+        double cooldown = -1;
         if (this instanceof ItemAbility<?> itemAbility) {
             for (Requirement<?> requirement : itemAbility.requirements()) {
                 if (requirement instanceof ManaRequirement<?> manaRequirement) {
@@ -38,7 +39,7 @@ public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
                 if (requirement instanceof CooldownRequirement<?>(
                         long cooldown1, java.time.temporal.TemporalUnit timeUnit
                 )) {
-                    cooldown = timeUnit.getDuration().getSeconds() * cooldown1;
+                    cooldown = (cooldown1 * (timeUnit == ChronoUnit.MILLIS ? .001 : timeUnit.getDuration().getSeconds()));
                 }
                 if (requirement instanceof HealthRequirement<?>(double maxHealthPercentage)) {
                     healthCost = player == null ? (maxHealthPercentage * 100) : (player.getStat(Stat.Health) * maxHealthPercentage);
@@ -47,7 +48,7 @@ public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
         }
         if (manaCost > 0) list.add("§8Mana Cost: §3" + (manaCost));
         if (healthCost > 0) list.add("§8Health Cost: §c" + StringUtils.cleanDouble(healthCost) + (player == null ? "%" : ""));
-        if (cooldown > 0) list.add("§8Cooldown: §a" + (cooldown) + "s");
+        if (cooldown > 0) list.add("§8Cooldown: §a" + StringUtils.toFormatedNumber(cooldown) + "s");
         return list;
     }
 
