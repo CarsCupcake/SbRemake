@@ -44,6 +44,7 @@ import net.minestom.server.timer.TaskSchedule;
 import net.minestom.server.utils.time.Cooldown;
 import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
@@ -60,6 +61,8 @@ public abstract class SkyblockEntity extends EntityCreature {
     @Getter
     @Setter
     private SkyblockPlayer lastDamager;
+
+    private final Object _lock = new Object();
 
     public SkyblockEntity(@NotNull EntityType entityType) {
         this(entityType, null);
@@ -202,11 +205,42 @@ public abstract class SkyblockEntity extends EntityCreature {
         return NameTagType.Basic;
     }
 
+    private LivingEntity nameTag;
+
     @Override
     public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
         setHealth(getMaxHealth());
         health = getMaxHealth();
-        return super.setInstance(instance, spawnPosition);
+        return super.setInstance(instance, spawnPosition).thenRun(() -> {
+            synchronized (_lock) {
+                if (isInvisible()) {
+                    nameTag = new LivingEntity(EntityType.ARMOR_STAND);
+                    ((ArmorStandMeta) nameTag.getEntityMeta()).setMarker(true);
+                    nameTag.setCustomName(getCustomName());
+                    nameTag.setCustomNameVisible(true);
+                    nameTag.setInstance(instance, getPosition());
+                    nameTag.setCustomNameVisible(true);
+                    nameTag.setInvisible(true);
+                    addPassenger(nameTag);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void remove() {
+        super.remove();
+        if (nameTag != null) {
+            nameTag.remove();
+        }
+    }
+
+    @Override
+    public void setCustomName(@Nullable Component customName) {
+        super.setCustomName(customName);
+        if (isInvisible() && nameTag != null) {
+            nameTag.setCustomName(customName);
+        }
     }
 
     public int getLevel() {
@@ -368,7 +402,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         Basic() {
             @Override
             public String apply(SkyblockEntity skyblockEntity) {
-                return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] §c" + (skyblockEntity.getName()) + " §a" + ((skyblockEntity.getHealth() >= 100_000 ?  StringUtils.toFormatedNumber(skyblockEntity.getHealth()) : StringUtils.cleanDouble(skyblockEntity.getHealth()))) + "§7/§a" + (skyblockEntity.getMaxHealth() >= 100_000 ?  StringUtils.toFormatedNumber(skyblockEntity.getMaxHealth()) : StringUtils.cleanDouble(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol());
+                return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] §c" + (skyblockEntity.getName()) + " §a" + ((skyblockEntity.getHealth() >= 100_000 ?  StringUtils.toShortNumber(skyblockEntity.getHealth()) : StringUtils.toFormatedNumber(skyblockEntity.getHealth()))) + "§7/§a" + (skyblockEntity.getMaxHealth() >= 100_000 ?  StringUtils.toShortNumber(skyblockEntity.getMaxHealth()) : StringUtils.toFormatedNumber(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol());
             }
         }, Slayer() {
             @Override

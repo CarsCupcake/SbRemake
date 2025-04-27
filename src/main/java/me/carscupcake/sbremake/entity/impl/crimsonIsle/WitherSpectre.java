@@ -13,13 +13,13 @@ import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
 import me.carscupcake.sbremake.worlds.region.Region;
+import net.kyori.adventure.text.Component;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Vec;
-import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.EquipmentSlot;
-import net.minestom.server.entity.Player;
+import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
+import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.server.play.EntityEffectPacket;
 import net.minestom.server.particle.Particle;
@@ -27,13 +27,18 @@ import net.minestom.server.potion.Potion;
 import net.minestom.server.potion.PotionEffect;
 import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
+
+import static net.minestom.server.potion.Potion.INFINITE_DURATION;
 
 public class WitherSpectre extends SkyblockEntity implements SkillXpDropper {
     private static final String HEAD_VALUE = "ewogICJ0aW1lc3RhbXAiIDogMTYzOTUxMjkwNTczNywKICAicHJvZmlsZUlkIiA6ICI3MzgyZGRmYmU0ODU0NTVjODI1ZjkwMGY4OGZkMzJmOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJCdUlJZXQiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjZhYTVhY2ZkOTczZjY3YmE4ZTI0OWFlMDdhMTFhZTdjYTcxM2M5MDBkOTBkMDljZTA5MDNjNzlkZGQ3ZGQ5ZSIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9";
     private static final Color CHESTPLATE_COLOR = new Color(921622);
     private static final Region WITHER_SPECTRE_REGION = new CuboidRegion("null", Set.of(new BoundingBox(new Vec(-432, 85, -533), new Vec(-384, 113, -483))));
+
+    private final Entity nameTag = new Entity(EntityType.ARMOR_STAND);
 
     public WitherSpectre() {
         super(EntityType.WITHER_SKELETON, new LootTable<SbItemStack>().addLoot(new ItemLoot(Material.GUNPOWDER)).addLoot(new CoinLoot(20)));
@@ -46,23 +51,12 @@ public class WitherSpectre extends SkyblockEntity implements SkillXpDropper {
         }).repeat(TimeUnit.SERVER_TICK.getDuration()).schedule();
         addAIGroup(SkyblockEntity.zombieAiGroup(this, WITHER_SPECTRE_REGION, true));
         getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        setInvisible(true);
     }
 
     @Override
     public void spawn() {
         super.spawn();
-        addEffect(new Potion(PotionEffect.INVISIBILITY, (byte) 1, -1, 0));
-    }
-
-    @Override
-    public void updateNewViewer(@NotNull Player player) {
-        super.updateNewViewer(player);
-        new TaskScheduler() {
-            @Override
-            public void run() {
-                player.sendPacket(new EntityEffectPacket(getEntityId(), new Potion(PotionEffect.INVISIBILITY, (byte) 1, Integer.MAX_VALUE, 0)));
-            }
-        }.delayTask(10);
     }
 
     @Override
