@@ -8,6 +8,8 @@ import me.carscupcake.sbremake.item.impl.armor.PerfectArmor;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
 import me.carscupcake.sbremake.item.impl.pets.Pets;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.UltimateEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.UltimateEnchantments;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneItem;
 import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -130,6 +132,7 @@ public interface ISbItem {
     }
 
     static void init() {
+        UltimateEnchantment.ULTIMATE_ENCHANTMENTS.addAll(Arrays.asList(UltimateEnchantments.values()));
         for (Material material : Material.values()) {
             String name = StringUtils.connect(material.namespace().value().split("_"), true);
             SbItemStack.initSbItem(new BaseSbItem(material, name));

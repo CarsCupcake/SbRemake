@@ -24,7 +24,7 @@ public class StringUtils {
             return 0;
         }
         int trailingZeros = 0;
-        for (int i = Math.min(numberStr.length(), decimalIndex + digits); i > decimalIndex; i--) {
+        for (int i = Math.min(numberStr.length() - 1, decimalIndex + digits); i > decimalIndex; i--) {
             var char_ = numberStr.charAt(i);
             if (char_ == '0') trailingZeros++;
             else break;

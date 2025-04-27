@@ -7,8 +7,9 @@ import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.Recipe;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.pets.Pets;
-import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.UltimateEnchantments;
 import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -35,12 +36,10 @@ import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.instance.block.BlockHandler;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
 import net.minestom.server.timer.TaskSchedule;
 import net.minestom.server.utils.NamespaceID;
-import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import org.slf4j.event.Level;
 
@@ -135,7 +134,9 @@ public class Main {
             //TODO return Debug Sample Packet
             player.sendPacket(new DebugSamplePacket(new long[]{tickDelay, tickDelay, 0, 50 - tickDelay}, DebugSamplePacket.Type.TICK_TIME));
         });
-        for (SkyblockEnchantment enchantment : NormalEnchantment.values())
+        for (SkyblockEnchantment enchantment : NormalEnchantments.values())
+            SkyblockEnchantment.enchantments.put(enchantment.getId(), enchantment);
+        for (SkyblockEnchantment enchantment : UltimateEnchantments.values())
             SkyblockEnchantment.enchantments.put(enchantment.getId(), enchantment);
         Reforge.init();
         MinecraftServer.getConnectionManager().setPlayerProvider((uuid, s, playerConnection) -> {

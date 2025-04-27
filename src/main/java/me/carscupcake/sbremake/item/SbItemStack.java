@@ -8,7 +8,7 @@ import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
 import me.carscupcake.sbremake.item.impl.pets.Pet;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.item.modifiers.RuneModifier;
-import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlot;
 import me.carscupcake.sbremake.item.modifiers.potion.PotionInfo;
@@ -104,8 +104,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         Map<SkyblockEnchantment, Integer> enchantments = getEnchantments();
         if (!enchantments.isEmpty()) {
             list = list.with(Enchantment.PROTECTION, 1);
-            if (enchantments.containsKey(NormalEnchantment.Efficiency) && player != null && !player.getWorldProvider().useCustomMining()) {
-                list = list.with(Enchantment.EFFICIENCY, min(255, enchantments.get(NormalEnchantment.Efficiency)));
+            if (enchantments.containsKey(NormalEnchantments.Efficiency) && player != null && !player.getWorldProvider().useCustomMining()) {
+                list = list.with(Enchantment.EFFICIENCY, min(255, enchantments.get(NormalEnchantments.Efficiency)));
             }
         } else {
             if (sbItem.modifierBuilder().isGlint()) list = list.with(Enchantment.PROTECTION, 1);
@@ -318,12 +318,12 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             lore.add((rarity.getPrefix()) + "Shortbow: Instatntly shoots!");
             lore.add("  ");
         }
-        if (sbItem.getType().isReforgable()) /* Todo add reforge check*/ {
+        if (sbItem.getType().isReforgable() && reforge == null) {
             lore.add("§8This item can be reforged!");
         }
         for (Requirement requirement : sbItem.requirements())
             if (!requirement.canUse(player, item)) lore.add(requirement.display());
-        lore.add((rarity.getPrefix()) + "§l" + (rarity.getDisplay().toUpperCase()) + (isDungeonItem() ? "DUNGEON " : "") + " " + (sbItem.getType().getDisplay().toUpperCase()));
+        lore.add((rarity.getPrefix()) + "§l" + (rarity.getDisplay().toUpperCase()) + (isDungeonItem() ? " DUNGEON" : "") + " " + (sbItem.getType() == ItemType.None && sbItem.isDungeonItem() ? "ITEM" : sbItem.getType().getDisplay().toUpperCase()));
         return lore;
     }
 

@@ -34,7 +34,7 @@ public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
         if (this instanceof ItemAbility<?> itemAbility) {
             for (Requirement<?> requirement : itemAbility.requirements()) {
                 if (requirement instanceof ManaRequirement<?> manaRequirement) {
-                    manaCost = manaRequirement.getManaCost();
+                    manaCost = manaRequirement.getManaCost(itemStack);
                 }
                 if (requirement instanceof CooldownRequirement<?>(
                         long cooldown1, java.time.temporal.TemporalUnit timeUnit

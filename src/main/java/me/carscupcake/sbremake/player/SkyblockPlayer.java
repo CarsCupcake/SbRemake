@@ -29,7 +29,7 @@ import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.item.impl.other.*;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
 import me.carscupcake.sbremake.item.impl.pets.PetItem;
-import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.item.modifiers.potion.PotionInfo;
 import me.carscupcake.sbremake.player.hotm.HeartOfTheMountain;
 import me.carscupcake.sbremake.player.hotm.Powder;
@@ -208,7 +208,7 @@ public class SkyblockPlayer extends Player {
                                         if (rule.blocks().test(block)) {
                                             if (rule.speed() == null) continue;
                                             double mult = rule.speed();
-                                            int lvl = sbItem.getEnchantmentLevel(NormalEnchantment.Efficiency);
+                                            int lvl = sbItem.getEnchantmentLevel(NormalEnchantments.Efficiency);
                                             if (lvl > 0) mult += Math.pow(lvl, 2) + 1;
                                             me.carscupcake.sbremake.player.potion.PotionEffect effect = player.getPotionEffect(Potion.Haste);
                                             if (effect != null) {
@@ -933,6 +933,7 @@ public class SkyblockPlayer extends Player {
         }
         setHealth(getMaxHealth());
         setSbHealth(getMaxSbHealth());
+        setMana(getStat(Stat.Intelligence));
         instance.loadChunk(spawn.chunkX(), spawn.chunkZ());
         setNoGravity(true);
         spawnTeleportId = getNextTeleportId();

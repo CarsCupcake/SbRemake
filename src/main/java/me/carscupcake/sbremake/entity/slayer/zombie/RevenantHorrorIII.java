@@ -9,7 +9,7 @@ import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.other.slayer.zombie.BeheadedHorror;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
-import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
@@ -41,8 +41,8 @@ import static me.carscupcake.sbremake.entity.slayer.zombie.RevenantHorrorI.REVEN
 public class RevenantHorrorIII extends SlayerEntity implements SkillXpDropper {
     public static final RngMeterEntry BEHEADED_HORROR = new RngMeterEntry("BEHEADED_HORROR", new RngMeterItemLoot(BeheadedHorror.class, SlayerLootTable.LootTableType.Main, Slayers.Zombie, 10), new RngMeterItemLoot(BeheadedHorror.class, SlayerLootTable.LootTableType.Main, Slayers.Zombie, 20));
     public static final RngMeterEntry SMITE_VI = new RngMeterEntry("SMITE_VI",
-            new RngMeterItemLoot(SbItemStack.base(Material.ENCHANTED_BOOK).withModifier(Modifier.ENCHANTMENTS, Map.of(NormalEnchantment.Smite, 6)), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 50),
-            new RngMeterItemLoot(SbItemStack.base(Material.ENCHANTED_BOOK).withModifier(Modifier.ENCHANTMENTS, Map.of(NormalEnchantment.Smite, 6)), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 100));
+            new RngMeterItemLoot(SbItemStack.base(Material.ENCHANTED_BOOK).withModifier(Modifier.ENCHANTMENTS, Map.of(NormalEnchantments.Smite, 6)), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 50),
+            new RngMeterItemLoot(SbItemStack.base(Material.ENCHANTED_BOOK).withModifier(Modifier.ENCHANTMENTS, Map.of(NormalEnchantments.Smite, 6)), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 100));
     public static final SlayerLootTable lootTable;
 
     static {

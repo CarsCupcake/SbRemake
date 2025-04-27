@@ -9,7 +9,7 @@ import me.carscupcake.sbremake.item.impl.other.slayer.zombie.RevenantViscera;
 import me.carscupcake.sbremake.item.impl.other.slayer.zombie.ShardOfTheShredded;
 import me.carscupcake.sbremake.item.impl.other.slayer.zombie.WardenHeart;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
-import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.*;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
@@ -44,7 +44,7 @@ import java.util.Set;
 import static me.carscupcake.sbremake.entity.slayer.zombie.RevenantHorrorI.REVENANT_FLESH;
 
 public class RevenantHorrorV extends SlayerEntity {
-    public static final RngMeterEntry SMITE_VII = new RngMeterEntry("SMITE_VII", new RngMeterItemLoot(SbItemStack.base(Material.ENCHANTED_BOOK).withModifier(Modifier.ENCHANTMENTS, Map.of(NormalEnchantment.Smite, 7)), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 7));
+    public static final RngMeterEntry SMITE_VII = new RngMeterEntry("SMITE_VII", new RngMeterItemLoot(SbItemStack.base(Material.ENCHANTED_BOOK).withModifier(Modifier.ENCHANTMENTS, Map.of(NormalEnchantments.Smite, 7)), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 7));
     public static final RngMeterEntry SHARD_OF_THE_SHREDDED = new RngMeterEntry("SHARD_OF_THE_SHREDDED", new RngMeterItemLoot(SbItemStack.from(ShardOfTheShredded.class), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 8));
     public static final RngMeterEntry WARDEN_HEART = new RngMeterEntry("WARDEN_HEART", new RngMeterItemLoot(SbItemStack.from(WardenHeart.class), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 2));
     public static final RngMeterEntry REVENANT_VISCERA = new RngMeterEntry("REVENANT_VISCERA", new RngMeterItemLoot(SbItemStack.from(RevenantViscera.class), SlayerLootTable.LootTableType.Main, Slayers.Zombie, 2_000));

@@ -3,7 +3,7 @@ package me.carscupcake.sbremake.blocks.impl.ore;
 import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
-import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.block.Block;
@@ -30,7 +30,7 @@ public class EmeraldOre extends MiningBlock {
     @Override
     public Set<SbItemStack> getDrops(SkyblockPlayer player) {
         SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
-        return Set.of(withMiningFortune(ISbItem.get((item != null && item.getEnchantmentLevel(NormalEnchantment.SilkTouch) > 0) ? Material.EMERALD_ORE : Material.EMERALD), 1, player));
+        return Set.of(withMiningFortune(ISbItem.get((item != null && item.getEnchantmentLevel(NormalEnchantments.SilkTouch) > 0) ? Material.EMERALD_ORE : Material.EMERALD), 1, player));
     }
 
     @Override

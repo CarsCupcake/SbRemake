@@ -2,7 +2,7 @@ package me.carscupcake.sbremake.item.impl.pickaxe;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.*;
-import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantment;
+import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import net.minestom.server.item.Material;
 
 import java.util.Map;
@@ -40,7 +40,7 @@ public class RookiePickaxe implements ISbItem, ISbItem.StatProvider, NpcSellable
 
     @Override
     public ItemStackModifiers modifierBuilder() {
-        return ItemStackModifiers.builder().enchantments(Map.of(NormalEnchantment.Efficiency, 1)).build();
+        return ItemStackModifiers.builder().enchantments(Map.of(NormalEnchantments.Efficiency, 1)).build();
     }
 
     @Override

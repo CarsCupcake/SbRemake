@@ -25,6 +25,10 @@ public enum ItemType {
     Belt(true, false, "Belt"),
     Gauntlet(true, false, "Gauntlet"),
     Necklace(true, false, "Necklace");
+
+    public static final ItemType[] SWORDS = {Sword, Longsword};
+    public static final ItemType[] ARMOR = {Helmet, Chestplate, Leggings, Boots};
+
     private final boolean reforgable;
     private final boolean statsInMainhand;
     private final String display;
