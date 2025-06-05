@@ -22,8 +22,6 @@ public non-sealed abstract class FullSetBonus implements Ability {
 
     public abstract void stop(SkyblockPlayer player);
 
-    ;
-
     @Override
     public String headline(SbItemStack item, SkyblockPlayer player) {
         int pieces = (player == null) ? 0 : player.getFullSetBonusPieceAmount(this);
@@ -33,6 +31,8 @@ public non-sealed abstract class FullSetBonus implements Ability {
         if (maxPieces != minPieces) {
             return "§6" + (maxPieces) + "-Piece Set Bonus: " + (name);
         }
+        if (maxPieces == minPieces && maxPieces == 1)
+            return "§6Ability: " + name;
         return "§6Full Set Bonus: " + (name) + " " + ((pieces == minPieces) ? "§6" : "§7") + "(" + (pieces) + "/" + (maxPieces) + ")";
     }
 }

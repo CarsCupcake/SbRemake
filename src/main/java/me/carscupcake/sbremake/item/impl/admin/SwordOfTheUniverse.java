@@ -43,7 +43,7 @@ public class SwordOfTheUniverse implements ISbItem, ISbItem.StatProvider {
 
     @Override
     public Lore getLore() {
-        return new Lore(List.of("§eOi you! Yes you. What are you looking", "§eat? Yes this bow has ∞ damage.", "§eKinda overkill? I'm lazy ok.", "§c(╯°□°）╯§f︵§7 ┻━┻"));
+        return new Lore(List.of("§eOi you! Yes you. What are you looking", "§eat? Yes this sword has ∞ damage.", "§eKinda overkill? I'm lazy ok.", "§c(╯°□°）╯§f︵§7 ┻━┻"));
     }
 
     @Override

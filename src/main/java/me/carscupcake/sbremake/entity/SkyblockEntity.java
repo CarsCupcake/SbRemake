@@ -213,7 +213,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         health = getMaxHealth();
         return super.setInstance(instance, spawnPosition).thenRun(() -> {
             synchronized (_lock) {
-                if (isInvisible()) {
+                if (showCustomNameTag()) {
                     nameTag = new LivingEntity(EntityType.ARMOR_STAND);
                     ((ArmorStandMeta) nameTag.getEntityMeta()).setMarker(true);
                     nameTag.setCustomName(getCustomName());
@@ -227,6 +227,10 @@ public abstract class SkyblockEntity extends EntityCreature {
         });
     }
 
+    protected boolean showCustomNameTag() {
+        return isInvisible();
+    }
+
     @Override
     public void remove() {
         super.remove();
@@ -238,7 +242,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     @Override
     public void setCustomName(@Nullable Component customName) {
         super.setCustomName(customName);
-        if (isInvisible() && nameTag != null) {
+        if (showCustomNameTag() && nameTag != null) {
             nameTag.setCustomName(customName);
         }
     }

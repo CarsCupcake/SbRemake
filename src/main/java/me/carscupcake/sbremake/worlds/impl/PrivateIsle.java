@@ -112,7 +112,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
                 fakeFolder.delete();
 
             }
-            FileUtils.copyDirectoryToDirectory(new File(localCashed, "private_isle"), findWorldFolder().getParentFile());
+            FileUtils.copyDirectoryToDirectory(localCashed, findWorldFolder().getParentFile());
             Main.LOGGER.debug("Created new isle");
         }
     }

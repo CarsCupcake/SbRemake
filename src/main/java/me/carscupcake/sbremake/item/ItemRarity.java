@@ -31,11 +31,7 @@ public enum ItemRarity {
     }
 
     public static ItemRarity next(ItemRarity rarity) {
-        boolean found = false;
-        for (ItemRarity r : ItemRarity.values()) {
-            if (found) return r;
-            if (rarity == r) found = true;
-        }
-        return rarity;
+        if (rarity == VERY_SPECIAL || rarity == ADMIN) return rarity;
+        return ItemRarity.values()[(1+(rarity.ordinal()))];
     }
 }

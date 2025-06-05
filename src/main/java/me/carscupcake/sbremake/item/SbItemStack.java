@@ -323,7 +323,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         }
         for (Requirement requirement : sbItem.requirements())
             if (!requirement.canUse(player, item)) lore.add(requirement.display());
-        lore.add((rarity.getPrefix()) + "§l" + (rarity.getDisplay().toUpperCase()) + (isDungeonItem() ? " DUNGEON" : "") + " " + (sbItem.getType() == ItemType.None && sbItem.isDungeonItem() ? "ITEM" : sbItem.getType().getDisplay().toUpperCase()));
+        lore.add((rarity.getPrefix()) + (getModifier(Modifier.RarityUpgrades) != 0 ? ("§ka" + rarity.getPrefix() + " ") : "") + "§l" + (rarity.getDisplay().toUpperCase()) + (isDungeonItem() ? " DUNGEON" : "") + " " + (sbItem.getType() == ItemType.None && sbItem.isDungeonItem() ? "ITEM" : sbItem.getType().getDisplay().toUpperCase()) + (getModifier(Modifier.RarityUpgrades) != 0 ? (" §ka") : ""));
         return lore;
     }
 
@@ -356,9 +356,13 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                 default -> ItemRarity.LEGENDARY;
             };
         }
-        //TODO add custom rarity getter
         if (sbItem.getType() == ItemType.Pet) return getModifier(Modifier.PET_INFO).rarity();
-        return sbItem.getRarity();
+        var rarity = sbItem.getRarity();
+        for (int i = 0; i < getModifier(Modifier.RarityUpgrades); i++)
+            if (rarity == ItemRarity.VERY_SPECIAL) break;
+            else rarity = rarity.next();
+
+        return rarity;
     }
 
     public double getStat(Stat stat, SkyblockPlayer player) {

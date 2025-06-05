@@ -21,7 +21,6 @@ import net.minestom.server.event.player.PlayerStartDiggingEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.block.BlockFace;
-
 import java.time.Duration;
 import java.util.Random;
 import java.util.Set;

@@ -138,11 +138,6 @@ public class NecronBlade implements ISbItem, ISbItem.StatProvider, Dungeonizable
     }
 
     @Override
-    public int getCost(int star) {
-        return 0;
-    }
-
-    @Override
     public Essence getEssence() {
         return Essence.Wither;
     }

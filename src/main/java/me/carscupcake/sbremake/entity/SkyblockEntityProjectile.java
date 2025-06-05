@@ -18,20 +18,27 @@ import java.time.Duration;
 public class SkyblockEntityProjectile extends EntityProjectile {
     private final double damage;
     private final double trueDamage;
+    private final boolean hasGravity;
 
     public SkyblockEntityProjectile(@NotNull SkyblockEntity shooter, @NotNull EntityType entityType) {
-        this(shooter.getDamage(), shooter.getTrueDamage(), entityType, shooter.getPosition().add(0, shooter.getEyeHeight(), 0), shooter.getInstance(), shooter.getPosition().direction(), shooter);
+        this(shooter.getDamage(), shooter.getTrueDamage(), entityType, shooter.getPosition().add(0, shooter.getEyeHeight(), 0), shooter.getInstance(), shooter.getPosition().direction(), shooter, true);
     }
 
-    public SkyblockEntityProjectile(double damage, double trueDamage, EntityType entityType, Pos pos, Instance instance, Vec shootingDir, @Nullable SkyblockEntity shooter) {
+    public SkyblockEntityProjectile(@NotNull SkyblockEntity shooter, @NotNull EntityType entityType, boolean hasGravity) {
+        this(shooter.getDamage(), shooter.getTrueDamage(), entityType, shooter.getPosition().add(0, shooter.getEyeHeight(), 0), shooter.getInstance(), shooter.getPosition().direction(), shooter, hasGravity);
+    }
+
+    public SkyblockEntityProjectile(double damage, double trueDamage, EntityType entityType, Pos pos, Instance instance, Vec shootingDir, @Nullable SkyblockEntity shooter, boolean hasGravity) {
         super(shooter, entityType);
+        this.hasGravity = hasGravity;
+        setNoGravity(!hasGravity);
         this.damage = damage;
         this.trueDamage = trueDamage;
         setInstance(instance, pos);
         setVelocity(shootingDir.normalize().mul(40));
         setView((float) Math.toDegrees(Math.atan2(getVelocity().x(), getVelocity().z())), (float) Math.toDegrees(Math.atan2(getVelocity().y(), Math.sqrt(getVelocity().x() * getVelocity().x() + getVelocity().z() * getVelocity().z()))));
         setNoGravity(false);
-        scheduler().buildTask(() -> {
+        if (hasGravity) scheduler().buildTask(() -> {
             if (this.isRemoved() || this.getInstance() == null || this.getVelocity() == Vec.ZERO) {
                 return;
             }
@@ -39,5 +46,10 @@ public class SkyblockEntityProjectile extends EntityProjectile {
                 pl.sendPacket(new EntityVelocityPacket(this.getEntityId(), this.getVelocity().mul(8000.0F / (float) ServerFlag.SERVER_TICKS_PER_SECOND)));
             }
         }).repeat(Duration.ofMillis(50)).schedule();
+    }
+
+    @Override
+    public boolean hasNoGravity() {
+        return !hasGravity;
     }
 }

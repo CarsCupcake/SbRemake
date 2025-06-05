@@ -257,6 +257,18 @@ public interface Modifier<T> {
         }
     };
 
+    Modifier<Integer> RarityUpgrades = new Modifier<Integer>() {
+        @Override
+        public @Nullable Integer getFromNbt(SbItemStack item) {
+            return ((CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES)).getInt("rarity_upgrades", 0);
+        }
+
+        @Override
+        public SbItemStack toNbt(Integer i, SbItemStack itemStack) {
+            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, ((CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES)).putInt("rarity_upgrades", i)));
+        }
+    };
+
     default T get(SbItemStack item) {
         Object o = item.modifierCache().get(this);
         if (o != null) return (T) o;

@@ -11,8 +11,6 @@ public interface Dungeonizable extends StarUpgradable {
         return StarUpgradable.super.getBonus(player, stars);
     }
 
-    int getCost(int star);
-
     Essence getEssence();
 
     @Override

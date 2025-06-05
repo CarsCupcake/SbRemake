@@ -43,6 +43,12 @@ public record ItemLoot(SbItemStack item, int min, int max, double chance, boolea
     public ItemLoot(Material material) {
         this(SbItemStack.base(material), 1, 1);
     }
+    public ItemLoot(Material material, int amount) {
+        this(SbItemStack.base(material), amount, 1);
+    }
+    public ItemLoot(Material material, int min, int max, double chance) {
+        this(SbItemStack.base(material), min, max, chance);
+    }
 
     @Override
     public Set<SbItemStack> loot(SkyblockPlayer player) {

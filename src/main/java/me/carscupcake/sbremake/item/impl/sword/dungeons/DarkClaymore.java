@@ -1,13 +1,11 @@
 package me.carscupcake.sbremake.item.impl.sword.dungeons;
 
 import me.carscupcake.sbremake.Stat;
-import me.carscupcake.sbremake.item.ISbItem;
-import me.carscupcake.sbremake.item.ItemRarity;
-import me.carscupcake.sbremake.item.ItemType;
-import me.carscupcake.sbremake.item.Lore;
+import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlotType;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlots;
+import me.carscupcake.sbremake.player.Essence;
 import me.carscupcake.sbremake.util.CoinsCost;
 import me.carscupcake.sbremake.util.Cost;
 import me.carscupcake.sbremake.util.ItemCost;
@@ -15,7 +13,7 @@ import net.minestom.server.item.Material;
 
 import java.util.Map;
 
-public class DarkClaymore implements ISbItem, ISbItem.StatProvider, GemstoneSlots {
+public class DarkClaymore implements ISbItem, ISbItem.StatProvider, GemstoneSlots, Dungeonizable {
     @Override
     public String getId() {
         return "DARK_CLAYMORE";
@@ -70,5 +68,20 @@ public class DarkClaymore implements ISbItem, ISbItem.StatProvider, GemstoneSlot
                 new ItemCost(Gemstone.gemstones.get(Gemstone.Type.Ruby).get(Gemstone.Quality.Fine).asItem(), 40),
                 new ItemCost(Gemstone.gemstones.get(Gemstone.Type.Amethyst).get(Gemstone.Quality.Fine).asItem(), 40)};
         return new Cost[][]{costs, costs};
+    }
+
+    @Override
+    public Essence getEssence() {
+        return Essence.Wither;
+    }
+
+    @Override
+    public int getMaxStars() {
+        return 5;
+    }
+
+    @Override
+    public boolean isDungeonItem() {
+        return true;
     }
 }
