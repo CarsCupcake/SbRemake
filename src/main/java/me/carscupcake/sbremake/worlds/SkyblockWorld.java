@@ -17,6 +17,7 @@ import me.carscupcake.sbremake.worlds.region.Region;
 import net.hollowcube.polar.PolarLoader;
 import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.ChunkRange;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.instance.Chunk;
@@ -393,7 +394,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                 container.setChunkLoader(loader);
                 container.loadChunk(spawn().chunkX(), spawn().chunkZ()).get();
                 var chunks = new ArrayList<CompletableFuture<Chunk>>();
-                ChunkUtils.forChunksInRange(0, 0, 8, (x, z) -> chunks.add(container.loadChunk(x, z)));
+                ChunkRange.chunksInRange(0, 0, 8, (x, z) -> chunks.add(container.loadChunk(x, z)));
                 if (async) CompletableFuture.runAsync(() -> {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
                     LightingChunk.relight(container, container.getChunks());

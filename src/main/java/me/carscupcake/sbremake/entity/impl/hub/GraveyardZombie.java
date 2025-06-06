@@ -11,8 +11,13 @@ import net.minestom.server.entity.attribute.Attribute;
 public class GraveyardZombie extends SkyblockEntity implements SkillXpDropper {
     public GraveyardZombie() {
         super(EntityType.ZOMBIE);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
+    }
+
+    @Override
+    public void spawn() {
+        super.spawn();
         addAIGroup(zombieAiGroup(this, Hub.Region.Graveyard));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
     }
 
     @Override

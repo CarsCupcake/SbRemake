@@ -16,6 +16,10 @@ public class ArachneBrood extends SkyblockEntity {
         this.level = parent.isCristal() ? 200 : 100;
         this.maxHealth = parent.isCristal() ? 20_000 : 4_000;
         this.damage = parent.isCristal() ? 400 : 200;
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(zombieAiGroup(this, SpidersDen.Region.ArachnesSanctuary));
     }
 

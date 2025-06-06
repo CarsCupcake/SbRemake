@@ -14,6 +14,10 @@ import net.minestom.server.item.Material;
 public class Chicken extends SkyblockEntity implements SkillXpDropper {
     public Chicken() {
         super(EntityType.CHICKEN, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(Material.FEATHER), 1, 1)).addLoot(new ItemLoot(ISbItem.get(Material.CHICKEN), 1, 1)));
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(randomStroll(this, 4));
     }
 

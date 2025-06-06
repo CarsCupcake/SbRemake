@@ -8,6 +8,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentWord;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class ReforgeCommand extends Command {
             String s = commandContext.get(word);
             if (s == null) return;
             SkyblockPlayer player = (SkyblockPlayer) commandSender;
-            SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
+            SbItemStack item = player.getSbItemInHand(PlayerHand.MAIN);
             if (item == null) {
                 player.sendMessage("§cYou do not have a valid item");
                 return;
@@ -44,7 +45,7 @@ public class ReforgeCommand extends Command {
                     return;
                 }
             item = reforge.apply(item);
-            player.setItemInHand(Player.Hand.MAIN, item.update(player).item());
+            player.setItemInHand(PlayerHand.MAIN, item.update(player).item());
         }, word);
     }
 }

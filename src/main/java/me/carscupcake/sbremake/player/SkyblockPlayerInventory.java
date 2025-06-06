@@ -4,7 +4,7 @@ import me.carscupcake.sbremake.event.SbEntityEquipEvent;
 import me.carscupcake.sbremake.item.SbItemStack;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.event.EventDispatcher;
-import net.minestom.server.event.inventory.PlayerInventoryItemChangeEvent;
+import net.minestom.server.event.inventory.InventoryItemChangeEvent;
 import net.minestom.server.inventory.PlayerInventory;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.utils.MathUtils;
@@ -19,16 +19,18 @@ import java.util.Arrays;
 public class SkyblockPlayerInventory extends PlayerInventory {
     private static final VarHandle ITEM_UPDATER = MethodHandles.arrayElementVarHandle(SbItemStack[].class);
     private final SbItemStack[] itemStacks;
+    private final SkyblockPlayer player;
 
     public SkyblockPlayerInventory(@NotNull SkyblockPlayer player) {
-        super(player);
+        super();
+        this.player = player;
         itemStacks = new SbItemStack[46];
         Arrays.fill(itemStacks, SbItemStack.AIR);
     }
 
     @Override
-    protected void UNSAFE_itemInsert(int slot, @NotNull ItemStack itemStack, boolean sendPacket) {
-        UNSAFE_itemInsert(slot, SbItemStack.from(itemStack), sendPacket);
+    protected void UNSAFE_itemInsert(int slot, @NotNull ItemStack item, @NotNull ItemStack previous, boolean sendPacket) {
+        UNSAFE_itemInsert(slot, SbItemStack.from(item), sendPacket);
     }
 
     protected void UNSAFE_itemInsert(int slot, @NotNull SbItemStack itemStack, boolean sendPacket) {
@@ -50,6 +52,7 @@ public class SkyblockPlayerInventory extends PlayerInventory {
             this.player.updateEquipmentAttributes(this.itemStacks[slot].item(), itemStack.item(), equipmentSlot);
         }
 
+        var previous = super.itemStacks[slot];
         this.itemStacks[slot] = itemStack;
         super.itemStacks[slot] = itemStack.item();
         if (sendPacket) {
@@ -57,7 +60,7 @@ public class SkyblockPlayerInventory extends PlayerInventory {
                 this.player.syncEquipment(equipmentSlot);
             }
 
-            this.sendSlotRefresh((short) PlayerInventoryUtils.convertToPacketSlot(slot), itemStack.item());
+            this.sendSlotRefresh(slot, itemStack.item(), previous);
         }
 
     }
@@ -136,7 +139,7 @@ public class SkyblockPlayerInventory extends PlayerInventory {
             this.UNSAFE_itemInsert(slot, itemStack, sendPacket);
         }
 
-        EventDispatcher.call(new PlayerInventoryItemChangeEvent(this.player, slot, previous.item(), itemStack.item()));
+        EventDispatcher.call(new InventoryItemChangeEvent(this, slot, previous.item(), itemStack.item()));
 
     }
 }

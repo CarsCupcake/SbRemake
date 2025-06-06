@@ -22,6 +22,10 @@ public class RedstonePigman extends SkyblockEntity {
 
     public RedstonePigman() {
         super(EntityType.ZOMBIFIED_PIGLIN);
+    }
+
+    @Override
+    public void spawn() {
         EntityAIGroup aiGroup = new EntityAIGroup();
         aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(this, 16), new ClosestEntityTarget(this, 16, entity1 -> {
             if (!(entity1 instanceof SkyblockPlayer player)) return false;
@@ -39,8 +43,6 @@ public class RedstonePigman extends SkyblockEntity {
         aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(this, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(this, 10, DeepCaverns.Region.PigmensDen) // Walk around
         ));
         addAIGroup(aiGroup);
-
-
     }
 
     @Override

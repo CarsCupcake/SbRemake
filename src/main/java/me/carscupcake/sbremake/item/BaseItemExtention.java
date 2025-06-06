@@ -9,12 +9,12 @@ import java.util.Map;
 public record BaseItemExtention(Material base, String name, Map<Stat, Double> stats, ItemRarity rarity,
                                 ItemType type) implements ISbItem {
     public BaseItemExtention(Material base, Map<Stat, Double> stats, ItemRarity rarity, ItemType type) {
-        this(base, StringUtils.connect(base.namespace().value().split("_"), true), stats, rarity, type);
+        this(base, StringUtils.connect(base.key().value().split("_"), true), stats, rarity, type);
     }
 
     @Override
     public String getId() {
-        return base.namespace().value().toUpperCase();
+        return base.key().value().toUpperCase();
     }
 
     @Override

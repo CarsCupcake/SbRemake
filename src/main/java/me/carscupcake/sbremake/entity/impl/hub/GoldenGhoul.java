@@ -19,12 +19,16 @@ public class GoldenGhoul extends SkyblockEntity implements SkillXpDropper {
         super(EntityType.ZOMBIE, new LootTable<SbItemStack>().addLoot(new ItemLoot(SbItemStack.base(Material.ROTTEN_FLESH), 2, 2, 1))
                 .addLoot(new ItemLoot(SbItemStack.base(Material.GOLD_INGOT), 1, 9, 1))
                 .addLoot(new CoinLoot(100)));
-        addAIGroup(zombieAiGroup(this, Hub.Region.HubCrypts));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.2f);
         setBoots(ItemStack.of(Material.GOLDEN_BOOTS));
         setLeggings(ItemStack.of(Material.GOLDEN_LEGGINGS));
         setChestplate(ItemStack.of(Material.GOLDEN_CHESTPLATE));
         setItemInMainHand(ItemStack.of(Material.GOLDEN_SWORD));
+    }
+
+    @Override
+    public void spawn() {
+        addAIGroup(zombieAiGroup(this, Hub.Region.HubCrypts));
     }
 
     @Override

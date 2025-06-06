@@ -71,7 +71,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     public SkyblockEntity(@NotNull EntityType entityType, ILootTable<SbItemStack> lootTable) {
         super(entityType, UUID.randomUUID());
         this.lootTable = lootTable == null ? new LootTable<>() : lootTable;
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
         setCustomNameVisible(true);
     }
 
@@ -359,6 +359,11 @@ public abstract class SkyblockEntity extends EntityCreature {
         runnable.setSelf(task);
     }
 
+    @Override
+    public @NotNull Pos getPosition() {
+        return super.position;
+    }
+
     public void damage(double amount) {
         lastDamager = null;
         damage(DamageType.GENERIC, (float) amount);
@@ -372,7 +377,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     @Override
     public void setHealth(float health) {
         this.health = Math.max(0, Math.min(getMaxHealth(), health));
-        super.setHealth((float) (getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * (health / getMaxHealth())));
+        super.setHealth((float) (getAttribute(Attribute.MAX_HEALTH).getValue() * (health / getMaxHealth())));
         update();
     }
 
@@ -418,7 +423,7 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     @Getter
     protected static class RandomStrollInRegion extends GoalSelector {
-        private static final long DELAY = 7000L;
+        private static final long DELAY = 2500L;
         private final int radius;
         private final List<Vec> closePositions;
         private final Random random = new Random();
@@ -426,17 +431,22 @@ public abstract class SkyblockEntity extends EntityCreature {
         private final long randomDelay = new Random().nextLong(5000);
         private long lastStroll;
         private final boolean isHiddenRegion;
+        private final SkyblockEntity entity;
 
-        public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, Region region) {
-            super(entityCreature);
+        public RandomStrollInRegion(@NotNull SkyblockEntity skyblockEntity, int radius, Region region) {
+            super(skyblockEntity);
+            if (skyblockEntity == null) throw new IllegalArgumentException("skyblockEntity cannot be null");
+            this.entity = skyblockEntity;
             this.regions = List.of(region);
             this.radius = radius;
             this.closePositions = getNearbyBlocks(radius);
             isHiddenRegion = false;
         }
 
-        public RandomStrollInRegion(@NotNull EntityCreature entityCreature, int radius, List<Region> region, boolean isHidden) {
-            super(entityCreature);
+        public RandomStrollInRegion(@NotNull SkyblockEntity skyblockEntity, int radius, List<Region> region, boolean isHidden) {
+            super(skyblockEntity);
+            if (skyblockEntity == null) throw new IllegalArgumentException("skyblockEntity cannot be null");
+            this.entity = skyblockEntity;
             this.regions = region;
             this.radius = radius;
             this.closePositions = getNearbyBlocks(radius);
@@ -448,21 +458,18 @@ public abstract class SkyblockEntity extends EntityCreature {
         }
 
         public void start() {
+            if (entity.getPosition().equals(Pos.ZERO)) {
+                return;
+            }
             int remainingAttempt = this.closePositions.size();
             while (remainingAttempt-- > 0) {
                 int index = this.random.nextInt(this.closePositions.size());
                 Vec position = this.closePositions.get(index);
-                Pos target = this.entityCreature.getPosition().add(position);
-                Chunk c = entityCreature.getInstance().getChunkAt(target);
-                if (c == null || !c.isLoaded()) continue;
+                Pos target = this.entity.getPosition().add(position);
                 try {
-                    for (Region region : regions) {
-                        if (region.isInRegion(target)) {
-                            boolean result = this.entityCreature.getNavigator().setPathTo(target);
-                            if (result) {
-                                break;
-                            }
-                        }
+                    boolean result = this.entity.getNavigator().setPathTo(target);
+                    if (result) {
+                        break;
                     }
                 } catch (NullPointerException e) {
                     //Could not care less
@@ -485,12 +492,17 @@ public abstract class SkyblockEntity extends EntityCreature {
 
         private @NotNull List<Vec> getNearbyBlocks(int radius) {
             List<Vec> blocks = new ArrayList<>();
-
             for (int x = -radius; x <= radius; ++x) {
                 for (int y = -radius; y <= radius; ++y) {
                     for (int z = -radius; z <= radius; ++z) {
                         Vec vec = new Vec(x, y, z);
-                        blocks.add(vec);
+                        var relative = this.entity.getPosition().add(vec);
+                        for (Region region : regions) {
+                            if (region.isInRegion(relative)) {
+                                blocks.add(vec);
+                                break;
+                            }
+                        }
                     }
                 }
             }

@@ -146,17 +146,17 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.17.0</version>
+            <version>4.21.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-gson</artifactId>
-            <version>4.17.0</version>
+            <version>4.21.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-json</artifactId>
-            <version>4.17.0</version>
+            <version>4.21.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -187,7 +187,7 @@
         <dependency>
             <groupId>net.minestom</groupId>
             <artifactId>minestom-snapshots</artifactId>
-            <version>7ce047b22e</version>
+            <version>d1634fb586</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>

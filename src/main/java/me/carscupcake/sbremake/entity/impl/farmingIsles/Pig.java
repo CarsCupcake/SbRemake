@@ -14,6 +14,10 @@ import net.minestom.server.item.Material;
 public class Pig extends SkyblockEntity implements SkillXpDropper {
     public Pig() {
         super(EntityType.PIG, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(Material.PORKCHOP), 1, 1)));
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(randomStroll(this, 4));
     }
 

@@ -17,8 +17,12 @@ public class Rabbit extends SkyblockEntity implements SkillXpDropper {
     public Rabbit() {
         super(EntityType.RABBIT, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(Material.RABBIT), 1, 1))
                 .addLootTable(new LootTable<SbItemStack>().setSingleLoot().addLoot(new ItemLoot(ISbItem.get(Material.RABBIT_HIDE), 1, 0.5)).addLoot(new ItemLoot(ISbItem.get(Material.RABBIT_FOOT), 1, 0.5)), 0.7));
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.1);
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(randomStroll(this, FarmingIsles.Region.Oasis, 4));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.1);
     }
 
     @Override

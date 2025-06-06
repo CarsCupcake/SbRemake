@@ -34,6 +34,14 @@ public class SpiderJockeySkeleton extends SkyblockEntity implements SkillXpDropp
         EntityAIGroup group = new EntityAIGroup();
         group.getGoalSelectors().add(rangedAttackGoal);
         group.getTargetSelectors().addAll(regionTarget(this, inSpidersMound ? SpidersDen.Region.SpiderMound : SpidersDen.Region.ArachnesBurrow, 16).getTargetSelectors());
+    }
+
+    @Override
+    public void spawn() {
+        RangedSilverfishAttackGoal rangedAttackGoal = new RangedSilverfishAttackGoal(this, 40, 25, 15, false, TimeUnit.SERVER_TICK);
+        EntityAIGroup group = new EntityAIGroup();
+        group.getGoalSelectors().add(rangedAttackGoal);
+        group.getTargetSelectors().addAll(regionTarget(this, inSpidersMound ? SpidersDen.Region.SpiderMound : SpidersDen.Region.ArachnesBurrow, 16).getTargetSelectors());
         addAIGroup(group);
     }
 

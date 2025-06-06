@@ -6,12 +6,15 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.SoundType;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.metadata.monster.CreeperMeta;
 import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.network.packet.server.play.ExplosionPacket;
+import net.minestom.server.particle.Particle;
+import net.minestom.server.sound.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -56,7 +59,7 @@ public class CreeperGoal extends GoalSelector {
             if (range < desiredRange || (range < explosionRange && explosionTicks < 30)) {
                 if (explosionTicks == 0) {
                     stop = true;
-                    ExplosionPacket packet = new ExplosionPacket(entity.getPosition().x(), entity.getPosition().y(), entity.getPosition().z(), explosionRange, new byte[0], 0, 0, 0);
+                    ExplosionPacket packet = new ExplosionPacket(entity.getPosition(), new Vec(explosionRange), Particle.EXPLOSION, SoundEvent.ENTITY_GENERIC_EXPLODE);
                     entity.getInstance().sendGroupedPacket(packet);
                     for (Entity e : entity.getInstance().getNearbyEntities(entity.getPosition(), explosionRange)) {
                         if (e instanceof SkyblockPlayer player) {

@@ -14,13 +14,17 @@ import net.minestom.server.item.Material;
 public class MinerZombie20 extends SkyblockEntity implements SkillXpDropper {
     public MinerZombie20() {
         super(EntityType.ZOMBIE);
-        this.addAIGroup(zombieAiGroup(this, DeepCaverns.Region.ObsidianSanctuary));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
         setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.DIAMOND_BLOCK).setGlint(true).build());
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
         setEquipment(EquipmentSlot.LEGGINGS, new ItemBuilder(Material.DIAMOND_LEGGINGS).setGlint(true).build());
         setEquipment(EquipmentSlot.BOOTS, new ItemBuilder(Material.DIAMOND_BOOTS).setGlint(true).build());
         setEquipment(EquipmentSlot.MAIN_HAND, new ItemBuilder(Material.DIAMOND_SWORD).setGlint(true).build());
+    }
+
+    @Override
+    public void spawn() {
+        this.addAIGroup(zombieAiGroup(this, DeepCaverns.Region.ObsidianSanctuary));
     }
 
     @Override

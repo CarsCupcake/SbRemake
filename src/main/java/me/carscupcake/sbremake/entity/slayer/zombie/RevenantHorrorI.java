@@ -38,17 +38,21 @@ public class RevenantHorrorI extends SlayerEntity implements SkillXpDropper {
 
     public RevenantHorrorI(SkyblockPlayer owner) {
         super(EntityType.ZOMBIE, lootTable, owner);
-        EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(new RevenantAttackGoal(this, 1.3, 3.2, Duration.ofMillis(3200), Duration.ofSeconds(1)), new RandomStrollGoal(this, 5) // Walk around
-        ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(this, 35), new ClosestEntityTarget(this, 128, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p == owner)));
-        addAIGroup(aiGroup);
         setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0aW1lc3RhbXAiOjE1NjgwMzY3MjYwNjYsInByb2ZpbGVJZCI6IjQxZDNhYmMyZDc0OTQwMGM5MDkwZDU0MzRkMDM4MzFiIiwicHJvZmlsZU5hbWUiOiJNZWdha2xvb24iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzFmYzAxODQ0NzNmZTg4MmQyODk1Y2U3Y2JjODE5N2JkNDBmZjcwYmYxMGQzNzQ1ZGU5N2I2YzJhOWM1ZmM3OGYifX19").build());
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
         setEquipment(EquipmentSlot.LEGGINGS, new ItemBuilder(Material.CHAINMAIL_LEGGINGS).setGlint(true).build());
         setEquipment(EquipmentSlot.BOOTS, new ItemBuilder(Material.DIAMOND_BOOTS).build());
         setEquipment(EquipmentSlot.MAIN_HAND, new ItemBuilder(Material.DIAMOND_HOE).setGlint(true).build());
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.368);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.368);
+    }
+
+    @Override
+    public void spawn() {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().addAll(List.of(new RevenantAttackGoal(this, 1.3, 3.2, Duration.ofMillis(3200), Duration.ofSeconds(1)), new RandomStrollGoal(this, 5) // Walk around
+        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(this, 35), new ClosestEntityTarget(this, 128, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p == owner)));
+        addAIGroup(aiGroup);
     }
 
     @Override

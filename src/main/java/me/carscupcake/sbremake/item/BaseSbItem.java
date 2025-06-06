@@ -6,7 +6,7 @@ public record BaseSbItem(Material material, String name) implements ISbItem {
 
     @Override
     public String getId() {
-        return material.namespace().value().toUpperCase();
+        return material.key().value().toUpperCase();
     }
 
     @Override

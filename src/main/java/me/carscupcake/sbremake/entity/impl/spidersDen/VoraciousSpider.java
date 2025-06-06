@@ -8,9 +8,11 @@ public class VoraciousSpider extends SkyblockEntity {
     private final float maxHealth;
     private final int level;
     private final double damage;
+    private final int tier;
 
     public VoraciousSpider(int tier) {
         super(EntityType.SPIDER);
+        this.tier = tier;
         maxHealth = switch (tier) {
             case 1 -> 300;
             case 2 -> 750;
@@ -32,6 +34,10 @@ public class VoraciousSpider extends SkyblockEntity {
             case 4 -> 170;
             default -> throw new IllegalStateException();
         };
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(zombieAiGroup(this, tier == 1 ? SpidersDen.Region.SpiderMound : SpidersDen.Region.ArachnesBurrow));
     }
 

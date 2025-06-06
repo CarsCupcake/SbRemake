@@ -44,19 +44,18 @@ public class WitherSpectre extends SkyblockEntity implements SkillXpDropper {
         super(EntityType.WITHER_SKELETON, new LootTable<SbItemStack>().addLoot(new ItemLoot(Material.GUNPOWDER)).addLoot(new CoinLoot(20)));
         setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture(HEAD_VALUE).build());
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(CHESTPLATE_COLOR).build());
-        setItemInHand(Player.Hand.MAIN, new ItemBuilder(Material.STONE_SWORD).build());
+        setItemInHand(PlayerHand.MAIN, new ItemBuilder(Material.STONE_SWORD).build());
         scheduler().buildTask(() -> {
             if (instance != null)
                 ParticleUtils.spawnParticle(getInstance(), getPosition(), Particle.WITCH, 5, Vec.ZERO, 0.2f);
         }).repeat(TimeUnit.SERVER_TICK.getDuration()).schedule();
-        addAIGroup(SkyblockEntity.zombieAiGroup(this, WITHER_SPECTRE_REGION, true));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
         setInvisible(true);
     }
 
     @Override
     public void spawn() {
-        super.spawn();
+        addAIGroup(SkyblockEntity.zombieAiGroup(this, WITHER_SPECTRE_REGION, true));
     }
 
     @Override

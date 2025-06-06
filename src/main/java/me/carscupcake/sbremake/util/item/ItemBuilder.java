@@ -196,7 +196,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addEnchant(Enchantment enchantment, int level) {
-        enchants.put(DynamicRegistry.Key.of(Objects.requireNonNull(enchantment.registry()).namespace()), level);
+        enchants.put(DynamicRegistry.Key.of(Objects.requireNonNull(enchantment.registry()).key()), level);
         return this;
     }
 }

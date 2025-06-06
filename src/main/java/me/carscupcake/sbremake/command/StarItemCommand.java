@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 
 public class StarItemCommand extends Command {
     public StarItemCommand() {
@@ -14,13 +15,13 @@ public class StarItemCommand extends Command {
         addSyntax((sender, context) -> {
             var stars = context.get(integerArgument);
             var player = (SkyblockPlayer) sender;
-            var item = player.getSbItemInHand(Player.Hand.MAIN);
+            var item = player.getSbItemInHand(PlayerHand.MAIN);
             if (!(item.sbItem() instanceof StarUpgradable starUpgradable)) {
                 sender.sendMessage("Your item can not have stars!");
                 return;
             }
             stars = starUpgradable.getMaxStars() < stars ? starUpgradable.getMaxStars() : stars;
-            player.setItemInHand(Player.Hand.MAIN, item.withModifier(Modifier.STARS, stars).update(player));
+            player.setItemInHand(PlayerHand.MAIN, item.withModifier(Modifier.STARS, stars).update(player));
         }, integerArgument);
     }
 }

@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
 
@@ -30,7 +31,7 @@ public class LapisLazuliOre extends MiningBlock {
 
     @Override
     public Set<SbItemStack> getDrops(SkyblockPlayer player) {
-        SbItemStack item = player.getSbItemInHand(Player.Hand.MAIN);
+        SbItemStack item = player.getSbItemInHand(PlayerHand.MAIN);
         boolean b = item != null && item.getEnchantmentLevel(NormalEnchantments.SilkTouch) > 0;
         return Set.of(withMiningFortune(ISbItem.get(b ? Material.LAPIS_ORE : Material.LAPIS_LAZULI), b ? 1 : (4 + new Random().nextInt(6)), player));
     }

@@ -16,9 +16,11 @@ public class DasherSpider extends SkyblockEntity implements MeleeAttackGoalEntit
     private final float maxHealth;
     private final double damage;
     private final int level;
+    private final int tier;
 
     public DasherSpider(int tier) {
         super(EntityType.SPIDER);
+        this.tier = tier;
         maxHealth = switch (tier) {
             case 1 -> 170;
             case 2 -> 900;
@@ -40,6 +42,10 @@ public class DasherSpider extends SkyblockEntity implements MeleeAttackGoalEntit
             case 4 -> 150;
             default -> throw new IllegalStateException();
         };
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(zombieAiGroup(this, tier == 1 ? SpidersDen.Region.SpiderMound : SpidersDen.Region.ArachnesBurrow));
     }
 

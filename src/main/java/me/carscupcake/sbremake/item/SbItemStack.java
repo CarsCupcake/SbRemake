@@ -87,7 +87,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
 
     @NotNull
     public static SbItemStack base(Material material) {
-        ISbItem item = items.get(material.namespace().value().toUpperCase());
+        ISbItem item = items.get(material.key().value().toUpperCase());
         return item.create();
     }
 

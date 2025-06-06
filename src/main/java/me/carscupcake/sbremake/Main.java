@@ -26,6 +26,7 @@ import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.Time;
 import me.carscupcake.sbremake.worlds.impl.PrivateIsle;
 import me.carscupcake.sbremake.worlds.region.Region;
+import net.kyori.adventure.key.Key;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandManager;
@@ -36,10 +37,12 @@ import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.network.ConnectionState;
+import net.minestom.server.network.packet.client.configuration.ClientSelectKnownPacksPacket;
+import net.minestom.server.network.packet.client.play.ClientConfigurationAckPacket;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
 import net.minestom.server.timer.TaskSchedule;
-import net.minestom.server.utils.NamespaceID;
 import org.reflections.Reflections;
 import org.slf4j.event.Level;
 
@@ -82,13 +85,13 @@ public class Main {
     private volatile static ConfigFile crackedRegistry;
 
     private static final String[] registerDefaultManagers = new String[] {"banner", "trapped_chest", "skull", "chest", "sign", "brewing_stand", "enchanting_table",
-    "furnace", "dispenser", "daylight_detector", "jukebox", "beacon"};
+    "furnace", "dispenser", "daylight_detector", "jukebox", "beacon", "ender_chest", "dropper", "comparator", "bed", "hopper", "end_portal"};
 
     public static void main(String[] args) throws Exception {
         MinecraftServer server = MinecraftServer.init();
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
         for (var s : registerDefaultManagers)
-            MinecraftServer.getBlockManager().registerHandler("minecraft:" + s, () -> () -> NamespaceID.from(s));
+            MinecraftServer.getBlockManager().registerHandler("minecraft:" + s, () -> () -> Key.key(s));
         LOGGER = new SkyblockSimpleLogger();
         if (System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true")) {
             LOGGER.setLogLevel(0);
@@ -107,6 +110,9 @@ public class Main {
         Recipe.init();
         LOGGER.info("Loaded {} Crafting Recipes in {}ms", Recipe.craftingRecipes.size(), System.currentTimeMillis() - time);
         MiningBlock.init();
+        MinecraftServer.getPacketListenerManager().setConfigurationListener(ClientConfigurationAckPacket.class, (clientSelectKnownPacksPacket, player) -> {
+            System.out.println("IN: " + player.getName());
+        });
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockBreakEvent.class, new PlayerBlockBreakListener());
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, new AsyncPlayerConfigurationListener());
@@ -139,12 +145,12 @@ public class Main {
         for (SkyblockEnchantment enchantment : UltimateEnchantments.values())
             SkyblockEnchantment.enchantments.put(enchantment.getId(), enchantment);
         Reforge.init();
-        MinecraftServer.getConnectionManager().setPlayerProvider((uuid, s, playerConnection) -> {
+        MinecraftServer.getConnectionManager().setPlayerProvider((connection, profile) -> {
             UUID configId;
             synchronized (_lock) {
-                configId = isCracked ? crackedRegistry.getOrSetDefault(s, ConfigSection.UUID, UUID.randomUUID()) : uuid;
+                configId = isCracked ? crackedRegistry.getOrSetDefault(profile.name(), ConfigSection.UUID, UUID.randomUUID()) : profile.uuid();
             }
-            return new SkyblockPlayer(uuid, s, playerConnection, configId);
+            return new SkyblockPlayer(connection, profile, configId);
         });
         MinecraftServer.getSchedulerManager().buildShutdownTask(() -> {
             Audiences.players().forEachAudience(audience -> {
@@ -236,10 +242,10 @@ public class Main {
             Path folderRootPath = fileSystem.getPath("assets/loot/blocks");
             try (Stream<Path> stream = Files.walk(folderRootPath)) {
                 BlockLootTable.blockLootTables = stream.parallel()
-                        .filter(b -> Block.fromNamespaceId(b.getFileName().toString().replace(".json", "")) != null)
+                        .filter(b -> Block.fromKey(b.getFileName().toString().replace(".json", "")) != null)
                         .map(path -> {
                             try (var s = Files.newInputStream(path)) {
-                                return new BlockLootTable(s, Block.fromNamespaceId(path.getFileName().toString().replace(".json", "")));
+                                return new BlockLootTable(s, Block.fromKey(path.getFileName().toString().replace(".json", "")));
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }

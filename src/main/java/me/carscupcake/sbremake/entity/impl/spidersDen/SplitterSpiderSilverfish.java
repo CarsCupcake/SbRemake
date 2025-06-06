@@ -12,9 +12,11 @@ import java.util.List;
 
 public class SplitterSpiderSilverfish extends SkyblockEntity implements SkillXpDropper {
     private final int level;
+    private final int tier;
 
     public SplitterSpiderSilverfish(@Range(from = 1, to = 4) int tier) {
         super(EntityType.SILVERFISH);
+        this.tier = tier;
         level = switch (tier) {
             case 1 -> 2;
             case 2 -> 42;
@@ -22,6 +24,11 @@ public class SplitterSpiderSilverfish extends SkyblockEntity implements SkillXpD
             case 4 -> 50;
             default -> throw new IllegalStateException("Not in range");
         };
+        addAIGroup(zombieAiGroup(this, tier == 1 ? List.of(SpidersDen.Region.SpiderMound) : List.of(SpidersDen.Region.ArachnesBurrow, SpidersDen.Region.ArachnesSanctuary)));
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(zombieAiGroup(this, tier == 1 ? List.of(SpidersDen.Region.SpiderMound) : List.of(SpidersDen.Region.ArachnesBurrow, SpidersDen.Region.ArachnesSanctuary)));
     }
 

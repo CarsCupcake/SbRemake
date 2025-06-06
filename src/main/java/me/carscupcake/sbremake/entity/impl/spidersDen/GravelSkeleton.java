@@ -13,6 +13,10 @@ public class GravelSkeleton extends SkyblockEntity implements SkillXpDropper {
     public GravelSkeleton() {
         super(EntityType.SKELETON);
         setEquipment(EquipmentSlot.MAIN_HAND, ItemStack.builder(Material.BOW).build());
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(skeletonAiGroup(this));
     }
 

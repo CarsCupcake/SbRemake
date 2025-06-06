@@ -10,6 +10,7 @@ import net.minestom.server.command.builder.arguments.ArgumentWord;
 import net.minestom.server.command.builder.arguments.number.ArgumentInteger;
 import net.minestom.server.command.builder.arguments.number.ArgumentNumber;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
@@ -44,13 +45,13 @@ public class EnchantCommand extends Command {
                 }
             }
             int level = commandContext.get(integerArgumentNumber);
-            SbItemStack item = ((SkyblockPlayer) commandSender).getSbItemInHand(Player.Hand.MAIN);
+            SbItemStack item = ((SkyblockPlayer) commandSender).getSbItemInHand(PlayerHand.MAIN);
             if (item == null) {
                 commandSender.sendMessage("§cNot a valid item!");
                 return;
             }
 
-            ((SkyblockPlayer) commandSender).setItemInHand(Player.Hand.MAIN, SbItemStack.from(enchantment.apply(item.item(), level)).update((SkyblockPlayer) commandSender));
+            ((SkyblockPlayer) commandSender).setItemInHand(PlayerHand.MAIN, SbItemStack.from(enchantment.apply(item.item(), level)).update((SkyblockPlayer) commandSender));
         }, word, integerArgumentNumber);
 
         addSyntax((commandSender, commandContext) -> {
@@ -78,12 +79,12 @@ public class EnchantCommand extends Command {
                 }
             }
             int level = enchantment.getMaxLevel();
-            SbItemStack item = ((SkyblockPlayer) commandSender).getSbItemInHand(Player.Hand.MAIN);
+            SbItemStack item = ((SkyblockPlayer) commandSender).getSbItemInHand(PlayerHand.MAIN);
             if (item == null) {
                 commandSender.sendMessage("§cNot a valid item!");
                 return;
             }
-            ((SkyblockPlayer) commandSender).setItemInHand(Player.Hand.MAIN, SbItemStack.from(enchantment.apply(item.item(), level)).update((SkyblockPlayer) commandSender));
+            ((SkyblockPlayer) commandSender).setItemInHand(PlayerHand.MAIN, SbItemStack.from(enchantment.apply(item.item(), level)).update((SkyblockPlayer) commandSender));
         }, word);
     }
 }

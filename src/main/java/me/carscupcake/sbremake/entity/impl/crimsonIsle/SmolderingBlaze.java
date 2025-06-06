@@ -30,6 +30,10 @@ public class SmolderingBlaze extends SkyblockEntity implements SkillXpDropper {
         super(EntityType.BLAZE, new LootTable<SbItemStack>().addLoot(new ItemLoot(Material.BLAZE_ROD, 2, 3, 1))
                 .addLoot(new ItemLoot(BlazeAshes.class, 1, 0.2))
                 .addLoot(new ItemLoot(NetherrackLookingSunshade.class, 1, 0.01)));
+    }
+
+    @Override
+    public void spawn() {
         var group = new EntityAIGroup();
         group.getGoalSelectors().addAll(List.of(new BlazeGoal(this, 16)));
         group.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(this, 20),

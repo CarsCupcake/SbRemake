@@ -18,6 +18,10 @@ public class SpiderJockey extends SkyblockEntity implements SkillXpDropper {
     public SpiderJockey(boolean inSpidersMound) {
         super(EntityType.SPIDER);
         this.inSpidersMound = inSpidersMound;
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(zombieAiGroup(this, inSpidersMound ? SpidersDen.Region.SpiderMound : SpidersDen.Region.ArachnesBurrow));
     }
 

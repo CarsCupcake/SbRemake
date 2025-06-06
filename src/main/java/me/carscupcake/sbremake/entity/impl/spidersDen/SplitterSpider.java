@@ -45,6 +45,10 @@ public class SplitterSpider extends SkyblockEntity implements SkillXpDropper {
             case 4 -> 36;
             default -> throw new IllegalStateException("Not in range");
         };
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(zombieAiGroup(this));
     }
 

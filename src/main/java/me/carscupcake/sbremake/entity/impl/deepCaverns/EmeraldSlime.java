@@ -22,6 +22,10 @@ public class EmeraldSlime extends SkyblockEntity {
             case 10 -> 6;
             default -> 11;
         }));
+    }
+
+    @Override
+    public void spawn() {
         EntityAIGroup group = regionTarget(this, DeepCaverns.Region.Slimehill, 16);
         group.getGoalSelectors().add(new SlimeAttackGoal(this, Duration.of(10, TimeUnit.SERVER_TICK), 10));
         addAIGroup(group);

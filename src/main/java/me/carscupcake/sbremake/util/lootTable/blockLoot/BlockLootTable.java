@@ -12,9 +12,9 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import net.kyori.adventure.key.Key;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
-import net.minestom.server.utils.NamespaceID;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -187,7 +187,7 @@ public class BlockLootTable implements ILootTable<SbItemStack> {
         }
         if (!allowed) return null;
         assert entry.name != null;
-        SbItemStack item = SbItemStack.base(Objects.requireNonNull(Material.fromNamespaceId(NamespaceID.from(Key.key(entry.name, ':')))));
+        SbItemStack item = SbItemStack.base(Objects.requireNonNull(Material.fromKey(Key.key(entry.name, ':'))));
         for (Function<BlockContext, Integer> function : entry.functions) {
             assert item != null;
             int amount = function.apply(context);
@@ -243,7 +243,7 @@ public class BlockLootTable implements ILootTable<SbItemStack> {
         @Override
         public boolean test(@NotNull BlockContext blockContext) {
             if (blockContext.player == null) return false;
-            var item = blockContext.player.getSbItemInHand(Player.Hand.MAIN);
+            var item = blockContext.player.getSbItemInHand(PlayerHand.MAIN);
             if (item == null) return false;
             boolean result = false;
             for (String itemId : items) {
@@ -300,7 +300,7 @@ public class BlockLootTable implements ILootTable<SbItemStack> {
         public boolean test(@NotNull BlockContext blockContext) {
             int level = 0;
             if (blockContext.player != null) {
-                var item = blockContext.player.getSbItemInHand(Player.Hand.MAIN);
+                var item = blockContext.player.getSbItemInHand(PlayerHand.MAIN);
                 if (item != null)
                     level = item.getEnchantmentLevel(enchantement);
             }

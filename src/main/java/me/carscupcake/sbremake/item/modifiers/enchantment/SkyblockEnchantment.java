@@ -14,6 +14,7 @@ import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.ItemComponent;
@@ -75,7 +76,7 @@ public interface SkyblockEnchantment {
 
     static void initListener() {
         LISTENER.register(new PlayerDamageEntityListener(event -> {
-            SbItemStack item = event.getPlayer().getSbItemInHand(Player.Hand.MAIN);
+            SbItemStack item = event.getPlayer().getSbItemInHand(PlayerHand.MAIN);
             if (item == null) return;
             Map<SkyblockEnchantment, Integer> enchantments = item.getEnchantments();
 

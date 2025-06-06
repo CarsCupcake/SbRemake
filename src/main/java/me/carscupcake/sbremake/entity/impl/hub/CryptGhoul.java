@@ -23,12 +23,16 @@ public class CryptGhoul extends SkyblockEntity implements SkillXpDropper {
         super(EntityType.ZOMBIE, new LootTable<SbItemStack>().addLoot(new ItemLoot(SbItemStack.base(Material.ROTTEN_FLESH), 1, 2, 1))
                 .addLoot(new CoinLoot(13)).addLoot(new ItemLoot(SbItemStack.from(Pet.class).withModifier(Modifier.PET_INFO, new Pet.PetInfo(Pets.Ghoul, ItemRarity.EPIC, 0)), 1, 1, 0.00003, true, true, ItemLoot.NormalMessages.RNGesus))
                 .addLoot(new ItemLoot(SbItemStack.from(Pet.class).withModifier(Modifier.PET_INFO, new Pet.PetInfo(Pets.Ghoul, ItemRarity.LEGENDARY, 0)), 1, 1, 0.00001, true, true, ItemLoot.NormalMessages.RNGesus)));
-        addAIGroup(zombieAiGroup(this, Hub.Region.HubCrypts));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.2f);
         setBoots(ItemStack.of(Material.CHAINMAIL_BOOTS));
         setLeggings(ItemStack.of(Material.CHAINMAIL_LEGGINGS));
         setChestplate(ItemStack.of(Material.CHAINMAIL_CHESTPLATE));
         setItemInMainHand(ItemStack.of(Material.IRON_SWORD));
+    }
+
+    @Override
+    public void spawn() {
+        addAIGroup(zombieAiGroup(this, Hub.Region.HubCrypts));
     }
 
     @Override

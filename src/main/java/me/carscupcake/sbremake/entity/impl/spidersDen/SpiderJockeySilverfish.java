@@ -15,6 +15,10 @@ public class SpiderJockeySilverfish extends SkyblockEntity implements SkillXpDro
     public SpiderJockeySilverfish(boolean inSpidersMound) {
         super(EntityType.SILVERFISH);
         this.inSpidersMound = inSpidersMound;
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(zombieAiGroup(this, inSpidersMound ? List.of(SpidersDen.Region.SpiderMound) : List.of(SpidersDen.Region.ArachnesBurrow, SpidersDen.Region.ArachnesSanctuary)));
     }
 

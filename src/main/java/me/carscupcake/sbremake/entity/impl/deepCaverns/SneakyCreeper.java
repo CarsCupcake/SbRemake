@@ -7,15 +7,19 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.EntityAIGroup;
 
 public class SneakyCreeper extends SkyblockEntity {
-    private final CreeperGoal goal;
+    private CreeperGoal goal;
 
     public SneakyCreeper() {
         super(EntityType.CREEPER);
+        setInvisible(true);
+    }
+
+    @Override
+    public void spawn() {
         EntityAIGroup group = regionTarget(this, DeepCaverns.Region.GunpowderMines, 8);
         goal = new CreeperGoal(this, 3, 1);
         group.getGoalSelectors().add(goal);
         addAIGroup(group);
-        setInvisible(true);
     }
 
     @Override

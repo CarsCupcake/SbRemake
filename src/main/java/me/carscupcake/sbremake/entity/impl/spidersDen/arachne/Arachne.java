@@ -23,6 +23,10 @@ public class Arachne extends SkyblockEntity {
         maxHealth = cristal ? 100_000 : 20_000;
         damage = cristal ? 600 : 300;
         threashhold = maxHealth * 0.5f;
+    }
+
+    @Override
+    public void spawn() {
         addAIGroup(zombieAiGroup(this, SpidersDen.Region.ArachnesSanctuary));
     }
 

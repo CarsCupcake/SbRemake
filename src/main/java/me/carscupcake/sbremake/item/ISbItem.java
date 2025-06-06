@@ -134,7 +134,7 @@ public interface ISbItem {
     static void init() {
         UltimateEnchantment.ULTIMATE_ENCHANTMENTS.addAll(Arrays.asList(UltimateEnchantments.values()));
         for (Material material : Material.values()) {
-            String name = StringUtils.connect(material.namespace().value().split("_"), true);
+            String name = StringUtils.connect(material.key().value().split("_"), true);
             SbItemStack.initSbItem(new BaseSbItem(material, name));
         }
         HashMap<ISbItem, EnchantedRecipe> recipes = new HashMap<>();
@@ -181,7 +181,7 @@ public interface ISbItem {
 
     static ISbItem get(Material material) {
         try {
-            return SbItemStack.raw(material.namespace().value().toUpperCase());
+            return SbItemStack.raw(material.key().value().toUpperCase());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

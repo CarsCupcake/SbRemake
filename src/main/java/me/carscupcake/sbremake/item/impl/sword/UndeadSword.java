@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.impl.sword.slayer.zombie.RevenantFalchion;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.Material;
@@ -52,7 +53,7 @@ public class UndeadSword implements ISbItem, Listener, NpcSellable {
         return EventNode.all("undead_sword").addListener(PlayerMeleeDamageEntityEvent.class, event -> {
             if (!(event.getTarget().getEntityType() == EntityType.ZOMBIFIED_PIGLIN || event.getTarget().getEntityType() == EntityType.SKELETON || event.getTarget().getEntityType() == EntityType.WITHER || event.getTarget().getEntityType() == EntityType.ZOMBIE))
                 return;
-            SbItemStack stack = event.getPlayer().getSbItemInHand(Player.Hand.MAIN);
+            SbItemStack stack = event.getPlayer().getSbItemInHand(PlayerHand.MAIN);
             if (stack == null) return;
             if ((stack.sbItem() instanceof UndeadSword)) {
                 event.addAdditiveMultiplier(1);

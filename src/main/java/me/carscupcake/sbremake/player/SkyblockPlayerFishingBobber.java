@@ -7,6 +7,7 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityProjectile;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.entity.metadata.other.FishingHookMeta;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.server.play.EntityVelocityPacket;
@@ -21,7 +22,7 @@ public class SkyblockPlayerFishingBobber extends EntityProjectile {
     public SkyblockPlayerFishingBobber(@NotNull SkyblockPlayer shooter) {
         super(shooter, EntityType.FISHING_BOBBER);
         this.player = shooter;
-        item = shooter.getSbItemInHand(Player.Hand.MAIN);
+        item = shooter.getSbItemInHand(PlayerHand.MAIN);
         var meta = (FishingHookMeta) this.getEntityMeta();
         meta.setOwnerEntity(shooter);
         scheduler().buildTask(() -> {

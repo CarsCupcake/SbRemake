@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.*;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.Material;
@@ -56,7 +57,7 @@ public class Terminator implements ISbItem, Shortbow, ISbItem.StatProvider, List
     public EventNode<Event> node() {
         return EventNode.all("terminator.ability").addListener(PlayerStatEvent.class, playerStatEvent -> {
             if (playerStatEvent.stat() != Stat.CritChance) return;
-            SbItemStack item = playerStatEvent.player().getSbItemInHand(Player.Hand.MAIN);
+            SbItemStack item = playerStatEvent.player().getSbItemInHand(PlayerHand.MAIN);
             if (item != null && item.sbItem() instanceof Terminator)
                 playerStatEvent.modifiers().add(new PlayerStatEvent.BasicModifier("Terminator", 0.25, PlayerStatEvent.Type.MultiplicativeMultiplier, PlayerStatEvent.StatsCategory.Armor));
         });

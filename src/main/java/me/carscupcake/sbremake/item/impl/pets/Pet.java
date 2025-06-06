@@ -8,6 +8,7 @@ import me.carscupcake.sbremake.item.ability.AbilityType;
 import me.carscupcake.sbremake.item.ability.ItemAbility;
 import me.carscupcake.sbremake.player.StoredPet;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +61,7 @@ public class Pet implements ISbItem {
     @Override
     public List<Ability> getDefaultAbilities() {
         return new ArrayList<>(List.of(new ItemAbility<>("", AbilityType.RIGHT_CLICK, playerInteractEvent -> {
-            playerInteractEvent.player().getPets().add(StoredPet.to(playerInteractEvent.player().getSbItemInHand(Player.Hand.MAIN)));
+            playerInteractEvent.player().getPets().add(StoredPet.to(playerInteractEvent.player().getSbItemInHand(PlayerHand.MAIN)));
             playerInteractEvent.player().sendMessage("§aAdded the Pet to you pet menu!");
             playerInteractEvent.getPlayer().setItemInMainHand(ItemStack.AIR);
         })));

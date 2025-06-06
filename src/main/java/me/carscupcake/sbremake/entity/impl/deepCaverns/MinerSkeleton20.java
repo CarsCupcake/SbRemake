@@ -15,12 +15,17 @@ public class MinerSkeleton20 extends SkyblockEntity implements SkillXpDropper {
     public MinerSkeleton20() {
         super(EntityType.SKELETON);
         this.addAIGroup(skeletonAiGroup(this, DeepCaverns.Region.ObsidianSanctuary));
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
         setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.DIAMOND_BLOCK).setGlint(true).build());
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
         setEquipment(EquipmentSlot.LEGGINGS, new ItemBuilder(Material.DIAMOND_LEGGINGS).setGlint(true).build());
         setEquipment(EquipmentSlot.BOOTS, new ItemBuilder(Material.DIAMOND_BOOTS).setGlint(true).build());
         setEquipment(EquipmentSlot.MAIN_HAND, new ItemBuilder(Material.BOW).setGlint(true).build());
+    }
+
+    @Override
+    public void spawn() {
+        this.addAIGroup(skeletonAiGroup(this, DeepCaverns.Region.ObsidianSanctuary));
     }
 
     @Override

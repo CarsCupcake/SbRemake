@@ -31,12 +31,16 @@ public class LapisZombies extends SkyblockEntity implements SkillXpDropper {
                                 .addLoot(new ItemLoot(ISbItem.get(LapisHelmet.class), 1, 0.01d))
                                 .setSingleLoot()
                         , 0.01));
-        this.addAIGroup(zombieAiGroup(this, DeepCaverns.Region.LapisQuarry));
         setEquipment(EquipmentSlot.HELMET, ItemStack.of(Material.BLUE_STAINED_GLASS));
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new DyedItemColor(0x0000ff)).build());
         setEquipment(EquipmentSlot.LEGGINGS, new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new DyedItemColor(0x0000ff)).build());
         setEquipment(EquipmentSlot.BOOTS, new ItemBuilder(Material.LEATHER_BOOTS).setLeatherColor(new DyedItemColor(0x0000ff)).build());
-        getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.15f);
+        getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
+    }
+
+    @Override
+    public void spawn() {
+        this.addAIGroup(zombieAiGroup(this, DeepCaverns.Region.LapisQuarry));
     }
 
     @Override

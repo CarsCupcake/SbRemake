@@ -13,6 +13,7 @@ import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import net.kyori.adventure.sound.Sound;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
@@ -30,7 +31,7 @@ public class GodPotion implements ISbItem, HeadWithValue {
             }
             event.player().startPotionEffect(new PotionEffect(Potion.JumpBoost, ms, (byte) 6));
         }
-        event.player().setItemInHand(Player.Hand.MAIN, ItemStack.AIR);
+        event.player().setItemInHand(PlayerHand.MAIN, ItemStack.AIR);
         new TaskScheduler() {
             int i = 0;
 

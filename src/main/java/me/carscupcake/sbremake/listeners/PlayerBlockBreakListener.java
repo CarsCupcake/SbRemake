@@ -23,6 +23,7 @@ import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.timer.TaskSchedule;
@@ -177,13 +178,13 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
         if (((SkyblockPlayer) event.getPlayer()).getWorldProvider().type() == SkyblockWorld.PrivateIsle) {
             boolean b = false;
             for (String s : pickaxesBlocks) {
-                if (s.equalsIgnoreCase(event.getBlock().registry().namespace().asString())) {
+                if (s.equalsIgnoreCase(event.getBlock().registry().key().asString())) {
                     b = true;
                     break;
                 }
             }
             if (b) {
-                SbItemStack mainHand = player.getSbItemInHand(Player.Hand.MAIN);
+                SbItemStack mainHand = player.getSbItemInHand(PlayerHand.MAIN);
                 if (mainHand == null || !(mainHand.sbItem() instanceof IVanillaPickaxe pick)) return;
                 switch (pick.getTier()) {
                     case Wood:
@@ -209,7 +210,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
 
     private boolean checkBlocks(VanillaPickaxeTier tier, Block block) {
         for (var s : needToolTierBlocks.get(tier))
-            if (s.equalsIgnoreCase(block.registry().namespace().asString()))
+            if (s.equalsIgnoreCase(block.registry().key().asString()))
                 return true;
         return false;
     }
