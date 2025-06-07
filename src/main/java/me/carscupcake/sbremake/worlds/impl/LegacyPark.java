@@ -9,7 +9,7 @@ import net.minestom.server.coordinate.Pos;
 
 import java.util.HashMap;
 
-public class Park extends SkyblockWorld.WorldProvider {
+public class LegacyPark extends SkyblockWorld.WorldProvider {
     public final HashMap<BlockVec, Log.LogInfo> brokenLogs = new HashMap<>();
     private final TaskScheduler foragingReset = new TaskScheduler() {
         @Override
@@ -21,7 +21,7 @@ public class Park extends SkyblockWorld.WorldProvider {
 
     @Override
     public SkyblockWorld type() {
-        return SkyblockWorld.Park;
+        return SkyblockWorld.LegacyPark;
     }
 
     @Override

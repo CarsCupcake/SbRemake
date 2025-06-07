@@ -12,11 +12,10 @@ import me.carscupcake.sbremake.util.CoinsCost;
 import me.carscupcake.sbremake.util.Cost;
 import me.carscupcake.sbremake.util.ItemCost;
 import me.carscupcake.sbremake.worlds.impl.Hub;
-import me.carscupcake.sbremake.worlds.impl.Park;
+import me.carscupcake.sbremake.worlds.impl.LegacyPark;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
-import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -111,7 +110,7 @@ public class JungleAxe implements ISbItem, Listener, GemstoneSlots {
                                             entity.setInstance(event.player().getInstance(), Pos.fromPoint(posNew).add(0.5, 0, 0.5));
                                             entity.addViewer(event.player());
                                             event.player().getSkill(Skill.Foraging).addXp(log.xp());
-                                            if (event.player().getWorldProvider() instanceof Park park)
+                                            if (event.player().getWorldProvider() instanceof LegacyPark park)
                                                 park.brokenLogs.put(posNew, new Log.LogInfo(log, blockNew.properties()));
                                             if (event.player().getWorldProvider() instanceof Hub hub)
                                                 hub.brokenLogs.put(posNew, new Log.LogInfo(log, blockNew.properties()));

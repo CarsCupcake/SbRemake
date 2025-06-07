@@ -17,12 +17,11 @@ import me.carscupcake.sbremake.util.lootTable.blockLoot.BlockLootTable;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.impl.FarmingIsles;
 import me.carscupcake.sbremake.worlds.impl.Hub;
-import me.carscupcake.sbremake.worlds.impl.Park;
+import me.carscupcake.sbremake.worlds.impl.LegacyPark;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.ItemEntity;
-import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.instance.block.Block;
@@ -117,7 +116,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                     return;
                 }
             }
-        } else if (player.getWorldProvider().type() == SkyblockWorld.Park) {
+        } else if (player.getWorldProvider().type() == SkyblockWorld.ThePark || player.getWorldProvider().type() == SkyblockWorld.LegacyPark) {
             Log log = null;
             for (Log l : Log.logs)
                 if (Objects.requireNonNull(l.block().registry().material()).equals(event.getBlock().registry().material())) {
@@ -125,7 +124,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                     break;
                 }
             if (log != null) {
-                ((Park) player.getWorldProvider()).brokenLogs.put(event.getBlockPosition(), new Log.LogInfo(log, event.getBlock().properties()));
+                ((LegacyPark) player.getWorldProvider()).brokenLogs.put(event.getBlockPosition(), new Log.LogInfo(log, event.getBlock().properties()));
                 blockBreakLog(event, player, log);
                 return;
             }

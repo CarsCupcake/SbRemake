@@ -14,7 +14,6 @@ import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Returnable;
 import me.carscupcake.sbremake.worlds.impl.*;
 import me.carscupcake.sbremake.worlds.region.Region;
-import net.hollowcube.polar.PolarLoader;
 import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.ChunkRange;
@@ -28,7 +27,6 @@ import net.minestom.server.network.packet.server.play.DestroyEntitiesPacket;
 import net.minestom.server.registry.DynamicRegistry;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
-import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.world.DimensionType;
 import net.sf.sevenzipjbinding.ExtractOperationResult;
 import net.sf.sevenzipjbinding.IInArchive;
@@ -97,10 +95,22 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             return new DwarvenMines();
         }
     },
-    Park("park", FileEnding.ZIP) {
+    LegacyPark("park", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
-            return new Park();
+            return new LegacyPark();
+        }
+    },
+    ThePark("the_park", FileEnding.ZIP) {
+        @Override
+        public WorldProvider get() {
+            return new ThePark();
+        }
+    },
+    Galatea("galatea", FileEnding.ZIP) {
+        @Override
+        public WorldProvider get() {
+            return new Galatea();
         }
     },
     FarmingIsles("farming_isles", FileEnding.ZIP) {
