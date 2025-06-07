@@ -880,9 +880,9 @@ public class SkyblockPlayer extends Player {
     public void setGui(Gui gui) {
         if (gui == null) {
             if (this.gui == null) return;
-            closeInventory();
             this.gui.getPlayers().remove(this);
             this.gui = null;
+            closeInventory();
             return;
         }
         openInventory(gui.getInventory());
