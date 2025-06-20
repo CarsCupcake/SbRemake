@@ -13,6 +13,7 @@ import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.component.CustomData;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.tag.Tag;
@@ -89,7 +90,7 @@ public class ConfigSection {
         JsonObject object = new JsonObject();
         int size = stack.item().amount();
         object.addProperty("size", size);
-        object.add("nbt", nbtCompoundToJson((CompoundBinaryTag) stack.item().getTag(Tag.NBT("ExtraAttributes"))));
+        object.add("nbt", nbtCompoundToJson(Objects.requireNonNull(stack.item().get(DataComponents.CUSTOM_DATA)).nbt()));
         return object;
     }
 
@@ -99,7 +100,7 @@ public class ConfigSection {
         String id = tag.getString("id");
         SbItemStack stack = SbItemStack.from(id);
         assert stack != null;
-        ItemStack item = stack.item().withTag(Tag.NBT("ExtraAttributes"), tag).withAmount(size);
+        ItemStack item = stack.item().with(DataComponents.CUSTOM_DATA, new CustomData(tag)).withAmount(size);
         SbItemStack sbItemStack = SbItemStack.from(item);
         Map<SkyblockEnchantment, Integer> enchantmentIntegerMap = sbItemStack.getEnchantments();
         if (!enchantmentIntegerMap.isEmpty()) {

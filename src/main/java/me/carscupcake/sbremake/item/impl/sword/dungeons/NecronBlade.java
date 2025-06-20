@@ -18,12 +18,14 @@ import me.carscupcake.sbremake.util.TaskScheduler;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.nbt.StringBinaryTag;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
+import net.minestom.server.item.component.CustomData;
 import net.minestom.server.particle.Particle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -92,8 +94,8 @@ public class NecronBlade implements ISbItem, ISbItem.StatProvider, Dungeonizable
         @Override
         public @Nullable List<Ability> getFromNbt(SbItemStack item) {
             if (!(item.sbItem() instanceof NecronBlade)) return null;
-            var scrolls = ((CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES)).getList("ability_scrolls", ListBinaryTag.empty());
-            if (scrolls.size() == 0) return List.of();
+            var scrolls = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt().getList("ability_scrolls", ListBinaryTag.empty());
+            if (scrolls.isEmpty()) return List.of();
             if (scrolls.size() == 3) return List.of(WITHER_IMPACT);
             var list = new ArrayList<Ability>(scrolls.size());
             for (var scroll : scrolls) {
@@ -115,7 +117,7 @@ public class NecronBlade implements ISbItem, ISbItem.StatProvider, Dungeonizable
                 scrolls.add(StringBinaryTag.stringBinaryTag("IMPLOSION_SCROLL"));
                 scrolls.add(StringBinaryTag.stringBinaryTag("SHADOW_WARP_SCROLL"));
                 scrolls.add(StringBinaryTag.stringBinaryTag("WITHER_SHIELD_SCROLL"));
-                return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, ((CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES)).put("ability_scrolls", scrolls.build())));
+                return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt().put("ability_scrolls", scrolls.build()))));
             }
             for (var ability : abilities) {
                 if (ability == WITHER_IMPACT) {
@@ -128,7 +130,7 @@ public class NecronBlade implements ISbItem, ISbItem.StatProvider, Dungeonizable
                 if (ability == WITHER_SHIELD) scrolls.add(StringBinaryTag.stringBinaryTag("WITHER_SHIELD_SCROLL"));
                 if (ability == IMPLOSION) scrolls.add(StringBinaryTag.stringBinaryTag("IMPLOSION_SCROLL"));
             }
-            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, ((CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES)).put("ability_scrolls", scrolls.build())));
+            return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt().put("ability_scrolls", scrolls.build()))));
         }
     };
 

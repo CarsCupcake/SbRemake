@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.item.impl.axe;
 
+import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.ItemType;
@@ -12,9 +13,11 @@ import me.carscupcake.sbremake.util.Cost;
 import me.carscupcake.sbremake.util.ItemCost;
 import net.minestom.server.item.Material;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Treecapitator implements ISbItem, GemstoneSlots {
+public class Treecapitator implements ISbItem, GemstoneSlots, ISbItem.StatProvider {
     @Override
     public String getId() {
         return "TREECAPITATOR_AXE";
@@ -64,5 +67,12 @@ public class Treecapitator implements ISbItem, GemstoneSlots {
     public Cost[][] getLockedSlotCost() {
         return new Cost[][]{{new CoinsCost(50_000), new ItemCost(Gemstone.gemstones.get(Gemstone.Type.Citrine).get(Gemstone.Quality.Fine).asItem(), 20)},
                 {new CoinsCost(100_000), new ItemCost(Gemstone.gemstones.get(Gemstone.Type.Citrine).get(Gemstone.Quality.Fine).asItem(), 40)}};
+    }
+
+    private final Map<Stat, Number> stats = Map.of(Stat.Sweep, 25);
+
+    @Override
+    public Map<Stat, Number> stats() {
+        return stats;
     }
 }

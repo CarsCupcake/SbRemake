@@ -390,13 +390,13 @@ public class SkyblockPlayer extends Player {
             event.setCancelled(!player.addItem(sbItemStack.update()));
         }
     }).addListener(InventoryPreClickEvent.class, event -> {
-        if (event.getInventory() == event.getPlayer().getInventory()) return;
         if (((SkyblockPlayer) event.getPlayer()).getGui() != null) return;
         if (event.getSlot() == 8) {
             event.setCancelled(true);
             ((SkyblockPlayer) event.getPlayer()).openSkyblockMenu();
             return;
         }
+        if (event.getInventory() == event.getPlayer().getInventory()) return;
         if (event.getSlot() < 41 || event.getSlot() > 44) {
             if (event.getClick() instanceof Click.LeftShift || event.getClick() instanceof Click.RightShift) {
                 SbItemStack clicked = SbItemStack.from(event.getClickedItem());

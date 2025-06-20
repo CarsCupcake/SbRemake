@@ -9,8 +9,10 @@ import me.carscupcake.sbremake.item.impl.pets.Pet;
 import me.carscupcake.sbremake.item.impl.pets.PetItem;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.tag.Tag;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -56,7 +58,7 @@ public class StoredPet {
 
     public static StoredPet to(SbItemStack item) {
         Pet.PetInfo info = item.getModifier(Modifier.PET_INFO);
-        return new StoredPet(info.pet(), info.exp(), info.rarity(), info.petItem(), info.petCandyUsed(), UUID.fromString(((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getString("uuid")));
+        return new StoredPet(info.pet(), info.exp(), info.rarity(), info.petItem(), info.petCandyUsed(), UUID.fromString(Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt().getString("uuid")));
     }
 
     public void addXp(double amount) {

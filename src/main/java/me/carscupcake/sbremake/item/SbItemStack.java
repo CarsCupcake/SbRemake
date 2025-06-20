@@ -18,6 +18,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.StringBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.component.DataComponents;
@@ -30,6 +31,7 @@ import net.minestom.server.item.Material;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.component.HeadProfile;
 import net.minestom.server.item.component.PotionContents;
+import net.minestom.server.item.component.TooltipDisplay;
 import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.potion.PotionType;
 import net.minestom.server.tag.Tag;
@@ -77,10 +79,9 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     @NotNull
     public static SbItemStack from(ItemStack stack) {
         if (stack == null || stack.material() == Material.AIR) return AIR;
-        CompoundBinaryTag compound = (CompoundBinaryTag) stack.getTag(Tag.NBT("ExtraAttributes"));
-        if (compound == null || !compound.keySet().contains("id"))
+        if (!stack.hasTag(Tag.NBT("id")))
             return Objects.requireNonNull(base(stack.material()).withAmount(stack.amount()));
-        ISbItem iSbItem = items.get(compound.getString("id"));
+        ISbItem iSbItem = items.get(((StringBinaryTag) stack.getTag(Tag.NBT("id"))).value());
         if (iSbItem == null) return base(stack.material());
         return new SbItemStack(stack, iSbItem);
     }
@@ -131,7 +132,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                 list = list.with(Enchantment.PROTECTION, 1);
             }
         }
-        return new SbItemStack(itemStack.with(DataComponents.LORE, lore).with(DataComponents.ENCHANTMENTS, list).with(DataComponents.CUSTOM_NAME, Component.text(getRarity().getPrefix() + displayName())), sbItem);
+        return new SbItemStack(itemStack.with(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(false, ISbItem.HIDDEN_COMPONENTS))
+                .with(DataComponents.LORE, lore).with(DataComponents.ENCHANTMENTS, list).with(DataComponents.CUSTOM_NAME, Component.text(getRarity().getPrefix() + displayName())), sbItem);
     }
 
     public String displayName() {
@@ -179,7 +181,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     Rarity - Type String
      */
     private static final Stat[] redStats = {Stat.Damage, Stat.Strength, Stat.CritChance, Stat.CritDamage, Stat.AttackSpeed};
-    private static final Stat[] greenStats = {Stat.SwingRange, Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck, Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed, Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune, Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed, Stat.Vitality, Stat.Mending};
+    private static final Stat[] greenStats = {Stat.SwingRange, Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck, Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed, Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune, Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed, Stat.Vitality, Stat.Mending, Stat.Sweep};
 
     public List<String> buildLore(@Nullable SkyblockPlayer player) {
         GemstoneSlot[] gemstoneSlots = getModifier(Modifier.GEMSTONE_SLOTS);

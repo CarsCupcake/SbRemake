@@ -6,12 +6,12 @@ import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.util.Returnable;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.inventory.Inventory;
+import net.minestom.server.item.component.CustomData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-
-import static me.carscupcake.sbremake.item.modifiers.Modifier.EXTRA_ATTRIBUTES;
 
 public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result, int amount, int prioritySlot,
                            Grid grid, Requirement... requirements) implements Recipe {
@@ -88,13 +88,13 @@ public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result,
         var item = result.create().withAmount(amount);
         if (prioritySlot == -1 || items == null)
             return item;
-        var component = (CompoundBinaryTag) items.get(prioritySlot).item().getTag(EXTRA_ATTRIBUTES);
-        var resC = (CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES);
+        var component = items.get(prioritySlot).item().get(DataComponents.CUSTOM_DATA).nbt();
+        var resC = item.item().get(DataComponents.CUSTOM_DATA).nbt();
         for (var entry : component) {
             if (entry.getKey().equalsIgnoreCase("id")) continue;
             resC = resC.put(entry.getKey(), entry.getValue());
         }
-        return SbItemStack.from(item.item().withTag(EXTRA_ATTRIBUTES, resC)).update();
+        return SbItemStack.from(item.item().with(DataComponents.CUSTOM_DATA, new CustomData(resC))).update();
     }
 
     @Override

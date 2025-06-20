@@ -6,6 +6,8 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.minestom.server.component.DataComponents;
+import net.minestom.server.item.component.CustomData;
 
 import java.util.Objects;
 import java.util.Random;
@@ -49,7 +51,7 @@ public record RngMeterItemLoot(SbItemStack item, int min, int max, SlayerLootTab
             if (meter.getSelected() != null && meter.getSelected().contains(this))
                 meter.setRngMeterXp(0);
         }
-        SbItemStack itemStack = (item.sbItem().isUnstackable()) ? SbItemStack.from(item.item().withTag(Modifier.EXTRA_ATTRIBUTES, ((CompoundBinaryTag) item.item().getTag(Modifier.EXTRA_ATTRIBUTES)).putString("uuid", UUID.randomUUID().toString()))) : item;
+        SbItemStack itemStack = (item.sbItem().isUnstackable()) ? SbItemStack.from(item.item().with(DataComponents.CUSTOM_DATA, new CustomData(Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt().putString("uuid", UUID.randomUUID().toString())))) : item;
         return Set.of(Objects.requireNonNull(max - min == 0 ? itemStack.withAmount(max) : itemStack.withAmount(new Random().nextInt(max - min) + min)).update(player));
     }
 

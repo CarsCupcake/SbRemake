@@ -33,6 +33,7 @@ public enum Stat {
     CocoaBeansFortune(true, "Cocoa Beans Fortune", "☘", "§6"),
     ForagingFortune("Foraging Fortune", "☘", "§6", false),
     BreakingPower("Breaking Power", "Ⓟ", "§2", false),
+    Sweep("Sweep", "∮", "§2", false, 0, 200),
     Pristine("Pristine", "✧", "§5", false),
     FishingSpeed("Fishing Speed", "☂", "§b", false, 0, 500),
     ColdResistance("Cold Resistance", "❄", "§b", false),

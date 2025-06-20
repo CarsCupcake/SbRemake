@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.item.impl.axe;
 
+import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.event.LogBreakEvent;
 import me.carscupcake.sbremake.item.*;
@@ -61,15 +62,19 @@ public class JungleAxe implements ISbItem, Listener, GemstoneSlots {
         return LorePlace.BelowAbility;
     }
 
+    @Override
+    public double getStat(Stat stat) {
+        return stat == Stat.Sweep ? 10 : 0;
+    }
+
     private static final HashMap<SkyblockPlayer, Long> cooldown = new HashMap<>();
 
     @Override
     public EventNode<Event> node() {
-        return EventNode.all("jungle_axe").addListener(LogBreakEvent.class, event -> {
+        return EventNode.all("sweep").addListener(LogBreakEvent.class, event -> {
             SbItemStack stack = event.player().getSbItemInHand(PlayerHand.MAIN);
             if (stack == null) return;
-            ISbItem item = stack.sbItem();
-            int blocks = item instanceof JungleAxe ? 10 : (item instanceof Treecapitator ? 35 : 0);
+            int blocks = (int) event.player().getStat(Stat.Sweep);
             if (blocks == 0) return;
             long last = cooldown.getOrDefault(event.player(), 0L);
             long now = System.currentTimeMillis();

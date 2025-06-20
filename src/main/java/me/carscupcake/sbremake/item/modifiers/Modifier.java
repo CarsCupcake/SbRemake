@@ -23,6 +23,7 @@ import net.kyori.adventure.nbt.*;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.component.CustomData;
 import net.minestom.server.item.component.HeadProfile;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
@@ -32,12 +33,11 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 public interface Modifier<T> {
-    Tag<BinaryTag> EXTRA_ATTRIBUTES = Tag.NBT("ExtraAttributes");
     Modifier<Reforge> REFORGE = new Modifier<>() {
         @Override
         public Reforge getFromNbt(SbItemStack item) {
             if (item == SbItemStack.AIR) return null;
-            String id = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getString("reforge", "");
+            String id = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt().getString("reforge", "");
             if (id.isEmpty()) return null;
             return Reforge.reforges.get(id);
         }
@@ -45,15 +45,15 @@ public interface Modifier<T> {
         @Override
         public SbItemStack toNbt(Reforge reforge, SbItemStack itemStack) {
             ItemStack item = itemStack.item();
-            CompoundBinaryTag tag = (CompoundBinaryTag) item.getTag(Tag.NBT("ExtraAttributes"));
-            return SbItemStack.from(item.withTag(Tag.NBT("ExtraAttributes"), tag.putString("reforge", reforge.getId())));
+            CompoundBinaryTag tag = Objects.requireNonNull(item.get(DataComponents.CUSTOM_DATA)).nbt();
+            return SbItemStack.from(item.with(DataComponents.CUSTOM_DATA, new CustomData(tag.putString("reforge", reforge.getId()))));
         }
     };
     Modifier<Map<SkyblockEnchantment, Integer>> ENCHANTMENTS = new Modifier<>() {
         @Override
         public Map<SkyblockEnchantment, Integer> getFromNbt(SbItemStack item) {
             if (item == SbItemStack.AIR) return new HashMap<>();
-            CompoundBinaryTag enchantments = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getCompound("enchantments");
+            CompoundBinaryTag enchantments = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt().getCompound("enchantments");
             Map<SkyblockEnchantment, Integer> enchantmentMap = new HashMap<>();
             for (String key : enchantments.keySet()) {
                 enchantmentMap.put(SkyblockEnchantment.enchantments.get(key), enchantments.getInt(key));
@@ -63,13 +63,13 @@ public interface Modifier<T> {
 
         @Override
         public SbItemStack toNbt(Map<SkyblockEnchantment, Integer> skyblockEnchantmentIntegerMap, SbItemStack itemStack) {
-            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(Tag.NBT("ExtraAttributes"));
+            CompoundBinaryTag extraAttributes = Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt();
             CompoundBinaryTag enchantments = extraAttributes.getCompound("enchantments", CompoundBinaryTag.empty());
             for (Map.Entry<SkyblockEnchantment, Integer> entry : skyblockEnchantmentIntegerMap.entrySet()) {
                 enchantments = enchantments.putInt(entry.getKey().getId(), entry.getValue());
             }
             extraAttributes = extraAttributes.put("enchantments", enchantments);
-            return SbItemStack.from(itemStack.item().withTag(Tag.NBT("ExtraAttributes"), extraAttributes));
+            return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(extraAttributes)));
         }
     };
     Modifier<List<String>> UNLOCKED_GEMSTONE_SLOTS = new Modifier<>() {
@@ -77,7 +77,7 @@ public interface Modifier<T> {
         public List<String> getFromNbt(SbItemStack item) {
             if (item == SbItemStack.AIR) return new ArrayList<>();
             if (!(item.sbItem() instanceof GemstoneSlots)) return new ArrayList<>();
-            CompoundBinaryTag gems = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getCompound("gems");
+            CompoundBinaryTag gems = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt().getCompound("gems");
             List<String> unlocked = new ArrayList<>();
             for (BinaryTag tag : gems.getList("unlocked_slots")) {
                 unlocked.add(((StringBinaryTag) tag).value());
@@ -87,11 +87,11 @@ public interface Modifier<T> {
 
         @Override
         public SbItemStack toNbt(List<String> strings, SbItemStack itemStack) {
-            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(Tag.NBT("ExtraAttributes"));
+            CompoundBinaryTag extraAttributes = Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt();
             CompoundBinaryTag gems = extraAttributes.getCompound("gems");
             List<BinaryTag> tags = new ArrayList<>();
             for (String s : strings) tags.add(StringBinaryTag.stringBinaryTag(s));
-            ItemStack item = itemStack.item().withTag(Tag.NBT("ExtraAttributes"), extraAttributes.put("gems", gems.put("unlocked_slots", ListBinaryTag.listBinaryTag(BinaryTagTypes.STRING, tags))));
+            ItemStack item = itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(extraAttributes.put("gems", gems.put("unlocked_slots", ListBinaryTag.listBinaryTag(BinaryTagTypes.STRING, tags)))));
             return SbItemStack.from(item);
         }
     };
@@ -101,7 +101,7 @@ public interface Modifier<T> {
             if (item == SbItemStack.AIR) return new GemstoneSlot[0];
             if (!(item.sbItem() instanceof GemstoneSlots slots)) return new GemstoneSlot[0];
             GemstoneSlot[] gemstoneSlots = new GemstoneSlot[slots.getGemstoneSlots().length];
-            CompoundBinaryTag gems = ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getCompound("gems");
+            CompoundBinaryTag gems = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt().getCompound("gems");
             List<String> unlocked = item.getModifier(UNLOCKED_GEMSTONE_SLOTS);
             int i = 0;
             boolean[] unlockedByDefault = slots.getUnlocked();
@@ -125,7 +125,7 @@ public interface Modifier<T> {
         @Override
         public SbItemStack toNbt(GemstoneSlot[] gemstoneSlots, SbItemStack itemStack) {
             if (!(itemStack.sbItem() instanceof GemstoneSlots slots)) return itemStack;
-            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(Tag.NBT("ExtraAttributes"));
+            CompoundBinaryTag extraAttributes = Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt();
             CompoundBinaryTag gems = CompoundBinaryTag.empty();
             List<String> unlocked = new ArrayList<>();
             int i = 0;
@@ -137,7 +137,7 @@ public interface Modifier<T> {
                 }
                 i++;
             }
-            SbItemStack item = SbItemStack.from(itemStack.item().withTag(Tag.NBT("ExtraAttributes"), extraAttributes.put("gems", gems)));
+            SbItemStack item = SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(extraAttributes.put("gems", gems))));
             return item.withModifier(UNLOCKED_GEMSTONE_SLOTS, unlocked);
         }
     };
@@ -146,7 +146,7 @@ public interface Modifier<T> {
         @Override
         public @Nullable Pair<Attribute, Attribute> getFromNbt(SbItemStack item) {
             if (item == SbItemStack.AIR) return null;
-            var extraAttributes = (CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES);
+            var extraAttributes = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt();
             var attributes = extraAttributes.getCompound("attributes", CompoundBinaryTag.empty());
             if (CompoundBinaryTag.empty() == attributes) return null;
             if (attributes.size() != 2) return null;
@@ -158,15 +158,15 @@ public interface Modifier<T> {
 
         @Override
         public SbItemStack toNbt(Pair<Attribute, Attribute> abstractAttributeAbstractAttributePair, SbItemStack itemStack) {
-            var extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES);
+            var extraAttributes = Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt();
             var attributes = CompoundBinaryTag.builder().putInt(abstractAttributeAbstractAttributePair.getFirst().attribute().getId(), abstractAttributeAbstractAttributePair.getFirst().level()).putInt(abstractAttributeAbstractAttributePair.getSecond().attribute().getId(), abstractAttributeAbstractAttributePair.getSecond().level()).build();
-            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, extraAttributes.put("attributes", attributes)));
+            return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(extraAttributes.put("attributes", attributes))));
         }
     };
     Modifier<Pet.PetInfo> PET_INFO = new Modifier<>() {
         @Override
         public Pet.PetInfo getFromNbt(SbItemStack item) {
-            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"));
+            CompoundBinaryTag extraAttributes = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt();
             CompoundBinaryTag petInfoTag = extraAttributes.getCompound("petInfo");
             if (CompoundBinaryTag.empty() == petInfoTag)
                 return new Pet.PetInfo(null, ItemRarity.SPECIAL, 0, 0, null, 0);
@@ -179,19 +179,19 @@ public interface Modifier<T> {
         @Override
         public SbItemStack toNbt(Pet.PetInfo petInfo, SbItemStack itemStack) {
             ItemStack item = itemStack.item().with(DataComponents.PROFILE, new HeadProfile(new PlayerSkin("", petInfo.pet().skullValue())));
-            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(Tag.NBT("ExtraAttributes"));
+            CompoundBinaryTag extraAttributes = Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt();
             CompoundBinaryTag petInfoTag = extraAttributes.getCompound("petInfo");
             petInfoTag = petInfoTag.putString("type", petInfo.pet().getId()).putDouble("exp", petInfo.exp()).putInt("candyUsed", petInfo.petCandyUsed()).putString("tier", petInfo.rarity().name());
             if (petInfo.petItem() == null) petInfoTag = petInfoTag.remove("heldItem");
             else petInfoTag = petInfoTag.putString("heldItem", petInfo.petItem().getId());
-            return SbItemStack.from(item.withTag(Tag.NBT("ExtraAttributes"), extraAttributes.put("petInfo", petInfoTag)));
+            return SbItemStack.from(item.with(DataComponents.CUSTOM_DATA, new CustomData(extraAttributes.put("petInfo", petInfoTag))));
         }
     };
     Modifier<List<PotionInfo.PotionEffect>> POTION_EFFECTS = new Modifier<>() {
         @Override
         public List<PotionInfo.PotionEffect> getFromNbt(SbItemStack item) {
             List<PotionInfo.PotionEffect> effects = new ArrayList<>();
-            for (BinaryTag binaryTag : ((CompoundBinaryTag) item.item().getTag(Tag.NBT("ExtraAttributes"))).getList("effects")) {
+            for (BinaryTag binaryTag : Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt().getList("effects")) {
                 CompoundBinaryTag c = (CompoundBinaryTag) binaryTag;
                 effects.add(new PotionInfo.PotionEffect(IPotion.potions.get(c.getString("effect")), c.getByte("level"), c.getLong("duration_ticks")));
             }
@@ -200,18 +200,18 @@ public interface Modifier<T> {
 
         @Override
         public SbItemStack toNbt(List<PotionInfo.PotionEffect> effects, SbItemStack itemStack) {
-            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(Tag.NBT("ExtraAttributes"));
+            CompoundBinaryTag extraAttributes = Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt();
             List<BinaryTag> tags = new ArrayList<>();
             for (PotionInfo.PotionEffect effect : effects) {
                 tags.add(CompoundBinaryTag.empty().putString("effect", effect.potion().getId()).putByte("level", effect.level()).putLong("duration_ticks", effect.durationTicks()));
             }
-            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, extraAttributes.put("effects", ListBinaryTag.listBinaryTag(BinaryTagTypes.COMPOUND, tags))));
+            return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(extraAttributes.put("effects", ListBinaryTag.listBinaryTag(BinaryTagTypes.COMPOUND, tags)))));
         }
     };
     Modifier<PotionInfo> POTION = new Modifier<>() {
         @Override
         public @Nullable PotionInfo getFromNbt(SbItemStack item) {
-            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES);
+            CompoundBinaryTag extraAttributes = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt();
             String potionType = extraAttributes.getString("potion_type");
             if (potionType.isEmpty()) return null;
             String potion = extraAttributes.getString("potion");
@@ -224,16 +224,17 @@ public interface Modifier<T> {
         @Override
         public SbItemStack toNbt(PotionInfo potionInfo, SbItemStack itemStack) {
             itemStack = itemStack.withModifier(POTION_EFFECTS, potionInfo.effects());
-            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES);
+            CompoundBinaryTag extraAttributes = Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt();
             if (potionInfo.customPotionName() != null)
                 extraAttributes = extraAttributes.putString("potion_name", potionInfo.customPotionName());
-            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, extraAttributes.putString("potion", potionInfo.potion().getId()).putBoolean("enhanced", potionInfo.enhanced()).putBoolean("extended", potionInfo.extended()).putByte("potion_level", potionInfo.potionLevel()).putString("potion_type", potionInfo.potionType().name())));
+            return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA,
+                    new CustomData(extraAttributes.putString("potion", potionInfo.potion().getId()).putBoolean("enhanced", potionInfo.enhanced()).putBoolean("extended", potionInfo.extended()).putByte("potion_level", potionInfo.potionLevel()).putString("potion_type", potionInfo.potionType().name()))));
         }
     };
     Modifier<RuneModifier> RUNE = new Modifier<>() {
         @Override
         public @Nullable RuneModifier getFromNbt(SbItemStack item) {
-            CompoundBinaryTag extraAttributes = (CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES);
+            CompoundBinaryTag extraAttributes = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt();
             CompoundBinaryTag tag = extraAttributes.getCompound("runes");
             Iterator<Map.Entry<String, ? extends BinaryTag>> it = tag.iterator();
             if (!it.hasNext()) return null;
@@ -243,30 +244,31 @@ public interface Modifier<T> {
 
         @Override
         public SbItemStack toNbt(RuneModifier iRune, SbItemStack itemStack) {
-            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, ((CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES)).put("runes", iRune == null ? CompoundBinaryTag.empty() : CompoundBinaryTag.empty().putInt(iRune.rune().getId(), iRune.level()))));
+            return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt().put("runes", iRune == null ?
+                    CompoundBinaryTag.empty() : CompoundBinaryTag.empty().putInt(iRune.rune().getId(), iRune.level())))));
         }
     };
     Modifier<Integer> STARS = new Modifier<>() {
         @Override
         public Integer getFromNbt(SbItemStack item) {
-            return ((CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES)).getInt("upgrade_level", 0);
+            return (Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt()).getInt("upgrade_level", 0);
         }
 
         @Override
         public SbItemStack toNbt(Integer integer, SbItemStack itemStack) {
-            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, ((CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES)).putInt("upgrade_level", integer)));
+            return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData((Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt()).putInt("upgrade_level", integer))));
         }
     };
 
     Modifier<Integer> RarityUpgrades = new Modifier<>() {
         @Override
         public @NotNull Integer getFromNbt(SbItemStack item) {
-            return ((CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES)).getInt("rarity_upgrades", 0);
+            return (Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt()).getInt("rarity_upgrades", 0);
         }
 
         @Override
         public SbItemStack toNbt(Integer i, SbItemStack itemStack) {
-            return SbItemStack.from(itemStack.item().withTag(EXTRA_ATTRIBUTES, ((CompoundBinaryTag) itemStack.item().getTag(EXTRA_ATTRIBUTES)).putInt("rarity_upgrades", i)));
+            return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt().putInt("rarity_upgrades", i))));
         }
     };
 

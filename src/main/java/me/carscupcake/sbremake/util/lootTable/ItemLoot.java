@@ -6,7 +6,9 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.Material;
+import net.minestom.server.item.component.CustomData;
 
 import java.util.*;
 
@@ -53,7 +55,8 @@ public record ItemLoot(SbItemStack item, int min, int max, double chance, boolea
     @Override
     public Set<SbItemStack> loot(SkyblockPlayer player) {
         int amount = (min == max) ? max : (new Random().nextInt(max - min) + min);
-        SbItemStack item = (this.item.sbItem().isUnstackable()) ? SbItemStack.from(this.item.item().withTag(Modifier.EXTRA_ATTRIBUTES, ((CompoundBinaryTag) this.item.item().getTag(Modifier.EXTRA_ATTRIBUTES)).putString("uuid", UUID.randomUUID().toString()))) : this.item;
+        SbItemStack item = (this.item.sbItem().isUnstackable()) ? SbItemStack.from(this.item.item().with(DataComponents.CUSTOM_DATA, new CustomData(Objects.requireNonNull(this.item.item().get(DataComponents.CUSTOM_DATA)).nbt()
+                .putString("uuid", UUID.randomUUID().toString())))) : this.item;
         item = item.withAmount(amount);
         if (item == null) return new HashSet<>(0);
         if (builder != null)

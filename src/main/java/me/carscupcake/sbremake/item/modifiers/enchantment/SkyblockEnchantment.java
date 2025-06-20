@@ -18,14 +18,12 @@ import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.component.CustomData;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.tag.Tag;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public interface SkyblockEnchantment {
     Map<String, SkyblockEnchantment> enchantments = new HashMap<>();
@@ -49,7 +47,7 @@ public interface SkyblockEnchantment {
     }
 
     default ItemStack apply(ItemStack item, int level) {
-        CompoundBinaryTag tag = (CompoundBinaryTag) item.getTag(Tag.NBT("ExtraAttributes"));
+        CompoundBinaryTag tag = Objects.requireNonNull(item.get(DataComponents.CUSTOM_DATA)).nbt();
         CompoundBinaryTag enchantments = tag.getCompound("enchantments", CompoundBinaryTag.from(new HashMap<>()));
         if (level > 0) {
             enchantments = enchantments.putInt(getId(), level);
@@ -58,7 +56,7 @@ public interface SkyblockEnchantment {
         if (enchantments.size() == 1) {
             item = item.with(DataComponents.ENCHANTMENTS, new EnchantmentList(Enchantment.PROTECTION, 1));
         }
-        return item.withTag(Tag.NBT("ExtraAttributes"), tag.put("enchantments", enchantments));
+        return item.with(DataComponents.CUSTOM_DATA, new CustomData(tag.put("enchantments", enchantments)));
     }
 
     EventNode<Event> LISTENER = EventNode.all("enchantments")

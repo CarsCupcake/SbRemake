@@ -23,6 +23,7 @@ import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.AttributeList;
+import net.minestom.server.item.component.CustomData;
 import net.minestom.server.item.component.HeadProfile;
 import net.minestom.server.item.component.TooltipDisplay;
 import net.minestom.server.tag.Tag;
@@ -125,7 +126,7 @@ public interface ISbItem {
         ItemStackModifiers modifiers = modifierBuilder();
         CompoundBinaryTag.Builder b = CompoundBinaryTag.builder().putString("id", getId());
         if (isUnstackable()) b = b.putString("uuid", UUID.randomUUID().toString());
-        ItemStack item = build(modifiers.apply(builder.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(false, HIDDEN_COMPONENTS)).set(Tag.NBT("ExtraAttributes"), b.build()))).build();
+        ItemStack item = build(modifiers.apply(builder.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(false, HIDDEN_COMPONENTS)).set(DataComponents.CUSTOM_DATA, new CustomData(b.build())))).build();
         SbItemStack itemStack = SbItemStack.from(modifiers.apply(item));
         return itemStack.update();
     }
