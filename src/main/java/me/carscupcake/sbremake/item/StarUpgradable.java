@@ -47,7 +47,7 @@ public interface StarUpgradable {
             return true;
         });
         gui.setGeneralClickEvent(inventoryPreClickEvent -> {
-            if (inventoryPreClickEvent.getInventory() == null) return false;
+            if (inventoryPreClickEvent.getInventory() == inventoryPreClickEvent.getPlayer().getInventory()) return false;
             if (inventoryPreClickEvent.getSlot() == 31 && crafted.get()) {
                 return false;
             }
@@ -83,7 +83,7 @@ public interface StarUpgradable {
             return true;
         });
         gui.setPostClickEvent(event -> {
-            if (event.getInventory() == null) return;
+            if (event.getInventory() == event.getPlayer().getInventory()) return;
             if (event.getSlot() == 31 && crafted.get()) {
                 gui.getInventory().setItemStack(31, new ItemBuilder(Material.BARRIER).setLore(emptyUpgradeLore).setName("§cUpgrade Item").build());
                 gui.getInventory().setItemStack(22, emptyAnvil);

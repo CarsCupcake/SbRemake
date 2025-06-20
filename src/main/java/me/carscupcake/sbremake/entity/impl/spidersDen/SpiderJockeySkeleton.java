@@ -30,10 +30,6 @@ public class SpiderJockeySkeleton extends SkyblockEntity implements SkillXpDropp
         super(EntityType.SKELETON);
         this.inSpidersMound = inSpidersMound;
         setEquipment(EquipmentSlot.MAIN_HAND, ItemStack.of(Material.BOW));
-        RangedSilverfishAttackGoal rangedAttackGoal = new RangedSilverfishAttackGoal(this, 40, 25, 15, false, TimeUnit.SERVER_TICK);
-        EntityAIGroup group = new EntityAIGroup();
-        group.getGoalSelectors().add(rangedAttackGoal);
-        group.getTargetSelectors().addAll(regionTarget(this, inSpidersMound ? SpidersDen.Region.SpiderMound : SpidersDen.Region.ArachnesBurrow, 16).getTargetSelectors());
     }
 
     @Override

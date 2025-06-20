@@ -5,7 +5,7 @@ import lombok.Getter;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.minestom.server.item.ItemComponent;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
@@ -32,7 +32,7 @@ public class ItemStackModifiers {
 
     public ItemStack.Builder apply(ItemStack.Builder builder) {
         if (glint || !baseEnchantments.isEmpty())
-            builder.set(ItemComponent.ENCHANTMENTS, new EnchantmentList(Enchantment.PROTECTION, 1).withTooltip(false));
+            builder.set(DataComponents.ENCHANTMENTS, new EnchantmentList(Enchantment.PROTECTION, 1));
         for (Map.Entry<String, BinaryTag> tagEntry : baseTags.entrySet()) {
             builder.setTag(Tag.NBT("ExtraAttributes"), tagEntry.getValue());
         }

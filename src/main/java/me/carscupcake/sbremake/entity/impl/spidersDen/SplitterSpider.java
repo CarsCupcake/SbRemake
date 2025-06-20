@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
+import me.carscupcake.sbremake.worlds.impl.SpidersDen;
 import net.minestom.server.entity.EntityType;
 import org.jetbrains.annotations.Range;
 
@@ -49,7 +50,7 @@ public class SplitterSpider extends SkyblockEntity implements SkillXpDropper {
 
     @Override
     public void spawn() {
-        addAIGroup(zombieAiGroup(this));
+        addAIGroup(zombieAiGroup(this, tier == 1 ? SpidersDen.Region.SpiderMound : SpidersDen.Region.ArachnesBurrow));
     }
 
     @Override

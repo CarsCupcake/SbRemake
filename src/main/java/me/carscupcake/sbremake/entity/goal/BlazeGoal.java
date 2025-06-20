@@ -36,6 +36,7 @@ public class BlazeGoal extends GoalSelector {
 
     @Override
     public void tick(long time) {
+        if (entity.getTarget() != null) return;
         --attackCooldown;
         if (attackCooldown == 20 && blazeMeta != null) {
             blazeMeta.setOnFire(true);

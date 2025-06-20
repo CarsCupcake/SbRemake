@@ -13,6 +13,7 @@ import me.carscupcake.sbremake.item.modifiers.enchantment.UltimateEnchantments;
 import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.accessories.AccessoryBag;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.potion.IPotion;
 import me.carscupcake.sbremake.player.potion.Potion;
@@ -37,8 +38,6 @@ import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.network.ConnectionState;
-import net.minestom.server.network.packet.client.configuration.ClientSelectKnownPacksPacket;
 import net.minestom.server.network.packet.client.play.ClientConfigurationAckPacket;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
@@ -76,16 +75,14 @@ import java.util.stream.Stream;
  */
 public class Main {
     public static final Object _lock = new Object();
+    private static final long startTime = System.currentTimeMillis();
+    private static final String[] registerDefaultManagers = new String[]{"banner", "trapped_chest", "skull", "chest", "sign", "brewing_stand", "enchanting_table", "furnace", "dispenser", "daylight_detector", "jukebox", "beacon", "ender_chest", "dropper", "comparator", "bed", "hopper", "end_portal"};
     public static volatile AtomicBoolean running = new AtomicBoolean(true);
     public static Thread CONSOLE_THREAD;
     public static volatile SkyblockSimpleLogger LOGGER;
-    static long tickDelay = -1;
-    private static final long startTime = System.currentTimeMillis();
     public static volatile boolean isCracked = false;
+    static long tickDelay = -1;
     private volatile static ConfigFile crackedRegistry;
-
-    private static final String[] registerDefaultManagers = new String[] {"banner", "trapped_chest", "skull", "chest", "sign", "brewing_stand", "enchanting_table",
-    "furnace", "dispenser", "daylight_detector", "jukebox", "beacon", "ender_chest", "dropper", "comparator", "bed", "hopper", "end_portal"};
 
     public static void main(String[] args) throws Exception {
         MinecraftServer server = MinecraftServer.init();
@@ -110,7 +107,7 @@ public class Main {
         Recipe.init();
         LOGGER.info("Loaded {} Crafting Recipes in {}ms", Recipe.craftingRecipes.size(), System.currentTimeMillis() - time);
         MiningBlock.init();
-        MinecraftServer.getPacketListenerManager().setConfigurationListener(ClientConfigurationAckPacket.class, (clientSelectKnownPacksPacket, player) -> {
+        MinecraftServer.getPacketListenerManager().setConfigurationListener(ClientConfigurationAckPacket.class, (_, player) -> {
             System.out.println("IN: " + player.getName());
         });
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());
@@ -134,6 +131,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(AlchemySkill.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(Pets.events);
         MinecraftServer.getGlobalEventHandler().addChild(PrivateIsle.NODE);
+        MinecraftServer.getGlobalEventHandler().addChild(AccessoryBag.LISTENER);
         MinecraftServer.getGlobalEventHandler().addListener(ServerTickMonitorEvent.class, serverTickMonitorEvent -> tickDelay = (long) serverTickMonitorEvent.getTickMonitor().getTickTime());
         for (Potion potion : Potion.values()) IPotion.potions.put(potion.getId(), potion);
         MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (_, player) -> {
@@ -179,7 +177,7 @@ public class Main {
                 Command instance = constructor.newInstance();
                 commandManager.register(instance);
             } catch (Exception e) {
-                LOGGER.error("Error while instantiating " + (clazz), e);
+                LOGGER.error("Error while instantiating {}", clazz, e);
             }
         }
         for (var arg : args)
@@ -232,8 +230,7 @@ public class Main {
         Time.init();
         MinecraftServer.getSchedulerManager().scheduleTask(System::gc, TaskSchedule.seconds(5), TaskSchedule.minutes(5));
         LOGGER.info("Time to start took {}ms", System.currentTimeMillis() - startTime);
-        if (isCracked)
-            LOGGER.warn("------ Cracked Enabled - Note that this is not officially supported ------");
+        if (isCracked) LOGGER.warn("------ Cracked Enabled - Note that this is not officially supported ------");
     }
 
     private static void loadBlockDrops() throws URISyntaxException {
@@ -241,17 +238,13 @@ public class Main {
         try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
             Path folderRootPath = fileSystem.getPath("assets/loot/blocks");
             try (Stream<Path> stream = Files.walk(folderRootPath)) {
-                BlockLootTable.blockLootTables = stream.parallel()
-                        .filter(b -> Block.fromKey(b.getFileName().toString().replace(".json", "")) != null)
-                        .map(path -> {
-                            try (var s = Files.newInputStream(path)) {
-                                return new BlockLootTable(s, Block.fromKey(path.getFileName().toString().replace(".json", "")));
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
-                        .filter(b -> b.getPools() != null)
-                        .collect(Collectors.groupingBy(blockLootTable -> blockLootTable.getBlock().registry().id(), new SingleCollector<>()));
+                BlockLootTable.blockLootTables = stream.parallel().filter(b -> Block.fromKey(b.getFileName().toString().replace(".json", "")) != null).map(path -> {
+                    try (var s = Files.newInputStream(path)) {
+                        return new BlockLootTable(s, Block.fromKey(path.getFileName().toString().replace(".json", "")));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }).filter(b -> b.getPools() != null).collect(Collectors.groupingBy(blockLootTable -> blockLootTable.getBlock().registry().id(), new SingleCollector<>()));
                 LOGGER.info("Loaded {} block loot tables", BlockLootTable.blockLootTables.size());
             }
         } catch (IOException e) {

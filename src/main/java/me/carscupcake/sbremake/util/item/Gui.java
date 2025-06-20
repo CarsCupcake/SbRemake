@@ -13,6 +13,7 @@ import net.minestom.server.event.inventory.InventoryCloseEvent;
 import net.minestom.server.event.inventory.InventoryItemChangeEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.inventory.Inventory;
+import net.minestom.server.inventory.click.Click;
 import net.minestom.server.inventory.click.ClickType;
 
 import java.util.HashSet;
@@ -28,8 +29,8 @@ public class Gui {
         if (player.getGui() == null) return;
         Gui gui = player.getGui();
         event.setCancelled(gui.cancelled);
-        for (Function<ClickType, Boolean> clickEvent : gui.clickEvents.get(event.getSlot()))
-            if (clickEvent.apply(event.getClickType())) event.setCancelled(true);
+        for (var clickEvent : gui.clickEvents.get(event.getSlot()))
+            if (clickEvent.apply(event.getClick())) event.setCancelled(true);
         if (gui.generalClickEvent.apply(event)) event.setCancelled(true);
 
     }).addListener(InventoryCloseEvent.class, event -> {
@@ -44,7 +45,8 @@ public class Gui {
         Gui gui = player.getGui();
         gui.getPostClickEvent().accept(event);
     }).addListener(InventoryItemChangeEvent.class, event -> {
-        if (event.getInventory() == null) return;
+        if (event.getInventory().getViewers().isEmpty()) return;
+        if (event.getInventory() == event.getInventory().getViewers().stream().findFirst().orElseThrow().getInventory()) return;
         for (Player viewer : event.getInventory().getViewers()) {
             SkyblockPlayer player = (SkyblockPlayer) viewer;
             if (player.getGui() == null) return;
@@ -59,7 +61,7 @@ public class Gui {
     private Consumer<InventoryItemChangeEvent> itemChangeEvent = (_) -> {
     };
     private Returnable<Boolean> closeEvent = () -> false;
-    private final MapList<Integer, Function<ClickType, Boolean>> clickEvents = new MapList<>();
+    private final MapList<Integer, Function<Click, Boolean>> clickEvents = new MapList<>();
     private final Inventory inventory;
     private boolean cancelled = false;
     protected final Set<SkyblockPlayer> players = new HashSet<>();

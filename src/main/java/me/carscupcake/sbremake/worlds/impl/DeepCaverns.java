@@ -258,4 +258,9 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
             }
         }
     }
+
+    @Override
+    public Pair<Pos, Pos> getChunksToLoad() {
+        return toMinMaxPair(new Pos(80, 0, 313), new Pos(-390, 0, -100));
+    }
 }

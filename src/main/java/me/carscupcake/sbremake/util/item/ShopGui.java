@@ -18,14 +18,14 @@ public class ShopGui extends Gui {
     private ShopGui(InventoryBuilder builder, SkyblockPlayer player, List<Pair<SbItemStack, Cost>> items) {
         super(builder.build());
         setGeneralClickEvent(event -> {
-            if (event.getInventory() == null) {
+            if (event.getInventory() == event.getPlayer().getInventory()) {
                 ItemStack item = event.getClickedItem();
                 SbItemStack stack = SbItemStack.from(item);
-                if (stack == null) return true;
+                if (stack == SbItemStack.AIR) return true;
                 if (stack.sbItem() instanceof NpcSellable npcSellable) {
                     int coins = npcSellable.sellPrice() * item.amount();
                     player.addCoins(coins);
-                    player.getInventory().setItemStack(event.getSlot(), ItemStack.AIR);
+                    player.getPlayerInventory().setItemStack(event.getSlot(), SbItemStack.AIR);
                     player.getSellHistory().push(new Pair<>(stack, coins));
                     player.sendMessage("§aYou sold " + (stack.displayName()) + " §8x" + (item.amount()) + " §afor §6" + (coins) + " Coins§a!");
                     updateSellHistory(player);

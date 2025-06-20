@@ -18,6 +18,7 @@ import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterItemLoot;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerLootTable;
 import net.kyori.adventure.sound.Sound;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
@@ -30,7 +31,6 @@ import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import net.minestom.server.item.component.DyedItemColor;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
@@ -76,8 +76,8 @@ public class RevenantHorrorV extends SlayerEntity {
 
     public RevenantHorrorV(SkyblockPlayer owner) {
         super(EntityType.ZOMBIE, lootTable, owner);
-        setBoots(new ItemBuilder(Material.LEATHER_BOOTS).setLeatherColor(new DyedItemColor(0xFFFFFF)).setGlint(true).build());
-        setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new DyedItemColor(0xFFFFFF)).setGlint(true).build());
+        setBoots(new ItemBuilder(Material.LEATHER_BOOTS).setLeatherColor(new Color(0xFFFFFF)).setGlint(true).build());
+        setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new Color(0xFFFFFF)).setGlint(true).build());
         setChestplate(new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
         setHelmet(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjg0Njk5MzU1NDNmYzY5ODY0MTcyYzZhZDk1Yzg5YjI4NTVjZDYwNDNkNzAyOGY2NmViZmE4NDRiNTllYTJlOSJ9fX0=").build());
         setItemInHand(PlayerHand.MAIN, new ItemBuilder(Material.IRON_SWORD).setGlint(true).build());

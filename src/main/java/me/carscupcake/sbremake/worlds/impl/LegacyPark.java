@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.worlds.impl;
 
 import me.carscupcake.sbremake.blocks.Log;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
@@ -47,5 +48,9 @@ public class LegacyPark extends SkyblockWorld.WorldProvider {
     @Override
     public boolean useCustomMining() {
         return false;
+    }
+    @Override
+    public Pair<Pos, Pos> getChunksToLoad() {
+        return new  Pair<>(new Pos(0, 0, 0), new Pos(0, 0, 0));
     }
 }

@@ -139,7 +139,7 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollGoal(entity, 16) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 16, new ArrayList<>(), true) // Walk around
         ));
         aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && !entity.isDead)));
         return aiGroup;
@@ -170,7 +170,7 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollGoal(entity, 5) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollInRegion(entity, 5, new ArrayList<>(), true) // Walk around
         ));
         aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player && !entity.isDead)));
         return aiGroup;
@@ -435,7 +435,6 @@ public abstract class SkyblockEntity extends EntityCreature {
 
         public RandomStrollInRegion(@NotNull SkyblockEntity skyblockEntity, int radius, Region region) {
             super(skyblockEntity);
-            if (skyblockEntity == null) throw new IllegalArgumentException("skyblockEntity cannot be null");
             this.entity = skyblockEntity;
             this.regions = List.of(region);
             this.radius = radius;
@@ -445,7 +444,6 @@ public abstract class SkyblockEntity extends EntityCreature {
 
         public RandomStrollInRegion(@NotNull SkyblockEntity skyblockEntity, int radius, List<Region> region, boolean isHidden) {
             super(skyblockEntity);
-            if (skyblockEntity == null) throw new IllegalArgumentException("skyblockEntity cannot be null");
             this.entity = skyblockEntity;
             this.regions = region;
             this.radius = radius;
@@ -454,7 +452,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         }
 
         public boolean shouldStart() {
-            return System.currentTimeMillis() - this.lastStroll >= DELAY + randomDelay;
+            return System.currentTimeMillis() - this.lastStroll >= DELAY + randomDelay && !entity.getInstance().getPlayers().isEmpty();
         }
 
         public void start() {
@@ -467,13 +465,15 @@ public abstract class SkyblockEntity extends EntityCreature {
                 Vec position = this.closePositions.get(index);
                 Pos target = this.entity.getPosition().add(position);
                 try {
+                    var chunk = entity.getInstance().getChunk(target.chunkX(), target.chunkZ());
+                    if (chunk == null || !chunk.isLoaded()) return;
                     boolean result = this.entity.getNavigator().setPathTo(target);
                     if (result) {
                         break;
                     }
                 } catch (NullPointerException e) {
                     //Could not care less
-                    if (e.getMessage().startsWith("Unloaded chunk")) return;
+                    if (e.getMessage().contains("Unloaded chunk at")) return;
                     throw new RuntimeException(e);
                 }
             }
@@ -497,6 +497,10 @@ public abstract class SkyblockEntity extends EntityCreature {
                     for (int z = -radius; z <= radius; ++z) {
                         Vec vec = new Vec(x, y, z);
                         var relative = this.entity.getPosition().add(vec);
+                        var chunk = entity.getInstance().getChunkAt(relative.chunkX(), relative.chunkZ());
+                        if (chunk == null || !chunk.isLoaded()) chunk = entity.getInstance().loadChunk(relative).join();
+                        if (chunk.getBlock(relative.blockX(), relative.blockY(), relative.blockZ()).isSolid()) continue;
+                        if (!chunk.getBlock(relative.blockX(), relative.blockY() - 1, relative.blockZ()).isSolid()) continue;
                         for (Region region : regions) {
                             if (region.isInRegion(relative)) {
                                 blocks.add(vec);

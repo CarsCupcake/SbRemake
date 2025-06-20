@@ -52,7 +52,6 @@ public class SkyblockPlayerInventory extends PlayerInventory {
             this.player.updateEquipmentAttributes(this.itemStacks[slot].item(), itemStack.item(), equipmentSlot);
         }
 
-        var previous = super.itemStacks[slot];
         this.itemStacks[slot] = itemStack;
         super.itemStacks[slot] = itemStack.item();
         if (sendPacket) {
@@ -60,7 +59,7 @@ public class SkyblockPlayerInventory extends PlayerInventory {
                 this.player.syncEquipment(equipmentSlot);
             }
 
-            this.sendSlotRefresh(slot, itemStack.item(), previous);
+            this.sendSlotRefresh(slot, itemStack.item());
         }
 
     }

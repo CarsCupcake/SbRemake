@@ -8,18 +8,17 @@ import com.google.gson.internal.LazilyParsedNumber;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import net.kyori.adventure.nbt.*;
+import net.kyori.adventure.text.Component;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.tag.Tag;
 import org.junit.Assert;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -60,9 +59,43 @@ public class ConfigSection {
         o.addProperty("z", pos.z());
         return o;
     });
-    public static final Data<SbItemStack> ITEM = new ClassicGetter<>(element1 -> {
-        CompoundBinaryTag tag = computeTag(element1.getAsJsonObject().get("nbt").getAsJsonObject());
-        int size = element1.getAsJsonObject().get("size").getAsInt();
+    public static final Data<SbItemStack> ITEM = new ClassicGetter<>(element -> {
+        return jsonElementToItem(element);
+    }, stack -> {
+        return itemToJson(stack);
+    });
+
+    public static final Data<SbItemStack[]> ITEM_ARRAY = new ClassicGetter<>(jsonElement -> {
+        if (!jsonElement.isJsonArray()) {
+            return null;
+        }
+        var array = jsonElement.getAsJsonArray();
+        var stack = new SbItemStack[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            stack[i] = jsonElementToItem(array.get(i));
+        }
+        return stack;
+    }, sbItemStacks -> {
+        var array = new JsonArray(sbItemStacks.length);
+        for (int i = 0; i < sbItemStacks.length; i++) {
+            array.set(i, itemToJson(sbItemStacks[i]));
+        }
+        return array;
+    });
+
+    public static final Data<UUID> UUID = new ClassicGetter<>(jsonElement -> java.util.UUID.fromString(jsonElement.getAsString()), uuid -> new JsonPrimitive(uuid.toString()));
+
+    public static JsonElement itemToJson(SbItemStack stack) {
+        JsonObject object = new JsonObject();
+        int size = stack.item().amount();
+        object.addProperty("size", size);
+        object.add("nbt", nbtCompoundToJson((CompoundBinaryTag) stack.item().getTag(Tag.NBT("ExtraAttributes"))));
+        return object;
+    }
+
+    private static SbItemStack jsonElementToItem(JsonElement element) {
+        CompoundBinaryTag tag = computeTag(element.getAsJsonObject().get("nbt").getAsJsonObject());
+        int size = element.getAsJsonObject().get("size").getAsInt();
         String id = tag.getString("id");
         SbItemStack stack = SbItemStack.from(id);
         assert stack != null;
@@ -71,19 +104,11 @@ public class ConfigSection {
         Map<SkyblockEnchantment, Integer> enchantmentIntegerMap = sbItemStack.getEnchantments();
         if (!enchantmentIntegerMap.isEmpty()) {
             EnchantmentList enchantmentList = new EnchantmentList(Enchantment.PROTECTION, 1);
-            item = sbItemStack.item().with(ItemComponent.ENCHANTMENTS, enchantmentList.withTooltip(false));
+            item = sbItemStack.item().with(DataComponents.ENCHANTMENTS, enchantmentList).withoutExtraTooltip();
             sbItemStack = SbItemStack.from(item);
         }
         return sbItemStack;
-    }, stack -> {
-        JsonObject object = new JsonObject();
-        int size = stack.item().amount();
-        object.addProperty("size", size);
-        object.add("nbt", nbtCompoundToJson((CompoundBinaryTag) stack.item().getTag(Tag.NBT("ExtraAttributes"))));
-        return object;
-    });
-
-    public static final Data<UUID> UUID = new ClassicGetter<>(jsonElement -> java.util.UUID.fromString(jsonElement.getAsString()), uuid -> new JsonPrimitive(uuid.toString()));
+    }
 
     private static JsonObject nbtCompoundToJson(CompoundBinaryTag compoundBinaryTag) {
         JsonObject object = new JsonObject();

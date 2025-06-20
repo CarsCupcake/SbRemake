@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.EntityNpc;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.WarpLocation;
@@ -115,6 +116,10 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
             FileUtils.copyDirectoryToDirectory(localCashed, findWorldFolder().getParentFile());
             Main.LOGGER.debug("Created new isle");
         }
+    }
+    @Override
+    public Pair<Pos, Pos> getChunksToLoad() {
+        return new  Pair<>(new Pos(0, 0, 0), new Pos(0, 0, 0));
     }
 
     @Override

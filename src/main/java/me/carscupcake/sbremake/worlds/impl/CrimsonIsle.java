@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.worlds.impl;
 
 import me.carscupcake.sbremake.entity.impl.crimsonIsle.WitherSpectre;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
@@ -39,5 +40,10 @@ public class CrimsonIsle extends SkyblockWorld.WorldProvider {
     protected void unregister() {
         super.unregister();
         entitySpawners.forEach(EntitySpawner::stop);
+    }
+
+    @Override
+    public Pair<Pos, Pos> getChunksToLoad() {
+        return toMinMaxPair(new Pos(40, 0, -315), new Pos(-770, 0, -1100));
     }
 }

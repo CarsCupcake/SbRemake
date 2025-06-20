@@ -63,7 +63,7 @@ public class WardenHelmet implements ISbItem, ISbItem.StatProvider, HeadWithValu
         return EventNode.all("item.warden_helmet").addListener(PlayerStatEvent.class, event -> {
             if (event.stat() == Stat.Damage) {
                 SbItemStack helmet = SbItemStack.from(event.getPlayer().getHelmet());
-                if (helmet == null) return;
+                if (helmet == SbItemStack.AIR) return;
                 if (helmet.sbItem() instanceof WardenHelmet && hasRequirements(event.player(), helmet.item())) {
                     int i = ((int) (event.player().getStat(Stat.Speed) / 25d));
                     event.modifiers().add(new PlayerStatEvent.BasicModifier("Brute Force", (i * 0.2), PlayerStatEvent.Type.AddativeMultiplier, PlayerStatEvent.StatsCategory.Ability));
@@ -71,7 +71,7 @@ public class WardenHelmet implements ISbItem, ISbItem.StatProvider, HeadWithValu
             }
             if (event.stat() == Stat.Speed) {
                 SbItemStack helmet = SbItemStack.from(event.getPlayer().getHelmet());
-                if (helmet == null) return;
+                if (helmet == SbItemStack.AIR) return;
                 if (helmet.sbItem() instanceof WardenHelmet && hasRequirements(event.player(), helmet.item())) {
                     event.modifiers().add(new PlayerStatEvent.BasicModifier("Brute Force", 0.5, PlayerStatEvent.Type.MultiplicativeMultiplier, PlayerStatEvent.StatsCategory.Ability));
                 }

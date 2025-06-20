@@ -39,6 +39,10 @@ public class SpidersDen extends SkyblockWorld.WorldProvider {
     }
 
     private final Set<EntitySpawner> entitySpawners = new HashSet<>();
+    @Override
+    public Pair<Pos, Pos> getChunksToLoad() {
+        return new  Pair<>(new Pos(0, 0, 0), new Pos(0, 0, 0));
+    }
 
     @Override
     protected void register() {

@@ -12,12 +12,11 @@ import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.PlayerDamageEntityListener;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
-import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
@@ -57,7 +56,7 @@ public interface SkyblockEnchantment {
         } else
             enchantments = enchantments.remove(getId());
         if (enchantments.size() == 1) {
-            item = item.with(ItemComponent.ENCHANTMENTS, new EnchantmentList(Enchantment.PROTECTION, 1).withTooltip(false));
+            item = item.with(DataComponents.ENCHANTMENTS, new EnchantmentList(Enchantment.PROTECTION, 1));
         }
         return item.withTag(Tag.NBT("ExtraAttributes"), tag.put("enchantments", enchantments));
     }

@@ -1,24 +1,24 @@
 package me.carscupcake.sbremake.util.item;
 
 import lombok.extern.slf4j.Slf4j;
+import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.util.Returnable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.util.RGBLike;
+import net.minestom.server.component.DataComponent;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.PlayerSkin;
-import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.*;
 import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.registry.DynamicRegistry;
+import net.minestom.server.registry.RegistryKey;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @SuppressWarnings("unused")
@@ -29,26 +29,27 @@ public class ItemBuilder {
     private int count = 1;
     private boolean isHead;
     private String headTexture;
-    private DyedItemColor leatherColor;
+    private RGBLike leatherColor;
     private ArrayList<BannerPatterns.Layer> bannerPatterns;
-    private final HashMap<DynamicRegistry.Key<Enchantment>, Integer> enchants = new HashMap<>();
+    private final Map<RegistryKey<Enchantment>, Integer> enchants = new HashMap<>();
     private boolean glint = false;
+    private boolean hideTooltip = false;
 
     public ItemBuilder(ItemStack itemStack) {
         this.material = itemStack.material();
-        this.name = ((TextComponent) Objects.requireNonNull(itemStack.get(ItemComponent.CUSTOM_NAME))).content();
-        lore.addAll(Objects.requireNonNull(itemStack.get(ItemComponent.LORE)));
+        this.name = ((TextComponent) Objects.requireNonNull(itemStack.get(DataComponents.CUSTOM_NAME))).content();
+        lore.addAll(Objects.requireNonNull(itemStack.get(DataComponents.LORE)));
         count = itemStack.amount();
-        isHead = material == Material.PLAYER_HEAD && itemStack.get(ItemComponent.PROFILE) != null;
+        isHead = material == Material.PLAYER_HEAD && itemStack.get(DataComponents.PROFILE) != null;
         if (isHead)
-            headTexture = Objects.requireNonNull(Objects.requireNonNull(itemStack.get(ItemComponent.PROFILE)).skin()).textures();
-        leatherColor = itemStack.get(ItemComponent.DYED_COLOR);
-        BannerPatterns patterns = itemStack.get(ItemComponent.BANNER_PATTERNS);
+            headTexture = Objects.requireNonNull(Objects.requireNonNull(itemStack.get(DataComponents.PROFILE)).skin()).textures();
+        leatherColor = itemStack.get(DataComponents.DYED_COLOR);
+        BannerPatterns patterns = itemStack.get(DataComponents.BANNER_PATTERNS);
         if (patterns != null) {
             bannerPatterns = new ArrayList<>();
             bannerPatterns.addAll(patterns.layers());
         }
-        EnchantmentList list = itemStack.get(ItemComponent.ENCHANTMENTS);
+        EnchantmentList list = itemStack.get(DataComponents.ENCHANTMENTS);
         if (list != null) {
             enchants.putAll(list.enchantments());
         }
@@ -146,27 +147,35 @@ public class ItemBuilder {
         return this;
     }
 
+    private static final Set<DataComponent<?>> HIDDEN_COMPONENTS = new HashSet<>(DataComponent.values());
+
     public ItemStack build() {
         ItemStack.Builder item = ItemStack.builder(material);
         if (!name.equals("N/A"))
-            item.set(ItemComponent.CUSTOM_NAME, Component.text(name));
-        item.set(ItemComponent.LORE, lore);
-        item.set(ItemComponent.ATTRIBUTE_MODIFIERS, AttributeList.EMPTY.withTooltip(false));
-        EnchantmentList enchantmentList = new EnchantmentList(enchants, false);
+            item.set(DataComponents.CUSTOM_NAME, Component.text(name));
+        item.set(DataComponents.LORE, lore);
+        item.set(DataComponents.ATTRIBUTE_MODIFIERS, AttributeList.EMPTY);
+        EnchantmentList enchantmentList = new EnchantmentList(enchants);
         if (glint && enchantmentList.enchantments().isEmpty())
-            enchantmentList = enchantmentList.with(Enchantment.PROTECTION, 1).withTooltip(false);
-        item.set(ItemComponent.ENCHANTMENTS, enchantmentList);
+            enchantmentList = enchantmentList.with(Enchantment.PROTECTION, 1);
+        item.set(DataComponents.ENCHANTMENTS, enchantmentList);
         if (leatherColor != null) {
-            item.set(ItemComponent.DYED_COLOR, leatherColor.withTooltip(false));
+            item.set(DataComponents.DYED_COLOR, leatherColor);
         }
         if (bannerPatterns != null) {
-            item.set(ItemComponent.BANNER_PATTERNS, new BannerPatterns(bannerPatterns));
+            item.set(DataComponents.BANNER_PATTERNS, new BannerPatterns(bannerPatterns));
         }
         if (isHead) {
-            item.set(ItemComponent.PROFILE, new HeadProfile(new PlayerSkin(headTexture, "")));
+            item.set(DataComponents.PROFILE, new HeadProfile(new PlayerSkin(headTexture, "")));
         }
+        item.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(hideTooltip, ISbItem.HIDDEN_COMPONENTS));
         item.amount(count);
         return item.build();
+    }
+
+    public ItemBuilder setHideTooltip(boolean hideTooltip) {
+        this.hideTooltip = hideTooltip;
+        return this;
     }
 
     public ItemBuilder setHeadTexture(String value) {
@@ -175,13 +184,8 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setLeatherColor(DyedItemColor color) {
-        this.leatherColor = color;
-        return this;
-    }
-
     public ItemBuilder setLeatherColor(RGBLike color) {
-        this.leatherColor = new DyedItemColor(color, false);
+        this.leatherColor = color;
         return this;
     }
 
@@ -196,7 +200,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addEnchant(Enchantment enchantment, int level) {
-        enchants.put(DynamicRegistry.Key.of(Objects.requireNonNull(enchantment.registry()).key()), level);
+        enchants.put(RegistryKey.unsafeOf(Objects.requireNonNull(Objects.requireNonNull(enchantment.exclusiveSet()).key()).key()), level);
         return this;
     }
 }

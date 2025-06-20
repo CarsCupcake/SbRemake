@@ -9,8 +9,8 @@ import java.util.function.Consumer;
 public class SwapSlotListener implements Consumer<PlayerChangeHeldSlotEvent> {
     @Override
     public void accept(PlayerChangeHeldSlotEvent playerSwapItemEvent) {
-        SbItemStack stack = SbItemStack.from(playerSwapItemEvent.getPlayer().getInventory().getItemStack(playerSwapItemEvent.getSlot()));
-        if (stack == null) return;
-        playerSwapItemEvent.getPlayer().getInventory().setItemStack(playerSwapItemEvent.getSlot(), stack.update((SkyblockPlayer) playerSwapItemEvent.getPlayer()).item());
+        SbItemStack stack = SbItemStack.from(playerSwapItemEvent.getPlayer().getInventory().getItemStack(playerSwapItemEvent.getNewSlot()));
+        if (stack == SbItemStack.AIR) return;
+        playerSwapItemEvent.getPlayer().getInventory().setItemStack(playerSwapItemEvent.getNewSlot(), stack.update((SkyblockPlayer) playerSwapItemEvent.getPlayer()).item());
     }
 }

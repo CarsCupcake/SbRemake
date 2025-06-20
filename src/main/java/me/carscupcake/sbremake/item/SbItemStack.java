@@ -20,11 +20,11 @@ import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.instance.Instance;
-import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.EnchantmentList;
@@ -115,23 +115,23 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         if (sbItem.getType() == ItemType.Pet) {
             Pet.PetInfo petInfo = getModifier(Modifier.PET_INFO);
             if (petInfo.pet() != null) {
-                itemStack = itemStack.with(ItemComponent.PROFILE, new HeadProfile(new PlayerSkin(petInfo.pet().skullValue(), "")));
+                itemStack = itemStack.with(DataComponents.PROFILE, new HeadProfile(new PlayerSkin(petInfo.pet().skullValue(), "")));
             }
         }
         if (sbItem.getType() == ItemType.Rune) {
             RuneModifier modifier = getModifier(Modifier.RUNE);
             if (modifier != null) {
-                itemStack = itemStack.with(ItemComponent.PROFILE, new HeadProfile(new PlayerSkin(modifier.rune().headValue(), "")));
+                itemStack = itemStack.with(DataComponents.PROFILE, new HeadProfile(new PlayerSkin(modifier.rune().headValue(), "")));
             }
         }
         if (sbItem.getType() == ItemType.Potion) {
             PotionInfo potionInfo = getModifier(Modifier.POTION);
             if (potionInfo != null) {
-                itemStack = itemStack.with(ItemComponent.POTION_CONTENTS, new PotionContents(PotionType.AWKWARD, potionInfo.potion().getPotionColor()));
+                itemStack = itemStack.with(DataComponents.POTION_CONTENTS, new PotionContents(PotionType.AWKWARD, potionInfo.potion().getPotionColor()));
                 list = list.with(Enchantment.PROTECTION, 1);
             }
         }
-        return new SbItemStack(itemStack.with(ItemComponent.LORE, lore).with(ItemComponent.ENCHANTMENTS, list.withTooltip(false)).with(ItemComponent.CUSTOM_NAME, Component.text(getRarity().getPrefix() + displayName())), sbItem);
+        return new SbItemStack(itemStack.with(DataComponents.LORE, lore).with(DataComponents.ENCHANTMENTS, list).with(DataComponents.CUSTOM_NAME, Component.text(getRarity().getPrefix() + displayName())), sbItem);
     }
 
     public String displayName() {
@@ -218,7 +218,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                 space = true;
             }
             if (sbItem instanceof Shortbow shortbow) {
-                lore.add("§7Shot Cooldown: §a" + (StringUtils.cleanDouble(((player == null) ? shortbow.getShortbowCooldown(getStat(Stat.AttackSpeed, player)) : shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) / 1000d)) + "s");
+                lore.add("§7Shot Cooldown: §a" + (StringUtils.cleanDouble(((player == null) ? shortbow.getShortbowCooldown(getStat(Stat.AttackSpeed, null)) : shortbow.getShortbowCooldown(player.getStat(Stat.AttackSpeed, true))) / 1000d)) + "s");
             }
         }
         if (gemstoneSlots.length > 0) {

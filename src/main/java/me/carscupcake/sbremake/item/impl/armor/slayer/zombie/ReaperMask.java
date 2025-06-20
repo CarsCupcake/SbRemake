@@ -85,7 +85,7 @@ public class ReaperMask implements ISbItem, ISbItem.StatProvider, GemstoneSlots,
         return EventNode.all("item.reaper_mask").addListener(PlayerStatEvent.class, event -> {
             if (event.stat() != Stat.Mending && event.stat() != Stat.Vitality) return;
             SbItemStack helmet = SbItemStack.from(event.getPlayer().getHelmet());
-            if (helmet == null) return;
+            if (helmet == SbItemStack.AIR) return;
             if (helmet.sbItem() instanceof ReaperMask && hasRequirements(event.player(), helmet.item())) {
                 event.modifiers().add(new PlayerStatEvent.BasicModifier("Evil Incarnate", 2, PlayerStatEvent.Type.MultiplicativeMultiplier, PlayerStatEvent.StatsCategory.Ability));
             }

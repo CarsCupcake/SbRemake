@@ -10,20 +10,20 @@ import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
+import net.minestom.server.color.Color;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import net.minestom.server.item.component.DyedItemColor;
 
 public class DeformedRevenant extends SkyblockEntity implements SkillXpDropper {
     public DeformedRevenant() {
         super(EntityType.ZOMBIE, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(RevenantFlesh.class), 5, 1)));
         setBoots(ItemStack.of(Material.DIAMOND_BOOTS));
-        setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new DyedItemColor(0xFF0000)).setGlint(true).build());
+        setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new Color(0xFF0000)).setGlint(true).build());
         setChestplate(new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
-        setHelmet(new ItemBuilder(Material.LEATHER_HELMET).setLeatherColor(new DyedItemColor(0xFF0000)).setGlint(true).build());
+        setHelmet(new ItemBuilder(Material.LEATHER_HELMET).setLeatherColor(new Color(0xFF0000)).setGlint(true).build());
         setItemInHand(PlayerHand.MAIN, new ItemBuilder(Material.GOLDEN_SWORD).setGlint(true).build());
         addAIGroup(zombieAiGroup(this));
     }

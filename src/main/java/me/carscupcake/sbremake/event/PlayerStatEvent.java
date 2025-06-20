@@ -79,6 +79,7 @@ public record PlayerStatEvent(SkyblockPlayer player, List<PlayerStatModifier> mo
         Ability("Ability"),
         Hotm("HOTM", new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZmMDZlYWEzMDA0YWVlZDA5YjNkNWI0NWQ5NzZkZTU4NGU2OTFjMGU5Y2FkZTEzMzYzNWRlOTNkMjNiOWVkYiJ9fX0=").build()),
         Potion("Potion", ItemStack.of(Material.POTION)),
+        TuningPoint("Tuning Point", ItemStack.of(Material.COMPARATOR)),
         Uncategorized("Uncategorized");
         private final String name;
         private final ItemStack item;

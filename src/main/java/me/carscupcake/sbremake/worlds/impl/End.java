@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.blocks.impl.Obsidian;
 import me.carscupcake.sbremake.entity.impl.end.EndermanT1;
 import me.carscupcake.sbremake.entity.impl.end.EndermanT2;
 import me.carscupcake.sbremake.entity.impl.end.EndermanT3;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
 import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
@@ -29,6 +30,11 @@ public class End extends SkyblockWorld.WorldProvider {
     @Override
     public Pos spawn() {
         return new Pos(-503, 101, -275.5, 90, 0);
+    }
+
+    @Override
+    public Pair<Pos, Pos> getChunksToLoad() {
+        return toMinMaxPair(new Pos(-270, 0, -110), new Pos(-800, 0, -450));
     }
 
     @Override

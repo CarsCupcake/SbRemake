@@ -16,13 +16,15 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.color.Color;
+import net.minestom.server.component.DataComponent;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.PlayerSkin;
-import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.AttributeList;
-import net.minestom.server.item.component.DyedItemColor;
 import net.minestom.server.item.component.HeadProfile;
+import net.minestom.server.item.component.TooltipDisplay;
 import net.minestom.server.tag.Tag;
 import net.minestom.server.utils.Unit;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +33,7 @@ import org.reflections.Reflections;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public interface ISbItem {
     String getId();
@@ -107,18 +110,22 @@ public interface ISbItem {
         return true;
     }
 
+    Set<DataComponent<?>> HIDDEN_COMPONENTS = Set.of(DataComponents.ENCHANTABLE, DataComponents.ENCHANTMENTS,
+            DataComponents.DAMAGE, DataComponents.USE_COOLDOWN, DataComponents.POTION_DURATION_SCALE, DataComponents.WEAPON, DataComponents.REPAIRABLE,
+            DataComponents.DYED_COLOR, DataComponents.ATTRIBUTE_MODIFIERS, DataComponents.PROFILE, DataComponents.BANNER_PATTERNS);
+
     default SbItemStack create() {
-        ItemStack.Builder builder = ItemStack.builder(getMaterial()).set(ItemComponent.ATTRIBUTE_MODIFIERS, new AttributeList(List.of(), false));
+        ItemStack.Builder builder = ItemStack.builder(getMaterial()).set(DataComponents.ATTRIBUTE_MODIFIERS, new AttributeList(List.of()));
         if (getMaterial() == Material.PLAYER_HEAD && this instanceof HeadWithValue value) {
-            builder.set(ItemComponent.PROFILE, new HeadProfile(new PlayerSkin(value.value(), "")));
+            builder.set(DataComponents.PROFILE, new HeadProfile(new PlayerSkin(value.value(), "")));
         }
         if (this instanceof ColoredLeather leather) {
-            builder.set(ItemComponent.DYED_COLOR, new DyedItemColor(leather.color().asRGB(), false));
+            builder.set(DataComponents.DYED_COLOR, new Color(leather.color().asRGB()));
         }
         ItemStackModifiers modifiers = modifierBuilder();
         CompoundBinaryTag.Builder b = CompoundBinaryTag.builder().putString("id", getId());
         if (isUnstackable()) b = b.putString("uuid", UUID.randomUUID().toString());
-        ItemStack item = build(modifiers.apply(builder.set(ItemComponent.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE).set(Tag.NBT("ExtraAttributes"), b.build()))).build();
+        ItemStack item = build(modifiers.apply(builder.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(false, HIDDEN_COMPONENTS)).set(Tag.NBT("ExtraAttributes"), b.build()))).build();
         SbItemStack itemStack = SbItemStack.from(modifiers.apply(item));
         return itemStack.update();
     }

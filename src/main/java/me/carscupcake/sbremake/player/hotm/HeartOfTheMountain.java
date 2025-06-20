@@ -9,6 +9,7 @@ import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TemplateItems;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.item.OversizedGui;
+import net.minestom.server.inventory.click.Click;
 import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
@@ -181,7 +182,7 @@ public class HeartOfTheMountain {
                             }
                         }
                     } else {
-                        if (event.getClickType() == ClickType.RIGHT_CLICK && !(upgrade instanceof PickaxeAbility) && !(upgrade instanceof PeakOfTheMountain)) {
+                        if (event.getClick() instanceof Click.Right && !(upgrade instanceof PickaxeAbility) && !(upgrade instanceof PeakOfTheMountain)) {
                             if (upgrade.isEnabled()) {
                                 player.sendMessage("§cDisabled " + (upgrade.getName()));
                                 upgrade.setEnabled(false);
@@ -206,7 +207,7 @@ public class HeartOfTheMountain {
                             } else
                                 player.sendMessage("§cYou have already purchased this upgrade!");
                         } else {
-                            boolean shift = event.getClickType() == ClickType.START_SHIFT_CLICK && !(upgrade instanceof PeakOfTheMountain);
+                            boolean shift = (event.getClick() instanceof Click.RightShift || event.getClick() instanceof Click.LeftShift) && !(upgrade instanceof PeakOfTheMountain);
                             int cost = 0;
                             if (shift) {
                                 int levels = Math.min(upgrade.getMaxLevel() - upgrade.getLevel(), 10);

@@ -39,12 +39,12 @@ public interface Gemstone {
         showGemstoneSlots(builder);
         Gui gui = new Gui(builder);
         gui.setItemChangeEvent(event -> {
-            if (event.getSlot() == 13 && event.getInventory() != null) showGemstoneSlots(gui.getInventory());
+            if (event.getSlot() == 13 && event.getInventory() != event.getInventory().getViewers().stream().findFirst().orElseThrow().getInventory()) showGemstoneSlots(gui.getInventory());
         });
         gui.setGeneralClickEvent(event -> {
-            if (event.getInventory() == null) {
+            if (event.getInventory() == event.getPlayer().getInventory()) {
                 SbItemStack item = SbItemStack.from(event.getClickedItem());
-                SbItemStack cursor = SbItemStack.from(event.getCursorItem());
+                SbItemStack cursor = SbItemStack.from(event.getPlayer().getInventory().getCursorItem());
                 if (item == SbItemStack.AIR && cursor != SbItemStack.AIR && cursor.sbItem() instanceof GemstoneSlots) return false;
                 if (item == SbItemStack.AIR) return false;
                 if ((!(item.sbItem() instanceof GemstoneSlots) && !(item.sbItem() instanceof Gemstone))) {
@@ -75,8 +75,8 @@ public interface Gemstone {
                     slots[index] = new GemstoneSlot(s.type(), gemstone, true);
                     gui.getInventory().setItemStack(13, selected.withModifier(Modifier.GEMSTONE_SLOTS, slots).update(player).item());
                     item = item.withAmount(item.item().amount() - 1);
-                    event.setCursorItem((item == null || item == SbItemStack.AIR) ? ItemStack.AIR : Objects.requireNonNull(item).item());
-                    event.setClickedItem(ItemStack.AIR);
+                    event.getPlayer().getInventory().setCursorItem((item == null || item == SbItemStack.AIR) ? ItemStack.AIR : Objects.requireNonNull(item).item());
+                    event.getInventory().setItemStack(event.getSlot(), ItemStack.AIR);
                     return false;
                 }
 

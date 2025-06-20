@@ -84,7 +84,9 @@ public class BlockLootTable implements ILootTable<SbItemStack> {
         if (cond != null) {
             conditions = cond.getAsJsonArray().asList().stream().map(entry -> {
                 var condition = entry.getAsJsonObject().get("condition").getAsString();
-                Predicate<BlockContext> out = switch (condition) {
+                //TODO Implement later
+                //I don't get this one lol. Here is the json {"condition":"minecraft:entity_properties","entity":"this","predicate":{}}
+                return switch (condition) {
                     case "minecraft:match_tool" -> {
                         var predicate = entry.getAsJsonObject().get("predicate").getAsJsonObject();
                         String[] items = new String[0];
@@ -139,7 +141,6 @@ public class BlockLootTable implements ILootTable<SbItemStack> {
                         yield null;
                     }
                 };
-                return out;
             }).filter(Objects::nonNull).toArray(Predicate[]::new);
         }
         return conditions;

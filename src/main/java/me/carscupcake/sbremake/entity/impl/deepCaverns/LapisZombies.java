@@ -14,12 +14,12 @@ import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
+import net.minestom.server.color.Color;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import net.minestom.server.item.component.DyedItemColor;
 
 public class LapisZombies extends SkyblockEntity implements SkillXpDropper {
     public LapisZombies() {
@@ -32,9 +32,9 @@ public class LapisZombies extends SkyblockEntity implements SkillXpDropper {
                                 .setSingleLoot()
                         , 0.01));
         setEquipment(EquipmentSlot.HELMET, ItemStack.of(Material.BLUE_STAINED_GLASS));
-        setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new DyedItemColor(0x0000ff)).build());
-        setEquipment(EquipmentSlot.LEGGINGS, new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new DyedItemColor(0x0000ff)).build());
-        setEquipment(EquipmentSlot.BOOTS, new ItemBuilder(Material.LEATHER_BOOTS).setLeatherColor(new DyedItemColor(0x0000ff)).build());
+        setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new Color(0x0000ff)).build());
+        setEquipment(EquipmentSlot.LEGGINGS, new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new Color(0x0000ff)).build());
+        setEquipment(EquipmentSlot.BOOTS, new ItemBuilder(Material.LEATHER_BOOTS).setLeatherColor(new Color(0x0000ff)).build());
         getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
     }
 

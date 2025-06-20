@@ -11,13 +11,16 @@ import me.carscupcake.sbremake.blocks.impl.ore.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.MapList;
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.util.Returnable;
 import me.carscupcake.sbremake.worlds.impl.*;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.coordinate.ChunkRange;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.InstanceContainer;
@@ -25,6 +28,7 @@ import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.network.packet.server.play.DestroyEntitiesPacket;
 import net.minestom.server.registry.DynamicRegistry;
+import net.minestom.server.registry.RegistryKey;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import net.minestom.server.world.DimensionType;
@@ -50,7 +54,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Getter
-@SuppressWarnings("preview")
 public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, WorldSelector {
     PrivateIsle("private_isle", FileEnding.ZIP) {
         @Override
@@ -150,7 +153,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         this.ores = (ores == null) ? new MiningBlock[0] : ores;
     }
 
-    public DynamicRegistry.Key<DimensionType> getDimension() {
+    public RegistryKey<DimensionType> getDimension() {
         return DimensionType.OVERWORLD;
     }
 
@@ -330,6 +333,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
     @SuppressWarnings({"unused", "ignored", "UnusedReturnValue"})
     @Getter
     public static abstract class WorldProvider {
+        private boolean isRelight;
         private static final MiningBlock[] VANILLA_ORES = {new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre()};
 
         private final Set<SkyblockPlayer> players = Collections.synchronizedSet(new HashSet<>());
@@ -342,6 +346,11 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         @Getter
         public volatile InstanceContainer container;
 
+        public void relight() {
+            isRelight = true;
+            LightingChunk.relight(container, container.getChunks());
+            System.gc();
+        }
 
         public WorldProvider(List<Launchpad> launchpads, AbstractNpc... npcs) {
             this.npcs = (npcs == null) ? new Npc[0] : npcs;
@@ -354,8 +363,9 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         }
 
         public abstract SkyblockWorld type();
+        public abstract Pair<Pos, Pos> getChunksToLoad();
 
-        public DynamicRegistry.Key<DimensionType> getDimension() {
+        public RegistryKey<DimensionType> getDimension() {
             return type().getDimension();
         }
 
@@ -390,6 +400,11 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             init(container, after, true);
         }
 
+        protected Pair<Pos, Pos> toMinMaxPair(Pos pos1, Pos pos2) {
+            return new Pair<>(new Pos(Math.min(pos1.x(), pos2.x()), 0, Math.min(pos1.z(), pos2.z())),
+                    new Pos(Math.max(pos1.x(), pos2.x()), 0, Math.max(pos1.z(), pos2.z())));
+        }
+
         private void init0(InstanceContainer container, @Nullable Runnable after, boolean async) {
             Main.LOGGER.debug("Loading in dimension {}", getDimension().key().value());
             container.setChunkSupplier(LightingChunk::new);
@@ -402,28 +417,33 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
 
                 var loader = new AnvilLoader(f.toPath());
                 container.setChunkLoader(loader);
-                container.loadChunk(spawn().chunkX(), spawn().chunkZ()).get();
                 var chunks = new ArrayList<CompletableFuture<Chunk>>();
-                ChunkRange.chunksInRange(0, 0, 8, (x, z) -> chunks.add(container.loadChunk(x, z)));
+                var span = getChunksToLoad();
+                for (int chunkX = span.getFirst().chunkX();  chunkX <= span.getSecond().chunkX(); chunkX++)
+                    for (int chunkZ = span.getFirst().chunkZ();  chunkZ <= span.getSecond().chunkZ(); chunkZ++) {
+                        chunks.add(container.loadChunk(chunkX, chunkZ));
+                    }
                 if (async) CompletableFuture.runAsync(() -> {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
-                    LightingChunk.relight(container, container.getChunks());
-                    container.loadChunk(spawn().chunkX(), spawn().chunkZ());
+                    MinecraftServer.getSchedulerManager().buildTask(() -> LightingChunk.relight(container, container.getChunks())).delay(Duration.ofSeconds(1)).schedule();
+                    MinecraftServer.getSchedulerManager().buildTask(System::gc).delay(Duration.ofSeconds(2)).schedule();
                     synchronized (_lock) {
                         loaded = true;
+                        register();
                         for (Runnable runnable : onStart) runnable.run();
                         container.setTime(Time.tick);
                     }
                 });
                 else {
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
+                    MinecraftServer.getSchedulerManager().buildTask(() -> LightingChunk.relight(container, container.getChunks())).delay(Duration.ofSeconds(1)).schedule();
+                    MinecraftServer.getSchedulerManager().buildTask(System::gc).delay(Duration.ofSeconds(2)).schedule();
                     Main.LOGGER.info("Relighting {} Chunks", container.getChunks().size());
-                    LightingChunk.relight(container, container.getChunks());
-                    container.loadChunk(spawn().chunkX(), spawn().chunkZ());
+                    loaded = true;
+                    register();
                     container.setTime(Time.tick);
                 }
                 addWorld(this);
-                register();
                 if (!async)
                     synchronized (_lock) {
                         for (Runnable runnable : onStart) runnable.run();
@@ -435,7 +455,6 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                 e.printStackTrace(System.err);
                 Main.LOGGER.trace("An Error occured while loading {}", type().getId(), e);
             }
-            System.gc();
         }
 
         public void init(@NotNull InstanceContainer container, @Nullable Runnable after, boolean async) {
@@ -592,6 +611,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         }
 
     }
+
 
     @Getter
     public enum FileEnding {

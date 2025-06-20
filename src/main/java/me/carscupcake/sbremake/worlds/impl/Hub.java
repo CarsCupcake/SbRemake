@@ -78,6 +78,10 @@ public class Hub extends SkyblockWorld.WorldProvider {
             brokenLogs.clear();
         }
     };
+    @Override
+    public Pair<Pos, Pos> getChunksToLoad() {
+        return toMinMaxPair(new Pos(200, 0, 220), new Pos(-400, 0, -390));
+    }
 
     @Override
     protected void register() {

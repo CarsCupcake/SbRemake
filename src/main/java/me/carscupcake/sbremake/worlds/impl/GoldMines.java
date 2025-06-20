@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.worlds.impl;
 
+import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.region.Region;
@@ -27,5 +28,10 @@ public class GoldMines extends SkyblockWorld.WorldProvider {
     @Override
     public Region[] regions() {
         return new Region[0];
+    }
+
+    @Override
+    public Pair<Pos, Pos> getChunksToLoad() {
+        return new  Pair<>(new Pos(0, 0, 0), new Pos(0, 0, 0));
     }
 }

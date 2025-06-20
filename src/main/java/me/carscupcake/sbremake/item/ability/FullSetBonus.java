@@ -31,7 +31,7 @@ public non-sealed abstract class FullSetBonus implements Ability {
         if (maxPieces != minPieces) {
             return "§6" + (maxPieces) + "-Piece Set Bonus: " + (name);
         }
-        if (maxPieces == minPieces && maxPieces == 1)
+        if (maxPieces == 1)
             return "§6Ability: " + name;
         return "§6Full Set Bonus: " + (name) + " " + ((pieces == minPieces) ? "§6" : "§7") + "(" + (pieces) + "/" + (maxPieces) + ")";
     }

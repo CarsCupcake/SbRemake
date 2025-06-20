@@ -39,6 +39,10 @@ public class FarmingIsles extends SkyblockWorld.WorldProvider {
         super(List.of(new Launchpad(141, -313, 143, -311, 91, SkyblockWorld.FarmingIsles, new Pos(153.5, 77, -362)),
                 new Launchpad(149, -359, 151, -361, 75, SkyblockWorld.FarmingIsles, new Pos(142, 92, -308))));
     }
+    @Override
+    public Pair<Pos, Pos> getChunksToLoad() {
+        return toMinMaxPair(new Pos(-400, 0, -60), new Pos(30, 0, -615));
+    }
 
     @Override
     public SkyblockWorld type() {

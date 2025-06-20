@@ -20,11 +20,12 @@ import me.carscupcake.sbremake.player.potion.IPotion;
 import me.carscupcake.sbremake.player.potion.PotionType;
 import me.carscupcake.sbremake.util.Pair;
 import net.kyori.adventure.nbt.*;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.PlayerSkin;
-import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.HeadProfile;
 import net.minestom.server.tag.Tag;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -177,7 +178,7 @@ public interface Modifier<T> {
 
         @Override
         public SbItemStack toNbt(Pet.PetInfo petInfo, SbItemStack itemStack) {
-            ItemStack item = itemStack.item().with(ItemComponent.PROFILE, new HeadProfile(new PlayerSkin("", petInfo.pet().skullValue())));
+            ItemStack item = itemStack.item().with(DataComponents.PROFILE, new HeadProfile(new PlayerSkin("", petInfo.pet().skullValue())));
             CompoundBinaryTag extraAttributes = (CompoundBinaryTag) itemStack.item().getTag(Tag.NBT("ExtraAttributes"));
             CompoundBinaryTag petInfoTag = extraAttributes.getCompound("petInfo");
             petInfoTag = petInfoTag.putString("type", petInfo.pet().getId()).putDouble("exp", petInfo.exp()).putInt("candyUsed", petInfo.petCandyUsed()).putString("tier", petInfo.rarity().name());
@@ -257,9 +258,9 @@ public interface Modifier<T> {
         }
     };
 
-    Modifier<Integer> RarityUpgrades = new Modifier<Integer>() {
+    Modifier<Integer> RarityUpgrades = new Modifier<>() {
         @Override
-        public @Nullable Integer getFromNbt(SbItemStack item) {
+        public @NotNull Integer getFromNbt(SbItemStack item) {
             return ((CompoundBinaryTag) item.item().getTag(EXTRA_ATTRIBUTES)).getInt("rarity_upgrades", 0);
         }
 
