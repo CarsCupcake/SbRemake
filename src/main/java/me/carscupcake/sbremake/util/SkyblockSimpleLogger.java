@@ -1,19 +1,34 @@
 package me.carscupcake.sbremake.util;
 
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.adventure.provider.MinestomComponentLoggerProvider;
+import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Marker;
 import org.slf4j.event.Level;
+import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.simple.SimpleLogger;
 
+import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
-@SuppressWarnings("preview")
+@Getter
 public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogger {
     private static final LegacyComponentSerializer SERIALIZER;
 
@@ -27,8 +42,67 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
         }
     }
 
+    private final Writer logWriter;
+    private final Writer errorWriter;
+
     public SkyblockSimpleLogger() {
         super("Skyblock");
+        var logFolder = new File("logs");
+        if (!logFolder.exists()) {
+            logFolder.mkdir();
+        }
+        var logs = new File(logFolder, "latest.txt");
+        var errors = new File(logFolder, "errorLog.txt");
+        if (Objects.requireNonNull(logFolder.listFiles()).length != 0) {
+            if (logs.exists() && errors.exists()) {
+                boolean success = false;
+                try {
+                    BasicFileAttributes attr = Files.readAttributes(logs.toPath(), BasicFileAttributes.class);
+                    if (attr.creationTime().toMillis() != 0) {
+                        var myFormatObj = new ISO8601DateFormat();
+                        zip(logFolder, List.of(logs, errors), myFormatObj.format(new Date(attr.creationTime().toMillis())));
+                        success = true;
+                    }
+                } catch (IOException ignored) {
+                }
+                if (!success) {
+                    var myFormatObj = new ISO8601DateFormat();
+                    zip(logFolder, List.of(logs, errors), myFormatObj.format(new Date()));
+                }
+            }
+            logs.delete();
+            errors.delete();
+        }
+        try {
+            logWriter = new FileWriter(logs, true);
+            errorWriter = new FileWriter(errors, true);
+        } catch (Exception e) {
+            throw new RuntimeException("An Error occured while initializing logger!", e);
+        }
+    }
+
+    public static File zip(File folder, List<File> files, String filename) {
+        File zipfile = new File(folder, filename.replace(' ', '_').replace(':', '.') + ".zip");
+        // Create a buffer for reading the files
+        byte[] buf = new byte[1024];
+        try(ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipfile))) {
+            for (File file : files) {
+                try(FileInputStream in = new FileInputStream(file.getCanonicalFile())) {
+                    // add ZIP entry to output stream
+                    out.putNextEntry(new ZipEntry(file.getName()));
+                    // transfer bytes from the file to the ZIP file
+                    int len;
+                    while ((len = in.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+                    // complete the entry
+                    out.closeEntry();
+                }
+            }
+            return zipfile;
+        } catch (IOException ex) {
+            throw new  RuntimeException(ex);
+        }
     }
 
     public void setLogLevel(int level) {
@@ -37,50 +111,57 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
 
     @Override
     public void trace(String msg, Throwable throwable) {
-        if (throwable != null) {
-            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (throwable)));
-            for (StackTraceElement element : throwable.getStackTrace()) {
-                Audiences.players().sendMessage(Component.text("§cat " + (element)));
-            }
-        }
+        writeToLogs(throwable);
         super.trace(msg, throwable);
     }
 
     @Override
     public void trace(Marker marker, String msg, Throwable t) {
+        writeToLogs(t);
+        super.trace(marker, msg, t);
+    }
+
+    private void writeToLogs(Throwable t) {
         if (t != null) {
             Audiences.players().sendMessage(Component.text("§c[ERROR] " + (t)));
-            for (StackTraceElement element : t.getStackTrace()) {
-                Audiences.players().sendMessage(Component.text("§cat " + (element)));
+            try {
+                errorWriter.write("ERROR: " + t + "\n");
+                logWriter.write("ERROR: " + t + "\n");
+                for (StackTraceElement element : t.getStackTrace()) {
+                    Audiences.players().sendMessage(Component.text("§cat " + (element)));
+                    errorWriter.write("at " + element + "\n");
+                    logWriter.write("at " + element + "\n");
+                }
+                errorWriter.flush();
+                logWriter.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
-        super.trace(marker, msg, t);
     }
 
     @Override
     public void error(String msg, Throwable t) {
-        if (t != null) {
-            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (t)));
-            for (StackTraceElement element : t.getStackTrace()) {
-                Audiences.players().sendMessage(Component.text("§cat " + (element)));
-            }
-        }
+        writeToLogs(t);
         super.error(msg, t);
     }
 
     @Override
     public void error(Marker marker, String msg, Throwable t) {
-        if (t != null) {
-            Audiences.players().sendMessage(Component.text("§c[ERROR] " + (t)));
-            for (StackTraceElement element : t.getStackTrace()) {
-                Audiences.players().sendMessage(Component.text("§cat " + (element)));
-            }
-        }
+        writeToLogs(t);
         super.error(marker, msg, t);
     }
 
     @Override
     protected void handleNormalizedLoggingCall(Level level, Marker marker, String messagePattern, Object[] arguments, Throwable throwable) {
+        if (logWriter != null) {
+            try {
+                logWriter.write("[" + level + "] " + MessageFormatter.basicArrayFormat(messagePattern, arguments) + "\n");
+                logWriter.flush();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         super.handleNormalizedLoggingCall(level, marker, messagePattern, arguments, throwable);
     }
 
