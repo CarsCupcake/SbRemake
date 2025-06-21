@@ -10,15 +10,7 @@ import net.minestom.server.coordinate.Pos;
 
 import java.util.HashMap;
 
-public class ThePark extends SkyblockWorld.WorldProvider {
-    public final HashMap<BlockVec, Log.LogInfo> brokenLogs = new HashMap<>();
-    private final TaskScheduler foragingReset = new TaskScheduler() {
-        @Override
-        public void run() {
-            brokenLogs.forEach((block, log) -> log.regen(container, block));
-            brokenLogs.clear();
-        }
-    };
+public class ThePark extends ForagingIsle {
 
     @Override
     public SkyblockWorld type() {
@@ -35,15 +27,6 @@ public class ThePark extends SkyblockWorld.WorldProvider {
         return new Region[0];
     }
 
-    @Override
-    protected void register() {
-        foragingReset.repeatTask(20 * 30);
-    }
-
-    @Override
-    protected void unregister() {
-        foragingReset.cancel();
-    }
 
     @Override
     public boolean useCustomMining() {

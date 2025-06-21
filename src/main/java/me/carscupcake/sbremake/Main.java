@@ -209,6 +209,7 @@ public class Main {
             while (running.get()) {
                 try {
                     String in = reader.readLine();
+                    if (in == null) continue;
                     if (!running.get()) return;
                     LOGGER.debug(in);
                     if (MinecraftServer.getCommandManager().commandExists(in.split(" ")[0])) {
