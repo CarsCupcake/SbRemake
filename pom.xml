@@ -25,6 +25,23 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version> <executions>
+                <execution>
+                    <id>build-minestom-snapshots-gradle</id>
+                    <phase>generate-sources</phase> <goals>
+                    <goal>exec</goal>
+                </goals>
+                    <configuration>
+                        <executable>./gradlew</executable> <workingDirectory>./minestom</workingDirectory> <arguments>
+                        <argument>build</argument>
+                        <argument>publishToMavenLocal</argument> </arguments>
+                    </configuration>
+                </execution>
+            </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.2</version>
@@ -186,8 +203,8 @@
         </dependency>
         <dependency>
             <groupId>net.minestom</groupId>
-            <artifactId>minestom-snapshots</artifactId>
-            <version>f9506f6821</version>
+            <artifactId>minestom-skyblock</artifactId>
+            <version>dev</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>

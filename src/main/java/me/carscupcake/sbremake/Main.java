@@ -28,6 +28,8 @@ import me.carscupcake.sbremake.worlds.Time;
 import me.carscupcake.sbremake.worlds.impl.PrivateIsle;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import net.minestom.server.LoggerProvider;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandManager;
@@ -85,11 +87,13 @@ public class Main {
     private volatile static ConfigFile crackedRegistry;
 
     public static void main(String[] args) throws Exception {
+        MinecraftServer.LoggerProvider = new SkyblockLoggerProvider();
+        LOGGER = (SkyblockSimpleLogger) MinecraftServer.LoggerProvider.getLogger(Main.class);
+        MinecraftServer.LOGGER = LOGGER;
         MinecraftServer server = MinecraftServer.init();
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
         for (var s : registerDefaultManagers)
             MinecraftServer.getBlockManager().registerHandler("minecraft:" + s, () -> () -> Key.key(s));
-        LOGGER = new SkyblockSimpleLogger();
         if (System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true")) {
             LOGGER.setLogLevel(0);
             LOGGER.isEnabledForLevel(Level.DEBUG);
@@ -289,5 +293,14 @@ public class Main {
 
     public static class SingleItem<T> {
         private T value = null;
+    }
+
+    public static class SkyblockLoggerProvider implements LoggerProvider {
+
+        private final SkyblockSimpleLogger logger =  new SkyblockSimpleLogger();
+        @Override
+        public ComponentLogger getLogger(Class<?> clazz) {
+            return logger;
+        }
     }
 }
