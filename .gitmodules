@@ -1,0 +1,3 @@
+[submodule "minestom"]
+    path = minestom
+    url = https://github.com/CarsCupcake/Minestom.git
