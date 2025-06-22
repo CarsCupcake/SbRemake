@@ -7,7 +7,7 @@ import me.carscupcake.sbremake.rewards.Reward;
 public record SkyblockXpReward(int xp) implements Reward {
     @Override
     public void reward(SkyblockPlayer player) {
-
+        player.addSkyblockXp(xp);
     }
 
     @Override

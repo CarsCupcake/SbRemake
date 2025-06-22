@@ -38,6 +38,7 @@ import me.carscupcake.sbremake.player.potion.IPotion;
 import me.carscupcake.sbremake.player.potion.Potion;
 import me.carscupcake.sbremake.player.skill.ISkill;
 import me.carscupcake.sbremake.player.skill.Skill;
+import me.carscupcake.sbremake.player.xp.SkyblockXpTask;
 import me.carscupcake.sbremake.util.*;
 import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.util.item.InventoryBuilder;
@@ -592,10 +593,12 @@ public class SkyblockPlayer extends Player {
     @Getter
     @Setter
     private SkyblockPlayerFishingBobber playerFishingBobber = null;
+    @Getter
+    private long skyblockXp = 0;
+
     /**
      * This is to set up stuff, when the player gets spawned (respawn or server join)
      */
-
     private int spawnTeleportId = 0;
     private double lastAbsorbtion = 0;
     private double lastSpeed = 0;
@@ -603,14 +606,18 @@ public class SkyblockPlayer extends Player {
 
     public SkyblockPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile, UUID configId) {
         super(playerConnection, gameProfile);
+        super.callSpawn = false;
         this.inventory = playerInventory;
         this.configId = configId;
         ConfigFile file = new ConfigFile("defaults", this);
         zealotPity = file.get("zealotPity", ConfigSection.INTEGER, 0);
         coins = file.get("coins", ConfigSection.DOUBLE, 0d);
         tags = new ArrayList<>(List.of(file.get("tags", ConfigSection.STRING_ARRAY, new String[0])));
-        for (Skill skill : Skill.values())
-            skills.put(skill, skill.instantiate(this));
+        for (Skill skill : Skill.values()) {
+            var skillInstance = skill.instantiate(this);
+            skills.put(skill, skillInstance);
+            initSkyblockXpTask(skillInstance);
+        }
         ConfigSection section = file.get("powder", ConfigSection.SECTION, new ConfigSection(new JsonObject()));
         for (Powder p : Powder.values()) {
             powder.put(p, section.get(p.getId(), ConfigSection.INTEGER, 0));
@@ -630,7 +637,9 @@ public class SkyblockPlayer extends Player {
             try {
                 if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) continue;
                 Constructor<? extends me.carscupcake.sbremake.item.collections.Collection> constructor = clazz.getConstructor(SkyblockPlayer.class);
-                collections.add(constructor.newInstance(this));
+                var collection = constructor.newInstance(this);
+                collections.add(collection);
+                initSkyblockXpTask(collection);
             } catch (Exception e) {
                 kick("§cError while loading");
                 throw new RuntimeException(e);
@@ -643,7 +652,23 @@ public class SkyblockPlayer extends Player {
         if (f.get("equipped", ConfigSection.INTEGER, -1) >= 0) {
             pet = pets.get(f.get("equipped", ConfigSection.INTEGER));
         }
+    }
 
+    private void initSkyblockXpTask(SkyblockXpTask xpTask) {
+        skyblockXp += xpTask.getTotalXp();
+    }
+
+    public void addSkyblockXp(@Range(from = 0, to = Long.MAX_VALUE) long xp) {
+        var previous = this.skyblockXp;
+        skyblockXp += xp;
+        if (previous / 100 < skyblockXp / 100) {
+            //TODO: Upgrade Message
+        }
+
+    }
+
+    public int getSkyblockLevel() {
+        return Math.toIntExact(skyblockXp / 100);
     }
 
     private static int getSlot(ItemType type) {
@@ -1032,6 +1057,11 @@ public class SkyblockPlayer extends Player {
 
     public void spawn(Pos spawn) {
         super.spawn();
+        if (Main.IS_DEBUG) {
+            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+            Main.LOGGER.debug("Spawn Caller: {}", stackTraceElements[2].getMethodName().equals("spawn") ? stackTraceElements[3].toString() : stackTraceElements[2].toString());
+        }
+
         absorption = 0;
         recalculateArmor();
         if (pet != null) {
@@ -1065,6 +1095,7 @@ public class SkyblockPlayer extends Player {
         sendPacket(new EntityMetaDataPacket(getEntityId(), Map.of(11, Metadata.Boolean(true))));
         sendPacket(new TimeUpdatePacket(0, Time.tick, false));
         if (!worldProvider.isRelight()) worldProvider.relight();
+        sendMessage("§bYour Skyblock Level is: §3" + getSkyblockLevel());
     }
 
     public float getMaxHealth() {

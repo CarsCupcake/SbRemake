@@ -417,6 +417,16 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         return new SbItemStack(item.withAmount(i), sbItem);
     }
 
+    private static final Random rand = new Random();
+
+    public SbItemStack calculateFortuneAmount(int base, double fortune) {
+        var floored = Math.floor(fortune / 100);
+        var extraChance = Math.floor(((fortune / 100) - floored));
+        if (rand.nextDouble() < extraChance)
+            floored++;
+        return withAmount((int) (base * (1 + floored)));
+    }
+
     public int getEnchantmentLevel(SkyblockEnchantment enchantment) {
         return getEnchantments().getOrDefault(enchantment, 0);
     }
@@ -428,6 +438,12 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     public void drop(Instance instance, Point pos) {
         ItemEntity entity = new ItemEntity(item());
         entity.setInstance(instance, pos);
+    }
+    public void drop(SkyblockPlayer player, Instance instance, Point pos) {
+        if (player.getSkyblockLevel() >= 6) {
+            if (player.addItem(this)) return;
+        }
+        drop(instance, pos);
     }
 
     public <T> T getModifier(Modifier<T> modifier) {

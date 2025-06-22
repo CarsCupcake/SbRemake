@@ -111,13 +111,11 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
 
     @Override
     public void trace(String msg, Throwable throwable) {
-        writeToLogs(throwable);
         super.trace(msg, throwable);
     }
 
     @Override
     public void trace(Marker marker, String msg, Throwable t) {
-        writeToLogs(t);
         super.trace(marker, msg, t);
     }
 
@@ -142,13 +140,11 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
 
     @Override
     public void error(String msg, Throwable t) {
-        writeToLogs(t);
         super.error(msg, t);
     }
 
     @Override
     public void error(Marker marker, String msg, Throwable t) {
-        writeToLogs(t);
         super.error(marker, msg, t);
     }
 
@@ -161,6 +157,9 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+        if (throwable != null) {
+            writeToLogs(throwable);
         }
         super.handleNormalizedLoggingCall(level, marker, messagePattern, arguments, throwable);
     }

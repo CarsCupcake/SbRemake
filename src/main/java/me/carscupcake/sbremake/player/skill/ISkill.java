@@ -8,6 +8,7 @@ import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.event.PlayerSkillXpEvent;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.xp.SkyblockXpTask;
 import me.carscupcake.sbremake.rewards.Reward;
 import me.carscupcake.sbremake.rewards.impl.CoinReward;
 import me.carscupcake.sbremake.util.SoundType;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public abstract class ISkill {
+public abstract class ISkill implements SkyblockXpTask {
     public static final int[] nextLevelXp = {
             50, 125, 200, 300, 500, 750, 1000, 1500, 2000, 3500, 5000, 7500,
             10000, 15000, 20000, 30000, 50000, 75000, 100000, 200000,
@@ -191,5 +192,26 @@ public abstract class ISkill {
         return (level <= 10) ? 5 : ((level <= 25) ? 10 : ((level <= 50) ? 20 : 30));
     }
 
+    @Override
+    public long getMaxXp() {
+        return getSkyblockXpForLevel(level);
+    }
 
+    private long getSkyblockXpForLevel(int level) {
+        if (level >= 10) return level * 5L;
+        var xp = 50;
+        level -= 10;
+        if (level >= 25) return xp + level * 10L;
+        xp += 150;
+        level -= 15;
+        if (level >= 50) return xp + level * 20L;
+        xp += 500;
+        level -= 25;
+        return xp + level * 30L;
+    }
+
+    @Override
+    public long getTotalXp() {
+        return getSkyblockXpForLevel(getMaxLevel());
+    }
 }

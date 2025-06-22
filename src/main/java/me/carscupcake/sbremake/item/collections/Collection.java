@@ -5,7 +5,10 @@ import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.skill.SkillXpDropper;
+import me.carscupcake.sbremake.player.xp.SkyblockXpTask;
 import me.carscupcake.sbremake.rewards.Reward;
+import me.carscupcake.sbremake.rewards.impl.SkyblockXpReward;
 import me.carscupcake.sbremake.util.StringUtils;
 import me.carscupcake.sbremake.util.TemplateItems;
 import me.carscupcake.sbremake.util.item.Gui;
@@ -22,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public abstract class Collection {
+public abstract class Collection implements SkyblockXpTask {
     private final SkyblockPlayer player;
     private long progress;
     private final int[] levelProgress;
@@ -128,4 +131,26 @@ public abstract class Collection {
      * @return the amount of progress 0 = not in the collection
      */
     public abstract int progress(ISbItem item);
+
+    @Override
+    public long getMaxXp() {
+        return getXpForLeve(maxLevel);
+    }
+
+    private long getXpForLeve(int level) {
+        var sbXp = 0L;
+        for (int i = 1; i <= level; i++) {
+            for (var reward : getRewards().get(i - 1)) {
+                if (reward instanceof SkyblockXpReward(var xp)) {
+                    sbXp += xp;
+                }
+            }
+        }
+        return sbXp;
+    }
+
+    @Override
+    public long getTotalXp() {
+        return getXpForLeve(level);
+    }
 }

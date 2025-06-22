@@ -25,9 +25,11 @@ import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.util.lootTable.blockLoot.BlockLootTable;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.Time;
+import me.carscupcake.sbremake.worlds.impl.Galatea;
 import me.carscupcake.sbremake.worlds.impl.PrivateIsle;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Namespaced;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minestom.server.LoggerProvider;
 import net.minestom.server.MinecraftServer;
@@ -59,6 +61,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -85,6 +88,7 @@ public class Main {
     public static volatile boolean isCracked = false;
     static long tickDelay = -1;
     private volatile static ConfigFile crackedRegistry;
+    public static final boolean IS_DEBUG = System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true");
 
     public static void main(String[] args) throws Exception {
         MinecraftServer.LoggerProvider = new SkyblockLoggerProvider();
@@ -136,6 +140,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(Pets.events);
         MinecraftServer.getGlobalEventHandler().addChild(PrivateIsle.NODE);
         MinecraftServer.getGlobalEventHandler().addChild(AccessoryBag.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(Galatea.LISTENER);
         MinecraftServer.getGlobalEventHandler().addListener(ServerTickMonitorEvent.class, serverTickMonitorEvent -> tickDelay = (long) serverTickMonitorEvent.getTickMonitor().getTickTime());
         for (Potion potion : Potion.values()) IPotion.potions.put(potion.getId(), potion);
         MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (_, player) -> {
@@ -201,6 +206,8 @@ public class Main {
             port = Integer.parseInt(args[0]);
         } catch (Exception _) {
         }
+        var key = Key.key("skyblock", "moonglare");
+        Galatea.MOONGLARE_KEY = MinecraftServer.getBiomeRegistry().register(key, Galatea.MOONGLARE);
         server.start("127.0.0.1", port);
         System.out.println("Started Server on port " + (port));
         CONSOLE_THREAD = java.lang.Thread.ofPlatform().name("Console").start(() -> {
@@ -213,7 +220,7 @@ public class Main {
                     if (!running.get()) return;
                     LOGGER.debug(in);
                     if (MinecraftServer.getCommandManager().commandExists(in.split(" ")[0])) {
-                        LOGGER.info("Executing " + (in));
+                        LOGGER.info("Executing {}", in);
                         synchronized (_lock) {
                             MinecraftServer.getCommandManager().execute(console, in);
                         }

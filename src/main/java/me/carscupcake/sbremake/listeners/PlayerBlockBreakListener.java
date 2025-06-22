@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.listeners;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import me.carscupcake.sbremake.Main;
+import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.blocks.Crop;
 import me.carscupcake.sbremake.blocks.FarmingCrystal;
 import me.carscupcake.sbremake.blocks.Log;
@@ -11,6 +12,7 @@ import me.carscupcake.sbremake.event.LogBreakEvent;
 import me.carscupcake.sbremake.item.IVanillaPickaxe;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.VanillaPickaxeTier;
+import me.carscupcake.sbremake.item.impl.other.foraging.Lushlilac;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.lootTable.blockLoot.BlockLootTable;
@@ -23,6 +25,7 @@ import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.block.BlockFace;
 import net.minestom.server.timer.TaskSchedule;
 
 import java.io.IOException;
@@ -92,7 +95,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
             for (Crop c : Crop.crops) {
                 if (c.block().registry().id() == event.getBlock().registry().id()) {
                     for (SbItemStack item : c.drops(player)) {
-                        item.drop(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
+                        item.drop(player, player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
                     }
                     if (c.xp() > 0)
                         player.getSkill(Skill.Farming).addXp(c.xp());
@@ -130,7 +133,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
             for (Crop c : Crop.crops) {
                 if (c.block().registry().id() == event.getBlock().registry().id()) {
                     for (SbItemStack item : c.drops(player)) {
-                        item.drop(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
+                        item.drop(player, player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
                     }
                     if (c.xp() > 0)
                         player.getSkill(Skill.Farming).addXp(c.xp());
@@ -141,7 +144,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                             if (block != event.getBlockPosition()) {
                                 player.getInstance().setBlock(block, Block.AIR);
                                 for (SbItemStack item : c.drops(player)) {
-                                    item.drop(player.getInstance(), block.add(0.5, 0, 0.5));
+                                    item.drop(player, player.getInstance(), block.add(0.5, 0, 0.5));
                                 }
                                 if (c.xp() > 0)
                                     player.getSkill(Skill.Farming).addXp(c.xp());
@@ -198,9 +201,19 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
             BlockLootTable lootTable = BlockLootTable.blockLootTables.get(event.getBlock().registry().id());
             if (lootTable != null) {
                 var items = lootTable.loot(player);
-                items.forEach(item -> item.drop(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5)));
+                items.forEach(item -> item.drop(player, player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5)));
             }
             return;
+        }
+        if (player.getWorldProvider() instanceof Galatea galatea) {
+            if (event.getBlock().registry().key().equals(Block.FLOWERING_AZALEA.key())) {
+                event.setCancelled(false);
+                event.setResultBlock(Block.AZALEA);
+                SbItemStack.from(Lushlilac.class).calculateFortuneAmount(1, player.getStat(Stat.ForagingFortune)).drop(player, player.getInstance(), event.getBlockPosition().middle().relative(BlockFace.TOP));
+                player.getSkill(Skill.Foraging).addXp(10);
+                galatea.scheduleTask(() -> event.getInstance().setBlock(event.getBlockPosition(), Block.FLOWERING_AZALEA), 2_400);
+                return;
+            }
         }
         event.setCancelled(true);
     }
