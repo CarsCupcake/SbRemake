@@ -8,7 +8,6 @@ import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.event.PlayerSkillXpEvent;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.player.xp.SkyblockXpTask;
 import me.carscupcake.sbremake.rewards.Reward;
 import me.carscupcake.sbremake.rewards.impl.CoinReward;
 import me.carscupcake.sbremake.util.SoundType;
