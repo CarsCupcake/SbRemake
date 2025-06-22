@@ -98,10 +98,7 @@ public class JungleAxe implements ISbItem, Listener, GemstoneSlots {
                             }
                         if (log != null) {
                             event.player().getInstance().setBlock(block, Block.AIR);
-                            SbItemStack i = log.drops(event.player());
-                            ItemEntity entity = new ItemEntity(i.item());
-                            entity.setInstance(event.player().getInstance(), block.add(0.5, 0, 0.5));
-                            entity.addViewer(event.player());
+                            log.drop().create().calculateFortuneAmount(1, event.player().getStat(Stat.ForagingFortune)).drop(event.player(), instance, block.add(0.5, 0, 0.5));
                             event.player().getSkill(Skill.Foraging).addXp(log.xp());
                             if (event.player().getWorldProvider() instanceof LegacyPark park)
                                 park.brokenLogs.put(block, new Log.LogInfo(log, blockType.properties()));

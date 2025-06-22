@@ -93,11 +93,7 @@ public abstract class MiningBlock {
     protected void dropItems(SkyblockPlayer player, Pos block, BlockFace face) {
         for (SbItemStack item : getDrops(player))
             if (item != null && item.item().amount() > 0) {
-                ItemEntity entity = new ItemEntity(item.item());
-                entity.setInstance(player.getInstance(), block.add(face.toDirection().normalX() + 0.5, face.toDirection().normalY(), face.toDirection().normalZ() + 0.5));
-                entity.addViewer(player);
-                entity.setVelocity(new Vec(0, 0.5, 0));
-                entity.scheduleRemove(Duration.ofSeconds(30));
+                item.drop(player, player.getInstance(), block.add(face.toDirection().normalX() + 0.5, face.toDirection().normalY(), face.toDirection().normalZ() + 0.5));
             }
     }
 

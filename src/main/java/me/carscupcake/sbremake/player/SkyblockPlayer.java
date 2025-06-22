@@ -1096,6 +1096,10 @@ public class SkyblockPlayer extends Player {
         sendPacket(new TimeUpdatePacket(0, Time.tick, false));
         if (!worldProvider.isRelight()) worldProvider.relight();
         sendMessage("§bYour Skyblock Level is: §3" + getSkyblockLevel());
+        var speed = getStat(Stat.Speed);
+        this.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((float) (0.1 * (speed / 100d)));
+        this.getAttribute(Attribute.FLYING_SPEED).setBaseValue((float) (0.1 * (speed / 100d)));
+        this.sendPacket(new PlayerAbilitiesPacket(this.getGameMode() == GameMode.CREATIVE ? PlayerAbilitiesPacket.FLAG_ALLOW_FLYING : (byte) 0, 0.05f, (float) (0.1 * (speed / 100d))));
     }
 
     public float getMaxHealth() {

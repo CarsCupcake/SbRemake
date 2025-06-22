@@ -23,6 +23,7 @@ import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Point;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.instance.Instance;
@@ -38,6 +39,7 @@ import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.*;
 
 import static java.lang.Math.min;
@@ -437,6 +439,8 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
 
     public void drop(Instance instance, Point pos) {
         ItemEntity entity = new ItemEntity(item());
+        entity.scheduleRemove(Duration.ofSeconds(30));
+        entity.setVelocity(new Vec(new Random().nextDouble(), 2, new Random().nextDouble()));
         entity.setInstance(instance, pos);
     }
     public void drop(SkyblockPlayer player, Instance instance, Point pos) {

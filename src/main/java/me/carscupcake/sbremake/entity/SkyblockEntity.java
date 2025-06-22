@@ -330,11 +330,7 @@ public abstract class SkyblockEntity extends EntityCreature {
             }
             Set<SbItemStack> items = lootTable.loot(lastDamager);
             for (SbItemStack item : items) {
-                ItemEntity entity = new ItemEntity(item.item());
-                entity.setInstance(getInstance(), getPosition());
-                entity.addViewer(lastDamager);
-                entity.setVelocity(new Vec(new Random().nextDouble(), 2, new Random().nextDouble()));
-                entity.scheduleRemove(Duration.ofSeconds(30));
+                item.drop(lastDamager, getInstance(), getPosition());
             }
         }
         for (TaskScheduler scheduler : new HashSet<>(assignedTask))

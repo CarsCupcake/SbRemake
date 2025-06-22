@@ -228,13 +228,12 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
     }
 
     private void blockBreakLog(PlayerBlockBreakEvent event, SkyblockPlayer player, Log log) {
-        SbItemStack item = log.drops(player);
+        SbItemStack item = log.drop().create().calculateFortuneAmount(1, player.getStat(Stat.ForagingFortune));
         LogBreakEvent logBreakEvent = new LogBreakEvent(player, event.getBlockPosition(), log, new ArrayList<>(List.of(item)));
         MinecraftServer.getGlobalEventHandler().call(logBreakEvent);
         for (SbItemStack i : logBreakEvent.drops()) {
-            ItemEntity entity = new ItemEntity(i.item());
-            entity.setInstance(player.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
-            entity.addViewer(player);
+
+            i.drop(player, event.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
         }
         player.getSkill(Skill.Foraging).addXp(log.xp());
         return;
