@@ -194,17 +194,17 @@ public abstract class ISkill implements SkyblockXpTask {
 
     @Override
     public long getMaxXp() {
-        return getSkyblockXpForLevel(level);
+        return getSkyblockXpForLevel(getMaxLevel());
     }
 
     private long getSkyblockXpForLevel(int level) {
-        if (level >= 10) return level * 5L;
+        if (level <= 10) return level * 5L;
         var xp = 50;
         level -= 10;
-        if (level >= 25) return xp + level * 10L;
+        if (level <= 25) return xp + level * 10L;
         xp += 150;
         level -= 15;
-        if (level >= 50) return xp + level * 20L;
+        if (level <= 50) return xp + level * 20L;
         xp += 500;
         level -= 25;
         return xp + level * 30L;
@@ -212,6 +212,6 @@ public abstract class ISkill implements SkyblockXpTask {
 
     @Override
     public long getTotalXp() {
-        return getSkyblockXpForLevel(getMaxLevel());
+        return getSkyblockXpForLevel(level);
     }
 }

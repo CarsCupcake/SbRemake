@@ -97,7 +97,7 @@ import java.util.function.Function;
 
 @Slf4j
 @Getter
-@SuppressWarnings({"unused", "UnstableApiUsage"})
+@SuppressWarnings({"unused"})
 public class SkyblockPlayer extends Player {
     public static final Comparator<StoredPet> PET_COMPARATOR = (o1, o2) -> {
         int rarity = o2.getRarity().ordinal() - o1.getRarity().ordinal();
@@ -1061,7 +1061,7 @@ public class SkyblockPlayer extends Player {
             StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
             Main.LOGGER.debug("Spawn Caller: {}", stackTraceElements[2].getMethodName().equals("spawn") ? stackTraceElements[3].toString() : stackTraceElements[2].toString());
         }
-
+        setFlying(false);
         absorption = 0;
         recalculateArmor();
         if (pet != null) {

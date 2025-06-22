@@ -211,7 +211,9 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                 event.setResultBlock(Block.AZALEA);
                 SbItemStack.from(Lushlilac.class).calculateFortuneAmount(1, player.getStat(Stat.ForagingFortune)).drop(player, player.getInstance(), event.getBlockPosition().middle().relative(BlockFace.TOP));
                 player.getSkill(Skill.Foraging).addXp(10);
-                galatea.scheduleTask(() -> event.getInstance().setBlock(event.getBlockPosition(), Block.FLOWERING_AZALEA), 2_400);
+                var instance = event.getInstance();
+                var pos = event.getBlockPosition();
+                galatea.scheduleTask(() -> instance.setBlock(pos, Block.FLOWERING_AZALEA), 2_400);
                 return;
             }
         }
