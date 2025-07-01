@@ -24,6 +24,9 @@ Run (double click) the run.bat
 To connect use Minecraft Version 1.21.4 with the Address localhost:25565
 
 ## Contributing
-To pull the repo successfully please not that i use a submodule here which allso has to be pulled
-Use this command 'git clone --recurse-submodules -j8 https://github.com/CarsCupcake/SbRemake.git' to clone successfully
-or update it seperatly via 'git submodule update --init --recursive'
+To pull the repo successfully please not that i use a submodule here which allso has to be pulled.  
+Use this command:   
+``` git clone --recurse-submodules -j8 https://github.com/CarsCupcake/SbRemake.git ```  
+to clone successfully,  
+or update it seperatly via  
+``` git submodule update --init --recursive ```
