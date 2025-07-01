@@ -18,6 +18,13 @@ import java.util.Arrays;
 import java.util.Map;
 
 public enum Pets implements IPet {
+    JadeDragon("Jade Dragon", PetType.Foraging, "ewogICJ0aW1lc3RhbXAiIDogMTcxNjQzNzE2MjM3NiwKICAicHJvZmlsZUlkIiA6ICI0NmNhODkyZTY4ODA0YThmYjFkYzkwYjg0ZTY5ZjVmZSIsCiAgInByb2ZpbGVOYW1lIiA6ICJPbG8xNjA2IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzQwOTk1ODk3OTZkZTE4NTc4N2FiOTJjMzA2NmQwZDBhZjgzMmZmYWQ3MTUzYTQyYmIyZTJkMjM1OThlN2VhNjAiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ==",
+            Map.of(Stat.Health, new PetStat(0.25), Stat.MagicFind, new PetStat(0.05), Stat.ForagingFortune, new PetStat(0.25))) {
+        @Override
+        public LevelingType getLevelingType() {
+            return LevelingType.Dragon;
+        }
+    },
     BlueWhale("Blue Whale", PetType.Fishing, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGFiNzc5YmJjY2M4NDlmODgyNzNkODQ0ZThjYTJmM2E2N2ExNjk5Y2IyMTZjMGExMWI0NDMyNmNlMmNjMjAifX19",
             Map.of(Stat.Health, new PetStat(2)), new PetAbility("Ingest", "§7All potions heal §a+%h%" + (Stat.Health.getSymbol()) + ".", Map.of("%h%", new PetStat(0.5)))),
     Ghoul("Ghoul", PetType.Combat, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODc5MzQ1NjViZjUyMmY2ZjQ3MjZjZGZlMTI3MTM3YmUxMWQzN2MzMTBkYjM0ZDhjNzAyNTMzOTJiNWZmNWIifX19",

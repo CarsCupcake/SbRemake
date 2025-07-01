@@ -169,7 +169,7 @@ public interface Modifier<T> {
             CompoundBinaryTag extraAttributes = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt();
             CompoundBinaryTag petInfoTag = extraAttributes.getCompound("petInfo");
             if (CompoundBinaryTag.empty() == petInfoTag)
-                return new Pet.PetInfo(null, ItemRarity.SPECIAL, 0, 0, null, 0);
+                return new Pet.PetInfo(null, ItemRarity.SPECIAL, 0, null, 0);
             IPet pet = IPet.pets.get(petInfoTag.getString("type"));
             ISbItem petItemId = SbItemStack.raw(petInfoTag.getString("heldItem"));
             PetItem petItem = (petItemId == null) ? null : (PetItem) petItemId;

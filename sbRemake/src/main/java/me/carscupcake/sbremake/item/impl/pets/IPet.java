@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.item.impl.pets;
 
+import lombok.Getter;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
@@ -11,7 +12,9 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.StoredPet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public interface IPet {
     String getName();
@@ -25,27 +28,6 @@ public interface IPet {
     double getStat(Stat stat, Pet.PetInfo petInfo);
 
     PetType getPetType();
-
-    default int getLevel(ItemRarity rarity, double exp) {
-        int level = 1;
-        for (int xp : switch (rarity) {
-            case COMMON -> Pet.common;
-            case UNCOMMON -> Pet.uncommon;
-            case RARE -> Pet.rare;
-            case EPIC -> Pet.epic;
-            default -> Pet.legendary;
-        }) {
-            if (exp >= xp) {
-                level++;
-                exp -= xp;
-            } else break;
-        }
-        return level;
-    }
-
-    default int getMaxLevel() {
-        return 100;
-    }
 
     default void spawnPet(SkyblockPlayer player, StoredPet petInfo) {
         player.setPetTask(new PlayerPet(petInfo, player));
@@ -66,4 +48,36 @@ public interface IPet {
     }
 
     HashMap<String, IPet> pets = new HashMap<>();
+
+
+    default LevelingType getLevelingType() {
+        return LevelingType.Normal;
+    }
+
+    @Getter
+    enum LevelingType {
+        Normal(100),
+        Dragon(200);
+        private final int maxLevel;
+        LevelingType(int maxLevel) {
+            this.maxLevel = maxLevel;
+        }
+
+        public Iterable<Double> xpIterator(ItemRarity rarity) {
+            return () -> new Iterator<>() {
+
+                int i = 1;
+
+                @Override
+                public boolean hasNext() {
+                    return i < maxLevel;
+                }
+
+                @Override
+                public Double next() {
+                    return Pet.PetInfo.nextLevelXp(rarity, i++, LevelingType.this);
+                }
+            };
+        }
+    }
 }

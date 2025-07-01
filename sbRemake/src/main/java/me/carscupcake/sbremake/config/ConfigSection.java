@@ -1,10 +1,8 @@
 package me.carscupcake.sbremake.config;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import com.google.gson.internal.LazilyParsedNumber;
+import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import net.kyori.adventure.nbt.*;
@@ -99,7 +97,10 @@ public class ConfigSection {
         int size = element.getAsJsonObject().get("size").getAsInt();
         String id = tag.getString("id");
         SbItemStack stack = SbItemStack.from(id);
-        assert stack != null;
+        if (stack == null) {
+            Main.LOGGER.warn("Could not find ISbItem with id {}", id);
+            stack = SbItemStack.AIR;
+        }
         ItemStack item = stack.item().with(DataComponents.CUSTOM_DATA, new CustomData(tag)).withAmount(size);
         SbItemStack sbItemStack = SbItemStack.from(item);
         Map<SkyblockEnchantment, Integer> enchantmentIntegerMap = sbItemStack.getEnchantments();
