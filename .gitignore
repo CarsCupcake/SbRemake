@@ -109,4 +109,4 @@ buildNumber.properties
 
 # Common working directory
 run/
-!/src/
+!/sbRemake/src/
