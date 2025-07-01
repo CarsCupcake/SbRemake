@@ -30,7 +30,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v4
     - uses: gradle/actions/wrapper-validation@v4
     - name: Build with Gradle
-      run: gradlew build
+      run: gradle build
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Generate and submit dependency graph
