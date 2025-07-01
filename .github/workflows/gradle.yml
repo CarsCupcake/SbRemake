@@ -35,3 +35,4 @@ jobs:
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@v4
+      continue-on-error: true
