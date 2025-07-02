@@ -98,6 +98,7 @@ import java.util.function.Function;
 @Getter
 @SuppressWarnings({"unused", "UnstableApiUsage"})
 public class SkyblockPlayer extends Player {
+	
     public static final Comparator<StoredPet> PET_COMPARATOR = (o1, o2) -> {
         int rarity = o2.getRarity().ordinal() - o1.getRarity().ordinal();
         if (rarity != 0) return rarity;
