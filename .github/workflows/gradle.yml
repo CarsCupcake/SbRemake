@@ -6,20 +6,16 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Java CI with Gradle
 permissions:
   contents: write
 on:
   push:
-    branches: [ "master" ]
   pull_request:
-    branches: [ "master" ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
       with:
@@ -29,10 +25,14 @@ jobs:
       with:
         java-version: '23'
         distribution: 'temurin'
-        cache: maven
-    - name: Build & Test with Maven
-      run: mvn package
+        cache: gradle
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+    - uses: gradle/actions/wrapper-validation@v4
+    - name: Build with Gradle
+      run: gradle build
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-    - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+    - name: Generate and submit dependency graph
+      uses: gradle/actions/dependency-submission@v4
+      continue-on-error: true
