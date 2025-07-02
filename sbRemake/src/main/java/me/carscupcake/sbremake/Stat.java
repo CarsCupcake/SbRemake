@@ -8,7 +8,7 @@ public enum Stat {
     Defense("Defense", "❈", "§a", false),
     Speed("Speed", "✦", "§f", false, 100, 500),
     Strength("Strength", "❁", "§c", false),
-    Intelligence("Intelligence", "✎", "§b", false),
+    Intelligence("Intelligence", "✎", "§b", false, 100d, -1d),
     CritChance("Crit Chance", "☣", "§9", true, 30, -1),
     CritDamage("Crit Damage", "☠", "§9", true, 50, -1),
     AttackSpeed("Bonus Attack Speed", "⚔", "§e", true, 0, 100),

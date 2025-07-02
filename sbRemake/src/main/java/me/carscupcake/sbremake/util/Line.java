@@ -1,12 +1,12 @@
 package me.carscupcake.sbremake.util;
 
-import net.minestom.server.collision.BoundingBox;
-import net.minestom.server.coordinate.Vec;
-import net.minestom.server.entity.Entity;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import net.minestom.server.collision.BoundingBox;
+import net.minestom.server.coordinate.Vec;
+import net.minestom.server.entity.Entity;
 
 public record Line(Vec supportVec, Vec direction) {
     public boolean collidesWithBB(BoundingBox bb) {

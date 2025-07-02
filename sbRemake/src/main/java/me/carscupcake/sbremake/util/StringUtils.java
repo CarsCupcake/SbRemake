@@ -11,6 +11,10 @@ public class StringUtils {
     private StringUtils() {
     }
 
+    public static String integer(double d) {
+        return String.format("%.0f", d);
+    }
+    
     public static String cleanDouble(double d, int digits) {
         int dg = countDigitsAfterDecimal(d, digits);
         return String.format("%." + (Math.min(dg, digits)) + "f", d);
