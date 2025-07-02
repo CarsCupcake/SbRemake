@@ -522,7 +522,7 @@ public class SkyblockPlayer extends Player {
     @Setter
     public UpdateHealthPacket lastHealthPacket = null;
     @Getter
-    public double mana = 100;
+    public double mana;
     @Getter
     @Setter
     public Mining blockBreakScheduler = null;
