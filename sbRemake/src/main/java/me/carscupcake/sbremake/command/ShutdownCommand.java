@@ -14,13 +14,8 @@ import org.jetbrains.annotations.Nullable;
 public class ShutdownCommand extends Command {
 
     public ShutdownCommand() {
-        super("shutdown");
+        super("shutdown", "stop");
         addSyntax(this::execute);
-    }
-
-    @Override
-    public @Nullable String[] getAliases() {
-        return new String[]{"stop"};
     }
 
     private void execute(@NotNull CommandSender commandSender, @NotNull CommandContext commandContext) {

@@ -624,6 +624,7 @@ public class SkyblockPlayer extends Player {
             slayers.put(s, new PlayerSlayer(this, s));
         }
         sbHealth = getMaxSbHealth();
+        mana = getMaxMana();
         setNoGravity(true);
         Reflections reflections = new Reflections("me.carscupcake.sbremake.item.collections.impl");
         for (Class<? extends me.carscupcake.sbremake.item.collections.Collection> clazz : reflections.getSubTypesOf(me.carscupcake.sbremake.item.collections.Collection.class)) {
@@ -1261,12 +1262,17 @@ public class SkyblockPlayer extends Player {
         double val = getStat(Stat.Health);
         return (val >= Float.MAX_VALUE) ? Float.MAX_VALUE : (float) val;
     }
-
+    
+    public double getMaxMana() {
+        double val = getManaPool();
+        return (val >= Double.MAX_VALUE) ? Double.MAX_VALUE : val;
+    }
+    
     public double getManaPool() {
-        return getStat(Stat.Intelligence) + 100d;
+        return getStat(Stat.Intelligence);
     }
 
-    public void addSbHealth(double health, boolean ignoreVitality) {
+	public void addSbHealth(double health, boolean ignoreVitality) {
         if (ignoreVitality) {
             setSbHealth(health + getHealth());
             return;
