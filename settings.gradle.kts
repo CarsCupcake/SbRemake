@@ -2,9 +2,10 @@ rootProject.name = "SbRemake"
 
 include("minestom")
 
-include("minestom:testing")
-include("minestom:code-generators")
-include("minestom:jmh-benchmarks")
-include("minestom:jcstress-tests")
+includeBuild("minestom/build-src")
 
-include("minestom:demo")
+include("minestom:code-generators")
+//include("minestom:testing")
+
+include("minestom:jmh-benchmarks")
+//include("minestom:jcstress-tests")

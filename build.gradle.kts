@@ -1,16 +1,21 @@
 plugins {
     java
+    application
     `java-library`
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.0.0-rc1"
 }
 
 group = "me.carscupcake"
-version = "0.0.9"
+version = "0.0.10"
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(23)
+        sourceCompatibility = JavaVersion.VERSION_23
     }
+}
+application {
+    mainClass.set("me.carscupcake.sbremake.Main") // ⬅️ Configure here
 }
 
 repositories {
@@ -67,7 +72,7 @@ tasks.jar {
 }
 tasks.shadowJar {
     archiveFileName.set("SbRemake.jar")
-    destinationDirectory.set(layout.buildDirectory.dir("../target"))
+    destinationDirectory.set(project.file("target"))
 }
 
 sourceSets.main {
