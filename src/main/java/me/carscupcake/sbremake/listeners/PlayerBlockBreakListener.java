@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.listeners;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import me.carscupcake.sbremake.Main;
+import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.blocks.Crop;
 import me.carscupcake.sbremake.blocks.FarmingCrystal;
 import me.carscupcake.sbremake.blocks.Log;
@@ -11,18 +12,22 @@ import me.carscupcake.sbremake.event.LogBreakEvent;
 import me.carscupcake.sbremake.item.IVanillaPickaxe;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.VanillaPickaxeTier;
+import me.carscupcake.sbremake.item.impl.other.foraging.Lushlilac;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.lootTable.blockLoot.BlockLootTable;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
-import me.carscupcake.sbremake.worlds.impl.*;
+import me.carscupcake.sbremake.worlds.impl.FarmingIsles;
+import me.carscupcake.sbremake.worlds.impl.ForagingIsle;
+import me.carscupcake.sbremake.worlds.impl.Galatea;
+import me.carscupcake.sbremake.worlds.impl.Hub;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.block.BlockFace;
 import net.minestom.server.timer.TaskSchedule;
 
 import java.io.IOException;
@@ -231,6 +236,5 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
             i.drop(player, event.getInstance(), event.getBlockPosition().add(0.5, 0, 0.5));
         }
         player.getSkill(Skill.Foraging).addXp(log.xp());
-        return;
     }
 }
