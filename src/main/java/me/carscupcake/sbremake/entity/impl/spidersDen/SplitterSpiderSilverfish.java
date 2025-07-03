@@ -24,12 +24,12 @@ public class SplitterSpiderSilverfish extends SkyblockEntity implements SkillXpD
             case 4 -> 50;
             default -> throw new IllegalStateException("Not in range");
         };
-        addAIGroup(zombieAiGroup(this, tier == 1 ? List.of(SpidersDen.Region.SpiderMound) : List.of(SpidersDen.Region.ArachnesBurrow, SpidersDen.Region.ArachnesSanctuary)));
+        addAIGroup(zombieAiGroup(this, tier == 1 ? List.of(SpidersDen.Region.SpiderMound) : List.of(SpidersDen.Region.ArachnesBurrow, SpidersDen.Region.ArachnesSanctuary), true));
     }
 
     @Override
     public void spawn() {
-        addAIGroup(zombieAiGroup(this, tier == 1 ? List.of(SpidersDen.Region.SpiderMound) : List.of(SpidersDen.Region.ArachnesBurrow, SpidersDen.Region.ArachnesSanctuary)));
+        addAIGroup(zombieAiGroup(this, tier == 1 ? List.of(SpidersDen.Region.SpiderMound) : List.of(SpidersDen.Region.ArachnesBurrow, SpidersDen.Region.ArachnesSanctuary), true));
     }
 
     @Override

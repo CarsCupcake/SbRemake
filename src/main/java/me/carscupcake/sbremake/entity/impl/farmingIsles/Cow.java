@@ -18,7 +18,7 @@ public class Cow extends SkyblockEntity implements SkillXpDropper {
 
     @Override
     public void spawn() {
-        addAIGroup(randomStroll(this, 4));
+        addAIGroup(randomStroll(this, 8, true));
     }
 
     @Override

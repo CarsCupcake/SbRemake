@@ -48,4 +48,9 @@ public class SneakyCreeper extends SkyblockEntity {
     public int getLevel() {
         return 3;
     }
+
+    @Override
+    protected boolean showCustomNameTag() {
+        return false;
+    }
 }

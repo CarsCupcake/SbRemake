@@ -14,6 +14,7 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.utils.location.RelativeVec;
 import org.jetbrains.annotations.NotNull;
 
+@DebugCommand
 public class DebugGridCommand extends Command {
     private final Argument<RelativeVec> center = new ArgumentRelativeBlockPosition("center")
             .setDefaultValue(new RelativeVec(new Vec(0, -1, 0), RelativeVec.CoordinateType.RELATIVE, true, true, true));

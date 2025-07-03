@@ -113,7 +113,9 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                     if (closest != null && distance < 30 * 30) {
                         closest.blocks().put(event.getBlockPosition(), event.getBlock());
                     } else {
-                        MinecraftServer.getSchedulerManager().buildTask(() -> event.getInstance().setBlock(event.getBlockPosition(), event.getBlock())).delay(TaskSchedule.seconds(30)).schedule();
+                        MinecraftServer.getSchedulerManager().buildTask(() -> {
+                            event.getInstance().ensureSetBlockAsync(event.getBlockPosition(), event.getBlock());
+                        }).delay(TaskSchedule.seconds(30)).schedule();
                         Main.LOGGER.info("Crop not in range!");
                     }
                     return;

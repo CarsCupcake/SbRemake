@@ -12,7 +12,6 @@ import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import net.minestom.server.color.Color;
 import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
@@ -25,7 +24,7 @@ public class DeformedRevenant extends SkyblockEntity implements SkillXpDropper {
         setChestplate(new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
         setHelmet(new ItemBuilder(Material.LEATHER_HELMET).setLeatherColor(new Color(0xFF0000)).setGlint(true).build());
         setItemInHand(PlayerHand.MAIN, new ItemBuilder(Material.GOLDEN_SWORD).setGlint(true).build());
-        addAIGroup(zombieAiGroup(this));
+        addAIGroup(zombieAiGroup(this, false));
     }
 
     @Override

@@ -24,7 +24,7 @@ public class MinerZombie20 extends SkyblockEntity implements SkillXpDropper {
 
     @Override
     public void spawn() {
-        this.addAIGroup(zombieAiGroup(this, DeepCaverns.Region.ObsidianSanctuary));
+        this.addAIGroup(zombieAiGroup(this, DeepCaverns.Region.ObsidianSanctuary, true));
     }
 
     @Override

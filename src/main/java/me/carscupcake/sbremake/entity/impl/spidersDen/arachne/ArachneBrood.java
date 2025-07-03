@@ -20,7 +20,7 @@ public class ArachneBrood extends SkyblockEntity {
 
     @Override
     public void spawn() {
-        addAIGroup(zombieAiGroup(this, SpidersDen.Region.ArachnesSanctuary));
+        addAIGroup(zombieAiGroup(this, SpidersDen.Region.ArachnesSanctuary, true));
     }
 
     @Override

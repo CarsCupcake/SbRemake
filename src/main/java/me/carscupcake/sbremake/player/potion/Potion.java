@@ -274,6 +274,7 @@ public enum Potion implements IPotion {
                 return;
             }
             player.sendPacket(new EntityEffectPacket(player.getEntityId(), new net.minestom.server.potion.Potion(net.minestom.server.potion.PotionEffect.JUMP_BOOST, jumpBoostLevel, (int) duration)));
+            player.addEffect(new net.minestom.server.potion.Potion(net.minestom.server.potion.PotionEffect.JUMP_BOOST, jumpBoostLevel, (int) duration));
         }
 
         @Override

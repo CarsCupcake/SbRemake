@@ -21,7 +21,7 @@ public class Endermite extends SkyblockEntity implements SkillXpDropper {
 
     @Override
     public void spawn() {
-        addAIGroup(zombieAiGroup(this));
+        addAIGroup(zombieAiGroup(this, true));
     }
 
     @Override

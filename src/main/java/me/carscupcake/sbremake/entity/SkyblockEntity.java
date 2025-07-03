@@ -27,7 +27,6 @@ import net.minestom.server.entity.*;
 import net.minestom.server.entity.ai.EntityAIGroup;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.ai.goal.DoNothingGoal;
-import net.minestom.server.entity.ai.goal.RandomStrollGoal;
 import net.minestom.server.entity.ai.goal.RangedAttackGoal;
 import net.minestom.server.entity.ai.target.ClosestEntityTarget;
 import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
@@ -36,7 +35,6 @@ import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.event.EventDispatcher;
-import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.timer.Task;
@@ -108,16 +106,16 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     }
 
-    protected static EntityAIGroup randomStroll(SkyblockEntity entity, int range) {
+    protected static EntityAIGroup randomStroll(SkyblockEntity entity, int range, boolean precompile) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().add(new RandomStrollGoal(entity, range));
+        aiGroup.getGoalSelectors().add(new RandomStrollInRegion(entity, range, new ArrayList<>(), precompile, true));
         aiGroup.getGoalSelectors().add(new DoNothingGoal(entity, 3000, 0.5f));
         return aiGroup;
     }
 
-    protected static EntityAIGroup randomStroll(SkyblockEntity entity, Region region, int range) {
+    protected static EntityAIGroup randomStroll(SkyblockEntity entity, Region region, int range, boolean precompile) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().add(new RandomStrollInRegion(entity, range, region));
+        aiGroup.getGoalSelectors().add(new RandomStrollInRegion(entity, range, region, precompile));
         return aiGroup;
     }
 
@@ -137,27 +135,30 @@ public abstract class SkyblockEntity extends EntityCreature {
         return regionTarget(entity, region, range, false);
     }
 
-    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity) {
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, boolean precompileRandomStroll) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 16, new ArrayList<>(), true) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 16,
+                                                                                                                                       new ArrayList<>(), precompileRandomStroll, true) // Walk around
         ));
         aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && !entity.isDead)));
         return aiGroup;
     }
 
-    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region) {
-        return zombieAiGroup(entity, region, false);
-    }protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region, boolean isHidden) {
-        return zombieAiGroup(entity, List.of(region), isHidden);
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region, boolean precompileRandomStroll) {
+        return zombieAiGroup(entity, region, precompileRandomStroll, false);
+    }protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region, boolean precompileRandomStroll, boolean isHidden) {
+        return zombieAiGroup(entity, List.of(region), precompileRandomStroll, isHidden);
     }
 
-    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, List<Region> region) {
-        return zombieAiGroup(entity, region, false);
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, List<Region> region, boolean precompileRandomStroll) {
+        return zombieAiGroup(entity, region, precompileRandomStroll,false);
     }
 
-    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, List<Region> region, boolean isHidden) {
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, List<Region> region, boolean precompileRandomStroll, boolean isHidden) {
         EntityAIGroup aiGroup = regionTarget(entity, region, 8, isHidden);
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 10, region, isHidden) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 10,
+                                                                                                                                       region, precompileRandomStroll,
+                                                                                                                                       isHidden) // Walk around
         ));
         return aiGroup;
     }
@@ -168,17 +169,18 @@ public abstract class SkyblockEntity extends EntityCreature {
         return rangedAttackGoal;
     }
 
-    protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity) {
+    protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity, boolean precompileRandomStroll) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollInRegion(entity, 5, new ArrayList<>(), true) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollInRegion(entity, 5, new ArrayList<>(), precompileRandomStroll, true) //
+                                                  // Walk around
         ));
         aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player && !entity.isDead)));
         return aiGroup;
     }
 
-    protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity, Region region) {
+    protected static EntityAIGroup skeletonAiGroup(SkyblockEntity entity, Region region, boolean precompileRandomStroll) {
         EntityAIGroup aiGroup = regionTarget(entity, region, 20);
-        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollInRegion(entity, 10, region) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollInRegion(entity, 10, region, precompileRandomStroll) // Walk around
         ));
         return aiGroup;
     }
@@ -355,11 +357,6 @@ public abstract class SkyblockEntity extends EntityCreature {
         runnable.setSelf(task);
     }
 
-    @Override
-    public @NotNull Pos getPosition() {
-        return super.position;
-    }
-
     public void damage(double amount) {
         lastDamager = null;
         damage(DamageType.GENERIC, (float) amount);
@@ -421,30 +418,33 @@ public abstract class SkyblockEntity extends EntityCreature {
     protected static class RandomStrollInRegion extends GoalSelector {
         private static final long DELAY = 2500L;
         private final int radius;
-        private final List<Vec> closePositions;
+        private final List<Pos> closePositions;
         private final Random random = new Random();
         private final List<Region> regions;
         private final long randomDelay = new Random().nextLong(5000);
         private long lastStroll;
         private final boolean isHiddenRegion;
         private final SkyblockEntity entity;
+        private final boolean precompilePos;
 
-        public RandomStrollInRegion(@NotNull SkyblockEntity skyblockEntity, int radius, Region region) {
+        public RandomStrollInRegion(@NotNull SkyblockEntity skyblockEntity, int radius, Region region, boolean precompilePos) {
             super(skyblockEntity);
             this.entity = skyblockEntity;
             this.regions = List.of(region);
             this.radius = radius;
-            this.closePositions = getNearbyBlocks(radius);
             isHiddenRegion = false;
+            this.precompilePos = precompilePos;
+            this.closePositions = getNearbyBlocks(radius, precompilePos);
         }
 
-        public RandomStrollInRegion(@NotNull SkyblockEntity skyblockEntity, int radius, List<Region> region, boolean isHidden) {
+        public RandomStrollInRegion(@NotNull SkyblockEntity skyblockEntity, int radius, List<Region> region, boolean precompilePos, boolean isHidden) {
             super(skyblockEntity);
             this.entity = skyblockEntity;
             this.regions = region;
             this.radius = radius;
-            this.closePositions = getNearbyBlocks(radius);
             this.isHiddenRegion = isHidden;
+            this.precompilePos = precompilePos;
+            this.closePositions = getNearbyBlocks(radius, precompilePos);
         }
 
         public boolean shouldStart() {
@@ -458,11 +458,24 @@ public abstract class SkyblockEntity extends EntityCreature {
             int remainingAttempt = this.closePositions.size();
             while (remainingAttempt-- > 0) {
                 int index = this.random.nextInt(this.closePositions.size());
-                Vec position = this.closePositions.get(index);
-                Pos target = this.entity.getPosition().add(position);
+                var position = this.closePositions.get(index);
+                Pos target = precompilePos ? position : this.entity.getPosition().add(position);
                 try {
                     var chunk = entity.getInstance().getChunk(target.chunkX(), target.chunkZ());
                     if (chunk == null || !chunk.isLoaded()) return;
+                    if (!precompilePos) {
+                        if (chunk.getBlock(target).isSolid()) continue;
+                        boolean inRegion = false;
+                        for (Region region : regions) {
+                            if (region.isInRegion(target)) {
+                                inRegion = true;
+                                break;
+                            }
+                        }
+                        if (!inRegion) {
+                            continue;
+                        }
+                    }
                     boolean result = this.entity.getNavigator().setPathTo(target);
                     if (result) {
                         break;
@@ -486,23 +499,26 @@ public abstract class SkyblockEntity extends EntityCreature {
             this.lastStroll = System.currentTimeMillis();
         }
 
-        private @NotNull List<Vec> getNearbyBlocks(int radius) {
-            List<Vec> blocks = new ArrayList<>();
+        private @NotNull List<Pos> getNearbyBlocks(int radius, boolean precompilePos) {
+            List<Pos> blocks = new ArrayList<>();
             for (int x = -radius; x <= radius; ++x) {
                 for (int y = -radius; y <= radius; ++y) {
                     for (int z = -radius; z <= radius; ++z) {
-                        Vec vec = new Vec(x, y, z);
-                        var relative = this.entity.getPosition().add(vec);
-                        var chunk = entity.getInstance().getChunkAt(relative.chunkX(), relative.chunkZ());
-                        if (chunk == null || !chunk.isLoaded()) chunk = entity.getInstance().loadChunk(relative).join();
-                        if (chunk.getBlock(relative.blockX(), relative.blockY(), relative.blockZ()).isSolid()) continue;
-                        if (!chunk.getBlock(relative.blockX(), relative.blockY() - 1, relative.blockZ()).isSolid()) continue;
-                        for (Region region : regions) {
-                            if (region.isInRegion(relative)) {
-                                blocks.add(vec);
-                                break;
+                        Pos vec = new Pos(x, y, z);
+                        if (precompilePos) {
+                            var relative = this.entity.getPosition().add(vec);
+                            var chunk = entity.getInstance().getChunkAt(relative.chunkX(), relative.chunkZ());
+                            if (chunk == null || !chunk.isLoaded()) chunk = entity.getInstance().loadChunk(relative).join();
+                            if (chunk.getBlock(relative.blockX(), relative.blockY(), relative.blockZ()).isSolid()) continue;
+                            if (!chunk.getBlock(relative.blockX(), relative.blockY() - 1, relative.blockZ()).isSolid()) continue;
+                            for (Region region : regions) {
+                                if (region.isInRegion(relative)) {
+                                    blocks.add(relative);
+                                    break;
+                                }
                             }
-                        }
+                        }else
+                            blocks.add(vec);
                     }
                 }
             }

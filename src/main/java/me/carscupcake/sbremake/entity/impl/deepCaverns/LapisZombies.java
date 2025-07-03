@@ -40,7 +40,7 @@ public class LapisZombies extends SkyblockEntity implements SkillXpDropper {
 
     @Override
     public void spawn() {
-        this.addAIGroup(zombieAiGroup(this, DeepCaverns.Region.LapisQuarry));
+        this.addAIGroup(zombieAiGroup(this, DeepCaverns.Region.LapisQuarry, true));
     }
 
     @Override
