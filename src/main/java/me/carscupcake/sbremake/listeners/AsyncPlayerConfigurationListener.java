@@ -13,6 +13,7 @@ public class AsyncPlayerConfigurationListener implements Consumer<AsyncPlayerCon
     @Override
     public void accept(AsyncPlayerConfigurationEvent asyncPlayerConfigurationEvent) {
         SkyblockPlayer player = (SkyblockPlayer) asyncPlayerConfigurationEvent.getPlayer();
+        if (player.getWorldProvider() != null) player.setWorldProvider(null);
         SkyblockWorld world = SkyblockWorld.PrivateIsle;
         ConfigFile defaults = new ConfigFile("defaults", player);
         if (defaults.has("world")) {

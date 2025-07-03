@@ -25,15 +25,6 @@ public record Log(Block block, ISbItem drop, double xp) {
             new Log(Block.ACACIA_LOG, 6d), new Log(Block.ACACIA_WOOD, ISbItem.get(Material.ACACIA_LOG), 6d),
             new Log(Block.JUNGLE_LOG, 6d), new Log(Block.JUNGLE_WOOD, ISbItem.get(Material.JUNGLE_LOG), 6d));
 
-    public SbItemStack drops(SkyblockPlayer player) {
-        SbItemStack item = drop.create();
-        double miningFortune = player.getStat(Stat.ForagingFortune) / 100d;
-        long baseMult = (long) miningFortune;
-        double chance = miningFortune - baseMult;
-        if (new Random().nextDouble() <= chance) baseMult++;
-        return item.withAmount((int) (1 + baseMult));
-    }
-
     public record LogInfo(Log log, Map<String, String> properties) {
         public void regen(Instance instance, BlockVec pos) {
             instance.setBlock(pos, log.block.withProperties(properties));

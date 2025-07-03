@@ -14,7 +14,6 @@ import net.minestom.server.item.Material;
 public class MinerSkeleton20 extends SkyblockEntity implements SkillXpDropper {
     public MinerSkeleton20() {
         super(EntityType.SKELETON);
-        this.addAIGroup(skeletonAiGroup(this, DeepCaverns.Region.ObsidianSanctuary));
         getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
         setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.DIAMOND_BLOCK).setGlint(true).build());
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());

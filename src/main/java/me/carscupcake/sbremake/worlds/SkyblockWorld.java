@@ -511,7 +511,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
 
         public final void addPlayer(SkyblockPlayer player, Pos spawn) {
             if (onPlayerAdd(player)) {
-                Main.LOGGER.info("Adding " + (((TextComponent) player.getName()).content()) + " to " + (type().name()));
+                Main.LOGGER.info("Adding {} to {}", ((TextComponent) player.getName()).content(), type().name());
                 if (shutdownTask != null) {
                     shutdownTask.cancel();
                     shutdownTask = null;
