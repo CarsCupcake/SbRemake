@@ -26,7 +26,8 @@ public enum ItemType {
     Gauntlet(true, false, "Gauntlet"),
     Necklace(true, false, "Necklace"),
     Accessory(false, false, "Accessory"),
-    ArrowPoison(false, false, "Arrow Poison"),;
+    Salt(false, true, "Salt"),
+    ArrowPoison(false, false, "Arrow Poison");
 
     public static final ItemType[] SWORDS = {Sword, Longsword};
     public static final ItemType[] ARMOR = {Helmet, Chestplate, Leggings, Boots};

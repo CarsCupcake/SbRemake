@@ -5,7 +5,6 @@ import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.player.xp.SkyblockXpTask;
 import me.carscupcake.sbremake.rewards.Reward;
 import me.carscupcake.sbremake.rewards.impl.SkyblockXpReward;
@@ -17,12 +16,16 @@ import me.carscupcake.sbremake.util.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minestom.server.inventory.click.Click;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import org.junit.Assert;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 @Getter
 public abstract class Collection implements SkyblockXpTask {
@@ -60,12 +63,15 @@ public abstract class Collection implements SkyblockXpTask {
 
     private static final int[][] slots = {{22}, {21, 23}, {21, 22, 23}, {20, 21, 23, 24}, {20, 21, 22, 23, 24}, {19, 20, 21, 23, 24, 25}, {19, 20, 21, 22, 23, 24, 25}, {18, 19, 20, 21, 23, 24, 25, 26}};
 
+    private ItemBuilder getShowItem() {
+        return new ItemBuilder(showItem()).setName("§e" + (getName()) + " " + (StringUtils.toRoman(level)))
+                .addAllLore("§7View all your " + (getName()) + " Collection", "§7progress and rewards!", "§7 ", "§7Total Collected: §e" + (StringUtils.toFormatedNumber(progress)));
+    }
+
     public void showInventory() {
         InventoryBuilder builder = new InventoryBuilder(6, (getName()) + " Collection")
                 .fill(TemplateItems.EmptySlot.getItem())
-                .setItem(new ItemBuilder(showItem()).setName("§e" + (getName()) + " " + (StringUtils.toRoman(level)))
-                        .addAllLore("§7View all your " + (getName()) + " Collection", "§7progress and rewards!", "§7 ", "§7Total Collected: §e" + (StringUtils.toFormatedNumber(progress)))
-                        .build(), 4);
+                .setItem(getShowItem().build(), 4);
         if (maxLevel < slots.length) {
             for (int i = 0; i < maxLevel; i++) {
                 builder.setItem(getCollectionShowItem(i + 1), slots[maxLevel][i]);
@@ -152,5 +158,31 @@ public abstract class Collection implements SkyblockXpTask {
     @Override
     public long getTotalXp() {
         return getXpForLeve(level);
+    }
+
+    public static void openCollectionSectionMenu(SkyblockPlayer player, String name, Material show, List<Collection> collections) {
+        InventoryBuilder builder = new InventoryBuilder(6, "%s Collections".formatted(name))
+                .fill(TemplateItems.EmptySlot.getItem(), 0, 8)
+                .fill(TemplateItems.EmptySlot.getItem(), 45, 53)
+                .verticalFill(0, 6, TemplateItems.EmptySlot.getItem())
+                .verticalFill(8, 6, TemplateItems.EmptySlot.getItem());
+        int slot = 10;
+        var clickEvents = new HashMap<Integer, Function<Click, Boolean>>();
+        for (Collection collection : collections) {
+            //TODO: Better Preview (to lazy rn)
+            builder.setItem(slot, collection.getShowItem().build());
+            clickEvents.put(slot, _ -> {
+                collection.showInventory();
+                return true;
+            });
+            if (++slot + 1 % 9 == 0) {
+                slot += 2;
+            }
+        }
+        Gui gui = new Gui(builder.build());
+        for (Map.Entry<Integer, Function<Click, Boolean>> entry : clickEvents.entrySet()) {
+            gui.getClickEvents().add(entry.getKey(), entry.getValue());
+        }
+        gui.showGui(player);
     }
 }

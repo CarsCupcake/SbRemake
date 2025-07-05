@@ -490,7 +490,7 @@ public class SkyblockPlayer extends Player {
     private final ActionBar actionBar = new ActionBar(this);
     private final Map<FullSetBonus, Integer> fullSetBonuses = new HashMap<>();
     @Getter
-    private final List<me.carscupcake.sbremake.item.collections.Collection> collections = new LinkedList<>();
+    private final Map<String, me.carscupcake.sbremake.item.collections.Collection> collections = new HashMap<>();
     private final Map<Skill, ISkill> skills = new HashMap<>();
     @Getter
     private final List<String> tags;
@@ -640,7 +640,7 @@ public class SkyblockPlayer extends Player {
                 if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) continue;
                 Constructor<? extends me.carscupcake.sbremake.item.collections.Collection> constructor = clazz.getConstructor(SkyblockPlayer.class);
                 var collection = constructor.newInstance(this);
-                collections.add(collection);
+                collections.put(collection.getId(), collection);
                 initSkyblockXpTask(collection);
             } catch (Exception e) {
                 kick("§cError while loading");
@@ -978,7 +978,7 @@ public class SkyblockPlayer extends Player {
         defaults.set("potions", potions, ConfigSection.SECTION);
         defaults.save();
         for (ISkill skill : this.skills.values()) skill.save();
-        collections.forEach(me.carscupcake.sbremake.item.collections.Collection::save);
+        collections.values().forEach(me.carscupcake.sbremake.item.collections.Collection::save);
         hotm.save();
         ConfigFile petsFile = new ConfigFile("pets", this);
         petsFile.set("stored", pets, STORED_PET_LIST_DATA);
@@ -1333,7 +1333,7 @@ public class SkyblockPlayer extends Player {
         }
         if (!getInventory().addItemStack(item.item())) return false;
         if (isCollection) {
-            for (me.carscupcake.sbremake.item.collections.Collection collection : collections) {
+            for (me.carscupcake.sbremake.item.collections.Collection collection : collections.values()) {
                 int amount = collection.progress(item.sbItem());
                 if (amount > 0) {
                     collection.addProgress(amount * item.item().amount());

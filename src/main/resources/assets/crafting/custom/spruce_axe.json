@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "minecraft:stick"
+    },
+    "b": {
+      "item": "minecraft:spruce_log",
+      "count": 32
+    }
+  },
+  "pattern": [
+    " bb",
+    " #b",
+    " # "
+  ],
+  "result": {
+    "item": "skyblock:jungle_axe"
+  },
+  "requirement": {
+    "type": "collection",
+    "id": "SPRUCE_WOOD",
+    "level": 2
+  }
+}
