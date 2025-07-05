@@ -199,7 +199,7 @@ public interface Recipe {
                     return true;
                 }
             }
-            return false;
+            return event.getInventory() != event.getPlayer().getInventory() && !craftingGrid.contains(event.getSlot());
         });
         gui.setItemChangeEvent(event -> {
             if (craftingGrid.contains(event.getSlot())) {
