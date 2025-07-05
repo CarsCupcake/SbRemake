@@ -1,9 +1,6 @@
 package me.carscupcake.sbremake.blocks;
 
-import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ISbItem;
-import me.carscupcake.sbremake.item.SbItemStack;
-import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
@@ -11,7 +8,6 @@ import net.minestom.server.item.Material;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.Set;
 
 public record Log(Block block, ISbItem drop, double xp) {
@@ -29,5 +25,15 @@ public record Log(Block block, ISbItem drop, double xp) {
         public void regen(Instance instance, BlockVec pos) {
             instance.setBlock(pos, log.block.withProperties(properties));
         }
+    }
+
+    public static Log getLog(Block block) {
+        Log log = null;
+        for (Log l : Log.logs)
+            if (Objects.requireNonNull(l.block().registry().material()).equals(block.registry().material())) {
+                log = l;
+                break;
+            }
+        return log;
     }
 }

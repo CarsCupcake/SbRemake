@@ -7,27 +7,19 @@ import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.modifiers.gemstone.Gemstone;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlotType;
 import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneSlots;
-import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.util.CoinsCost;
 import me.carscupcake.sbremake.util.Cost;
 import me.carscupcake.sbremake.util.ItemCost;
 import me.carscupcake.sbremake.util.TaskScheduler;
-import me.carscupcake.sbremake.worlds.impl.Hub;
-import me.carscupcake.sbremake.worlds.impl.LegacyPark;
+import me.carscupcake.sbremake.worlds.impl.ForagingIsle;
 import net.minestom.server.coordinate.BlockVec;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.ItemEntity;
-import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class JungleAxe implements ISbItem, Listener, GemstoneSlots {
 
@@ -77,76 +69,51 @@ public class JungleAxe implements ISbItem, Listener, GemstoneSlots {
             final int blocks = (int) Math.max(event.player().getStat(Stat.Sweep), 35);
             if (blocks == 0) return;
             var instance = event.player().getInstance();
+            ForagingIsle foragingIsle = (ForagingIsle) event.player().getWorldProvider();
+            LinkedList<BlockVec> candidates = new LinkedList<>();
+            for (int x = -1; x <= 1; x++)
+                for (int y = -1; y <= 1; y++)
+                    for (int z = -1; z <= 1; z++)
+                        if (x != 0 || y != 0 || z != 0) {
+                            var pos = event.pos().add(x, y, z);
+                            var b = instance.getBlock(event.pos());
+                            if (b == Block.AIR) continue;
+                            candidates.push(pos);
+                        }
 
             new TaskScheduler() {
                 int woods = 0;
-                final HashSet<BlockVec> candidatesOld = new HashSet<>();
-                final LinkedList<BlockVec> candidates = new LinkedList<>();
-                final LinkedList<BlockVec> candidatesNew = new LinkedList<>(List.of(event.pos()));
-                final LinkedList<BlockVec> toBreak = new LinkedList<>();
 
                 @Override
                 public void run() {
-                    if (!toBreak.isEmpty()) {
-                        var block = toBreak.poll();
-                        var blockType = instance.getBlock(block);
-                        Log log = null;
-                        for (Log l : Log.logs)
-                            if (Objects.requireNonNull(l.block().registry().material()).equals(blockType.registry().material())) {
-                                log = l;
-                                break;
-                            }
-                        if (log != null) {
-                            event.player().getInstance().setBlock(block, Block.AIR);
-                            log.drop().create().calculateFortuneAmount(1, event.player().getStat(Stat.ForagingFortune)).drop(event.player(), instance, block.add(0.5, 0, 0.5));
-                            event.player().getSkill(Skill.Foraging).addXp(log.xp());
-                            if (event.player().getWorldProvider() instanceof LegacyPark park)
-                                park.brokenLogs.put(block, new Log.LogInfo(log, blockType.properties()));
-                            if (event.player().getWorldProvider() instanceof Hub hub)
-                                hub.brokenLogs.put(block, new Log.LogInfo(log, blockType.properties()));
-                        }
-                    }
-                    if (woods >= blocks) {
-                        cancel();
-                        return;
-                    }
-                    if (candidatesNew.isEmpty()) {
-                        cancel();
-                        return;
-                    }
-                    candidates.addAll(candidatesNew);
-                    candidatesNew.clear();
                     while (!candidates.isEmpty()) {
-                        BlockVec candidate = candidates.pop();
-                        candidatesOld.add(candidate);
-                        for (int x = -1; x <= 1; x++) {
-                            for (int y = -1; y <= 1; y++) {
-                                for (int z = -1; z <= 1; z++) {
-                                    if (x != 0 || y != 0 || z != 0) {
-                                        if (woods >= blocks) break;
-                                        BlockVec posNew = candidate.add(x, y, z);
-                                        if (!candidatesOld.contains(posNew) && !candidates.contains(posNew) && !candidatesNew.contains(posNew)) {
-                                            Block blockNew = event.player().getInstance().getBlock(posNew);
-                                            Log log = null;
-                                            for (Log l : Log.logs)
-                                                if (Objects.requireNonNull(l.block().registry().material()).equals(blockNew.registry().material())) {
-                                                    log = l;
-                                                    break;
-                                                }
-                                            if (log != null) {
-                                                toBreak.add(posNew);
-                                                candidatesNew.add(posNew);
-                                                woods++;
-                                            }
+                        var candidate =  candidates.poll();
+                        var block = instance.getBlock(candidate);
+                        var log = Log.getLog(block);
+                        if (log != null) {
+                            woods++;
+                            instance.setBlock(candidate, Block.AIR);
+                            foragingIsle.brokenLogs.put(candidate, new Log.LogInfo(log, block.properties()));
+                            log.drop().create().calculateFortuneAmount(1, event.player().getStat(Stat.ForagingFortune)).drop(instance,
+                                            candidate.middle());
+
+                            for (int x = -1; x <= 1; x++)
+                                for (int y = -1; y <= 1; y++)
+                                    for (int z = -1; z <= 1; z++)
+                                        if (x != 0 || y != 0 || z != 0) {
+                                            var pos = candidate.add(x, y, z);
+                                            var b = instance.getBlock(pos);
+                                            if (b == Block.AIR) continue;
+                                            candidates.add(pos);
                                         }
-                                    }
-                                }
-                            }
+                            break;
                         }
-                        if (woods >= blocks) break;
+                    }
+                    if (candidates.isEmpty() || woods >= blocks) {
+                        cancel();
                     }
                 }
-            }.repeatTask(2);
+            }.repeatTask(1, 1);
 
         });
     }

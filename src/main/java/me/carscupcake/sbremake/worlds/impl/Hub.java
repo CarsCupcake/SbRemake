@@ -2,7 +2,6 @@ package me.carscupcake.sbremake.worlds.impl;
 
 import lombok.Getter;
 import me.carscupcake.sbremake.blocks.FarmingCrystal;
-import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.entity.impl.hub.CryptGhoul;
 import me.carscupcake.sbremake.entity.impl.hub.GoldenGhoul;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
@@ -22,12 +21,10 @@ import me.carscupcake.sbremake.item.impl.sword.UndeadSword;
 import me.carscupcake.sbremake.util.CoinsCost;
 import me.carscupcake.sbremake.util.ItemCost;
 import me.carscupcake.sbremake.util.Pair;
-import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.*;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
 import me.carscupcake.sbremake.worlds.region.PolygonalRegion;
 import net.minestom.server.collision.BoundingBox;
-import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.PlayerSkin;
@@ -36,10 +33,9 @@ import net.minestom.server.item.Material;
 import java.util.*;
 
 @Getter
-public class Hub extends SkyblockWorld.WorldProvider {
+public class Hub extends ForagingIsle {
     public static final String FARMING_CRYSTAL_SKIN = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI2NWY5NmY1NGI3ODg4NWM0NmU3ZDJmODZiMWMxZGJmZTY0M2M2MDYwZmM3ZmNjOTgzNGMzZTNmZDU5NTEzNSJ9fX0=";
     private List<FarmingCrystal> crystals = new ArrayList<>();
-    public final HashMap<BlockVec, Log.LogInfo> brokenLogs = new HashMap<>();
 
     public Hub() {
         super(List.of(new Launchpad(-11, -232, -9, -231, 63, SkyblockWorld.GoldMines, new Pos(-4.5, 77, -272)),
@@ -71,13 +67,6 @@ public class Hub extends SkyblockWorld.WorldProvider {
     }
 
     private final Set<EntitySpawner> spawners = new HashSet<>();
-    private final TaskScheduler foragingReset = new TaskScheduler() {
-        @Override
-        public void run() {
-            brokenLogs.forEach((block, log) -> log.regen(container, block));
-            brokenLogs.clear();
-        }
-    };
     @Override
     public Pair<Pos, Pos> getChunksToLoad() {
         return toMinMaxPair(new Pos(200, 0, 220), new Pos(-400, 0, -390));
@@ -85,7 +74,6 @@ public class Hub extends SkyblockWorld.WorldProvider {
 
     @Override
     protected void register() {
-        foragingReset.repeatTask(20 * 30);
         spawners.add(new EntitySpawner(new Pos[]{new Pos(-105.5, 71.0, -61.5), new Pos(-112.5, 71.0, -61.5), new Pos(-114.5, 71.0, -66.5), new Pos(-117.5, 71.0, -73.5), new Pos(-124.5, 71.0, -75.5), new Pos(-121.5, 71.0, -82.5), new Pos(-117.5, 71.0, -89.5), new Pos(-110.5, 72.0, -103.5), new Pos(-101.5, 72.0, -111.5), new Pos(-99.5, 72.0, -127.5), new Pos(-93.5, 72.0, -145.5), new Pos(-119.5, 72.0, -141.5), new Pos(-145.5, 72.0, -122.5), new Pos(-158.5, 72.0, -93.5), new Pos(-173.5, 74.0, -86.5), new Pos(-163.5, 72.0, -136.5), new Pos(-68.5, 79.0, -184.5), new Pos(-43.5, 80.0, -173.5)}, 200,
                 new EntitySpawner.BasicConstructor(GraveyardZombie::new), container));
         spawners.add(new EntitySpawner(new Pos[]{new Pos(-153.0, 58.0, -100.0), new Pos(-150.0, 57.0, -103.0), new Pos(-147.0, 56.0, -100.0), new Pos(-143.0, 55.0, -101.0), new Pos(-145.0, 57.0, -111.0), new Pos(-142.0, 58.0, -122.0), new Pos(-131.0, 57.0, -129.0), new Pos(-116.0, 53.0, -125.0), new Pos(-102.0, 48.0, -119.0), new Pos(-108.0, 45.0, -130.0), new Pos(-119.0, 41.0, -134.0), new Pos(-123.0, 41.0, -141.0), new Pos(-131.0, 41.0, -135.0), new Pos(-132.0, 45.0, -121.0), new Pos(-134.0, 48.0, -113.0), new Pos(-132.0, 50.0, -105.0), new Pos(-124.0, 48.0, -102.0), new Pos(-115.0, 45.0, -98.0), new Pos(-106.0, 47.0, -102.0), new Pos(-88.0, 46.0, -105.0), new Pos(-76.0, 46.0, -107.0), new Pos(-66.0, 49.0, -117.0), new Pos(-53.0, 53.0, -129.0), new Pos(-48.0, 57.0, -142.0), new Pos(-82.0, 44.0, -93.0), new Pos(-90.0, 43.0, -91.0), new Pos(-99.0, 38.0, -89.0), new Pos(-104.0, 38.0, -84.0), new Pos(-97.0, 38.0, -83.0), new Pos(-102.0, 38.0, -80.0), new Pos(-114.0, 42.0, -86.0), new Pos(-101.0, 40.0, -95.0)},
@@ -108,13 +96,14 @@ public class Hub extends SkyblockWorld.WorldProvider {
                                 new Pair<>(ISbItem.get(SpiderSword.class).create(), new CoinsCost(100)), new Pair<>(ISbItem.get(DiamondSword.class).create(), new CoinsCost(60)),
                                 new Pair<>(ISbItem.get(Bow.class).create(), new CoinsCost(25)), new Pair<>(ISbItem.get(FlintArrow.class).create().withAmount(12), new CoinsCost(40)),
                                 new Pair<>(ISbItem.get(WitherBow.class).create(), new CoinsCost(250)), new Pair<>(ISbItem.get(ArtisanalShortbow.class).create(), new CoinsCost(600))))};
+        super.register();
     }
 
     @Override
     protected void unregister() {
-        foragingReset.cancel();
         spawners.forEach(EntitySpawner::stop);
         crystals.forEach(farmingCrystal -> farmingCrystal.task().cancel());
+        super.unregister();
     }
 
     public enum Region implements me.carscupcake.sbremake.worlds.region.Region {

@@ -229,7 +229,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
         return false;
     }
 
-    private void blockBreakLog(PlayerBlockBreakEvent event, SkyblockPlayer player, Log log) {
+    public static void blockBreakLog(PlayerBlockBreakEvent event, SkyblockPlayer player, Log log) {
         SbItemStack item = log.drop().create().calculateFortuneAmount(1, player.getStat(Stat.ForagingFortune));
         LogBreakEvent logBreakEvent = new LogBreakEvent(player, event.getBlockPosition(), log, new ArrayList<>(List.of(item)));
         MinecraftServer.getGlobalEventHandler().call(logBreakEvent);
