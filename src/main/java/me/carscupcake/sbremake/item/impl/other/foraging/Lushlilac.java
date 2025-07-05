@@ -24,12 +24,12 @@ public class Lushlilac implements ISbItem, HeadWithValue {
 
     @Override
     public ItemType getType() {
-        return ItemType.None;
+        return ItemType.Salt;
     }
 
     @Override
     public ItemRarity getRarity() {
-        return ItemRarity.RARE;
+        return ItemRarity.UNCOMMON;
     }
 
     @Override

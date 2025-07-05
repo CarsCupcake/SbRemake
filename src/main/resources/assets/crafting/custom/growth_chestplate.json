@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "minecraft:enchanted_dark_oak_log",
+      "count": 64
+    }
+  },
+  "pattern": [
+    "# #",
+    "###",
+    "###"
+  ],
+  "result": {
+    "item": "skyblock:growth_chestplate"
+  },
+  "requirement": {
+    "type": "collection",
+    "id": "DARK_OAK_WOOD",
+    "level": 9
+  }
+}
