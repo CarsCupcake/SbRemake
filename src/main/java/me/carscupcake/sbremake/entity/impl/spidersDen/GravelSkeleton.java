@@ -17,7 +17,7 @@ public class GravelSkeleton extends SkyblockEntity implements SkillXpDropper {
 
     @Override
     public void spawn() {
-        addAIGroup(skeletonAiGroup(this));
+        addAIGroup(skeletonAiGroup(this, true));
     }
 
     @Override

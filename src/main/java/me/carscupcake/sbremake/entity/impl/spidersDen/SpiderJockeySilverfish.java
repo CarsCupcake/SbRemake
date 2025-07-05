@@ -19,7 +19,7 @@ public class SpiderJockeySilverfish extends SkyblockEntity implements SkillXpDro
 
     @Override
     public void spawn() {
-        addAIGroup(zombieAiGroup(this, inSpidersMound ? List.of(SpidersDen.Region.SpiderMound) : List.of(SpidersDen.Region.ArachnesBurrow, SpidersDen.Region.ArachnesSanctuary)));
+        addAIGroup(zombieAiGroup(this, inSpidersMound ? List.of(SpidersDen.Region.SpiderMound) : List.of(SpidersDen.Region.ArachnesBurrow, SpidersDen.Region.ArachnesSanctuary), true));
     }
 
     @Override

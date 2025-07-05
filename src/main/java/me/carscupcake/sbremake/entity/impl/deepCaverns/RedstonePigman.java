@@ -40,7 +40,7 @@ public class RedstonePigman extends SkyblockEntity {
                 }
             return false;
         })));
-        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(this, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(this, 10, DeepCaverns.Region.PigmensDen) // Walk around
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(this, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(this, 10, DeepCaverns.Region.PigmensDen, true) // Walk around
         ));
         addAIGroup(aiGroup);
     }

@@ -46,7 +46,7 @@ public class DasherSpider extends SkyblockEntity implements MeleeAttackGoalEntit
 
     @Override
     public void spawn() {
-        addAIGroup(zombieAiGroup(this, tier == 1 ? SpidersDen.Region.SpiderMound : SpidersDen.Region.ArachnesBurrow));
+        addAIGroup(zombieAiGroup(this, tier == 1 ? SpidersDen.Region.SpiderMound : SpidersDen.Region.ArachnesBurrow, true));
     }
 
     @Override

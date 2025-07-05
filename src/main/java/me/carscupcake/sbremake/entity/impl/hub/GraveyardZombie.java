@@ -17,7 +17,7 @@ public class GraveyardZombie extends SkyblockEntity implements SkillXpDropper {
     @Override
     public void spawn() {
         super.spawn();
-        addAIGroup(zombieAiGroup(this, Hub.Region.Graveyard));
+        addAIGroup(zombieAiGroup(this, Hub.Region.Graveyard, true));
     }
 
     @Override

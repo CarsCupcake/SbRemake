@@ -28,7 +28,7 @@ public class GoldenGhoul extends SkyblockEntity implements SkillXpDropper {
 
     @Override
     public void spawn() {
-        addAIGroup(zombieAiGroup(this, Hub.Region.HubCrypts));
+        addAIGroup(zombieAiGroup(this, Hub.Region.HubCrypts, true));
     }
 
     @Override

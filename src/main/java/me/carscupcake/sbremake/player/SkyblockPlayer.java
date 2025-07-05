@@ -460,6 +460,8 @@ public class SkyblockPlayer extends Player {
         if (event.interaction() != PlayerInteractEvent.Interaction.Right) return;
         if (event.player().instance.getBlock(event.block()).registry().material() == Material.CRAFTING_TABLE) {
             Recipe.openCraftingGui(event.player());
+        } else if (event.player().instance.getBlock(event.block()).registry().material() == Material.ANVIL) {
+            Recipe.openAnvilGui(event.player());
         }
     }).addListener(PlayerInteractEvent.class, event -> {
         if (event.interaction() != PlayerInteractEvent.Interaction.Right) return;

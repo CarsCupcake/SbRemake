@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake;
 
 import me.carscupcake.sbremake.blocks.MiningBlock;
+import me.carscupcake.sbremake.command.DebugCommand;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.item.ISbItem;
@@ -29,7 +30,6 @@ import me.carscupcake.sbremake.worlds.impl.Galatea;
 import me.carscupcake.sbremake.worlds.impl.PrivateIsle;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.key.Namespaced;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minestom.server.LoggerProvider;
 import net.minestom.server.MinecraftServer;
@@ -61,7 +61,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -182,6 +181,7 @@ public class Main {
         for (Class<? extends Command> clazz : reflections.getSubTypesOf(Command.class)) {
             try {
                 if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) continue;
+                if (clazz.isAnnotationPresent(DebugCommand.class) && !IS_DEBUG) continue;
                 Constructor<? extends Command> constructor = clazz.getConstructor();
                 Command instance = constructor.newInstance();
                 commandManager.register(instance);

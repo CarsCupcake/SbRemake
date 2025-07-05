@@ -23,7 +23,7 @@ public class EndermanT2 extends SkyblockEntity {
 
     @Override
     public void spawn() {
-        addAIGroup(zombieAiGroup(this));
+        addAIGroup(zombieAiGroup(this, true));
     }
 
     @Override

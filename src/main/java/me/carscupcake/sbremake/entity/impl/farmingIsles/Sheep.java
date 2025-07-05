@@ -21,7 +21,7 @@ public class Sheep extends SkyblockEntity implements SkillXpDropper {
 
     @Override
     public void spawn() {
-        addAIGroup(randomStroll(this, FarmingIsles.Region.Oasis, 4));
+        addAIGroup(randomStroll(this, FarmingIsles.Region.Oasis, 8, true));
     }
 
     @Override
