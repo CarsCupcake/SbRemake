@@ -24,9 +24,10 @@ public class CoalCollection extends Collection {
                 List.of(new SkyblockXpReward(4), new RecipeReward(Recipe.craftingRecipes.get("PERSONAL_BANK_ITEM")))
                 List.of(new SkyblockXpReward(4)), new RecipeReward(Recipe.craftingRecipes.get("ENCHANTED_EMERALD_BLOCK")))
                 List.of(new SkyblockXpReward(4)), new RecipeReward(Recipe.craftingRecipes.get("EMERALD_BLADE")))
-                List.of(new SkyblockXpReward(4)))); new RecipeReward(Recipe.craftingRecipes.get("EMERALD_ARMOR_HELMET",
-                                                                                                "EMERALD_ARMOR_CHESTPLATE",
-                                                                                                "
+                List.of(new SkyblockXpReward(4)))); new RecipeReward(Recipe.craftingRecipes.get(new RecipeReward(Recipe.craftingRecipes.get ("EMERALD_ARMOR_HELMET")),
+                                                                                                new RecipeReward(Recipe.craftingRecipes.get ("EMERALD_ARMOR_CHESTPLATE")),
+                                                                                                new RecipeReward(Recipe.craftingRecipes.get ("EMERALD_ARMOR_LEGGINGS")),
+                                                                                                new RecipeReward(Recipe.craftingRecipes.get ("EMERALD_ARMOR_BOOTS")),
           
                                                                                               
     }
