@@ -9,7 +9,6 @@ import me.carscupcake.sbremake.item.modifiers.RarityStat;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.EquipmentSlot;
-import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -28,6 +27,7 @@ public interface Reforge {
     Lore getLore();
 
     double getStat(Stat stat, ItemRarity rarity, @Nullable SkyblockPlayer player);
+    Map<Stat, RarityStat> getStats();
 
     ItemType[] allowedTypes();
 

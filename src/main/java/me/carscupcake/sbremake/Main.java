@@ -41,6 +41,7 @@ import net.minestom.server.event.player.*;
 import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
+import net.minestom.server.extras.velocity.VelocityProxy;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.client.play.ClientConfigurationAckPacket;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
@@ -61,10 +62,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -189,11 +187,22 @@ public class Main {
                 LOGGER.error("Error while instantiating {}", clazz, e);
             }
         }
-        for (var arg : args)
+        var itt = Arrays.stream(args).iterator();
+        while (itt.hasNext()) {
+            var arg = itt.next();
             if (arg.equals("--open-lan")) {
                 OpenToLAN.open();
-                break;
             }
+            if (arg.equals("-velocity")) {
+                var secret = itt.hasNext() ? itt.next() : null;
+                if (secret != null) {
+                    VelocityProxy.enable(secret);
+                    Main.LOGGER.info("Velocity Proxy enabled");
+                } else {
+                    Main.LOGGER.error("Please Provide a velocity secret!");
+                }
+            }
+        }
         try {
             isCracked = Boolean.parseBoolean(args[1]);
         } catch (Exception _) {

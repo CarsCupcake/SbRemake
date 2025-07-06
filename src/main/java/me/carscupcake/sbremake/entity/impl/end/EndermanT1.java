@@ -19,6 +19,11 @@ public class EndermanT1 extends SkyblockEntity {
                         .addLoot(new ItemLoot(EnderChestplate.class))
                         .addLoot(new ItemLoot(EnderLeggings.class))
                         .addLoot(new ItemLoot(EnderBoots.class)).setSingleLoot(), 0.1));
+    }
+
+    @Override
+    public void spawn() {
+        super.spawn();
         addAIGroup(zombieAiGroup(this, true));
     }
 
