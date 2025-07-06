@@ -1,20 +1,23 @@
-package me.carscupcake.sbremake.item.impl.other;
+package me.carscupcake.sbremake.item.minion;
 
 import me.carscupcake.sbremake.item.HeadWithValue;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.ItemType;
+import me.carscupcake.sbremake.item.ability.Ability;
 import net.minestom.server.item.Material;
 
-public class CoinItem100 implements ISbItem, HeadWithValue, ICoinItem {
+import java.util.List;
+
+public record MinionItem(String name, String id, String head, List<Ability> placeAbility) implements ISbItem, HeadWithValue {
     @Override
     public String getId() {
-        return "COIN_ITEM_100";
+        return id;
     }
 
     @Override
     public String getName() {
-        return "Hod did you get this?";
+        return name;
     }
 
     @Override
@@ -24,21 +27,26 @@ public class CoinItem100 implements ISbItem, HeadWithValue, ICoinItem {
 
     @Override
     public ItemType getType() {
-        return ItemType.None;
+        return ItemType.Minion;
     }
 
     @Override
     public ItemRarity getRarity() {
-        return ItemRarity.SPECIAL;
+        return ItemRarity.RARE;
+    }
+
+    @Override
+    public boolean isUnstackable() {
+        return true;
+    }
+
+    @Override
+    public List<Ability> getDefaultAbilities() {
+        return placeAbility;
     }
 
     @Override
     public String value() {
-        return "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RlZTYyMWViODJiMGRhYjQxNjYzMzBkMWRhMDI3YmEyYWMxMzI0NmE0YzFlN2Q1MTc0ZjYwNWZkZGYxMGExMCJ9fX0=";
-    }
-
-    @Override
-    public int coinValue() {
-        return 100;
+        return head;
     }
 }
