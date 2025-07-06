@@ -66,7 +66,7 @@ public class CombatMinion extends AbstractMinion {
 
             @Override
             public void run() {
-                if (stand == null || stand.isDead()) {
+                if (!isRunning) {
                     cancel();
                     return;
                 }
@@ -99,7 +99,7 @@ public class CombatMinion extends AbstractMinion {
 
             @Override
             public void run() {
-                if (stand == null || stand.isDead()) {
+                if (!isRunning) {
                     cancel();
                     return;
                 }
