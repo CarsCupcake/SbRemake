@@ -1,6 +1,8 @@
 package me.carscupcake.sbremake.item.minion;
 
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -51,6 +53,9 @@ public abstract class AbstractMinion implements Minion {
     protected boolean noSpace;
     protected LivingEntity message;
     protected final Instance instance;
+    @Getter
+    @Setter
+    protected boolean isRunning = true;
 
     /**
      * This constructor provides the basic values
@@ -136,7 +141,7 @@ public abstract class AbstractMinion implements Minion {
         new TaskScheduler() {
             @Override
             public void run() {
-                if (stand == null || stand.isDead()) {
+                if (!isRunning) {
                     return;
                 }
                 Pos l = stand.getPosition();
@@ -266,6 +271,7 @@ public abstract class AbstractMinion implements Minion {
 
     @Override
     public void remove(MinionRemoveReason removeReason) {
+        setRunning(false);
         if (stand != null && !stand.isDead()) stand.remove();
         if(message != null && !message.isDead()) message.remove();
 

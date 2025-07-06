@@ -47,7 +47,7 @@ public class MiningMinion extends AbstractMinion {
 
             @Override
             public void run() {
-                if (stand == null || stand.isDead()) {
+                if (!isRunning) {
                     cancel();
                     return;
                 }
@@ -89,7 +89,7 @@ public class MiningMinion extends AbstractMinion {
 
             @Override
             public void run() {
-                if (stand == null || stand.isDead()) {
+                if (!isRunning) {
                     cancel();
                     return;
                 }
