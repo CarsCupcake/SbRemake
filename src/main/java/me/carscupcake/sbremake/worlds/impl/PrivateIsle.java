@@ -148,8 +148,9 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
             e.printStackTrace(System.err);
         }
         Main.LOGGER.info("Saving Private Isle to {}", path == null ? "null" : path.toAbsolutePath().toString());
-        container.saveInstance();
-        container.saveChunksToStorage().thenRun(() -> Main.LOGGER.info("Done!"));
+        container.saveInstance().join();
+        container.saveChunksToStorage().join();
+        Main.LOGGER.debug("DONE!");
         super.unregister();
     }
 

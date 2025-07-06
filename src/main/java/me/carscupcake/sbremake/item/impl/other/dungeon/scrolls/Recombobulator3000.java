@@ -3,7 +3,7 @@ package me.carscupcake.sbremake.item.impl.other.dungeon.scrolls;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.item.smithing.SmithingItem;
-import me.carscupcake.sbremake.player.Essence;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.item.Material;
 
 public class Recombobulator3000 implements ISbItem, SmithingItem, HeadWithValue {
@@ -39,12 +39,12 @@ public class Recombobulator3000 implements ISbItem, SmithingItem, HeadWithValue 
     }
 
     @Override
-    public SbItemStack onApply(SbItemStack left, SbItemStack right) {
+    public SbItemStack onApply(SkyblockPlayer player, SbItemStack left, SbItemStack right) {
         return left.withModifier(Modifier.RarityUpgrades, 1);
     }
 
     @Override
-    public boolean canBeApplied(SbItemStack other) {
+    public boolean canBeApplied(SkyblockPlayer player, SbItemStack other) {
         return other.getModifier(Modifier.RarityUpgrades) == 0;
     }
 

@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.item.modifiers.reforges;
 
+import lombok.Getter;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.ItemType;
@@ -124,6 +125,7 @@ public enum SwordReforge implements Reforge {
     private final String id;
     private final List<Requirement> requirements;
     private final Lore lore;
+    @Getter
     private final Map<Stat, RarityStat> stats;
 
     SwordReforge(Map<Stat, RarityStat> stats, Requirement... requirement) {

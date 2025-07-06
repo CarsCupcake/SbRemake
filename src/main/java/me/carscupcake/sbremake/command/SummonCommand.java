@@ -7,6 +7,7 @@ import me.carscupcake.sbremake.entity.impl.crimsonIsle.miniBoss.Bladesoul;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
 import me.carscupcake.sbremake.entity.impl.spidersDen.*;
 import me.carscupcake.sbremake.entity.impl.spidersDen.arachne.Arachne;
+import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraph5;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
@@ -97,7 +98,8 @@ public class SummonCommand extends Command {
             public SkyblockEntity newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
                 return new SmolderingBlaze(null);
             }
-        };
+        },
+        VoidgloomSeraph5(VoidgloomSeraph5.class),;
 
         private final Class<? extends SkyblockEntity> entityClazz;
 

@@ -288,8 +288,8 @@ public interface Recipe {
                 gui.getInventory().setItemStack(13, anvilNoItem);
             }
             if (!(right.sbItem() instanceof SmithingItem rightSmithingItem)) return;
-            if (rightSmithingItem.canBeApplied(left)) {
-                gui.getInventory().setItemStack(13, rightSmithingItem.onApply(left, right).update(player).item());
+            if (rightSmithingItem.canBeApplied(player, left)) {
+                gui.getInventory().setItemStack(13, rightSmithingItem.onApply(player, left, right).update(player).item());
                 craftable.set(true);
                 return;
             }
