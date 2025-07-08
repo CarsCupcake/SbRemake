@@ -66,13 +66,14 @@ public class PlayerSlayer {
             double chance = meter.getLootTableChances().get(meterEntry);
             String oddMessage;
             if (chance < 0.0003) oddMessage = "§cRNGesus Incarnate";
-            else if (chance < 0.006) oddMessage = "§bPray RNGesus";
+            else if (chance < 0.006) oddMessage = "§dPray RNGesus";
             else if (chance < 0.03) oddMessage = "§5Extraordinary";
             else if (chance < 0.11) oddMessage = "§bRare";
             else if (chance < 0.31) oddMessage = "§9Occasional";
             else if (chance < 1) oddMessage = "§fCommon";
             else oddMessage = "§aGuaranteed";
-            itemBuilder.addAllLore("§c ", "§7Odds: " + (oddMessage) + " §7(" + (meter.getSelected() == meterEntry ? "§8§m" : "") + (StringUtils.cleanDouble(chance * 100, 4)) + (meter.getSelected() == meterEntry ? "§7 " + (StringUtils.cleanDouble((chance * (1 + Math.min(2, 2 * (meter.getRngMeterXp() / meter.getLootTableGoals().get(meterEntry))))) * 100, 4)) : "§7") + ")", " ", "§d" + (StringUtils.cleanDouble(meter.getRngMeterXp())) + "§5/§d" + (StringUtils.toShortNumber(meter.getLootTableGoals().get(meterEntry))));
+            itemBuilder.addAllLore("§c ",
+                                   "§7Odds: " + (oddMessage) + " §7(" + (meter.getSelected() == meterEntry ? "§8§m" : "") + (StringUtils.cleanDouble(chance * 100, 4)) + (meter.getSelected() == meterEntry ? "§7 " + (StringUtils.cleanDouble((chance * (1 + Math.min(2, 2 * (meter.getRngMeterXp() / meter.getLootTableGoals().get(meterEntry))))) * 100, 4)) : "§7") + ")", " ", "§d" + (StringUtils.cleanDouble(meter.getRngMeterXp())) + "§5/§d" + (StringUtils.toFormatedNumber(meter.getLootTableGoals().get(meterEntry))));
             builder.setItem(i, itemBuilder.build().withTag(Tag.String("meter_id"), meterEntry.id()));
             i++;
             if ((i + 1) % 9 == 0) i += 2;

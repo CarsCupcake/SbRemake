@@ -12,10 +12,12 @@ import me.carscupcake.sbremake.item.requirements.SkillRequirement;
 import me.carscupcake.sbremake.item.requirements.SlayerRequirement;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
+import me.carscupcake.sbremake.util.Lazy;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
+import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerLootTable;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerRngMeter;
 import net.kyori.adventure.sound.Sound;
 import net.minestom.server.coordinate.Pos;
@@ -30,8 +32,7 @@ import java.util.Random;
 
 public enum Slayers implements ISlayer {
     Zombie("Zombie Slayer", "Revenant Horror") {
-        private static double rngXp(RngMeterEntry entry) {
-
+        private double rngXp(RngMeterEntry entry) {
             lootChancesEntries.put(entry, entry.calculateHighestChance(RevenantHorrorI.lootTable, RevenantHorrorII.lootTable, RevenantHorrorIII.lootTable, RevenantHorrorIV.lootTable, RevenantHorrorV.lootTable));
             return entry.calculateRequiredXp(50_000, RevenantHorrorI.lootTable, RevenantHorrorII.lootTable, RevenantHorrorIII.lootTable, RevenantHorrorIV.lootTable, RevenantHorrorV.lootTable);
         }
@@ -70,10 +71,10 @@ public enum Slayers implements ISlayer {
             };
         }
 
-        private static final Map<RngMeterEntry, Double> rngMeterEntries = new HashMap<>();
-        private static final Map<RngMeterEntry, Double> lootChancesEntries = new HashMap<>();
+        private final Map<RngMeterEntry, Double> rngMeterEntries = new HashMap<>();
+        private final Map<RngMeterEntry, Double> lootChancesEntries = new HashMap<>();
 
-        private static void addRngMeterEntry(RngMeterEntry entry) {
+        private void addRngMeterEntry(RngMeterEntry entry) {
             rngMeterEntries.put(entry, rngXp(entry));
         }
 
@@ -86,9 +87,12 @@ public enum Slayers implements ISlayer {
             return new SlayerRngMeter(player, this, rngMeterEntries, lootChancesEntries);
         }
 
+        private final Lazy<List<RngMeterEntry>> entries = new Lazy<>(() -> List.of(RevenantHorrorII.FOUL_FLESH, RevenantHorrorII.PESTILENCE_RUNE,
+                                                                                  RevenantHorrorII.UNDEAD_CATALYST, RevenantHorrorIII.SMITE_VI, RevenantHorrorIII.BEHEADED_HORROR, RevenantHorrorII.REVENANT_CATALYST, RevenantHorrorIV.SNAKE_RUNE, RevenantHorrorV.REVENANT_VISCERA, RevenantHorrorIV.SCYTHE_BLADE, RevenantHorrorV.SMITE_VII, RevenantHorrorV.SHARD_OF_THE_SHREDDED, RevenantHorrorV.WARDEN_HEART));
+
         @Override
         public List<RngMeterEntry> getRngMeterEntries() {
-            return List.of(RevenantHorrorII.FOUL_FLESH, RevenantHorrorII.PESTILENCE_RUNE, RevenantHorrorII.UNDEAD_CATALYST, RevenantHorrorIII.SMITE_VI, RevenantHorrorIII.BEHEADED_HORROR, RevenantHorrorII.REVENANT_CATALYST, RevenantHorrorIV.SNAKE_RUNE, RevenantHorrorV.REVENANT_VISCERA, RevenantHorrorIV.SCYTHE_BLADE, RevenantHorrorV.SMITE_VII, RevenantHorrorV.SHARD_OF_THE_SHREDDED, RevenantHorrorV.WARDEN_HEART);
+            return entries.get();
         }
 
         private void spawnMiniBoss(SkyblockEntity entity, Instance instance, Pos pos) {
@@ -204,14 +208,55 @@ public enum Slayers implements ISlayer {
             };
         }
 
-        @Override
-        public SlayerRngMeter createRngMeter(SkyblockPlayer player) {
-            return null;
+        private static final Map<RngMeterEntry, Double> rngMeterEntries = new HashMap<>();
+        private static final Map<RngMeterEntry, Double> lootChancesEntries = new HashMap<>();
+        private static final Lazy<SlayerLootTable[]> lootTables = new  Lazy<>(() -> new SlayerLootTable[]{
+                VoidgloomSeraphI.getLootTable(new SlayerLootTable(), 1),
+                VoidgloomSeraphI.getLootTable(VoidgloomSeraphII.getLootTable(new SlayerLootTable(), 2), 2),
+                VoidgloomSeraphI.getLootTable(VoidgloomSeraphII.getLootTable(VoidgloomSeraphIII.getLootTable(new SlayerLootTable(), 3), 3), 3),
+                VoidgloomSeraphI.getLootTable(VoidgloomSeraphII.getLootTable(VoidgloomSeraphIII.getLootTable(VoidgloomSeraphIV.getSlayerLootTable(),
+                        4), 4), 4)});
+
+        private double rngXp(RngMeterEntry entry) {
+            var l = lootTables.get();
+            lootChancesEntries.put(entry, entry.calculateHighestChance(l[0],  l[1], l[2], l[3]));
+            return entry.calculateRequiredXp(50_000, l[0],  l[1], l[2], l[3]);
+        }
+
+        private void addRngMeterEntry(RngMeterEntry entry) {
+            rngMeterEntries.put(entry, rngXp(entry));
         }
 
         @Override
+        public SlayerRngMeter createRngMeter(SkyblockPlayer player) {
+            if (rngMeterEntries.isEmpty()) {
+                for (RngMeterEntry entry : getRngMeterEntries())
+                    addRngMeterEntry(entry);
+            }
+            return new SlayerRngMeter(player, this, rngMeterEntries, lootChancesEntries);
+        }
+
+        private final Lazy<List<RngMeterEntry>> entries = new Lazy<>(() -> List.of(VoidgloomSeraphII.TWILIGHT_ARROW_POISON,
+                                                            VoidgloomSeraphIII.ENDERSNAKE_RUNE,
+                                                            VoidgloomSeraphII.SUMMONING_EYE,
+                                                            VoidgloomSeraphIII.MANA_STEAL,
+                                                            VoidgloomSeraphIII.TRANSMITION_TUNER,
+                                                            VoidgloomSeraphIII.NULL_ATOM,
+                                                            VoidgloomSeraphIII.HAZMAT_ENDERMAN,
+                                                            VoidgloomSeraphIV.POCKET_ESPRESSO_MACHINE,
+                                                            VoidgloomSeraphIV.SMARTY_PANTS,
+                                                            VoidgloomSeraphIV.END_RUNE,
+                                                            VoidgloomSeraphIV.HANDY_BLOOD_CHALICE,
+                                                            VoidgloomSeraphIV.SINFUL_DICE,
+                                                            VoidgloomSeraphIV.UPGRADER,
+                                                            VoidgloomSeraphIV.ETHERWARP_MERGER,
+                                                            VoidgloomSeraphIV.JUDGEMENT_CORE,
+                                                            VoidgloomSeraphIV.ENCHANT_RUNE,
+                                                            VoidgloomSeraphIV.ENDER_SLAYER));
+
+        @Override
         public List<RngMeterEntry> getRngMeterEntries() {
-            return List.of();
+            return entries.get();
         }
 
         @Override
@@ -221,7 +266,7 @@ public enum Slayers implements ISlayer {
 
 
         private Requirement[] getRequirements(int tier) {
-            return new Requirement[0]; //TODO: Sven requirement?
+            return new Requirement[0]; //TODO: Sven requirement
         }
 
         @Override

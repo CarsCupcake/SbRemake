@@ -6,24 +6,45 @@ import me.carscupcake.sbremake.entity.slayer.ISlayer;
 import me.carscupcake.sbremake.entity.slayer.SlayerEntity;
 import me.carscupcake.sbremake.entity.slayer.Slayers;
 import me.carscupcake.sbremake.event.PlayerDamageEntityEvent;
+import me.carscupcake.sbremake.item.impl.other.slayer.enderman.NullSphere;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.Characters;
 import me.carscupcake.sbremake.util.TaskScheduler;
-import me.carscupcake.sbremake.util.lootTable.LootTable;
+import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
+import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterItemLoot;
+import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerLootTable;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.metadata.monster.EndermanMeta;
 
 import java.util.function.Function;
 
 public class VoidgloomSeraphI extends SlayerEntity implements SkillXpDropper {
+    public static final RngMeterEntry NULL_SPHERE =
+            new RngMeterEntry("NULL_SPHERE", new RngMeterItemLoot(NullSphere.class, 2, 3, SlayerLootTable.LootTableType.Token, Slayers.Enderman,
+                                                                  10_000),
+                              new RngMeterItemLoot(NullSphere.class, 14, 24, SlayerLootTable.LootTableType.Token, Slayers.Enderman,
+                                                   10_000),
+                              new RngMeterItemLoot(NullSphere.class, 60, 80, SlayerLootTable.LootTableType.Token, Slayers.Enderman,
+                                                   10_000),
+                              new RngMeterItemLoot(NullSphere.class, 105, 155, SlayerLootTable.LootTableType.Token, Slayers.Enderman,
+                                                   10_000)
+                              );
     private int hits = getMaxHits();
     @Getter
     private int phase = 0;
 
     public VoidgloomSeraphI(SkyblockPlayer owner) {
-        super(EntityType.ENDERMAN, new LootTable<>(), owner);
+        this(owner, new SlayerLootTable(), 1);
+    }
+
+    public VoidgloomSeraphI(SkyblockPlayer owner, SlayerLootTable lootTable, int tier) {
+        super(EntityType.ENDERMAN, getLootTable(lootTable, tier), owner);
+    }
+
+    public static SlayerLootTable getLootTable(SlayerLootTable lootTable, int tier) {
+        return lootTable.addLoot(NULL_SPHERE.loots()[tier - 1]);
     }
 
     @Override

@@ -2,8 +2,14 @@ package me.carscupcake.sbremake.entity.slayer.voidgloom;
 
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.entity.slayer.Slayers;
+import me.carscupcake.sbremake.item.impl.bow.arrowPoison.TwilightArrowPoison;
+import me.carscupcake.sbremake.item.impl.other.combat.SummoningEye;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.*;
+import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
+import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterItemLoot;
+import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerLootTable;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
@@ -21,8 +27,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class VoidgloomSeraphII extends VoidgloomSeraphI {
+    public static final RngMeterEntry TWILIGHT_ARROW_POISON
+            = new RngMeterEntry("TWILIGHT_ARROW_POISON",
+                                new RngMeterItemLoot(TwilightArrowPoison.class, 16, SlayerLootTable.LootTableType.Main, Slayers.Enderman, 1_800),
+                                new RngMeterItemLoot(TwilightArrowPoison.class, 24, 32, SlayerLootTable.LootTableType.Main, Slayers.Enderman, 1_800),
+                                new RngMeterItemLoot(TwilightArrowPoison.class, 60, 64, SlayerLootTable.LootTableType.Main, Slayers.Enderman, 1_800));
+    public static final RngMeterEntry SUMMONING_EYE
+            = new RngMeterEntry("SUMMONING_EYE",
+                                new RngMeterItemLoot(SummoningEye.class, SlayerLootTable.LootTableType.Main, Slayers.Enderman, 80));
+
     public VoidgloomSeraphII(SkyblockPlayer owner) {
-        super(owner);
+        this(owner, new SlayerLootTable(), 2);
+    }
+    public VoidgloomSeraphII(SkyblockPlayer owner, SlayerLootTable lootTable, int tier) {
+        super(owner, getLootTable(lootTable, tier), tier);
+    }
+
+    public static SlayerLootTable getLootTable(SlayerLootTable lootTable, int tier) {
+        return lootTable.addLoot(TWILIGHT_ARROW_POISON.loots()[tier - 2]).addLoot(SUMMONING_EYE.loots()[0]);
     }
 
     @Override
