@@ -25,6 +25,10 @@ public class EntitySinusMovement {
         move(e, end, ticks, staringTick, e.getPosition(), finish, null);
     }
 
+    public void move(Entity e, Runnable end, int ticks, int staringTick, Point finish, Runnable tick) {
+        move(e, end, ticks, staringTick, e.getPosition(), finish, tick);
+    }
+
     public void move(Entity e, int ticks, int staringTick, Point start, Point finish, Runnable tick) {
         move(e, null, ticks, staringTick, start, finish, tick);
     }

@@ -1,6 +1,10 @@
 package me.carscupcake.sbremake.entity.slayer;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
+import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphI;
+import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphII;
+import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphIII;
+import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphIV;
 import me.carscupcake.sbremake.entity.slayer.zombie.*;
 import me.carscupcake.sbremake.entity.slayer.zombie.minibosses.*;
 import me.carscupcake.sbremake.item.Requirement;
@@ -143,14 +147,7 @@ public enum Slayers implements ISlayer {
 
         @Override
         public boolean startSlayerQuest(int tier, SkyblockPlayer player) {
-            double coinCost = switch (tier) {
-                case 1 -> 2_000;
-                case 2 -> 7_500;
-                case 3 -> 20_000;
-                case 4 -> 50_000;
-                case 5 -> 100_000;
-                default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
-            };
+            double coinCost = getCoinCost(tier);
             if (coinCost > player.getCoins()) {
                 player.sendMessage("§cNot enough Coins");
                 return false;
@@ -173,6 +170,82 @@ public enum Slayers implements ISlayer {
         }
 
 
+    }, Enderman("Enderman", "Voidgloom Seraph") {
+        @Override
+        public SlayerEntity getEntity(int tier, SkyblockPlayer player) {
+            return switch (tier) {
+                case 1 -> new VoidgloomSeraphI(player);
+                case 2 -> new VoidgloomSeraphII(player);
+                case 3 -> new VoidgloomSeraphIII(player);
+                case 4 -> new VoidgloomSeraphIV(player);
+                default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
+            };
+        }
+
+        private final int[] xp = new int[]{10, 30, 250, 1_500, 5_000, 20_000, 100_000, 400_000, 1_000_000};
+
+        @Override
+        public int requiredXp(int currentLevel) {
+            return xp[currentLevel];
+        }
+
+        @Override
+        public String getTitle(int level) {
+            return switch (level) {
+                case 1 -> "Noob";
+                case 2 -> "Novice";
+                case 3 -> "Skilled";
+                case 4 -> "Destroyed";
+                case 5 -> "Bulldozer";
+                case 6 -> "Savage";
+                case 7 -> "Voidwracker";
+                case 8 -> "Tall Purple Hate";
+                default -> "Definition of End";
+            };
+        }
+
+        @Override
+        public SlayerRngMeter createRngMeter(SkyblockPlayer player) {
+            return null;
+        }
+
+        @Override
+        public List<RngMeterEntry> getRngMeterEntries() {
+            return List.of();
+        }
+
+        @Override
+        public boolean addXp(SkyblockEntity entity, int tier) {
+            return false;
+        }
+
+
+        private Requirement[] getRequirements(int tier) {
+            return new Requirement[0]; //TODO: Sven requirement?
+        }
+
+        @Override
+        public boolean startSlayerQuest(int tier, SkyblockPlayer player) {
+            double coinCost = getCoinCost(tier);
+            if (coinCost > player.getCoins()) {
+                player.sendMessage("§cNot enough Coins");
+                return false;
+            }
+
+            for (Requirement r : getRequirements(tier))
+                if (!r.canUse(player, null))
+                    return false;
+
+            player.setSlayerQuest(new SlayerQuest(player.getSlayers().get(this), tier, switch (tier) {
+                case 1 -> 2_750;
+                case 2 -> 6_600;
+                case 3 -> 11_000;
+                case 4 -> 22_000;
+                default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
+            }));
+            player.playSound(SoundType.ENTITY_ENDER_DRAGON_GROWL, Sound.Source.PLAYER, 1, 1);
+            return true;
+        }
     };
     private final String name;
     private final String mobName;
@@ -198,5 +271,16 @@ public enum Slayers implements ISlayer {
     @Override
     public String getMobName() {
         return mobName;
+    }
+
+    protected double getCoinCost(int tier) {
+        return switch (tier) {
+            case 1 -> 2_000;
+            case 2 -> 7_500;
+            case 3 -> 20_000;
+            case 4 -> 50_000;
+            case 5 -> 100_000;
+            default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
+        };
     }
 }

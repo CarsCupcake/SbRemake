@@ -1,7 +1,10 @@
 package me.carscupcake.sbremake.item.minion;
 
 import me.carscupcake.sbremake.event.PlayerInteractEvent;
+import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.util.Cost;
+import me.carscupcake.sbremake.util.ItemCost;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import me.carscupcake.sbremake.worlds.impl.PrivateIsle;
 import net.minestom.server.coordinate.Pos;
@@ -16,6 +19,7 @@ public interface IMinionData {
     int getLevels();
     String[] getHeadStrings();
     String name();
+    Cost[][] getCosts();
 
     /**
      * Get the drops for 1 generate
@@ -51,5 +55,19 @@ public interface IMinionData {
             else
                 event.player().setItemInHand(PlayerHand.MAIN, SbItemStack.AIR);
         }
+    }
+    static Cost[][] generateDefaultCost(ISbItem normal, ISbItem enchanted) {
+        return new Cost[][]{
+                {new ItemCost(normal, 160)},
+                {new ItemCost(normal, 320)},
+                {new ItemCost(normal, 512)},
+                {new ItemCost(enchanted, 8)},
+                {new ItemCost(enchanted, 16)},
+                {new ItemCost(enchanted, 32)},
+                {new ItemCost(enchanted, 64)},
+                {new ItemCost(enchanted, 128)},
+                {new ItemCost(enchanted, 512)},
+                {new ItemCost(enchanted, 1_024)},
+        };
     }
 }

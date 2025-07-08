@@ -6,8 +6,13 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.ai.EntityAIGroup;
+import net.minestom.server.entity.ai.target.ClosestEntityTarget;
+import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
+import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.function.Function;
 
 @Getter
@@ -40,6 +45,15 @@ public abstract class SlayerEntity extends SkyblockEntity {
     @Override
     public Function<SkyblockEntity, String> nameTag() {
         return NameTagType.Slayer;
+    }
+
+    protected EntityAIGroup slayerTarget() {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(this, 1.6, 20, TimeUnit.SERVER_TICK)
+        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(this, 64), new ClosestEntityTarget(this, 64,
+                                                                                                                        entity1 -> entity1.equals(owner))));
+        return aiGroup;
     }
 
     public abstract int getTier();

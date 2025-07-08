@@ -1,8 +1,12 @@
 package me.carscupcake.sbremake.item.impl.minion.mining;
 
 
+import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.item.impl.other.mining.resources.EnchantedCobblestone;
 import me.carscupcake.sbremake.item.minion.AbstractMiningMinionData;
+import me.carscupcake.sbremake.item.minion.IMinionData;
+import me.carscupcake.sbremake.util.Cost;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import me.carscupcake.sbremake.util.lootTable.ItemLoot;
@@ -19,6 +23,11 @@ public class CobblestoneMinionData extends AbstractMiningMinionData {
     @Override
     public Block representiveBlock() {
         return Block.COBBLESTONE;
+    }
+
+    @Override
+    public Cost[][] costs() {
+        return IMinionData.generateDefaultCost(ISbItem.get(Material.COBBLESTONE), ISbItem.get(EnchantedCobblestone.class));
     }
 
     @Override

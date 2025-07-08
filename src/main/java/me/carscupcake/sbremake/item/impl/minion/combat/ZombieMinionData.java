@@ -1,9 +1,13 @@
 package me.carscupcake.sbremake.item.impl.minion.combat;
 
 import me.carscupcake.sbremake.entity.impl.privateIsle.Zombie;
+import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.item.impl.other.mining.resources.EnchantedCobblestone;
 import me.carscupcake.sbremake.item.minion.AbstractCombatMinionData;
+import me.carscupcake.sbremake.item.minion.IMinionData;
 import me.carscupcake.sbremake.item.minion.MinionEntity;
+import me.carscupcake.sbremake.util.Cost;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import net.minestom.server.color.Color;
@@ -39,6 +43,10 @@ public class ZombieMinionData extends AbstractCombatMinionData {
                 "eyJ0aW1lc3RhbXAiOjE1NTc5MzYzNzE0OTAsInByb2ZpbGVJZCI6IjgyYzYwNmM1YzY1MjRiNzk4YjkxYTEyZDNhNjE2OTc3IiwicHJvZmlsZU5hbWUiOiJOb3ROb3RvcmlvdXNOZW1vIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS82YjRhOWRjNmQwZmRiZDFiYWQzNjEzZGNiM2FiNWM1NGM1ZWE1ZTBiNDk4ZWUzNWIyZmQzMDk1MWNjMmU5ZmNkIn19fQ==",
                 "eyJ0aW1lc3RhbXAiOjE1NTc5MzYzOTE2MjksInByb2ZpbGVJZCI6IjNmYzdmZGY5Mzk2MzRjNDE5MTE5OWJhM2Y3Y2MzZmVkIiwicHJvZmlsZU5hbWUiOiJZZWxlaGEiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY2OTlmZjVjZTlhMGY1MDMyMzQwNTk2ZjZiMmRkNmFjNzAyOGZjN2NjNWI5NDNkNGMxZmMyZDM3NDlmZWRjZDYifX19"
         };
+    }
+    @Override
+    public Cost[][] costs() {
+        return IMinionData.generateDefaultCost(ISbItem.get(Material.ROTTEN_FLESH), ISbItem.get(EnchantedCobblestone.class));
     }
 
     @Override

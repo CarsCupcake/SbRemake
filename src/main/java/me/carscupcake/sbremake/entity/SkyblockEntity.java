@@ -144,6 +144,16 @@ public abstract class SkyblockEntity extends EntityCreature {
         return aiGroup;
     }
 
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, int range, boolean precompileRandomStroll) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 16,
+                                                                                                                                       new ArrayList<>(), precompileRandomStroll, true) // Walk around
+        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, 6,
+                                                                                                                    entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && !entity.isDead)));
+        return aiGroup;
+    }
+
     protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region, boolean precompileRandomStroll) {
         return zombieAiGroup(entity, region, precompileRandomStroll, false);
     }protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, Region region, boolean precompileRandomStroll, boolean isHidden) {
@@ -305,7 +315,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         damage = onDamage(event.getPlayer(), damage);
         if (damage <= 0) return;
         event.getPostEvent().forEach(c -> c.accept(event));
-        spawnDamageTag(this, event.getDamageTag());
+        spawnDamageTag(this, event.getDamageTag(damage));
         lastDamager = event.getPlayer();
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
         if (isDead) {
