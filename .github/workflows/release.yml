@@ -36,7 +36,7 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.TOKEN_GITHUB }}"
-          automatic_release_tag: "${{ steps.vars.outputs.date_now }}-${{ steps.vars.outputs.sha_short }}"
+          automatic_release_tag: "Auto"
           prerelease: true
           title: "Automatic Build - ${{ steps.vars.outputs.date_now }}-${{ steps.vars.outputs.sha_short }}"
           files: |
