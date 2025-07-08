@@ -30,9 +30,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - uses: gradle/actions/wrapper-validation@v4
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: shadowJar
+        run: gradle shadowJar
       
       - name: Add Jar to GitHub releases
         uses: marvinpinto/action-automatic-releases@latest
