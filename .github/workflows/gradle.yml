@@ -36,3 +36,8 @@ jobs:
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@v4
       continue-on-error: true
+    - name: Set outputs
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    - name: Check outputs
+      run: echo ${{ steps.vars.outputs.sha_short }}
