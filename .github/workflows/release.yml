@@ -38,6 +38,6 @@ jobs:
           repo_token: "${{ secrets.TOKEN_GITHUB }}"
           automatic_release_tag: "Auto"
           prerelease: true
-          title: "Automatic Build - ${{ steps.vars.outputs.date_now }}-${{ steps.vars.outputs.sha_short }}"
+          title: "Automatic Build - ${{ steps.vars.outputs.date_now }}-${GITHUB_SHA::7}"
           files: |
             target/SbRemake.jar
