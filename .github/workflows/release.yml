@@ -12,8 +12,9 @@ jobs:
       - name: Set outputs
         id: vars
         run: |
-          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "date_now=$(date +'%d.%m.%Y')" >> $GITHUB_OUTPUT
+          DATE=$(date +'%Y.%m.%d')
+          echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "date_now=$DATE" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
@@ -27,17 +28,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - uses: gradle/actions/wrapper-validation@v4
       - name: Build with Gradle
-        run: gradle build
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
+        uses: gradle/gradle-build-action@v2
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
+          arguments: shadowJar
+      
       - name: Add Jar to GitHub releases
         uses: marvinpinto/action-automatic-releases@latest
         with:
