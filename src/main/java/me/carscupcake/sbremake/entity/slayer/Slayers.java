@@ -5,6 +5,9 @@ import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphI;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphII;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphIII;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphIV;
+import me.carscupcake.sbremake.entity.slayer.voidgloom.miniboss.VoidcrazedManiac;
+import me.carscupcake.sbremake.entity.slayer.voidgloom.miniboss.VoidlingDevotee;
+import me.carscupcake.sbremake.entity.slayer.voidgloom.miniboss.VoidlingRadical;
 import me.carscupcake.sbremake.entity.slayer.zombie.*;
 import me.carscupcake.sbremake.entity.slayer.zombie.minibosses.*;
 import me.carscupcake.sbremake.item.Requirement;
@@ -95,22 +98,7 @@ public enum Slayers implements ISlayer {
             return entries.get();
         }
 
-        private void spawnMiniBoss(SkyblockEntity entity, Instance instance, Pos pos) {
-            new TaskScheduler() {
-                int i = 0;
 
-                @Override
-                public void run() {
-                    ParticleUtils.spawnParticle(instance, pos.add(0, 0.5, 0), Particle.EXPLOSION, 1);
-                    instance.playSound(SoundType.ENTITY_GENERIC_EXPLODE.create(.5f, 1 + (i / 20f)), pos);
-                    if (i == 20) {
-                        cancel();
-                        entity.setInstance(instance, pos);
-                    }
-                    i += 1;
-                }
-            }.repeatTask(0, 1);
-        }
 
         @Override
         public boolean addXp(SkyblockEntity entity, int tier) {
@@ -208,6 +196,27 @@ public enum Slayers implements ISlayer {
             };
         }
 
+        @Override
+        public boolean addXp(SkyblockEntity entity, int tier) {
+            if (entity.getEntityType() == EntityType.ENDERMAN) {
+                double random = new Random().nextDouble();
+                switch (tier) {
+                    case 3 -> {
+                        if (random <= 0.1)
+                            spawnMiniBoss(new VoidlingDevotee(), entity.getInstance(), entity.getPosition());
+                    }
+                    case 4 -> {
+                        if (random <= 0.1)
+                            spawnMiniBoss(new VoidlingRadical(), entity.getInstance(), entity.getPosition());
+                        else if (random <= 0.2)
+                            spawnMiniBoss(new VoidcrazedManiac(), entity.getInstance(), entity.getPosition());
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
         private static final Map<RngMeterEntry, Double> rngMeterEntries = new HashMap<>();
         private static final Map<RngMeterEntry, Double> lootChancesEntries = new HashMap<>();
         private static final Lazy<SlayerLootTable[]> lootTables = new  Lazy<>(() -> new SlayerLootTable[]{
@@ -257,11 +266,6 @@ public enum Slayers implements ISlayer {
         @Override
         public List<RngMeterEntry> getRngMeterEntries() {
             return entries.get();
-        }
-
-        @Override
-        public boolean addXp(SkyblockEntity entity, int tier) {
-            return false;
         }
 
 
@@ -327,5 +331,22 @@ public enum Slayers implements ISlayer {
             case 5 -> 100_000;
             default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
         };
+    }
+
+    private static void spawnMiniBoss(SkyblockEntity entity, Instance instance, Pos pos) {
+        new TaskScheduler() {
+            int i = 0;
+
+            @Override
+            public void run() {
+                ParticleUtils.spawnParticle(instance, pos.add(0, 0.5, 0), Particle.EXPLOSION, 1);
+                instance.playSound(SoundType.ENTITY_GENERIC_EXPLODE.create(.5f, 1 + (i / 20f)), pos);
+                if (i == 20) {
+                    cancel();
+                    entity.setInstance(instance, pos);
+                }
+                i += 1;
+            }
+        }.repeatTask(0, 1);
     }
 }
