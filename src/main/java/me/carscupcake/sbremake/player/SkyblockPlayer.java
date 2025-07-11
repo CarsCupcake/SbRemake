@@ -1410,12 +1410,25 @@ public class SkyblockPlayer extends Player {
         dealDamage(event);
     }
 
+    public void damage(SkyblockEntity entity, double damage, double trueDamage) {
+        var event = new EntityMeleeDamagePlayerEvent(entity, this, damage, trueDamage);
+        MinecraftServer.getGlobalEventHandler().call(event);
+        if (event.isCancelled()) return;
+        sendPacket(new DamageEventPacket(getEntityId(), 0, getEntityId(), 0, getPosition()));
+        dealDamage(event);
+    }
+
     public void forceDamage(double amount) {
         sendPacket(new DamageEventPacket(getEntityId(), 0, getEntityId(), 0, getPosition()));
         dealDamage(new IDamageEvent() {
             @Override
             public double getCachedDamage() {
                 return amount;
+            }
+
+            @Override
+            public double getMultiplier() {
+                return 1;
             }
 
             @Override

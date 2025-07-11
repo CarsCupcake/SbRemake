@@ -179,7 +179,7 @@ public class VoidgloomSeraphII extends VoidgloomSeraphI {
             @Override
             public void run() {
                 if (i == 20 * 5) {
-                    owner.damage(0, owner.getStat(Stat.Health) * 1_000);
+                    owner.damage(VoidgloomSeraphII.this,0, owner.getStat(Stat.Health) * 1_000);
                     beaconBlock.release();
                     cancel();
                     return;

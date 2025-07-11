@@ -187,7 +187,7 @@ public class VoidgloomSeraphIV extends VoidgloomSeraphIII {
                     var dist = owner.getDistance(getPosition().withY(owner.getPosition().y()));
                     if (dist <= 2.5 || dist >= 10.5) {
                         hitCooldown = 20;
-                        owner.damage(0, owner.getStat(Stat.Health) * 0.1);
+                        owner.damage(VoidgloomSeraphIV.this, 0, owner.getStat(Stat.Health) * 0.1);
                     }
                 }
 
@@ -202,7 +202,7 @@ public class VoidgloomSeraphIV extends VoidgloomSeraphIII {
                             var dot2 = playerVec.dot(vec2);
                             if (dot1 >= 0 && dot2 <= 0 || dot1 <= 0 && dot2 >= 0) {
                                 hitCooldown = 20;
-                                owner.damage(0, owner.getStat(Stat.Health) * 0.25);
+                                owner.damage(VoidgloomSeraphIV.this, 0, owner.getStat(Stat.Health) * 0.25);
                             }
                         }
                     }

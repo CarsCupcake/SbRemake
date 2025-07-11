@@ -15,6 +15,7 @@ public class ProjectileDamagePlayerEvent implements CancellableEvent, IDamageEve
     private final SkyblockPlayer player;
     private double normalDamage;
     private double trueDamage;
+    private double multiplier = 1;
     private boolean cancelled = false;
 
     public ProjectileDamagePlayerEvent(SkyblockEntityProjectile entity, SkyblockPlayer player) {

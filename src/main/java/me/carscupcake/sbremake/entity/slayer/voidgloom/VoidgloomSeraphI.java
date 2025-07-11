@@ -56,7 +56,7 @@ public class VoidgloomSeraphI extends SlayerEntity implements SkillXpDropper {
             @Override
             public void run() {
                 if (owner.getPosition().distance(position) <= 6.5) {
-                    owner.damage(getDissonanceDamage(), 0);
+                    owner.damage(VoidgloomSeraphI.this, getDissonanceDamage(), 0);
                 }
             }
         };
@@ -120,11 +120,6 @@ public class VoidgloomSeraphI extends SlayerEntity implements SkillXpDropper {
     @Override
     public String getName() {
         return "§bVoidgloom Seraph";
-    }
-
-    @Override
-    public void damage(double amount) {
-        super.damage(amount);
     }
 
     @Override

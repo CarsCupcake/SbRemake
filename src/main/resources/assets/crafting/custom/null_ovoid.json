@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:null_sphere",
+      "count": 32
+    },
+    "i": {
+      "item": "skyblock:enchanted_obsidian",
+      "count": 32
+    }
+  },
+  "pattern": [
+    " # ",
+    "#i#",
+    " # "
+  ],
+  "result": {
+    "item": "skyblock:null_ovoid"
+  },
+  "requirement": {
+    "type": "slayer",
+    "id": "ENDERMAN",
+    "level": 2
+  }
+}

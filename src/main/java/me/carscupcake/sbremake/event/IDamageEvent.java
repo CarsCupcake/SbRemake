@@ -40,12 +40,14 @@ public interface IDamageEvent {
 
     double getTargetTrueDefense();
 
+    double getMultiplier();
+
     default double calculateDamage() {
         double defense = getTargetDefense();
         double trueDefense = getTargetTrueDefense();
         double damageReduction = defense / (defense + 100d);
         double trueDamageReduction = trueDefense / (trueDefense + 100);
-        setCachedDamage((getNormalDamage() * (1d - damageReduction)) + (getTrueDamage() * (1d - trueDamageReduction)));
+        setCachedDamage(((getNormalDamage() * (1d - damageReduction)) + (getTrueDamage() * (1d - trueDamageReduction))) * getMultiplier());
         return getCachedDamage();
     }
 }
