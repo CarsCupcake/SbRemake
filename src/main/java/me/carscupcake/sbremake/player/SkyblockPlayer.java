@@ -1553,4 +1553,8 @@ public class SkyblockPlayer extends Player {
     public void playSound(SoundType soundType, float volume, float pitch) {
         playSound(soundType.create(volume, pitch));
     }
+
+    public void playSound(@NotNull Pos position, SoundType soundType, float volume, float pitch) {
+        this.playSound(soundType.create(volume, pitch), position);
+    }
 }

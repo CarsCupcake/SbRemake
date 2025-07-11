@@ -366,7 +366,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         if (ticks == 0) return;
         player.getInstance().playSound(Sound.sound(SoundType.ITEM_FLINTANDSTEEL_USE.getKey(), Sound.Source.AMBIENT, 1, 0f), getPosition());
         FerocityRunnable runnable = new FerocityRunnable(ticks, player);
-        Task task = this.scheduler().scheduleTask(runnable, TaskSchedule.tick(10), TaskSchedule.tick(10));
+        Task task = this.scheduler().scheduleTask(runnable, TaskSchedule.tick(10), TaskSchedule.tick(5));
         runnable.setSelf(task);
     }
 

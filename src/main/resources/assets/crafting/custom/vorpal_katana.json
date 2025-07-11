@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:null_ovoid",
+      "count": 8
+    },
+    "e": {
+      "item": "skyblock:null_edge"
+    },
+    "m": {
+      "item": "skyblock:refined_mithril",
+      "count": 4
+    },
+    "/": {
+      "tag": "skyblock:voidedge_katana"
+    }
+  },
+  "pattern": [
+    " e ",
+    " # ",
+    "m/m"
+  ],
+  "result": {
+    "item": "skyblock:VORPAL_KATANA",
+    "priority": 7
+  },
+  "requirement": {
+    "type": "slayer",
+    "id": "ENDERMAN",
+    "level": 5
+  }
+}

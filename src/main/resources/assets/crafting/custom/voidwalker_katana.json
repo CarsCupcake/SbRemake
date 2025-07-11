@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:null_sphere",
+      "count": 16
+    },
+    "i": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    " # ",
+    " # ",
+    " i "
+  ],
+  "result": {
+    "item": "skyblock:voidwalker_katana"
+  },
+  "requirement": {
+    "type": "slayer",
+    "id": "ENDERMAN",
+    "level": 1
+  }
+}

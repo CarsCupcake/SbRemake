@@ -44,6 +44,26 @@ public class PlayerSlayer {
             //TODO level up message
         }
     }
+    public void resetXp() {
+        this.xp = 0;
+        this.level = 0;
+    }
+    public void subtractXp(int exp) {
+        this.xp -= exp;
+        int xp = this.xp;
+        level = 0;
+        while (level < slayer.getMaxLevel() && xp >= slayer.requiredXp(level)) {
+            level++;
+        }
+    }
+    public void setXp(int exp) {
+        this.xp = exp;
+        int xp = this.xp;
+        level = 0;
+        while (level < slayer.getMaxLevel() && xp >= slayer.requiredXp(level)) {
+            level++;
+        }
+    }
 
     public void save(ConfigFile f) {
         ConfigSection section = new ConfigSection(new JsonObject());

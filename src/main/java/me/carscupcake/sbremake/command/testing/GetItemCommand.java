@@ -39,7 +39,7 @@ public class GetItemCommand extends Command {
             return;
         }
         item.update((SkyblockPlayer) sender);
-        var maxStackSize = Objects.requireNonNull(item.withAmount(item.sbItem().getMaxStackSize()));
+        var maxStackSize = Objects.requireNonNull(item.withAmount(item.sbItem().isUnstackable() ? 1 : item.sbItem().getMaxStackSize()));
         var amount = context.getOrDefault(num, 1);
         while (amount > maxStackSize.item().amount()) {
             if (!player.addItem(maxStackSize)) return;

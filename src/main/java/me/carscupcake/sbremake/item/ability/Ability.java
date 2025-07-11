@@ -28,6 +28,7 @@ public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
         List<String> list = new ArrayList<>();
         list.add(headline(itemStack, player) + "§7");
         list.addAll(lore().build(itemStack, player));
+        long soulflowCost = -1;
         long manaCost = -1;
         double healthCost = -1;
         double cooldown = -1;
@@ -44,8 +45,12 @@ public sealed interface Ability permits FullSetBonus, ItemAbility, PetAbility {
                 if (requirement instanceof HealthRequirement<?>(double maxHealthPercentage)) {
                     healthCost = player == null ? (maxHealthPercentage * 100) : (player.getStat(Stat.Health) * maxHealthPercentage);
                 }
+                if (requirement instanceof SoulflowRequirement<?>(var soulflow)) {
+                    soulflowCost = soulflow;
+                }
             }
         }
+        if (soulflowCost > 0) list.add("§8Soulflow Cost: §3" + (soulflowCost));
         if (manaCost > 0) list.add("§8Mana Cost: §3" + (manaCost));
         if (healthCost > 0) list.add("§8Health Cost: §c" + StringUtils.cleanDouble(healthCost) + (player == null ? "%" : ""));
         if (cooldown > 0) list.add("§8Cooldown: §a" + StringUtils.toFormatedNumber(cooldown) + "s");
