@@ -305,14 +305,14 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                     }
                     var xpForThis = petInfo.nextLevelXp(petInfo.level());
                     double percentage = (petInfo.exp() - totalDone) / xpForThis;
-                    lore.add("§7Progress to Level " + (petInfo.level() + 1) + ": §e" + (StringUtils.cleanDouble(percentage, 1)) + "%");
-                    lore.add((StringUtils.makeProgressBarAsString(20, percentage, 1, "§f", "§a", "§m ")) + "§r §e" + (StringUtils.cleanDouble(petInfo.exp() - totalDone, 1)) + "§6/§e" + (StringUtils.toShortNumber(xpForThis)));
+                    lore.add("§7Progress to Level " + (petInfo.level() + 1) + ": §e" + (StringUtils.cleanDouble(percentage * 100, 1)) + "%");
+                    lore.add((StringUtils.makeProgressBarAsString(25, percentage, 1, "§f", "§a", "§m ")) + "§r §e" + (StringUtils.cleanDouble(petInfo.exp() - totalDone, 1)) + "§6/§e" + (StringUtils.toShortNumber(xpForThis)));
                 }
                 lore.add("§9 ");
             }
         }
         if (sbItem instanceof Shortbow) {
-            lore.add((rarity.getPrefix()) + "Shortbow: Instatntly shoots!");
+            lore.add((rarity.getPrefix()) + "Shortbow: Instantly shoots!");
             lore.add("  ");
         }
         if (sbItem.getType().isReforgable() && reforge == null) {

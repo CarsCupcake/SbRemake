@@ -434,7 +434,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                     CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
                     MinecraftServer.getSchedulerManager().buildTask(() -> LightingChunk.relight(container, container.getChunks())).delay(Duration.ofSeconds(1)).schedule();
                     MinecraftServer.getSchedulerManager().buildTask(System::gc).delay(Duration.ofSeconds(2)).schedule();
-                    Main.LOGGER.info("Relighting {} Chunks", container.getChunks().size());
+                    Main.LOGGER.debug("Relighting {} Chunks", container.getChunks().size());
                     loaded = true;
                     register();
                     container.setTime(Time.tick);
@@ -444,10 +444,10 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                     synchronized (_lock) {
                         for (Runnable runnable : onStart) runnable.run();
                     }
-                Main.LOGGER.info("Loaded {} Instance", type().getId());
+                Main.LOGGER.debug("Loaded {} Instance", type().getId());
                 loaded = true;
             } catch (Exception e) {
-                Main.LOGGER.info("A world failed to load!");
+                Main.LOGGER.warn("A world failed to load!");
                 e.printStackTrace(System.err);
                 Main.LOGGER.trace("An Error occured while loading {}", type().getId(), e);
             }

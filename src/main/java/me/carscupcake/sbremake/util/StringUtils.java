@@ -56,7 +56,7 @@ public class StringUtils {
     public static String toFormatedNumber(double number) {
         long asLong = (long) number;
         String s = toFormatedNumber(asLong);
-        return s + ((number % 1 == 0) ? "" : String.valueOf(cleanDouble(number - asLong)).substring(1));
+        return s + ((number % 1 == 0) ? "" : cleanDouble(number - asLong).substring(1));
     }
 
     public static String toFormatedNumber(int number) {
