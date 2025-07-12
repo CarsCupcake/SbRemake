@@ -32,7 +32,7 @@ jobs:
       - name: Build with Gradle
         run: gradle shadowJar
       - name: Set outputs
-        id: vars
+        id: sa
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Check outputs
         run: echo ${{ steps.vars.outputs.sha_short }}
@@ -42,6 +42,6 @@ jobs:
           repo_token: "${{ secrets.TOKEN_GITHUB }}"
           automatic_release_tag: "Auto"
           prerelease: true
-          title: "Automatic Build - ${{ steps.vars.outputs.date_now }}-${{ steps.vars.outputs.sha_short }}"
+          title: "Automatic Build - ${{ steps.vars.outputs.date_now }}-${{ steps.sa.outputs.sha_short }}"
           files: |
             target/SbRemake.jar
