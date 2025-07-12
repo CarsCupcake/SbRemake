@@ -938,7 +938,23 @@ public class SkyblockPlayer extends Player {
                                  .addAllLore("§7View your skills progression", "§7and rewards.", "§7 ", "§6" + (StringUtils.cleanDouble(skillsAverage())) + " Skill Avearage", "§e ", "§eClick to view!").build(), 19).setItem(new ItemBuilder(Material.PAINTING).setName("§aCollections §c§lWIP").build(), 20)
                 .setItem(new ItemBuilder(Material.BOOK).setName("§aRecipe Book §c§lWIP").build(), 21)
                 .setItem(new ItemBuilder(Material.PLAYER_HEAD)
-                                 .setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0=").setName("§aSkyblock Leveling §c§lWIP").build(), 22)
+                                 .setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0=")
+                                 .setName("§aSkyblock Leveling")
+                                 .addLore("""
+                                                  §7Your SkyBlock Level: §8[§b%s§8]
+                                                  §7  \s
+                                                  Determine how far you've progressed in SkyBlock and earn rewards from completing unique tasks.
+                                                     \s
+                                                  Progress to Level %s:
+                                                  %s§r §b%s§3/§b100 XP
+                                                    \s
+                                                  §eClick to view!"""
+                                                  .formatted(getSkyblockLevel(), getSkyblockLevel() + 1,
+                                                                StringUtils.makeProgressBarAsString(20, getSkyblockXp() - getSkyblockLevel() * 100L
+                                                                        , 100, "§f",
+                                                                                                    "§3",
+                                                                                                    "§m "), getSkyblockXp() - getSkyblockLevel() * 100L))
+                                 .build(), 22)
                 .setItem(new ItemBuilder(Material.WRITABLE_BOOK).setName("§aQuest Log §c§lWIP").build(), 23)
                 .setItem(new ItemBuilder(Material.CLOCK).setName("§aCalendar and Events §c§lWIP").build(), 24)
                 .setItem(new ItemBuilder(Material.CHEST).setName("§aStorage §c§lWIP").build(), 25)
