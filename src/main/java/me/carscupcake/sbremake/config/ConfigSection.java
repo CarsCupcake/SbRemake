@@ -1,12 +1,14 @@
 package me.carscupcake.sbremake.config;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.internal.LazilyParsedNumber;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import net.kyori.adventure.nbt.*;
-import net.kyori.adventure.text.Component;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
@@ -14,10 +16,12 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.CustomData;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
-import net.minestom.server.tag.Tag;
 import org.junit.Assert;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -25,6 +29,32 @@ import java.util.function.Function;
 @SuppressWarnings("unused")
 public class ConfigSection {
     public static final Data<ConfigSection> SECTION = new ClassicGetter<>(ConfigSection::new, ConfigSection::getRawElement);
+    public static final Data<Map<String, ConfigSection>> SECTIONS = new ClassicGetter<>(element1 -> {
+        var map = new HashMap<String, ConfigSection>();
+        for (var e : element1.getAsJsonObject().entrySet()) {
+            map.put(e.getKey(), new ConfigSection(e.getValue()));
+        }
+        return map;
+    }, stringConfigSectionMap -> {
+        var obj = new JsonObject();
+        for (var e : stringConfigSectionMap.entrySet()) {
+            obj.add(e.getKey(), e.getValue().element);
+        }
+        return obj;
+    });
+    public static final Data<ConfigSection[]> SECTION_ARRAY = new ClassicGetter<>(element1 -> {
+        var list  = element1.getAsJsonArray();
+        var arr = new ConfigSection[list.size()];
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = new ConfigSection(list.get(i));
+        }
+        return arr;
+    }, arr -> {
+        var list = new JsonArray();
+        for (var x : arr)
+            list.add(x.element);
+        return list;
+    });
     public static final Data<Boolean> BOOLEAN = new ClassicGetter<>(JsonElement::getAsBoolean, JsonPrimitive::new);
     public static final Data<String> STRING = new ClassicGetter<>(JsonElement::getAsString, JsonPrimitive::new);
     public static final Data<Integer> INTEGER = new ClassicGetter<>(JsonElement::getAsInt, JsonPrimitive::new);
@@ -75,9 +105,10 @@ public class ConfigSection {
         }
         return stack;
     }, sbItemStacks -> {
+        if (sbItemStacks == null ||sbItemStacks.length == 0) return new JsonArray(0);
         var array = new JsonArray(sbItemStacks.length);
-        for (int i = 0; i < sbItemStacks.length; i++) {
-            array.set(i, itemToJson(sbItemStacks[i]));
+        for (SbItemStack sbItemStack : sbItemStacks) {
+            array.add(itemToJson(sbItemStack));
         }
         return array;
     });

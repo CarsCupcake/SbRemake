@@ -2,11 +2,15 @@ package me.carscupcake.sbremake.item;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.item.ability.Ability;
+import me.carscupcake.sbremake.item.ability.AbilityType;
+import me.carscupcake.sbremake.item.ability.ItemAbility;
 import me.carscupcake.sbremake.item.crafting.CraftingIngredient;
 import me.carscupcake.sbremake.item.crafting.ShapedRecipe;
 import me.carscupcake.sbremake.item.impl.armor.PerfectArmor;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
 import me.carscupcake.sbremake.item.impl.pets.Pets;
+import me.carscupcake.sbremake.item.minion.IMinionData;
+import me.carscupcake.sbremake.item.minion.MinionItem;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.UltimateEnchantment;
 import me.carscupcake.sbremake.item.modifiers.enchantment.UltimateEnchantments;
@@ -14,11 +18,14 @@ import me.carscupcake.sbremake.item.modifiers.gemstone.GemstoneItem;
 import me.carscupcake.sbremake.item.requirements.CollectionRequirement;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
+import me.carscupcake.sbremake.worlds.impl.PrivateIsle;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.color.Color;
 import net.minestom.server.component.DataComponent;
 import net.minestom.server.component.DataComponents;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
@@ -26,15 +33,12 @@ import net.minestom.server.item.component.AttributeList;
 import net.minestom.server.item.component.CustomData;
 import net.minestom.server.item.component.HeadProfile;
 import net.minestom.server.item.component.TooltipDisplay;
-import net.minestom.server.tag.Tag;
-import net.minestom.server.utils.Unit;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public interface ISbItem {
     String getId();
@@ -147,8 +151,8 @@ public interface ISbItem {
         }
         HashMap<ISbItem, EnchantedRecipe> recipes = new HashMap<>();
         GemstoneItem.init();
-        Reflections reflections = new Reflections("me.carscupcake.sbremake.item.impl");
-        for (Class<? extends ISbItem> clazz : reflections.getSubTypesOf(ISbItem.class)) {
+        var reflections = new Reflections("me.carscupcake.sbremake.item.impl");
+        for (var clazz : reflections.getSubTypesOf(ISbItem.class)) {
             try {
                 if (clazz.isInterface()) continue;
                 if (clazz.isRecord()) continue;
@@ -165,6 +169,20 @@ public interface ISbItem {
                 e.printStackTrace(System.err);
             }
         }
+        reflections = new Reflections("me.carscupcake.sbremake.item.impl.minion");
+        for (var clazz : reflections.getSubTypesOf(IMinionData.class)) {
+            try {
+                if (clazz.isInterface()) continue;
+                if (clazz.isRecord()) continue;
+                if (clazz.isEnum()) continue;
+                if (Modifier.isAbstract(clazz.getModifiers())) continue;
+                var constructor = clazz.getConstructor();
+                var instance = constructor.newInstance();
+                registerMinion(instance);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
         PerfectArmor.init();
         for (Pets pets : Pets.values())
             IPet.pets.put(pets.getId(), pets);
@@ -176,6 +194,23 @@ public interface ISbItem {
         }
         SkyblockEnchantment.initListener();
         MinecraftServer.getGlobalEventHandler().addChild(SkyblockEnchantment.LISTENER);
+    }
+
+    static void registerMinion(IMinionData minion) {
+        IMinionData.minions.put(minion.id(), minion);
+        for (int i = 1; i <= minion.getLevels(); i++){
+            int finalI = i;
+            var item = new MinionItem(minion.name() + " " + StringUtils.toRoman(i), minion.id() + "_GENERATOR_" + i,
+                                         minion.getHeadStrings()[i-1], List.of(new ItemAbility<>("Place", AbilityType.RIGHT_CLICK, event -> {
+                                             if (event.block() == null) return;
+                                             if (event.player().getWorldProvider() instanceof PrivateIsle privateIsle) {
+                                                 if (privateIsle.addMinion(minion, finalI, new Pos(event.block().add(0.5, 1, 0.5)))) {
+                                                     event.player().setItemInHand(PlayerHand.MAIN, SbItemStack.AIR);
+                                                 }
+                                             }
+            })));
+            SbItemStack.initSbItem(item);
+        }
     }
 
     static ISbItem get(Class<? extends ISbItem> itemClass) {

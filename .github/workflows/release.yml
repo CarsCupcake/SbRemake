@@ -13,7 +13,7 @@ jobs:
         id: vars
         run: |
           DATE=$(date +'%Y.%m.%d')
-          echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "date_now=$DATE" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
         with:
@@ -31,13 +31,17 @@ jobs:
       - uses: gradle/actions/wrapper-validation@v4
       - name: Build with Gradle
         run: gradle shadowJar
-      
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Check outputs
+        run: echo ${{ steps.vars.outputs.sha_short }}
       - name: Add Jar to GitHub releases
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.TOKEN_GITHUB }}"
           automatic_release_tag: "Auto"
           prerelease: true
-          title: "Automatic Build - ${{ steps.vars.outputs.date_now }}-${GITHUB_SHA::7}"
+          title: "Automatic Build - ${{ steps.vars.outputs.date_now }}-${{ steps.vars.outputs.sha_short }}"
           files: |
             target/SbRemake.jar

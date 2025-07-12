@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:NULL_BLADE"
+    },
+    "i": {
+      "item": "skyblock:VORPAL_KATANA"
+    }
+  },
+  "pattern": [
+    " # ",
+    " # ",
+    " i "
+  ],
+  "result": {
+    "item": "skyblock:ATOMSPLIT_KATANA"
+  },
+  "requirement": {
+    "type": "slayer",
+    "id": "ENDERMAN",
+    "level": 6
+  }
+}

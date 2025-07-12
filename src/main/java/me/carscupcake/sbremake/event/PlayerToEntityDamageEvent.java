@@ -91,11 +91,11 @@ public abstract class PlayerToEntityDamageEvent implements PlayerEvent, Cancella
 
     private static final String[] prefixes = {"f§", "e§", "6§", "c§", "f§"};
 
-    public String getDamageTag() {
+    public String getDamageTag(float damage) {
         StringBuilder builder = new StringBuilder(damageTagPrefix);
         if (crit) {
             int prefixCounter = 0;
-            String str = StringUtils.cleanDouble(calculateCritHit(), 0);
+            String str = StringUtils.cleanDouble(damage, 0);
             StringBuilder sb = new StringBuilder(str);
             sb.reverse();
             str = sb.toString();
@@ -115,7 +115,7 @@ public abstract class PlayerToEntityDamageEvent implements PlayerEvent, Cancella
             builder.append(newString.reverse());
             builder.append(new StringBuilder(prefixes[prefixCounter]).reverse());
         } else {
-            builder.append(StringUtils.toFormatedNumber(calculateHit()));
+            builder.append(StringUtils.toFormatedNumber(damage));
         }
         return builder.append(damageTagSuffix).toString();
     }

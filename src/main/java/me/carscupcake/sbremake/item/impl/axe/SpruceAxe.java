@@ -20,8 +20,9 @@ import net.minestom.server.item.Material;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
-public class JungleAxe implements ISbItem, Listener, GemstoneSlots {
+public class SpruceAxe implements ISbItem, Listener, GemstoneSlots {
 
     @Override
     public String getId() {
@@ -30,7 +31,7 @@ public class JungleAxe implements ISbItem, Listener, GemstoneSlots {
 
     @Override
     public String getName() {
-        return "Jungle Axe";
+        return "Spruce Axe";
     }
 
     @Override

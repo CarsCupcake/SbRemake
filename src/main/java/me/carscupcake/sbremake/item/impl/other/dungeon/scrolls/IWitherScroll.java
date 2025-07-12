@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.ability.ItemAbility;
 import me.carscupcake.sbremake.item.impl.sword.dungeons.NecronBlade;
 import me.carscupcake.sbremake.item.smithing.SmithingItem;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.item.Material;
 
 import java.util.ArrayList;
@@ -11,14 +12,14 @@ import java.util.ArrayList;
 public interface IWitherScroll extends ISbItem, SmithingItem, NpcSellable {
 
     @Override
-    default SbItemStack onApply(SbItemStack left, SbItemStack right) {
+    default SbItemStack onApply(SkyblockPlayer player, SbItemStack left, SbItemStack right) {
         var abilities = new ArrayList<>(left.getModifier(NecronBlade.WITHER_SCROLLS));
         abilities.add(getBladeAbility());
         return left.withModifier(NecronBlade.WITHER_SCROLLS, abilities);
     }
 
     @Override
-    default boolean canBeApplied(SbItemStack other) {
+    default boolean canBeApplied(SkyblockPlayer player, SbItemStack other) {
         var scrolls = other.getModifier(NecronBlade.WITHER_SCROLLS);
         return other.sbItem() instanceof NecronBlade && (scrolls == null || !scrolls.contains(getBladeAbility()));
     }

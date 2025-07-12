@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "minecraft:stick"
+    },
+    "b": {
+      "item": "minecraft:birch_log",
+      "count": 64
+    }
+  },
+  "pattern": [
+    " bb",
+    " #b",
+    "#  "
+  ],
+  "result": {
+    "item": "skyblock:sculptors_axe"
+  },
+  "requirement": {
+    "type": "collection",
+    "id": "BIRCH_WOOD",
+    "level": 4
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:null_ovoid"
+    },
+    "m": {
+      "item": "skyblock:refined_mithril"
+    },
+    "/": {
+      "tag": "skyblock:voidwalker_katana"
+    }
+  },
+  "pattern": [
+    " m ",
+    " # ",
+    " / "
+  ],
+  "result": {
+    "item": "skyblock:voidedge_katana",
+    "priority": 7
+  },
+  "requirement": {
+    "type": "slayer",
+    "id": "ENDERMAN",
+    "level": 3
+  }
+}

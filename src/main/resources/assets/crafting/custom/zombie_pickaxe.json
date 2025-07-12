@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "minecraft:rotten_flesh"
+    },
+    "i": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "###",
+    " i ",
+    " i "
+  ],
+  "result": {
+    "item": "skyblock:zombie_pickaxe"
+  },
+  "requirement": {
+    "type": "collection",
+    "id": "ROTTEN_FLESH",
+    "level": 2
+  }
+}

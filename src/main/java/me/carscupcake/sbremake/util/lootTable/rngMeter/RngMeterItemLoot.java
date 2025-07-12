@@ -3,9 +3,7 @@ package me.carscupcake.sbremake.util.lootTable.rngMeter;
 import me.carscupcake.sbremake.entity.slayer.ISlayer;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
-import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.component.CustomData;
 
@@ -22,6 +20,9 @@ public record RngMeterItemLoot(SbItemStack item, int min, int max, SlayerLootTab
 
     public RngMeterItemLoot(SbItemStack item, SlayerLootTable.LootTableType type, ISlayer slayer, double weight) {
         this(item, 1, 1, type, slayer, weight);
+    }
+    public RngMeterItemLoot(Class<? extends ISbItem> item, int min, int max, SlayerLootTable.LootTableType type, ISlayer slayer, double weight) {
+        this(SbItemStack.from(item), min, max, type, slayer, weight);
     }
 
     public RngMeterItemLoot(Class<? extends ISbItem> item, int amount, SlayerLootTable.LootTableType type, ISlayer slayer, double weight) {

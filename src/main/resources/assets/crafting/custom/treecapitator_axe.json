@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "minecraft:jungle_axe"
+    },
+    "b": {
+      "item": "minecraft:enchanted_jungle_log",
+      "count": 4
+    }
+  },
+  "pattern": [
+    "bbb",
+    "b#b",
+    "bbb"
+  ],
+  "result": {
+    "item": "skyblock:treecapitator_axe"
+  },
+  "requirement": {
+    "type": "collection",
+    "id": "JUNGLE_WOOD",
+    "level": 7
+  }
+}

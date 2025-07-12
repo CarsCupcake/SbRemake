@@ -11,4 +11,12 @@ public class ArrayUtil {
         }
         return -1;
     }
+    public static <T> boolean contains(T[] array, T object) {
+        for (T t : array) {
+            if (t.equals(object)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

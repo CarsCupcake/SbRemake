@@ -17,17 +17,13 @@ import me.carscupcake.sbremake.worlds.impl.*;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.collision.BoundingBox;
-import net.minestom.server.coordinate.ChunkRange;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.network.packet.server.play.DestroyEntitiesPacket;
-import net.minestom.server.registry.DynamicRegistry;
 import net.minestom.server.registry.RegistryKey;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
@@ -583,7 +579,6 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
     }
 
     public static void getZipFiles(String zipFile, String destFolder) throws IOException {
-        BufferedOutputStream dest;
         try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
@@ -600,8 +595,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                         new File((destFolder) + "/" + (entry.getName().substring(0, di))).mkdirs();
                     }
                 }
-                try (FileOutputStream fos = new FileOutputStream((destFolder) + "/" + (entry.getName()))) {
-                    dest = new BufferedOutputStream(fos);
+                try (FileOutputStream fos = new FileOutputStream((destFolder) + "/" + (entry.getName())); var dest = new BufferedOutputStream(fos)) {
                     while ((count = zis.read(data)) != -1) dest.write(data, 0, count);
                     dest.flush();
                     dest.close();

@@ -177,6 +177,13 @@ public enum NormalEnchantments implements SkyblockEnchantment {
         public Lore getDescription() {
             return new Lore("§7Grants §b+-i- %s".formatted(Stat.Intelligence.toString()), "-i-", new LevelToBonusPlaceholder(integer -> integer * 5, this));
         }
+    },
+    ManaSteal("Mana Steal", "mana_steal", 0, 3, ItemType.SWORDS) {
+        @Override
+        public Lore getDescription() {
+            return new Lore("§7Regain §b-i-%§7 of your mana on hit.", "-i-",
+                            new LevelToBonusPlaceholder(this, integer -> StringUtils.cleanDouble(0.25 * integer)));
+        }
     };
 
     private final String name;

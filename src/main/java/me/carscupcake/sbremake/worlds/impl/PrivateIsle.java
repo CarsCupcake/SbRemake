@@ -1,8 +1,13 @@
 package me.carscupcake.sbremake.worlds.impl;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.config.ConfigFile;
+import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.item.minion.IMinionData;
+import me.carscupcake.sbremake.item.minion.Minion;
+import me.carscupcake.sbremake.item.minion.MinionRemoveReason;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.Pair;
@@ -17,12 +22,12 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.kohsuke.github.GitHub;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static me.carscupcake.sbremake.worlds.SkyblockWorld.extract;
@@ -41,6 +46,9 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
                 }
             });
     private final SkyblockPlayer owner;
+    public final Map<UUID, Minion> minions = new HashMap<>();
+    @Setter
+    private int maxMinions = 5;
 
     public PrivateIsle(SkyblockPlayer owner) throws IOException {
         super(new EntityNpc[]{new EntityNpc(new Pos(9, 100, 33), null, "Jerry", EntityType.VILLAGER)});
@@ -138,7 +146,26 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
     }
 
     @Override
+    protected void register() {
+        ConfigFile config = new ConfigFile("minions", owner);
+        for (var entry : config.as(ConfigSection.SECTIONS).entrySet()) {
+            try {
+                var minionData = entry.getValue();
+                var id = minionData.get("id", ConfigSection.STRING);
+                var level = minionData.get("level", ConfigSection.INTEGER);
+                var pos = minionData.get("pos", ConfigSection.POSITION);
+                addMinion(IMinionData.minions.get(id), level, new Pos(pos), UUID.fromString(entry.getKey()));
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
+    }
+
+    @Override
     protected void unregister() {
+        for (var minion : minions.values()) {
+            minion.remove(MinionRemoveReason.QUIT);
+        }
         Path path = null;
         try {
             var f = AnvilLoader.class.getDeclaredField("path");
@@ -148,8 +175,9 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
             e.printStackTrace(System.err);
         }
         Main.LOGGER.info("Saving Private Isle to {}", path == null ? "null" : path.toAbsolutePath().toString());
-        container.saveInstance();
-        container.saveChunksToStorage().thenRun(() -> Main.LOGGER.info("Done!"));
+        container.saveInstance().join();
+        container.saveChunksToStorage().join();
+        Main.LOGGER.debug("DONE!");
         super.unregister();
     }
 
@@ -160,5 +188,22 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
     @Override
     public boolean useCustomMining() {
         return false;
+    }
+    public boolean addMinion(IMinionData minion, int level, Pos location) {
+        UUID uuid = UUID.randomUUID();
+        while (minions.containsKey(uuid)) uuid = UUID.randomUUID();
+        return addMinion(minion, level, location, uuid);
+    }
+
+    public boolean addMinion(IMinionData minion, int level, Pos location, UUID uuid) {
+        if (minions.size() + 1 >= maxMinions) return false;
+        minions.put(uuid, Minion.getMinion(minion, level, container, location, uuid.toString(), owner));
+        return true;
+    }
+
+    public void pickupMinion(Minion minion) {
+        Assert.assertTrue(minions.containsValue(minion));
+        minion.remove(MinionRemoveReason.PICKUP_MINION);
+        minions.remove(minion.getId());
     }
 }

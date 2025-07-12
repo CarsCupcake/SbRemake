@@ -125,9 +125,10 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     protected static EntityAIGroup regionTarget(SkyblockEntity entity, List<Region> region, int range, boolean isHidden) {
         EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, range, entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL &&
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, range,
+                                                                                                                        entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL &&
                 ((!isHidden && p.getRegion() != null && region.contains(p.getRegion())) || (isHidden && region.stream().map(region1 -> region1.isInRegion(p.getPosition())).reduce(false, Boolean::logicalOr)))
-                && !entity.isDead)));
+                && !entity.isDead && (p.getSlayerQuest() == null || p.getSlayerQuest().getStage() != SlayerQuest.SlayerQuestStage.MobKilling))));
         return aiGroup;
     }
 
@@ -140,7 +141,18 @@ public abstract class SkyblockEntity extends EntityCreature {
         aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 16,
                                                                                                                                        new ArrayList<>(), precompileRandomStroll, true) // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && !entity.isDead)));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 10), new ClosestEntityTarget(entity, 6,
+                                                                                                                     entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && !entity.isDead && (p.getSlayerQuest() == null || p.getSlayerQuest().getStage() != SlayerQuest.SlayerQuestStage.MobKilling))));
+        return aiGroup;
+    }
+
+    protected static EntityAIGroup zombieAiGroup(SkyblockEntity entity, int range, boolean precompileRandomStroll) {
+        EntityAIGroup aiGroup = new EntityAIGroup();
+        aiGroup.getGoalSelectors().addAll(List.of(new MeleeAttackGoal(entity, 1.6, 20, TimeUnit.SERVER_TICK), new RandomStrollInRegion(entity, 16,
+                                                                                                                                       new ArrayList<>(), precompileRandomStroll, true) // Walk around
+        ));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, range), new ClosestEntityTarget(entity, 6,
+                                                                                                                    entity1 -> entity1 instanceof SkyblockPlayer p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && !entity.isDead && (p.getSlayerQuest() == null || p.getSlayerQuest().getStage() != SlayerQuest.SlayerQuestStage.MobKilling))));
         return aiGroup;
     }
 
@@ -174,7 +186,8 @@ public abstract class SkyblockEntity extends EntityCreature {
         aiGroup.getGoalSelectors().addAll(List.of(createRangedAttackGoal(entity), new RandomStrollInRegion(entity, 5, new ArrayList<>(), precompileRandomStroll, true) //
                                                   // Walk around
         ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32, entity1 -> entity1 instanceof Player && !entity.isDead)));
+        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(entity, 32), new ClosestEntityTarget(entity, 32,
+                                                                                                                     entity1 -> entity1 instanceof SkyblockPlayer p && !entity.isDead && (p.getSlayerQuest() == null || p.getSlayerQuest().getStage() != SlayerQuest.SlayerQuestStage.MobKilling))));
         return aiGroup;
     }
 
@@ -305,7 +318,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         damage = onDamage(event.getPlayer(), damage);
         if (damage <= 0) return;
         event.getPostEvent().forEach(c -> c.accept(event));
-        spawnDamageTag(this, event.getDamageTag());
+        spawnDamageTag(this, event.getDamageTag(damage));
         lastDamager = event.getPlayer();
         damage(DamageType.PLAYER_ATTACK, damage * (1 - (getDefense() / (getDefense() + 100))));
         if (isDead) {
@@ -353,7 +366,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         if (ticks == 0) return;
         player.getInstance().playSound(Sound.sound(SoundType.ITEM_FLINTANDSTEEL_USE.getKey(), Sound.Source.AMBIENT, 1, 0f), getPosition());
         FerocityRunnable runnable = new FerocityRunnable(ticks, player);
-        Task task = this.scheduler().scheduleTask(runnable, TaskSchedule.tick(10), TaskSchedule.tick(10));
+        Task task = this.scheduler().scheduleTask(runnable, TaskSchedule.tick(10), TaskSchedule.tick(5));
         runnable.setSelf(task);
     }
 

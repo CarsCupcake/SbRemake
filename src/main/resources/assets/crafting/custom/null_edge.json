@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "skyblock:ENCHANTED_MITHRIL",
+      "count": 32
+    },
+    "/": {
+      "tag": "skyblock:NULL_ATOM"
+    }
+  },
+  "pattern": [
+    "#/#",
+    "#/#",
+    "#/#"
+  ],
+  "result": {
+    "item": "skyblock:NULL_EDGE"
+  }
+}

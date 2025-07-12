@@ -14,18 +14,13 @@ import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterItemLoot;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerLootTable;
 import net.minestom.server.coordinate.Vec;
-import net.minestom.server.entity.*;
-import net.minestom.server.entity.ai.EntityAIGroup;
-import net.minestom.server.entity.ai.goal.RandomStrollGoal;
-import net.minestom.server.entity.ai.target.ClosestEntityTarget;
-import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
+import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.item.Material;
 import net.minestom.server.particle.Particle;
 import org.jetbrains.annotations.NotNull;
-
-import java.time.Duration;
-import java.util.List;
 
 public class RevenantHorrorI extends SlayerEntity implements SkillXpDropper {
     public static final RngMeterEntry REVENANT_FLESH = new RngMeterEntry("REVENANT_FLESH", new RngMeterItemLoot(SbItemStack.from(RevenantFlesh.class), 1, 3, SlayerLootTable.LootTableType.Token, Slayers.Zombie, 10_000), new RngMeterItemLoot(SbItemStack.from(RevenantFlesh.class), 9, 18, SlayerLootTable.LootTableType.Token, Slayers.Zombie, 10_000), new RngMeterItemLoot(SbItemStack.from(RevenantFlesh.class), 30, 50, SlayerLootTable.LootTableType.Token, Slayers.Zombie, 10_000), new RngMeterItemLoot(SbItemStack.from(RevenantFlesh.class), 50, 64, SlayerLootTable.LootTableType.Token, Slayers.Zombie, 10_000), new RngMeterItemLoot(SbItemStack.from(RevenantFlesh.class), 63, 64, SlayerLootTable.LootTableType.Token, Slayers.Zombie, 10_000));
@@ -48,11 +43,7 @@ public class RevenantHorrorI extends SlayerEntity implements SkillXpDropper {
 
     @Override
     public void spawn() {
-        EntityAIGroup aiGroup = new EntityAIGroup();
-        aiGroup.getGoalSelectors().addAll(List.of(new RevenantAttackGoal(this, 1.3, 3.2, Duration.ofMillis(3200), Duration.ofSeconds(1)), new RandomStrollGoal(this, 5) // Walk around
-        ));
-        aiGroup.getTargetSelectors().addAll(List.of(new LastEntityDamagerTarget(this, 35), new ClosestEntityTarget(this, 128, entity1 -> entity1 instanceof Player p && !p.isDead() && p.getGameMode() == GameMode.SURVIVAL && p == owner)));
-        addAIGroup(aiGroup);
+        addAIGroup(slayerTarget());
     }
 
     @Override

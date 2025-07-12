@@ -18,8 +18,9 @@ public class SlayerLootTable implements ILootTable<SbItemStack> {
     private final MapList<LootTableType, RngMeterLoot> loot = new MapList<>();
     private final Map<RngMeterLoot, Double> baseChances = new HashMap<>();
 
-    public void addLoot(RngMeterLoot loot) {
+    public SlayerLootTable addLoot(RngMeterLoot loot) {
         this.loot.add(loot.type(), loot);
+        return this;
     }
 
     public void calculateWeight(SkyblockPlayer player) {

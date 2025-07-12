@@ -16,12 +16,17 @@ public class EntityMeleeDamagePlayerEvent implements CancellableEvent, IDamageEv
     private double normalDamage;
     private double trueDamage;
     private boolean cancelled = false;
+    private double multiplier = 1;
 
     public EntityMeleeDamagePlayerEvent(SkyblockEntity entity, SkyblockPlayer player) {
+        this(entity, player, entity.getDamage(), entity.getTrueDamage());
+    }
+
+    public EntityMeleeDamagePlayerEvent(SkyblockEntity entity, SkyblockPlayer player, double damage, double trueDamage) {
         this.player = player;
         this.entity = entity;
-        normalDamage = entity.getDamage();
-        trueDamage = entity.getTrueDamage();
+        this.normalDamage = damage;
+        this.trueDamage = trueDamage;
     }
 
     private double cachedDamage;

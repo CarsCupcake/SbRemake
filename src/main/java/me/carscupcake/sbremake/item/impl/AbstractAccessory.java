@@ -45,6 +45,8 @@ public abstract class AbstractAccessory implements ISbItem, ISbItem.StatProvider
     public abstract AccessoryFamily getAccessoryFamily();
 
     public enum AccessoryFamily {
-        NetherrackLookingSunshade
+        NetherrackLookingSunshade,
+        PocketEspressoMachine,
+        HandyBloodChalice
     }
 }

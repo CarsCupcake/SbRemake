@@ -25,7 +25,6 @@ import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.CustomData;
 import net.minestom.server.item.component.HeadProfile;
-import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +32,21 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 public interface Modifier<T> {
+    Modifier<UUID> ITEM_ID = new Modifier<>() {
+        @Override
+        public @Nullable UUID getFromNbt(SbItemStack item) {
+            var nbt = item.item().get(DataComponents.CUSTOM_DATA);
+            if (nbt == null) return null;
+            var uuid = nbt.nbt().getString("uuid");
+            return UUID.fromString(uuid);
+        }
+
+        @Override
+        public SbItemStack toNbt(UUID i, SbItemStack itemStack) {
+            return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA,
+                                                          new CustomData(Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt().putString("uuid", i.toString()))));
+        }
+    };
     Modifier<Reforge> REFORGE = new Modifier<>() {
         @Override
         public Reforge getFromNbt(SbItemStack item) {
@@ -263,6 +277,7 @@ public interface Modifier<T> {
     Modifier<Integer> RarityUpgrades = new Modifier<>() {
         @Override
         public @NotNull Integer getFromNbt(SbItemStack item) {
+            if (item == SbItemStack.AIR) return 0;
             return (Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt()).getInt("rarity_upgrades", 0);
         }
 

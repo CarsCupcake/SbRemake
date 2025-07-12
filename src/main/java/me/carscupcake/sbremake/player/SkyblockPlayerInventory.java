@@ -8,15 +8,15 @@ import net.minestom.server.event.inventory.InventoryItemChangeEvent;
 import net.minestom.server.inventory.PlayerInventory;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.utils.MathUtils;
-import net.minestom.server.utils.inventory.PlayerInventoryUtils;
 import net.minestom.server.utils.validate.Check;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.Arrays;
+import java.util.Iterator;
 
-public class SkyblockPlayerInventory extends PlayerInventory {
+public class SkyblockPlayerInventory extends PlayerInventory implements Iterable<SbItemStack> {
     private static final VarHandle ITEM_UPDATER = MethodHandles.arrayElementVarHandle(SbItemStack[].class);
     private final SbItemStack[] itemStacks;
     private final SkyblockPlayer player;
@@ -140,5 +140,21 @@ public class SkyblockPlayerInventory extends PlayerInventory {
 
         EventDispatcher.call(new InventoryItemChangeEvent(this, slot, previous.item(), itemStack.item()));
 
+    }
+
+    @Override
+    public @NotNull Iterator<SbItemStack> iterator() {
+        return new  Iterator<>() {
+            int i = 0;
+            @Override
+            public boolean hasNext() {
+                return itemStacks.length > i;
+            }
+
+            @Override
+            public SbItemStack next() {
+                return itemStacks[i++];
+            }
+        };
     }
 }

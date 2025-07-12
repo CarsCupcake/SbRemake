@@ -3,7 +3,7 @@ package me.carscupcake.sbremake.item.impl.bow;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.*;
-import net.minestom.server.entity.Player;
+import me.carscupcake.sbremake.player.Essence;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -12,7 +12,7 @@ import net.minestom.server.item.Material;
 import java.util.List;
 import java.util.Map;
 
-public class Terminator implements ISbItem, Shortbow, ISbItem.StatProvider, Listener {
+public class Terminator implements ISbItem, Shortbow, ISbItem.StatProvider, Listener, Dungeonizable {
     @Override
     public String getId() {
         return "TERMINATOR";
@@ -61,5 +61,15 @@ public class Terminator implements ISbItem, Shortbow, ISbItem.StatProvider, List
             if (item != null && item.sbItem() instanceof Terminator)
                 playerStatEvent.modifiers().add(new PlayerStatEvent.BasicModifier("Terminator", 0.25, PlayerStatEvent.Type.MultiplicativeMultiplier, PlayerStatEvent.StatsCategory.Armor));
         });
+    }
+
+    @Override
+    public Essence getEssence() {
+        return Essence.Spider;
+    }
+
+    @Override
+    public int getMaxStars() {
+        return 5;
     }
 }
