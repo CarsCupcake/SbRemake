@@ -20,6 +20,7 @@ import me.carscupcake.sbremake.util.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
 import java.util.ArrayList;
@@ -56,6 +57,23 @@ public abstract class ISkill implements SkyblockXpTask {
         ConfigSection section = file.get(id, ConfigSection.SECTION, new ConfigSection(new JsonObject()));
         xp = section.get("xp", ConfigSection.DOUBLE, 0d);
         level = section.get("level", ConfigSection.INTEGER, 0);
+    }
+
+    public ItemStack getSkillMenuItem() {
+        return new ItemBuilder(showItem)
+                .setName("§a" + getName() + " " + StringUtils.toRoman(level))
+                .addAllLore(basicLore.build(null, player))
+                .addLoreRow("§7   ")
+                .addLoreIf(() -> getMaxLevel() == getLevel(), "§8Max Skill Level Reached!",
+                           "§e§m                    §r §6" + StringUtils.toFormatedNumber(getXp()))
+                .addLoreIf(() -> getMaxLevel() > getLevel(), () -> """
+                        §7Progress to level %s: §e%s
+                        %s§r §e%s§6/§e%s""".formatted(StringUtils.toRoman(getLevel() + 1),
+                                                                  StringUtils.cleanDouble((getXp()/nextLevelXp[level]) * 100, 1),
+                                                      StringUtils.makeProgressBarAsString(25, getXp()/nextLevelXp[level], 1, "§f", "§a",
+                                                                                          "§m "),
+                                                      StringUtils.toFormatedNumber(getXp()), StringUtils.toShortNumber(nextLevelXp[level])))
+                .build();
     }
 
     public abstract int getMaxLevel();

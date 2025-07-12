@@ -1000,6 +1000,24 @@ public class SkyblockPlayer extends Player {
             openPetsMenu();
             return true;
         });
+        gui.getClickEvents().add(19, clickType -> {
+            openSkillsMenu();
+            return true;
+        });
+        gui.showGui(this);
+    }
+
+    public void openSkillsMenu() {
+        var builder = new InventoryBuilder(6, "§7Skills Menu")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .setItem(19, skills.get(Skill.Combat).getSkillMenuItem())
+                .setItem(20, skills.get(Skill.Farming).getSkillMenuItem())
+                .setItem(21, skills.get(Skill.Fishing).getSkillMenuItem())
+                .setItem(22, skills.get(Skill.Mining).getSkillMenuItem())
+                .setItem(23, skills.get(Skill.Foraging).getSkillMenuItem())
+                .setItem(25, skills.get(Skill.Alchemy).getSkillMenuItem());
+        Gui gui = new Gui(builder.build());
+        gui.setCancelled(true);
         gui.showGui(this);
     }
 
