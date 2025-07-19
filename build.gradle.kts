@@ -54,6 +54,8 @@ dependencies {
     implementation("net.sf.sevenzipjbinding:sevenzipjbinding:16.02-2.01")
     implementation("net.sf.sevenzipjbinding:sevenzipjbinding-all-platforms:16.02-2.01")
     implementation("com.github.f4b6a3:uuid-creator:6.0.0")
+    implementation("org.apache.commons:commons-csv:1.14.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.19.0")
 }
 
 tasks.jar {
