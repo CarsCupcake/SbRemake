@@ -648,7 +648,7 @@ public class SkyblockPlayer extends Player {
                 throw new RuntimeException(e);
             }
         }
-        this.accessoryBag = new AccessoryBag(new ConfigFile("accsessoryBag", this), 3);
+        this.accessoryBag = new AccessoryBag(new ConfigFile("accessoryBag", this), 3);
         this.hotm = new HeartOfTheMountain(this);
         ConfigFile f = new ConfigFile("pets", this);
         pets.addAll(f.get("stored", STORED_PET_LIST_DATA, new ArrayList<>()));
@@ -1042,6 +1042,8 @@ public class SkyblockPlayer extends Player {
             configFile.set(i + "", item, ConfigSection.ITEM);
         }
         configFile.save();
+        var accessoryBagConfig = new ConfigFile("accessoryBag", this);
+        ((ConfigFile) accessoryBag.save(accessoryBagConfig)).save();
         ConfigFile defaults = new ConfigFile("defaults", this);
         defaults.set("world", this.getWorldProvider().type().getId(), ConfigSection.STRING);
         defaults.set("coins", this.coins, ConfigSection.DOUBLE);

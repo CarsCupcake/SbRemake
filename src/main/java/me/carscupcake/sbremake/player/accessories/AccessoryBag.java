@@ -8,9 +8,16 @@ import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.AbstractAccessory;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.TemplateItems;
+import me.carscupcake.sbremake.util.item.InventoryBuilder;
+import me.carscupcake.sbremake.util.item.PageGui;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.EventNode;
+import net.minestom.server.inventory.Inventory;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.tag.Tag;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,9 +49,19 @@ public class AccessoryBag {
         }
     }
 
+    public ConfigSection save(ConfigSection config) {
+        config.set("items", items.toArray(SbItemStack[]::new), ConfigSection.ITEM_ARRAY);
+        var tuningSection = config.get("tunings", ConfigSection.SECTION, new  ConfigSection(new JsonObject()));
+        for (var tuning : tunings.entrySet()) {
+            tuningSection.set(tuning.getKey().name(), tuning.getValue(), ConfigSection.INTEGER);
+        }
+        config.set("tunings", tuningSection, ConfigSection.SECTION);
+        return config;
+    }
+
     private void computeMagicalPower() {
         AtomicInteger magicalPower = new AtomicInteger(0);
-        items.parallelStream().collect(Collectors.groupingBy(stack -> ((AbstractAccessory) stack.sbItem()).getAccessoryFamily())).forEach((key, value) -> {
+        items.parallelStream().collect(Collectors.groupingBy(stack -> ((AbstractAccessory) stack.sbItem()).getAccessoryFamily())).forEach((_, value) -> {
             if (value.size() == 1) {
                 magicalPower.addAndGet(getPowerFromRarity(value.getFirst().getRarity()));
             } else {
@@ -54,6 +71,66 @@ public class AccessoryBag {
             }
         });
         this.magicalPower = magicalPower.get();
+    }
+
+    public void openInventory(SkyblockPlayer player) {
+        int invs = 1 + (capacity / 45);
+        var list = 0;
+        var inventories = new ArrayList<Inventory>(invs);
+        for (int i = 0; i < invs; i++) {
+            var invSlots = (capacity - list > 45) ? 54 : (9 * (1 + getNextHigher((capacity - list) / 9d)));
+            var builder = new InventoryBuilder((int) Math.ceil(invSlots / 9d), "Accessory Bag (" + (i + 1) + "/" + invs + ")")
+                    .fill(TemplateItems.EmptySlot.getItem());
+            for (int j = 0; j < invSlots; j++) {
+                if (list >= capacity) {
+                    break;
+                }
+                if (items.size() <= list) {
+                    builder.setItem(j, ItemStack.AIR);
+                    list++;
+                    continue;
+                }
+                builder.setItem(j, items.get(list).item());
+                list++;
+            }
+            inventories.add(builder.build());
+        }
+        var gui = new PageGui(inventories, PageGui.ItemSlotPosition.BottomLeft, PageGui.ItemSlotPosition.BottomRight);
+        gui.showGui(player);
+        gui.setGeneralClickEvent(event -> {
+            if (event.isCancelled()) return true;
+            if (event.getSlot() < 0 ||  event.getSlot() > event.getInventory().getSize()) return true;
+            var itemStack = event.getInventory().getItemStack(event.getSlot());
+            var item = SbItemStack.from(itemStack);
+            if (!itemStack.hasTag(Tag.NBT("id")) || !(item.sbItem() instanceof AbstractAccessory)) {
+                if (item == SbItemStack.AIR) return false;
+                player.sendMessage("§cThis is not an accessory!");
+                return true;
+            }
+            return false;
+        });
+        gui.setCloseEvent(() -> {
+            var items = new ArrayList<SbItemStack>();
+            for (var inventory : gui.getInventories()) {
+                for (int i = 0; i < inventory.getSize() - 9; i++) {
+                    var item = inventory.getItemStack(i);
+                    if (item == ItemStack.AIR) continue;
+                    var sbItem = SbItemStack.from(item);
+                    if (sbItem.sbItem() instanceof AbstractAccessory)
+                        items.add(sbItem);
+                }
+            }
+            AccessoryBag.this.items.clear();
+            AccessoryBag.this.items.addAll(items);
+            AccessoryBag.this.computeMagicalPower();
+            return false;
+        });
+    }
+
+    private int getNextHigher(double d) {
+        int toInt = (int) d;
+        if (toInt < d) return toInt + 1;
+        return toInt;
     }
 
     public int getTuningPoints() {
