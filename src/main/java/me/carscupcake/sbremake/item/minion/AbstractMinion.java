@@ -93,11 +93,13 @@ public abstract class AbstractMinion implements Minion {
         Collections.shuffle(missing);
         var target = missing.getFirst();
         missing.remove(target);
-        var lo = stand.getPosition().withDirection(target.middle().sub(stand.getPosition()));
-        var angle = new Vec(lo.pitch(), 0, 0);
-        stand.teleport(lo);
-        var armorStandMeta = (ArmorStandMeta) stand.getEntityMeta();
-        armorStandMeta.setHeadRotation(angle);
+        if (instance.isChunkLoaded(stand.getPosition())){
+            var lo = stand.getPosition().withDirection(target.middle().sub(stand.getPosition()));
+            var angle = new Vec(lo.pitch(), 0, 0);
+            stand.teleport(lo);
+            var armorStandMeta = (ArmorStandMeta) stand.getEntityMeta();
+            armorStandMeta.setHeadRotation(angle);
+        }
         return target;
     }
 
