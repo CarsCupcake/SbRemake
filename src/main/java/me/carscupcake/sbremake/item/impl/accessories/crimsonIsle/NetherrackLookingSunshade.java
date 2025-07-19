@@ -44,4 +44,9 @@ public class NetherrackLookingSunshade extends AbstractAccessory implements Head
     public String value() {
         return "eyJ0aW1lc3RhbXAiOjE1NTczMzMyNjkxMDIsInByb2ZpbGVJZCI6ImIwZDRiMjhiYzFkNzQ4ODlhZjBlODY2MWNlZTk2YWFiIiwicHJvZmlsZU5hbWUiOiJ4RmFpaUxlUiIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmM5MzBiMGEyZDg3ZjJkZGRiNDA5YTMwMmY5NTkxODk3MTg0ZjI5ZWNjOTdiNWNhNWNkZWMxY2Q2OTgzOTU5NyJ9fX0=";
     }
+
+    @Override
+    public boolean isUnstackable() {
+        return true;
+    }
 }

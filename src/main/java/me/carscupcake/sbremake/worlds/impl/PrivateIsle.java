@@ -59,7 +59,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
 
             File localCashed = new File("./worlds/%s".formatted(type().getId()));
             if (!localCashed.exists() || !localCashed.isDirectory()) {
-                Main.LOGGER.info("File not found in cache! Downloading...");
+                Main.LOGGER.debug("File not found in cache! Downloading...");
                 dir = localCashed;
                 File f = localCashed.getParentFile();
                 GitHub gitHub = GitHub.connectAnonymously();
@@ -174,7 +174,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-        Main.LOGGER.info("Saving Private Isle to {}", path == null ? "null" : path.toAbsolutePath().toString());
+        Main.LOGGER.debug("Saving Private Isle to {}", path == null ? "null" : path.toAbsolutePath().toString());
         container.saveInstance().join();
         container.saveChunksToStorage().join();
         Main.LOGGER.debug("DONE!");

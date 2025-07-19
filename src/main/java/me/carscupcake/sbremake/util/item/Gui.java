@@ -12,6 +12,7 @@ import net.minestom.server.event.inventory.InventoryClickEvent;
 import net.minestom.server.event.inventory.InventoryCloseEvent;
 import net.minestom.server.event.inventory.InventoryItemChangeEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
+import net.minestom.server.inventory.AbstractInventory;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.click.Click;
 import net.minestom.server.inventory.click.ClickType;
@@ -29,8 +30,8 @@ public class Gui {
         if (player.getGui() == null) return;
         Gui gui = player.getGui();
         event.setCancelled(gui.cancelled);
-        for (var clickEvent : gui.clickEvents.get(event.getSlot()))
-            if (clickEvent.apply(event.getClick())) event.setCancelled(true);
+        if (gui.click(event.getSlot(), event.getClick(), event.getInventory()))
+            event.setCancelled(true);
         if (gui.generalClickEvent.apply(event)) event.setCancelled(true);
 
     }).addListener(InventoryCloseEvent.class, event -> {
@@ -62,7 +63,7 @@ public class Gui {
     };
     private Returnable<Boolean> closeEvent = () -> false;
     private final MapList<Integer, Function<Click, Boolean>> clickEvents = new MapList<>();
-    private final Inventory inventory;
+    private Inventory inventory;
     private boolean cancelled = false;
     protected final Set<SkyblockPlayer> players = new HashSet<>();
 
@@ -73,6 +74,18 @@ public class Gui {
     public void showGui(SkyblockPlayer player) {
         player.setGui(this);
         players.add(player);
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+        players.forEach(player -> player.openInventory(inventory));
+    }
+
+    protected boolean click(int slot, Click click, AbstractInventory inventory) {
+        boolean cancelled = false;
+        for (var clickEvent : clickEvents.get(slot))
+            if (clickEvent.apply(click)) cancelled = true;
+        return cancelled;
     }
 
 }

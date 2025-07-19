@@ -28,6 +28,7 @@ import me.carscupcake.sbremake.item.impl.bow.BowItem;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.item.impl.other.*;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
+import me.carscupcake.sbremake.item.impl.pets.Pet;
 import me.carscupcake.sbremake.item.impl.pets.PetItem;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.item.modifiers.potion.PotionInfo;
@@ -647,7 +648,7 @@ public class SkyblockPlayer extends Player {
                 throw new RuntimeException(e);
             }
         }
-        this.accessoryBag = new AccessoryBag(new ConfigFile("accsessoryBag", this), 3);
+        this.accessoryBag = new AccessoryBag(new ConfigFile("accessoryBag", this), 3);
         this.hotm = new HeartOfTheMountain(this);
         ConfigFile f = new ConfigFile("pets", this);
         pets.addAll(f.get("stored", STORED_PET_LIST_DATA, new ArrayList<>()));
@@ -931,13 +932,92 @@ public class SkyblockPlayer extends Player {
         profileItem.setName("§aYour Skyblock Profile").addAllLore("§7View your equipment, stats,").addAllLore("§7and more!").addAllLore("§7 ");
         for (Stat stat : Stat.values())
             profileItem.addLoreRow((stat) + " §f" + (getStat(stat)) + (stat.isPercentValue() ? "%" : ""));
-        inventoryBuilder.setItem(profileItem.addAllLore("§7  ").addLoreRow("§eClick to view!").build(), 13).setItem(new ItemBuilder(Material.DIAMOND_SWORD).setName("§aYour Skills").addAllLore("§7View your skills progression", "§7and rewards.", "§7 ", "§6" + (StringUtils.cleanDouble(skillsAverage())) + " Skill Avearage", "§e ", "§eClick to view!").build(), 19).setItem(new ItemBuilder(Material.PAINTING).setName("§aCollections §c§lWIP").build(), 20).setItem(new ItemBuilder(Material.BOOK).setName("§aRecipe Book §c§lWIP").build(), 21).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0=").setName("§aSkyblock Leveling §c§lWIP").build(), 22).setItem(new ItemBuilder(Material.WRITABLE_BOOK).setName("§aQuest Log §c§lWIP").build(), 23).setItem(new ItemBuilder(Material.CLOCK).setName("§aCalendar and Events §c§lWIP").build(), 24).setItem(new ItemBuilder(Material.CHEST).setName("§aStorage §c§lWIP").build(), 25).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0=").setName("§aYour Bags §c§lWIP").build(), 29).setItem(new ItemBuilder(Material.BONE).setName("§aPets §c§lWIP").build(), 30).setItem(new ItemBuilder(Material.CRAFTING_TABLE).setName("§aCrafting Table §c§lWIP").build(), 31).setItem(new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new Color(0x3e05af)).setName("§aWardrobe §c§lWIP").build(), 32).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA5Mjk5YTExN2JlZTg4ZDMyNjJmNmFiOTgyMTFmYmEzNDRlY2FlMzliNDdlYzg0ODEyOTcwNmRlZGM4MWU0ZiJ9fX0=").setName("§aPersonal Bank §c§lWIP").build(), 33).setItem(new ItemBuilder(Material.BARRIER).setName("§cClose").build(), 49);
+        inventoryBuilder.setItem(profileItem.addAllLore("§7  ").addLoreRow("§eClick to view!").build(), 13)
+                .setItem(new ItemBuilder(Material.DIAMOND_SWORD)
+                                 .setName("§aYour Skills")
+                                 .addAllLore("§7View your skills progression", "§7and rewards.", "§7 ", "§6" + (StringUtils.cleanDouble(skillsAverage())) + " Skill Avearage", "§e ", "§eClick to view!").build(), 19).setItem(new ItemBuilder(Material.PAINTING).setName("§aCollections §c§lWIP").build(), 20)
+                .setItem(new ItemBuilder(Material.BOOK).setName("§aRecipe Book §c§lWIP").build(), 21)
+                .setItem(new ItemBuilder(Material.PLAYER_HEAD)
+                                 .setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0=")
+                                 .setName("§aSkyblock Leveling")
+                                 .addLore("""
+                                                  §7Your SkyBlock Level: §8[§b%s§8]
+                                                  §7  \s
+                                                  Determine how far you've progressed in SkyBlock and earn rewards from completing unique tasks.
+                                                     \s
+                                                  Progress to Level %s:
+                                                  %s§r §b%s§3/§b100 XP
+                                                    \s
+                                                  §eClick to view!"""
+                                                  .formatted(getSkyblockLevel(), getSkyblockLevel() + 1,
+                                                                StringUtils.makeProgressBarAsString(20, getSkyblockXp() - getSkyblockLevel() * 100L
+                                                                        , 100, "§f",
+                                                                                                    "§3",
+                                                                                                    "§m "), getSkyblockXp() - getSkyblockLevel() * 100L))
+                                 .build(), 22)
+                .setItem(new ItemBuilder(Material.WRITABLE_BOOK).setName("§aQuest Log §c§lWIP").build(), 23)
+                .setItem(new ItemBuilder(Material.CLOCK).setName("§aCalendar and Events §c§lWIP").build(), 24)
+                .setItem(new ItemBuilder(Material.CHEST).setName("§aStorage §c§lWIP").build(), 25)
+                .setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0=").setName("§aYour Bags §c§lWIP").build(), 29)
+                .setItem(new ItemBuilder(Material.BONE).setName("§aPets").addLore("""
+                                                                                          §7View and manage all of your Pets.
+                                                                                            \s
+                                                                                          Level up your pets \
+                                                                                          faster by gaining XP in their favourite skill!
+                                                                                             \s""")
+                                 .addLoreIf(() -> pet != null,
+                                            () -> "§7Selected pet: " + pet.getRarity().getPrefix() + pet.getPet().getName() + "\n  ")
+                                 .addLoreIf(() -> pet != null && pet.getPet().getLevelingType().getMaxLevel() <= pet.getLevel(),
+                                            () -> "§b§lMAX LEVEL\n§8▸ " + StringUtils.toFormatedNumber(pet.getXp()))
+                                 .addLoreIf(() -> pet != null && pet.getPet().getLevelingType().getMaxLevel() > pet.getLevel(),
+                                            () -> {
+                                                double totalDone = 0;
+                                                for (int i = 1; i < pet.getLevel(); i++) {
+                                                    totalDone += Pet.PetInfo.nextLevelXp(pet.getRarity(), i, pet.getPet()
+                                                            .getLevelingType());
+                                                }
+                                                var xpForThis = Pet.PetInfo.nextLevelXp(pet.getRarity(), pet.getLevel(), pet.getPet()
+                                                        .getLevelingType());
+                                                double percentage = (pet.getXp() - totalDone) / xpForThis;
+                                                return  "§7Progress to Level " + (pet.getLevel() + 1)
+                                                        + ": §e" + StringUtils.cleanDouble(percentage * 100, 1) + "%\n"
+                                                        + StringUtils.makeProgressBarAsString(25, percentage, 1, "§f", "§a",
+                                                                                              "§m ") + "§e " + StringUtils.toFormatedNumber(pet.getXp() - (pet.getLevel() == 1 ? 0 : Pet.PetInfo.nextLevelXp(pet.getRarity(), pet.getLevel() - 1, pet.getPet()
+                                                        .getLevelingType()))) + "§6/§e" + StringUtils.toShortNumber(xpForThis);
+                                            })
+                                 .addLoreIf(() -> pet == null, "§7Selected pet: §cNone!")
+                                 .addLore("§e   \nClick to view!").build()
+                        , 30)
+                .setItem(new ItemBuilder(Material.CRAFTING_TABLE).setName("§aCrafting Table").addLore("§7Opens the crafting grid\n§e\nClick to open!")
+                                 .build(), 31).setItem(new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new Color(0x3e05af)).setName("§aWardrobe §c§lWIP").build(), 32).setItem(new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA5Mjk5YTExN2JlZTg4ZDMyNjJmNmFiOTgyMTFmYmEzNDRlY2FlMzliNDdlYzg0ODEyOTcwNmRlZGM4MWU0ZiJ9fX0=").setName("§aPersonal Bank §c§lWIP").build(), 33).setItem(new ItemBuilder(Material.BARRIER).setName("§cClose").build(), 49);
         Gui gui = new Gui(inventoryBuilder.build());
         gui.setCancelled(true);
         gui.getClickEvents().add(31, clickType -> {
             Recipe.openCraftingGui(SkyblockPlayer.this);
             return true;
         });
+        gui.getClickEvents().add(30, clickType -> {
+            openPetsMenu();
+            return true;
+        });
+        gui.getClickEvents().add(19, clickType -> {
+            openSkillsMenu();
+            return true;
+        });
+        gui.showGui(this);
+    }
+
+    public void openSkillsMenu() {
+        var builder = new InventoryBuilder(6, "§7Skills Menu")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .setItem(19, skills.get(Skill.Combat).getSkillMenuItem())
+                .setItem(20, skills.get(Skill.Farming).getSkillMenuItem())
+                .setItem(21, skills.get(Skill.Fishing).getSkillMenuItem())
+                .setItem(22, skills.get(Skill.Mining).getSkillMenuItem())
+                .setItem(23, skills.get(Skill.Foraging).getSkillMenuItem())
+                .setItem(25, skills.get(Skill.Alchemy).getSkillMenuItem());
+        Gui gui = new Gui(builder.build());
+        gui.setCancelled(true);
         gui.showGui(this);
     }
 
@@ -962,6 +1042,8 @@ public class SkyblockPlayer extends Player {
             configFile.set(i + "", item, ConfigSection.ITEM);
         }
         configFile.save();
+        var accessoryBagConfig = new ConfigFile("accessoryBag", this);
+        ((ConfigFile) accessoryBag.save(accessoryBagConfig)).save();
         ConfigFile defaults = new ConfigFile("defaults", this);
         defaults.set("world", this.getWorldProvider().type().getId(), ConfigSection.STRING);
         defaults.set("coins", this.coins, ConfigSection.DOUBLE);

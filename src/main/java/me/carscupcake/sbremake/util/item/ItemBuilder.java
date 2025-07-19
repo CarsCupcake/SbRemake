@@ -15,7 +15,6 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.*;
 import net.minestom.server.item.enchant.Enchantment;
-import net.minestom.server.registry.DynamicRegistry;
 import net.minestom.server.registry.RegistryKey;
 
 import java.util.*;
@@ -116,7 +115,7 @@ public class ItemBuilder {
 
     public ItemBuilder addLoreIf(Returnable<Boolean> predicate, Returnable<String> l) {
         if (!predicate.get()) return this;
-        addLoreRow(l.get());
+        addLore(l.get());
         return this;
     }
 
