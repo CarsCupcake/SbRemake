@@ -93,6 +93,7 @@ import org.reflections.Reflections;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -598,6 +599,13 @@ public class SkyblockPlayer extends Player {
     private SkyblockPlayerFishingBobber playerFishingBobber = null;
     @Getter
     private long skyblockXp = 0;
+    @Getter
+    private double bankBalance;
+    @Getter
+    @Setter
+    private BankAccountType bankAccountType;
+    @Getter
+    private LimitedList<BankRecord> lastBankTransactions = new LimitedList<>(10);
 
     /**
      * This is to set up stuff, when the player gets spawned (respawn or server join)
@@ -615,6 +623,8 @@ public class SkyblockPlayer extends Player {
         ConfigFile file = new ConfigFile("defaults", this);
         zealotPity = file.get("zealotPity", ConfigSection.INTEGER, 0);
         coins = file.get("coins", ConfigSection.DOUBLE, 0d);
+        bankBalance = file.get("bankBalance", ConfigSection.DOUBLE, 0d);
+        bankAccountType = BankAccountType.valueOf(file.get("bankAccountType", ConfigSection.STRING, BankAccountType.Starter.name())) ;
         tags = new ArrayList<>(List.of(file.get("tags", ConfigSection.STRING_ARRAY, new String[0])));
         for (Skill skill : Skill.values()) {
             var skillInstance = skill.instantiate(this);
@@ -655,6 +665,194 @@ public class SkyblockPlayer extends Player {
         if (f.get("equipped", ConfigSection.INTEGER, -1) >= 0) {
             pet = pets.get(f.get("equipped", ConfigSection.INTEGER));
         }
+    }
+
+    public void showBank() {
+        var stringBuilder = new  StringBuilder();
+        var reverse = lastBankTransactions.descendingIterator();
+        while (reverse.hasNext()) {
+            stringBuilder.append(reverse.next()).append("\n");
+        }
+        var builder = new InventoryBuilder(4, "Personal Bank Account")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .setItem(11, new ItemBuilder(Material.CHEST)
+                        .setName("§aDeposite Coins")
+                        .addLore("""
+                                    §7Current balance: §6%s
+                                    §7 \s
+                                    Store coins in the bank to keep them safe while you go on adventures!""".formatted(StringUtils.toFormatedNumber(bankBalance)))
+                        .build())
+                .setItem(13, new ItemBuilder(Material.DROPPER)
+                        .setName("§aWithdraw Coins")
+                        .addLore("""
+                                §7Current balance: §6%s
+                                §7 \s
+                                Take your couns out of the bank in order to spend them.""".formatted(StringUtils.toFormatedNumber(bankBalance)))
+                        .build())
+                .setItem(15, new ItemBuilder(Material.MAP)
+                        .setName("§aRecent Transactions")
+                        .addLore(stringBuilder.toString())
+                        .build())
+                .setItem(35, new ItemBuilder(Material.GOLD_BLOCK)
+                        .setName("§6Bank Upgrades")
+                        .addLore("""
+                                §7Are you so rich that you cant even store your coins?
+                                 \s
+                                Current Account: %s
+                                §7Bank Limit: §6%s
+                                  \s
+                                §eClick to upgrade!""".formatted(bankAccountType.getName(), StringUtils.toFormatedNumber(bankAccountType.getMaxBalance())))
+                        .build());
+        Gui gui = new Gui(builder.build());
+        gui.getClickEvents().add(11, click -> {
+            depositMenu();
+            return true;
+        });
+        gui.getClickEvents().add(13, click -> {
+            withdrawMenu();
+            return true;
+        });
+        gui.setCancelled(true);
+        gui.showGui(this);
+    }
+
+    private void depositMenu() {
+        var builder = new  InventoryBuilder(4, "Bank Deposit")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .setItem(11, new ItemBuilder(Material.CHEST)
+                        .setName("§aYour whole purse")
+                        .addLore("""
+                                §8Bank Deposit
+                                 \s
+                                §7Current balance: §6%s
+                                §7Ammount to deposite: §6%s
+                                 \s
+                                §eClick to deposit
+                                """.formatted(StringUtils.toFormatedNumber(bankBalance), StringUtils.toFormatedNumber(
+                                Math.min(coins, bankAccountType.getMaxBalance() - (bankBalance)))))
+                        .build())
+                .setItem(13, new ItemBuilder(Material.CHEST)
+                        .setName("§aHalf of your purse")
+                        .addLore("""
+                                §8Bank Deposit
+                                 \s
+                                §7Current balance: §6%s
+                                §7Ammount to deposite: §6%s
+                                 \s
+                                §eClick to deposit
+                                """.formatted(StringUtils.toFormatedNumber(bankBalance), StringUtils.toFormatedNumber(
+                                Math.min(coins * 0.5, bankAccountType.getMaxBalance() - (bankBalance)))))
+                        .build());
+        Gui gui = new Gui(builder.build());
+        gui.setCancelled(true);
+        gui.getClickEvents().add(11, click -> {
+            var toDeposit = Math.min(coins, bankAccountType.getMaxBalance() - (bankBalance));
+            if (toDeposit < 0.1) {
+                sendMessage("§cYou cannot deposit this little!");
+                return true;
+            }
+            addBankBalance(toDeposit);
+            coins -= toDeposit;
+            closeGui();
+            return true;
+        });
+        gui.getClickEvents().add(13, click -> {
+            var toDeposit = Math.min(coins * 0.5, bankAccountType.getMaxBalance() - (bankBalance));
+            if (toDeposit < 0.1) {
+                sendMessage("§cYou cannot deposit this little!");
+                return true;
+            }
+            addBankBalance(toDeposit);
+            coins -= toDeposit;
+            closeGui();
+            return true;
+        });
+        new TaskScheduler() {
+
+            @Override
+            public void run() {
+                gui.showGui(SkyblockPlayer.this);
+            }
+        }.delayTask(1);
+    }
+
+
+    private void withdrawMenu() {
+        var builder = new InventoryBuilder(4, "Bank Withdrawal")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .setItem(10, new ItemBuilder(Material.DROPPER)
+                        .setAmount(64)
+                        .setName("§aEverything in your Account")
+                        .addLore("""
+                                §8Bank Withdrawal
+                                
+                                §7Current balance: §6%s
+                                §7Amount to withdraw: §6%s
+                                
+                                §eClick to withdraw coins!""".formatted(StringUtils.toFormatedNumber(bankBalance), StringUtils.toFormatedNumber(bankBalance)))
+                        .build())
+                .setItem(12, new ItemBuilder(Material.DROPPER)
+                        .setAmount(32)
+                        .setName("§aHalf of your Account")
+                        .addLore("""
+                                §8Bank Withdrawal
+                                
+                                §7Current balance: §6%s
+                                §7Amount to withdraw: §6%s
+                                
+                                §eClick to withdraw coins!""".formatted(StringUtils.toFormatedNumber(bankBalance), StringUtils.toFormatedNumber(bankBalance * 0.5)))
+                        .build())
+                .setItem(14, new ItemBuilder(Material.DROPPER)
+                        .setName("§a20% of your Account")
+                        .addLore("""
+                                §8Bank Withdrawal
+                                
+                                §7Current balance: §6%s
+                                §7Amount to withdraw: §6%s
+                                
+                                §eClick to withdraw coins!""".formatted(StringUtils.toFormatedNumber(bankBalance), StringUtils.toFormatedNumber(bankBalance * 0.2)))
+                        .build());
+        Gui gui = new Gui(builder.build());
+        gui.setCancelled(true);
+        gui.getClickEvents().add(10, click -> {
+            if (bankBalance < 0.1) {
+                sendMessage("§cYou cannot withdraw this little!");
+                return true;
+            }
+            withdrawBankBalance(bankBalance);
+            coins += bankBalance;
+            closeGui();
+            return true;
+        });
+        gui.getClickEvents().add(12, click -> {
+            var bal = bankBalance * 0.5;
+            if (bal < 0.1) {
+                sendMessage("§cYou cannot deposit this little!");
+                return true;
+            }
+            withdrawBankBalance(bal);
+            coins += bal ;
+            closeGui();
+            return true;
+        });
+        gui.getClickEvents().add(14, click -> {
+            var bal = bankBalance * 0.2;
+            if (bal < 0.1) {
+                sendMessage("§cYou cannot deposit this little!");
+                return true;
+            }
+            withdrawBankBalance(bal);
+            coins += bal ;
+            closeGui();
+            return true;
+        });
+        new TaskScheduler() {
+
+            @Override
+            public void run() {
+                gui.showGui(SkyblockPlayer.this);
+            }
+        }.delayTask(1);
     }
 
     private void initSkyblockXpTask(SkyblockXpTask xpTask) {
@@ -1032,6 +1230,19 @@ public class SkyblockPlayer extends Player {
         return total / i;
     }
 
+    public void addBankBalance(double amount) {
+        if (amount < 0) throw new IllegalArgumentException("amount < 0");
+        if (amount + bankBalance > bankAccountType.getMaxBalance()) throw new IllegalArgumentException("amount + bankBalance > bankAccountType.getMaxBalance()");
+        bankBalance += amount;
+        lastBankTransactions.add(new BankRecord(amount, LocalDateTime.now()));
+    }
+
+    public void withdrawBankBalance(double amount) {
+        if (bankBalance - amount < 0) throw new IllegalArgumentException("amount < 0");
+        bankBalance -= amount;
+        lastBankTransactions.add(new BankRecord(-amount, LocalDateTime.now()));
+    }
+
     public void save() {
         if (noSave) return;
         ConfigFile configFile = new ConfigFile("inventory", this);
@@ -1047,6 +1258,8 @@ public class SkyblockPlayer extends Player {
         ConfigFile defaults = new ConfigFile("defaults", this);
         defaults.set("world", this.getWorldProvider().type().getId(), ConfigSection.STRING);
         defaults.set("coins", this.coins, ConfigSection.DOUBLE);
+        defaults.set("bankBalance", this.bankBalance, ConfigSection.DOUBLE);
+        defaults.set("bankAccountType", this.bankAccountType.name(), ConfigSection.STRING);
         defaults.set("tags", tags.toArray(new String[0]), ConfigSection.STRING_ARRAY);
         defaults.set("zealotPity", zealotPity, ConfigSection.INTEGER);
         ConfigSection powders = defaults.get("powder", ConfigSection.SECTION, new ConfigSection(new JsonObject()));
@@ -1213,11 +1426,11 @@ public class SkyblockPlayer extends Player {
         inWorldTransfer = false;
     }
 
-    public void addCoins(int i) {
+    public void addCoins(double i) {
         coins += i;
     }
 
-    public void removeCoins(int i) {
+    public void removeCoins(double i) {
         if (coins - i < 0) throw new IllegalStateException("Coins are not allowed to be negative");
         coins -= i;
     }
