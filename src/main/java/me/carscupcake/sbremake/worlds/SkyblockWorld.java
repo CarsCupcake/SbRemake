@@ -1,5 +1,8 @@
 package me.carscupcake.sbremake.worlds;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.Getter;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.blocks.MiningBlock;
@@ -8,21 +11,35 @@ import me.carscupcake.sbremake.blocks.impl.Stone;
 import me.carscupcake.sbremake.blocks.impl.Titanium;
 import me.carscupcake.sbremake.blocks.impl.mithril.*;
 import me.carscupcake.sbremake.blocks.impl.ore.*;
+import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.util.Returnable;
+import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.worlds.impl.*;
 import me.carscupcake.sbremake.worlds.region.Region;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.color.Color;
+import net.minestom.server.component.DataComponent;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.EquipmentSlot;
+import net.minestom.server.entity.LivingEntity;
+import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.server.play.DestroyEntitiesPacket;
 import net.minestom.server.registry.RegistryKey;
 import net.minestom.server.timer.Task;
@@ -352,6 +369,65 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             this.npcs = (npcs == null) ? new Npc[0] : npcs;
             id = (type().id) + (getWorlds(type()).size());
             this.launchpads = launchpads;
+        }
+
+        protected List<LivingEntity> summonArmorStandFixture(String path) {
+            return summonArmorStandFixture(path, null);
+        }
+
+        protected List<LivingEntity> summonArmorStandFixture(String path, @Nullable Pos offset) {
+            List<LivingEntity> entities = new ArrayList<>();
+            try {
+                var element = JsonParser.parseReader(new InputStreamReader(Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream(path))));
+                var baseSection = new ConfigSection(element);
+                if (offset == null) {
+                    offset = Pos.fromPoint(baseSection.get("playerPos", ConfigSection.POSITION, Pos.ZERO)).withYaw(0).withPitch(0);
+                }
+                for (var section : baseSection.get("stands", ConfigSection.SECTION_ARRAY)) {
+                    var stand = new LivingEntity(EntityType.ARMOR_STAND);
+                    var meta = (ArmorStandMeta) stand.getEntityMeta();
+                    meta.setSmall(section.get("small", ConfigSection.BOOLEAN, false));
+                    meta.setHasNoBasePlate(!section.get("base", ConfigSection.BOOLEAN, false));
+                    meta.setHasArms(section.get("arms", ConfigSection.BOOLEAN, false));
+                    meta.setLeftArmRotation(section.get("leftArm", ConfigSection.EULERS_ANGLE, Vec.ZERO));
+                    meta.setRightArmRotation(section.get("rightArm", ConfigSection.EULERS_ANGLE, Vec.ZERO));
+                    meta.setLeftLegRotation(section.get("leftLeg", ConfigSection.EULERS_ANGLE, Vec.ZERO));
+                    meta.setRightLegRotation(section.get("rightLeg", ConfigSection.EULERS_ANGLE, Vec.ZERO));
+                    meta.setHeadRotation(section.get("head", ConfigSection.EULERS_ANGLE, Vec.ZERO));
+                    meta.setBodyRotation(section.get("body", ConfigSection.EULERS_ANGLE, Vec.ZERO));
+                    meta.setInvisible(section.get("invisible", ConfigSection.BOOLEAN, false));
+                    meta.setMarker(section.get("marker", ConfigSection.BOOLEAN, false));
+                    var equipment = section.get("equipment", ConfigSection.SECTION);
+                    stand.setEquipment(EquipmentSlot.HELMET, makeStackFromConfig(equipment.get("helmet", ConfigSection.SECTION)));
+                    stand.setEquipment(EquipmentSlot.CHESTPLATE, makeStackFromConfig(equipment.get("chestplate", ConfigSection.SECTION)));
+                    stand.setEquipment(EquipmentSlot.LEGGINGS, makeStackFromConfig(equipment.get("leggings", ConfigSection.SECTION)));
+                    stand.setEquipment(EquipmentSlot.BOOTS, makeStackFromConfig(equipment.get("boots", ConfigSection.SECTION)));
+                    stand.setEquipment(EquipmentSlot.MAIN_HAND, makeStackFromConfig(equipment.get("mainHand", ConfigSection.SECTION)));
+                    stand.setEquipment(EquipmentSlot.OFF_HAND, makeStackFromConfig(equipment.get("offHand", ConfigSection.SECTION)));
+                    stand.setInstance(container, section.get("relativePos", ConfigSection.POSITION, Pos.ZERO).add(offset));
+                    if (section.has("name")) {
+                        stand.setCustomNameVisible(true);
+                        stand.set(DataComponents.CUSTOM_NAME, Component.text(section.get("name", ConfigSection.STRING)));
+                    }
+                    stand.setNoGravity(true);
+                    entities.add(stand);
+                }
+            } catch (Exception e) {
+                Main.LOGGER.trace("Failed to load armor stand fixture for asset " + path, e);
+            }
+            return entities;
+        }
+
+        private ItemStack makeStackFromConfig(ConfigSection section) {
+            if (section == null) return ItemStack.AIR;
+            var stack = new ItemBuilder(Objects.requireNonNull(Material.fromKey(Key.key(section.get("id", ConfigSection.STRING)))));
+            if (stack.getMaterial() == Material.AIR) return ItemStack.AIR;
+            if (stack.getMaterial() == Material.PLAYER_HEAD && section.has("textures"))
+                stack.setHeadTexture(section.get("textures", ConfigSection.SECTION, new ConfigSection(new JsonObject())).get("value", ConfigSection.STRING));
+            stack.setGlint(section.get("glint", ConfigSection.BOOLEAN, false));
+            if (section.has("leather_color"))
+                stack.setLeatherColor(new Color(section.get("leather_color", ConfigSection.INTEGER, 0)));
+            return stack.build();
         }
 
         public WorldProvider(AbstractNpc... npcs) {

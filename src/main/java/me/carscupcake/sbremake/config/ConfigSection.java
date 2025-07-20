@@ -12,10 +12,12 @@ import net.kyori.adventure.nbt.*;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.CustomData;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
+import org.intellij.lang.annotations.Subst;
 import org.junit.Assert;
 
 import java.util.HashMap;
@@ -80,12 +82,26 @@ public class ConfigSection {
     });
     public static final Data<Point> POSITION = new ClassicGetter<>(element -> {
         JsonObject o = element.getAsJsonObject();
-        return new Pos(o.get("x").getAsDouble(), o.get("y").getAsDouble(), o.get("z").getAsDouble());
+        var yaw = o.has("yaw") ? o.get("yaw").getAsFloat() : 0f;
+        var pitch = o.has("pitch") ? o.get("pitch").getAsFloat() : 0f;
+        return new Pos(o.get("x").getAsDouble(), o.get("y").getAsDouble(), o.get("z").getAsDouble(), yaw, pitch);
     }, pos -> {
         JsonObject o = new JsonObject();
         o.addProperty("x", pos.x());
         o.addProperty("y", pos.y());
         o.addProperty("z", pos.z());
+        o.addProperty("yaw", (pos instanceof Pos p) ? p.yaw() : 0f);
+        o.addProperty("pitch", (pos instanceof Pos p) ? p.pitch() : 0f);
+        return o;
+    });
+    public static final Data<Vec> EULERS_ANGLE = new ClassicGetter<>(element -> {
+        JsonObject o = element.getAsJsonObject();
+        return new Vec(o.get("pitch").getAsDouble(), o.get("yaw").getAsDouble(), o.get("roll").getAsDouble());
+    }, pos -> {
+        JsonObject o = new JsonObject();
+        o.addProperty("yaw", pos.x());
+        o.addProperty("pitch", pos.y());
+        o.addProperty("roll", pos.z());
         return o;
     });
     public static final Data<SbItemStack> ITEM = new ClassicGetter<>(element -> {
@@ -265,6 +281,7 @@ public class ConfigSection {
         element = base;
     }
 
+    @Subst("")
     public <T> T get(String key, ConfigFile.Data<T> data) {
         if (element == null) element = new JsonObject();
         return data.get(element, key);

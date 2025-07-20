@@ -1,0 +1,149 @@
+{
+  "playerPos": {
+    "x": -3.487293696566746,
+    "y": 68.0625,
+    "z": -140.6200596022092,
+    "yaw": -450.3001,
+    "pitch": 23.699774
+  },
+  "stands": [
+    {
+      "small": false,
+      "leftArm": {
+        "yaw": 0.0,
+        "pitch": -10.0,
+        "roll": -10.0
+      },
+      "rightArm": {
+        "yaw": 0.0,
+        "pitch": -15.0,
+        "roll": 10.0
+      },
+      "leftLeg": {
+        "yaw": 0.0,
+        "pitch": -1.0,
+        "roll": -1.0
+      },
+      "rightLeg": {
+        "yaw": 0.0,
+        "pitch": 1.0,
+        "roll": 1.0
+      },
+      "head": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "body": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "invisible": false,
+      "marker": false,
+      "arms": true,
+      "equipment": {
+        "mainHand": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "offHand": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "helmet": {
+          "id": "minecraft:iron_helmet",
+          "glint": false
+        },
+        "chestplate": {
+          "id": "minecraft:iron_chestplate",
+          "glint": false
+        },
+        "leggings": {
+          "id": "minecraft:iron_leggings",
+          "glint": false
+        },
+        "boots": {
+          "id": "minecraft:iron_boots",
+          "glint": false
+        }
+      },
+      "relativePos": {
+        "x": 2.987293696566746,
+        "y": -0.0625,
+        "z": 1.12005960220921,
+        "yaw": 90.0,
+        "pitch": 0.0
+      }
+    },
+    {
+      "small": false,
+      "leftArm": {
+        "yaw": 0.0,
+        "pitch": -10.0,
+        "roll": -10.0
+      },
+      "rightArm": {
+        "yaw": 0.0,
+        "pitch": 90.0,
+        "roll": 90.0
+      },
+      "leftLeg": {
+        "yaw": 0.0,
+        "pitch": -1.0,
+        "roll": -1.0
+      },
+      "rightLeg": {
+        "yaw": 0.0,
+        "pitch": 1.0,
+        "roll": 1.0
+      },
+      "head": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "body": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "invisible": true,
+      "marker": false,
+      "arms": true,
+      "equipment": {
+        "mainHand": {
+          "id": "minecraft:iron_sword",
+          "glint": false
+        },
+        "offHand": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "helmet": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "chestplate": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "leggings": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "boots": {
+          "id": "minecraft:air",
+          "glint": false
+        }
+      },
+      "relativePos": {
+        "x": -2.575206303433254,
+        "y": -0.46875,
+        "z": 0.74505960220921,
+        "yaw": 0.0,
+        "pitch": 0.0
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.util.item;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.Lore;
@@ -20,6 +21,7 @@ import net.minestom.server.registry.RegistryKey;
 import java.util.*;
 
 @Slf4j
+@Getter
 @SuppressWarnings("unused")
 public class ItemBuilder {
     private final Material material;
