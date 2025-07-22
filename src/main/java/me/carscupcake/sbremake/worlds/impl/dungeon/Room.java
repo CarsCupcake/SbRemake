@@ -5,5 +5,5 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public record Room(RoomShape shape, Pos2d pos, List<Pos2d> children, @Nullable Pos2d parent) {
+public record Room(RoomType type, RoomShape shape, Pos2d pos, Rotation rotation, List<Pos2d> children, @Nullable Pos2d parent) {
 }

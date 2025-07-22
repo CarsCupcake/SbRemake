@@ -82,12 +82,13 @@ public enum RoomShape {
         var children = children(target, rotation);
         for (var child : children) {
             if (child.x() < 0 || child.z() < 0) return false;
+            if (child.x() >= rooms.length || child.z() >= rooms[0].length) return false;
             if (rooms[child.x()][child.z()] != null) return false;
         }
-        var roomBase = new Room(this, target, children, null);
+        var roomBase = new Room(RoomType.Room, this, target, rotation, children, null);
         rooms[target.x()][target.z()] = roomBase;
         for (var child : children) {
-            rooms[child.x()][child.z()] = new Room(this, child, List.of(), target);
+            rooms[child.x()][child.z()] = new Room(RoomType.Room, this, child, rotation, List.of(), target);
         }
         return true;
     }

@@ -1,5 +1,7 @@
 # User-specific stuff
 .idea/
+.gradle/
+build/
 
 *.iml
 *.ipr
@@ -2286,3 +2288,4 @@ run/
 /build/tmp/compileJava/compileTransaction/stash-dir/PasteTest.class.uniqueId0
 /build/tmp/compileJava/previous-compilation-data.bin
 /build/tmp/shadowJar/MANIFEST.MF
+/.gradle/workspace-id.txt.lock

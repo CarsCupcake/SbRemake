@@ -17,6 +17,6 @@ public record Pos2d(int x, int z) {
     }
 
     public Pos2d add(int x, int z) {
-        return new Pos2d(x * 32, z * 32);
+        return new Pos2d(this.x + x, this.z + z);
     }
 }
