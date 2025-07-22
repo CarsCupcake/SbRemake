@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.worlds.impl.dungeon;
 
 import me.carscupcake.sbremake.util.Pos2d;
+import net.minestom.server.coordinate.Point;
 
 import java.util.List;
 
@@ -10,15 +11,32 @@ public enum RoomShape {
         public List<Pos2d> children(Pos2d target, Rotation rotation) {
             return List.of();
         }
+
+        public Point withRotationOffset(Point point, Rotation rotation) {
+            return switch (rotation) {
+                case NW -> point;
+                case NE -> point.add(30, 0, 0);
+                case SE -> point.add(30, 0, 30);
+                case SW -> point.add(0, 0, 30);
+            };
+        }
     },
     ONE_BY_TWO("1x2") {
         @Override
         public List<Pos2d> children(Pos2d target, Rotation rotation) {
             return switch (rotation) {
-                case NW ->  List.of(target.add(0, 1));
-                case NE ->  List.of(target.add(1, 0));
-                case SE ->  List.of(target.add(0, -1));
-                case SW ->  List.of(target.add(-1, 0));
+                case NE, SW ->  List.of(target.add(0, 1));
+                case NW, SE ->  List.of(target.add(1, 0));
+            };
+        }
+
+        @Override
+        public Point withRotationOffset(Point point, Rotation rotation) {
+            return switch (rotation) {
+                case NW -> point;
+                case NE -> point.add(30, 0, 0);
+                case SE -> point.add(62, 0, 30);
+                case SW -> point.add(0, 0, 62);
             };
         }
     },
@@ -26,10 +44,18 @@ public enum RoomShape {
         @Override
         public List<Pos2d> children(Pos2d target, Rotation rotation) {
             return switch (rotation) {
-                case NW ->  List.of(target.add(0, 1), target.add(0, 2));
-                case NE ->  List.of(target.add(1, 0), target.add(2, 0));
-                case SE ->  List.of(target.add(0, -1), target.add(0, -2));
-                case SW ->  List.of(target.add(-1, 0), target.add(-2, 0));
+                case NE, SW ->  List.of(target.add(0, 1), target.add(0, 2));
+                case NW, SE ->  List.of(target.add(1, 0), target.add(2, 0));
+            };
+        }
+
+        @Override
+        public Point withRotationOffset(Point point, Rotation rotation) {
+            return switch (rotation) {
+                case NW -> point;
+                case NE -> point.add(30, 0, 0);
+                case SE -> point.add(91, 0, 30);
+                case SW -> point.add(0, 0, 91);
             };
         }
     },
@@ -37,10 +63,18 @@ public enum RoomShape {
         @Override
         public List<Pos2d> children(Pos2d target, Rotation rotation) {
             return switch (rotation) {
-                case NW ->  List.of(target.add(0, 1), target.add(0, 2), target.add(0, 3));
-                case NE ->  List.of(target.add(1, 0), target.add(2, 0), target.add(3, 0));
-                case SE ->  List.of(target.add(0, -1), target.add(0, -2), target.add(0, -3));
-                case SW ->  List.of(target.add(-1, 0), target.add(-2, 0), target.add(-3, 0));
+                case NE, SW ->  List.of(target.add(0, 1), target.add(0, 2), target.add(0, 3));
+                case NW, SE ->  List.of(target.add(1, 0), target.add(2, 0), target.add(3, 0));
+            };
+        }
+
+        @Override
+        public Point withRotationOffset(Point point, Rotation rotation) {
+            return switch (rotation) {
+                case NW -> point;
+                case NE -> point.add(30, 0, 0);
+                case SE -> point.add(126, 0, 30);
+                case SW -> point.add(0, 0, 126);
             };
         }
     },
@@ -48,10 +82,20 @@ public enum RoomShape {
         @Override
         public List<Pos2d> children(Pos2d target, Rotation rotation) {
             return switch (rotation) {
-                case NW ->  List.of(target.add(1, 0), target.add(1, 1));
-                case NE ->  List.of(target.add(0, -1), target.add(1, -1));
-                case SE ->  List.of(target.add(-1, 0), target.add(-1, -1));
-                case SW -> List.of(target.add(0, 1),  target.add(-1, 1));
+                case NW ->  List.of(target.add(0, 1), target.add(1, 1));
+                case NE ->  List.of(target.add(-1, 0), target.add(-1, 1));
+                case SE ->  List.of(target.add(0, -1), target.add(-1, -1));
+                case SW -> List.of(target.add(1, 0),  target.add(1, -1));
+            };
+        }
+
+        @Override
+        public Point withRotationOffset(Point point, Rotation rotation) {
+            return switch (rotation) {
+                case NW -> point;
+                case NE -> point.add(30, 0, 0);
+                case SE -> point.add(30, 0, 30);
+                case SW -> point.add(0, 0, 30);
             };
         }
     },
@@ -59,10 +103,20 @@ public enum RoomShape {
         @Override
         public List<Pos2d> children(Pos2d target, Rotation rotation) {
             return switch (rotation) {
-                case NW ->  List.of(target.add(1, 0), target.add(1, 1), target.add(0, 1));
-                case NE ->  List.of(target.add(0, -1), target.add(1, -1), target.add(1, 0));
-                case SE ->  List.of(target.add(-1, 0), target.add(-1, -1), target.add(0, -1));
-                case SW -> List.of(target.add(0, 1),  target.add(-1, 1), target.add(-1, 1));
+                case NE ->  List.of(target.add(1, 0), target.add(1, 1), target.add(0, 1));
+                case NW ->  List.of(target.add(0, -1), target.add(1, -1), target.add(1, 0));
+                case SW ->  List.of(target.add(-1, 0), target.add(-1, -1), target.add(0, -1));
+                case SE -> List.of(target.add(0, 1),  target.add(-1, 1), target.add(-1, 1));
+            };
+        }
+
+        @Override
+        public Point withRotationOffset(Point point, Rotation rotation) {
+            return switch (rotation) {
+                case NW -> point;
+                case NE -> point.add(62, 0, 0);
+                case SE -> point.add(62, 0, 62);
+                case SW -> point.add(0, 0, 62);
             };
         }
     };
@@ -93,4 +147,5 @@ public enum RoomShape {
         return true;
     }
     public abstract List<Pos2d> children(Pos2d target, Rotation rotation);
+    public abstract Point withRotationOffset(Point point, Rotation rotation);
 }

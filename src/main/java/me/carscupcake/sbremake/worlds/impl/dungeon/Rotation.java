@@ -5,6 +5,8 @@ import me.carscupcake.sbremake.util.Pos2d;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 
+import java.util.Objects;
+
 @Getter
 public enum Rotation {
     NW("northwest") {
@@ -56,4 +58,13 @@ public enum Rotation {
 
     public abstract Point toRelative(Pos2d mapPoint, Point point);
     public abstract Point toActual(Pos2d mapPoint, Point point);
+
+    public static Rotation fromName(String name) {
+        for (Rotation rotation : Rotation.values()) {
+            if (rotation.name.equals(name)) {
+                return rotation;
+            }
+        }
+        throw new IllegalArgumentException(name + " is not a valid rotation");
+    }
 }
