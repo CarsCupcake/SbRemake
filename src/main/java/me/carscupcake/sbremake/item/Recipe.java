@@ -140,7 +140,7 @@ public interface Recipe {
             Main.LOGGER.error("An error occurred", e);
         }
         Command command = new Command("craft");
-        command.setDefaultExecutor((commandSender, _) -> openCraftingGui((SkyblockPlayer) commandSender));
+        command.setDefaultExecutor((commandSender, ignored) -> openCraftingGui((SkyblockPlayer) commandSender));
         MinecraftServer.getCommandManager().register(command);
         CraftingIngredient ENCHANTED_DIAMOND_BLOCK = new CraftingIngredient(1, ISbItem.get(EnchantedDiamondBlock.class));
         for (int i = 2; i < 13; i++) {

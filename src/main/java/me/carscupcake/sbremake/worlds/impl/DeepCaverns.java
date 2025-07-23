@@ -201,7 +201,7 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
             } else {
                 Gui gui = new Gui(inv);
                 gui.setCancelled(true);
-                gui.getClickEvents().add(10, _ -> {
+                gui.getClickEvents().add(10, ignored -> {
                     if (player.getRegion() == Region.GunpowderMines)
                         player.sendMessage("§cYou are already in this room");
                     else
@@ -209,7 +209,7 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
                     player.closeGui();
                     return false;
                 });
-                gui.getClickEvents().add(12, _ -> {
+                gui.getClickEvents().add(12, ignored -> {
                     if (player.getRegion() == Region.LapisQuarry)
                         player.sendMessage("§cYou are already in this room");
                     else
@@ -217,7 +217,7 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
                     player.closeGui();
                     return false;
                 });
-                gui.getClickEvents().add(14, _ -> {
+                gui.getClickEvents().add(14, ignored -> {
                     if (player.getRegion() == Region.PigmensDen)
                         player.sendMessage("§cYou are already in this room");
                     else
@@ -225,7 +225,7 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
                     player.closeGui();
                     return false;
                 });
-                gui.getClickEvents().add(16, _ -> {
+                gui.getClickEvents().add(16, ignored -> {
                     if (player.getRegion() == Region.Slimehill)
                         player.sendMessage("§cYou are already in this room");
                     else
@@ -233,7 +233,7 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
                     player.closeGui();
                     return false;
                 });
-                gui.getClickEvents().add(28, _ -> {
+                gui.getClickEvents().add(28, ignored -> {
                     if (player.getRegion() == Region.DiamondReserve)
                         player.sendMessage("§cYou are already in this room");
                     else
@@ -241,7 +241,7 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
                     player.closeGui();
                     return false;
                 });
-                gui.getClickEvents().add(30, _ -> {
+                gui.getClickEvents().add(30, ignored -> {
                     if (player.getRegion() == Region.ObsidianSanctuary)
                         player.sendMessage("§cYou are already in this room");
                     else
@@ -249,7 +249,7 @@ public class DeepCaverns extends SkyblockWorld.WorldProvider {
                     player.closeGui();
                     return false;
                 });
-                gui.getClickEvents().add(32, _ -> {
+                gui.getClickEvents().add(32, ignored -> {
                     SkyblockWorld.sendToBest(SkyblockWorld.DwarvenMines, player);
                     player.closeGui();
                     return false;

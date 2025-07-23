@@ -41,7 +41,7 @@ public class GiftsFromTheDeparted extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Gain a §a%b%% §7chance to get an extra item when looting a §bFrozen Corpse", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
+        return new Lore("§7Gain a §a%b%% §7chance to get an extra item when looting a §bFrozen Corpse", Map.of("%b%", (ignored, ignored2) -> StringUtils.cleanDouble(getBonus(level), 1)));
     }
 
     public double getBonus(int level) {

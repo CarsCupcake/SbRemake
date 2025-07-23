@@ -24,12 +24,12 @@ public class OversizedGui extends Gui {
         this.items = items;
         this.index = index;
         final boolean vertical = startingPosition == StartingPosition.Bottom || startingPosition == StartingPosition.Top;
-        getClickEvents().add(up, _ -> {
+        getClickEvents().add(up, ignored -> {
             if (this.index == 0) return true;
             buildInventory(items, --this.index, vertical, getInventory(), false, up, down, close, staticItems);
             return true;
         });
-        getClickEvents().add(down, _ -> {
+        getClickEvents().add(down, ignored -> {
             if (this.index >= items.size() - (vertical ? 6 : 9)) return true;
             buildInventory(items, ++this.index, vertical, getInventory(), false, up, down, close, staticItems);
             return true;
@@ -61,7 +61,7 @@ public class OversizedGui extends Gui {
 
     public void setClose(int index) {
         this.close = index;
-        getClickEvents().add(index, _ -> {
+        getClickEvents().add(index, ignored -> {
             new HashSet<>(players).forEach(SkyblockPlayer::closeGui);
             return true;
         });

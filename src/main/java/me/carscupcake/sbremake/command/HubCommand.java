@@ -6,7 +6,7 @@ import net.minestom.server.command.builder.Command;
 public class HubCommand extends Command {
     public HubCommand() {
         super("hub");
-        addSyntax((commandSender, _) -> {
+        addSyntax((commandSender, ignored) -> {
             MinecraftServer.getCommandManager().execute(commandSender, "warp hub");
         });
     }

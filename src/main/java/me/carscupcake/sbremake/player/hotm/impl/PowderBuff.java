@@ -39,7 +39,7 @@ public class PowderBuff extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Gain §a%p%% §7more Mithril Powder and Gemstone Powder.", Map.of("%p%", (_, _) -> String.valueOf(getBuff(level))));
+        return new Lore("§7Gain §a%p%% §7more Mithril Powder and Gemstone Powder.", Map.of("%p%", (ignored, ignored2) -> String.valueOf(getBuff(level))));
     }
 
     public int getBuff(int level) {

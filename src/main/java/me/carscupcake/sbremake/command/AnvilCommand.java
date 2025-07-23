@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 public class AnvilCommand extends Command {
     public AnvilCommand() {
         super("anvil", "av");
-        setDefaultExecutor((sender, _) -> {
+        setDefaultExecutor((sender, ignored) -> {
             Recipe.openAnvilGui((SkyblockPlayer) sender);
         });
     }

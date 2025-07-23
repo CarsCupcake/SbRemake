@@ -40,7 +40,7 @@ public class GreatExplorer extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Grants §a+%p% §7chance to find treasure", Map.of("%p%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore("§7Grants §a+%p% §7chance to find treasure", Map.of("%p%", (ignored, ignored2) -> String.valueOf(getBonus(level))));
     }
 
     public int getBonus(int level) {

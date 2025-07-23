@@ -177,7 +177,7 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     protected static RangedAttackGoal createRangedAttackGoal(SkyblockEntity entity) {
         RangedAttackGoal rangedAttackGoal = new RangedAttackGoal(entity, 80, 25, 15, false, 1, 0.2, TimeUnit.SERVER_TICK);
-        rangedAttackGoal.setProjectileGenerator(_ -> new SkyblockEntityProjectile(entity, EntityType.ARROW));
+        rangedAttackGoal.setProjectileGenerator(ignored -> new SkyblockEntityProjectile(entity, EntityType.ARROW));
         return rangedAttackGoal;
     }
 

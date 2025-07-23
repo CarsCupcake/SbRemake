@@ -171,7 +171,7 @@ public abstract class Collection implements SkyblockXpTask {
         for (Collection collection : collections) {
             //TODO: Better Preview (to lazy rn)
             builder.setItem(slot, collection.getShowItem().build());
-            clickEvents.put(slot, _ -> {
+            clickEvents.put(slot, ignored -> {
                 collection.showInventory();
                 return true;
             });

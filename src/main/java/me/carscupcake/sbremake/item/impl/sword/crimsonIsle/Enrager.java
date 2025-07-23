@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Enrager implements ISbItem, ISbItem.StatProvider, GemstoneSlots, NpcSellable, StarUpgradable {
-    private static final List<Ability> abilities = List.of(new ItemAbility<>("Enrage", AbilityType.RIGHT_CLICK, _ -> {
+    private static final List<Ability> abilities = List.of(new ItemAbility<>("Enrage", AbilityType.RIGHT_CLICK, ignored -> {
         //TODO: Implement
     }, new Lore("§7Taunt enemies in a §a10 block§7 radius and reduce their " + Stat.Damage + " against you by §c10%§7 for §a10s§7."), new ManaRequirement<>(500), new HealthRequirement<>(0.1)));
     @Override

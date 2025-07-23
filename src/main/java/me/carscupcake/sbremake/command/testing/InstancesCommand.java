@@ -9,7 +9,7 @@ import java.util.Map;
 public class InstancesCommand extends Command {
     public InstancesCommand() {
         super("instances");
-        setDefaultExecutor((sender, _) -> {
+        setDefaultExecutor((sender, ignored) -> {
             if (SkyblockWorld.getWorlds().isEmpty()) {
                 sender.sendMessage("There are no skyblock worlds");
                 return;

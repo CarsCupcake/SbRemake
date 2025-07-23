@@ -19,22 +19,22 @@ public enum NormalEnchantments implements SkyblockEnchantment {
     Sharpness("Sharpness", "sharpness", 5, 7, ItemType.Sword, ItemType.Longsword) {
         @Override
         public Lore getDescription() {
-            return new Lore("§7Increases melee damage dealt by §a%bonus%%§7.", Map.of("%bonus%", (item, _) ->
+            return new Lore("§7Increases melee damage dealt by §a%bonus%%§7.", Map.of("%bonus%", (item, ignored) ->
                     StringUtils.cleanDouble(100 * EnchantmentUtils.getSharpnessBonus(item.getEnchantmentLevel(this)))));
         }
     },
     Smite("Smite", "smite", 5,7, ItemType.Sword, ItemType.Longsword) {
         @Override
         public Lore getDescription() {
-            return new Lore("§7Increases damage dealt to Skeletons, Zombie Pigmen, Withers and Zombies by §a%bonus%%§7.", Map.of("%bonus%", (item, _) ->
+            return new Lore("§7Increases damage dealt to Skeletons, Zombie Pigmen, Withers and Zombies by §a%bonus%%§7.", Map.of("%bonus%", (item, ignored) ->
                     StringUtils.cleanDouble(100 * EnchantmentUtils.getSharpnessBonus(item.getEnchantmentLevel(this)))));
         }
     },
     Cleave("Cleave", "cleave", 5, 6, ItemType.Sword, ItemType.Longsword) {
         @Override
         public Lore getDescription() {
-            return new Lore("§7Deals §a%a%%§7 of your damage dealt to other monsters within §a%b%§7 blocks of the target.", Map.of("%a%", (item, _) -> StringUtils.cleanDouble(100 * EnchantmentUtils.getCleaveBonus(item.getEnchantmentLevel(this))),
-                    "%b%", (item, _) -> StringUtils.cleanDouble(3 + (item.getEnchantmentLevel(this)) * 0.03)));
+            return new Lore("§7Deals §a%a%%§7 of your damage dealt to other monsters within §a%b%§7 blocks of the target.", Map.of("%a%", (item, ignored) -> StringUtils.cleanDouble(100 * EnchantmentUtils.getCleaveBonus(item.getEnchantmentLevel(this))),
+                    "%b%", (item, ignored) -> StringUtils.cleanDouble(3 + (item.getEnchantmentLevel(this)) * 0.03)));
         }
     },
     BaneOfArthropods("Bane Of Arthropods", "BANE_OF_ARTHROPODS", 5, 7, ItemType.SWORDS){
@@ -126,7 +126,7 @@ public enum NormalEnchantments implements SkyblockEnchantment {
     Efficiency("Efficiency", "efficiency", 5, 10, ItemType.Pickaxe, ItemType.Drill) {
         @Override
         public Lore getDescription() {
-            return new Lore("§7Grants §6+%a% " + (Stat.MiningSpeed), Map.of("%a%", (item, _) -> String.valueOf(10 + (item.getEnchantmentLevel(this) * 20))));
+            return new Lore("§7Grants §6+%a% " + (Stat.MiningSpeed), Map.of("%a%", (item, ignored) -> String.valueOf(10 + (item.getEnchantmentLevel(this) * 20))));
         }
 
        /* @Override
@@ -141,13 +141,13 @@ public enum NormalEnchantments implements SkyblockEnchantment {
     Fortune("Fortune", "fortune", 3, 4, ItemType.Pickaxe, ItemType.Drill) {
         @Override
         public Lore getDescription() {
-            return new Lore("§7Grants §6+%a% " + (Stat.MiningFortune), Map.of("%a%", (item, _) -> String.valueOf(EnchantmentUtils.getFortuneBonus(item.getEnchantmentLevel(this)))));
+            return new Lore("§7Grants §6+%a% " + (Stat.MiningFortune), Map.of("%a%", (item, ignored) -> String.valueOf(EnchantmentUtils.getFortuneBonus(item.getEnchantmentLevel(this)))));
         }
     },
     Pristine("Pristine", "pristine", 0, 5, ItemType.Pickaxe, ItemType.Drill) {
         @Override
         public Lore getDescription() {
-            return new Lore("§7Grants §5+%a% " + (Stat.Pristine) + "§7, which increases the chance to improve the quality of dropped §dGemstones§7.", Map.of("%a%", (item, _) -> String.valueOf(item.getEnchantmentLevel(this))));
+            return new Lore("§7Grants §5+%a% " + (Stat.Pristine) + "§7, which increases the chance to improve the quality of dropped §dGemstones§7.", Map.of("%a%", (item, ignored) -> String.valueOf(item.getEnchantmentLevel(this))));
         }
     },
     SilkTouch("Silk Touch", "silk_touch", 1, ItemType.Pickaxe, ItemType.Drill) {

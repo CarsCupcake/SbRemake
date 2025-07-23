@@ -47,8 +47,8 @@ public class ForagingSkill extends ISkill {
         super(player, "foraging", Material.JUNGLE_SAPLING, Material.OAK_LOG,
                 new Lore(List.of("§7Cut trees and forage for other", "§7plants to earn Foraging XP!", "§7 ",
                         "§eLogger %level%", " §fGrants §a%bonus%%  " + (Stat.ForagingFortune) + "§f, which", " §fincreases your chance for", " §fmultiple logs"), Map.of(
-                        "%level%", (_, _) -> StringUtils.toRoman(player.getSkill(Skill.Foraging).getLevel()),
-                        "%bonus%", (_, _) -> {
+                        "%level%", (ignored, ignored2) -> StringUtils.toRoman(player.getSkill(Skill.Foraging).getLevel()),
+                        "%bonus%", (ignored, ignored2) -> {
                             int level = player.getSkill(Skill.Foraging).getLevel();
                             return String.valueOf(level * 4);
                         }

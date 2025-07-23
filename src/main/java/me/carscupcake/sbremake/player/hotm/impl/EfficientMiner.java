@@ -40,7 +40,7 @@ public class EfficientMiner extends HotmUpgrade {
     @Override
     public Lore lore(int level) {
         return new Lore("§7When mining ores, you have a §a%a%% §7chance to mine %b% adjacent ores.",
-                Map.of("%a%", (_, _) -> String.valueOf(getPercentage(level)), "%b%", (_, _) -> String.valueOf(getBlocks(level))));
+                Map.of("%a%", (ignored, ignored2) -> String.valueOf(getPercentage(level)), "%b%", (ignored, ignored2) -> String.valueOf(getBlocks(level))));
     }
 
     public double getPercentage(int level) {

@@ -46,8 +46,8 @@ public interface IReforgeStone extends ISbItem, SmithingItem {
                                   \s
                                %breakdown%
                                """, Map.of(
-            "%reforge%", (item, _) -> ((IReforgeStone) item.sbItem()).getReforge().getName(),
-            "%breakdown%", (item, player) -> {
+            "%reforge%", (item, ignored) -> ((IReforgeStone) item.sbItem()).getReforge().getName(),
+            "%breakdown%", (item, ignored) -> {
                 var reforgeStone = (IReforgeStone) item.sbItem();
                 StringBuilder builder = new StringBuilder("§9").append(reforgeStone.getReforge().getName()).append("§7(§6Legendary§7):");
                 for (var stat : reforgeStone.getReforge().getStats().entrySet()) {

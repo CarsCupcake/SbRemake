@@ -46,7 +46,7 @@ public class PacketOutListener implements Consumer<PlayerPacketOutEvent> {
                     attributeInstance.modifiers().add(new AttributeModifier(Key.key("base"), 4, AttributeOperation.ADD_VALUE));
                 }
 
-            if (event.getPacket() instanceof PlayerAbilitiesPacket(_, _, float speed)) {
+            if (event.getPacket() instanceof PlayerAbilitiesPacket(var ignored, var ignored2, float speed)) {
                 if (speed != 0.1) event.setCancelled(true);
             }
         }

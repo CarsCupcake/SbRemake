@@ -42,7 +42,7 @@ public class DailyGrind extends HotmUpgrade {
     @Override
     public Lore lore(int level) {
         return new Lore(List.of("§7Your first daily commission in each", "§7Mining Zone grants bonus powder:", " ",
-                "§2Dwarven Mines§7: §a+%b% §2Mithril Powder", "§5Crystal Hollows§7: §a+%b% §bGemstone Powder", "§bGlacite Tunnels§7: §a+%b% §bGlacite Powder"), Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
+                "§2Dwarven Mines§7: §a+%b% §2Mithril Powder", "§5Crystal Hollows§7: §a+%b% §bGemstone Powder", "§bGlacite Tunnels§7: §a+%b% §bGlacite Powder"), Map.of("%b%", (ignored, ignored2) -> String.valueOf(getBonus(level))));
     }
 
     public int getBonus(int level) {

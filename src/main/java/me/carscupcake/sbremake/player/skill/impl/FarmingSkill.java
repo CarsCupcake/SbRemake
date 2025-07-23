@@ -45,8 +45,8 @@ public class FarmingSkill extends ISkill {
         super(player, "farming", Material.GOLDEN_HOE, Material.HAY_BLOCK,
                 new Lore(List.of("§7Harvest crops and shear sheep to", "§7earn Farming XP!", "§7 ",
                         "§eFarmhand %level%", " §fGrants §a%bonus%% " + (Stat.FarmingFortune) + "§f, which", " §fincreases your chance for", " §fmultiple crops"), Map.of(
-                        "%level%", (_, _) -> StringUtils.toRoman(player.getSkill(Skill.Farming).getLevel()),
-                        "%bonus%", (_, _) -> {
+                        "%level%", (ignored, ignored2) -> StringUtils.toRoman(player.getSkill(Skill.Farming).getLevel()),
+                        "%bonus%", (ignored, ignored2) -> {
                             int level = player.getSkill(Skill.Farming).getLevel();
                             return String.valueOf(level * 4);
                         }

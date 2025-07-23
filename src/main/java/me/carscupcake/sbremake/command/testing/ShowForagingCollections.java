@@ -9,7 +9,7 @@ import net.minestom.server.command.builder.Command;
 public class ShowForagingCollections extends Command {
     public ShowForagingCollections() {
         super("showforagingcollections");
-        setDefaultExecutor((sender, _) -> {
+        setDefaultExecutor((sender, ignored) -> {
             var player = (SkyblockPlayer) sender;
             CollectionTypes.Foraging.openMenu(player);
         });

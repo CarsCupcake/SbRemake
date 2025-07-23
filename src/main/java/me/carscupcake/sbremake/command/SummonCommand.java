@@ -40,7 +40,7 @@ public class SummonCommand extends Command {
         ));
         addSyntax(this::execute, entity, pos);
         setCondition(Conditions::playerOnly);
-        setDefaultExecutor((sender, _) -> sender.sendMessage("Usage: /summon <type> <x> <y> <z>"));
+        setDefaultExecutor((sender, ignored) -> sender.sendMessage("Usage: /summon <type> <x> <y> <z>"));
     }
 
     private void execute(@NotNull CommandSender commandSender, @NotNull CommandContext commandContext) {

@@ -42,9 +42,7 @@ public class Professional extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Gain §a+%b% " + (Stat.MiningSpeed) + " §7when mining Gemstones.", Map.of("%b%", (_, _) -> {
-            return StringUtils.cleanDouble(getBonus(level), 1);
-        }));
+        return new Lore("§7Gain §a+%b% " + (Stat.MiningSpeed) + " §7when mining Gemstones.", Map.of("%b%", (ignored, ignored2) -> StringUtils.cleanDouble(getBonus(level), 1)));
     }
 
     public double getBonus(int level) {

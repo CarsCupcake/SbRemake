@@ -40,8 +40,8 @@ public class MiningSkill extends ISkill {
         super(player, "mining", Material.STONE_PICKAXE, Material.IRON_BLOCK,
                 new Lore(List.of("§7Dive into deep caves and find rare", "§7ores and valuable materials to earn", "§7Mining XP!", "§7 ",
                         "§eSpelunker %level%", " §fGrants §a%bonus%%  " + (Stat.MiningFortune) + "§f, which", " §fincreases your chance for", " §fmultiple ore drops"), Map.of(
-                        "%level%", (_, _) -> StringUtils.toRoman(player.getSkill(Skill.Mining).getLevel()),
-                        "%bonus%", (_, _) -> {
+                        "%level%", (ignored, ignored2) -> StringUtils.toRoman(player.getSkill(Skill.Mining).getLevel()),
+                        "%bonus%", (ignored, ignored2) -> {
                             int level = player.getSkill(Skill.Mining).getLevel();
                             return String.valueOf(level * 4);
                         }

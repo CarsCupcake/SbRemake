@@ -49,8 +49,8 @@ public class CoalCollection extends Collection {
                 if (i.getMaterial() == Material.COAL) yield 1;
                 yield 0;
             }
-            case EnchantedCoal _ -> 160;
-            case EnchantedBlockOfCoal _ -> 160 * 160;
+            case EnchantedCoal ignored -> 160;
+            case EnchantedBlockOfCoal ignored -> 160 * 160;
             case null, default -> 0;
         };
     }

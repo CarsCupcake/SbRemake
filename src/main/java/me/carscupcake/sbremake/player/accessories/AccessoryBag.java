@@ -61,7 +61,7 @@ public class AccessoryBag {
 
     private void computeMagicalPower() {
         AtomicInteger magicalPower = new AtomicInteger(0);
-        items.parallelStream().collect(Collectors.groupingBy(stack -> ((AbstractAccessory) stack.sbItem()).getAccessoryFamily())).forEach((_, value) -> {
+        items.parallelStream().collect(Collectors.groupingBy(stack -> ((AbstractAccessory) stack.sbItem()).getAccessoryFamily())).forEach((ignored, value) -> {
             if (value.size() == 1) {
                 magicalPower.addAndGet(getPowerFromRarity(value.getFirst().getRarity()));
             } else {

@@ -39,7 +39,7 @@ public class DailyPowder extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Gain §a%p% Powder §7from the first ore you mine every day. Works for all powder types.", Map.of("%p%", (_, _) -> String.valueOf(bonus(level))));
+        return new Lore("§7Gain §a%p% Powder §7from the first ore you mine every day. Works for all powder types.", Map.of("%p%", (ignored, ignored2) -> String.valueOf(bonus(level))));
     }
 
     public int bonus(int level) {

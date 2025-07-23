@@ -7,7 +7,7 @@ import net.minestom.server.command.builder.Command;
 public class MaxProfile extends Command {
     public MaxProfile() {
         super("maxprofile");
-        addSyntax((e, _) -> {
+        addSyntax((e, ignored) -> {
             SkyblockPlayer player = (SkyblockPlayer) e;
             for (Skill skill : Skill.values()) {
                 player.getSkill(skill).addXp(112_000_000);

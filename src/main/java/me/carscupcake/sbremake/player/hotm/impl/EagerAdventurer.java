@@ -41,7 +41,7 @@ public class EagerAdventurer extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Grants §a+%b% " + (Stat.MiningSpeed) + " §7when mining inside the §bGlacite Mineshaft§7.", Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore("§7Grants §a+%b% " + (Stat.MiningSpeed) + " §7when mining inside the §bGlacite Mineshaft§7.", Map.of("%b%", (ignored, ignored2) -> String.valueOf(getBonus(level))));
     }
 
     public int getBonus(int level) {

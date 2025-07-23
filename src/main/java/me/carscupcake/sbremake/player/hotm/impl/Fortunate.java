@@ -42,7 +42,7 @@ public class Fortunate extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Gain §a+%b% " + (Stat.MiningFortune) + " §7when mining Gemstones.", Map.of("%b%", (_, _) -> {
+        return new Lore("§7Gain §a+%b% " + (Stat.MiningFortune) + " §7when mining Gemstones.", Map.of("%b%", (ignored, ignored2) -> {
             return StringUtils.cleanDouble(getBonus(level), 1);
         }));
     }

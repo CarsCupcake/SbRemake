@@ -20,7 +20,7 @@ public class GodPotionCommand extends Command {
             startPotion(player, ms);
             player.playSound(SoundType.ENTITY_PLAYER_BURP, Sound.Source.PLAYER, 2f, 0.1f);
         }, minutes);
-        addSyntax((commandSender, _) -> {
+        addSyntax((commandSender, ignored) -> {
             SkyblockPlayer player = (SkyblockPlayer) commandSender;
             long ms = 604_800_000; //1 Week of God Potion
             startPotion(player, ms);

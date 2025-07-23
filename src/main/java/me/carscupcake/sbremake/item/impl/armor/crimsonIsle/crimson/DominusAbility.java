@@ -52,13 +52,13 @@ public class DominusAbility extends FullSetBonus {
     @Override
     public Lore lore() {
         return new Lore("§7For every melee kill gain §c1§7 stack of §6Dominus ᝐ§7.\n \nEach §6Dominus ᝐ stack grants %b%\n \n§7At §c10§7 stacks also §bswipe§7 in a random direction hitting every enemy in the path of the swipe.\n §8\n§7Lose 1 stack after §c%s%s§7 of not gaining a stack.",
-                Map.of("%s%", (_, player) -> player == null ? "4" :
+                Map.of("%s%", (ignored, player) -> player == null ? "4" :
                                 switch (player.getFullSetBonusPieceAmount(this)) {
                                     case 3 -> "7";
                                     case 4 -> "10";
                                     default -> "4";
                                 },
-                        "%b%", (s, _) -> switch (((KuudraArmor) s.sbItem()).armorTier()) {
+                        "%b%", (s, ignored) -> switch (((KuudraArmor) s.sbItem()).armorTier()) {
                             case Base -> "§e+0.05 " + (Stat.SwingRange);
                             case Hot -> "§e+0.1 " + (Stat.SwingRange);
                             case Burning -> "§e+0.1 " + (Stat.SwingRange) + " §7and §c+1 " + (Stat.Ferocity);

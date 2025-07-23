@@ -19,6 +19,7 @@ public class AsyncPlayerConfigurationListener implements Consumer<AsyncPlayerCon
         if (defaults.has("world")) {
             world = SkyblockWorld.from(defaults.get("world", ConfigSection.STRING));
         }
+        if (world == SkyblockWorld.Dungeon) world = SkyblockWorld.PrivateIsle;
         assert world != null;
         SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(player, world);
         if (provider == null) {

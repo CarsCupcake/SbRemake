@@ -42,7 +42,7 @@ public interface StarUpgradable {
     static void showStarUpgradingGui(SkyblockPlayer player) {
         var crafted = new AtomicBoolean(false);
         var gui = new Gui(upgradeInventory.build());
-        gui.getClickEvents().add(49, _ -> {
+        gui.getClickEvents().add(49, ignored -> {
             player.closeGui();
             return true;
         });
@@ -59,7 +59,7 @@ public interface StarUpgradable {
             }
             return false;
         });
-        gui.getClickEvents().add(22, _ -> {
+        gui.getClickEvents().add(22, ignored -> {
             var sbItem = SbItemStack.from(gui.getInventory().getItemStack(13));
             if (!(sbItem.sbItem() instanceof StarUpgradable upgradable) || upgradable.getMaxStars() <= sbItem.getModifier(Modifier.STARS)) {
                 player.sendMessage("§cYou cannot upgrade this item!");

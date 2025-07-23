@@ -41,7 +41,7 @@ public class SubzeroMining extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Grants §a+%b% " + (Stat.MiningFortune) + " §7when mining §bGlacite§7.", Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore("§7Grants §a+%b% " + (Stat.MiningFortune) + " §7when mining §bGlacite§7.", Map.of("%b%", (ignored, ignored2) -> String.valueOf(getBonus(level))));
     }
 
     public int getBonus(int level) {

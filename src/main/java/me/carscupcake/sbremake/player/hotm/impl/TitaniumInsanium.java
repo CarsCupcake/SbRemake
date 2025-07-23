@@ -39,7 +39,7 @@ public class TitaniumInsanium extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7When mining Mithril Ore, you have a §a%ch%% §7chance to convert the block into Titanium Ore.", Map.of("%ch%", (_, _) -> String.valueOf(reward(level))));
+        return new Lore("§7When mining Mithril Ore, you have a §a%ch%% §7chance to convert the block into Titanium Ore.", Map.of("%ch%", (ignored, ignored2) -> String.valueOf(reward(level))));
     }
 
     public double reward(int level) {

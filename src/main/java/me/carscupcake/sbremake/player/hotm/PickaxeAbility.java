@@ -19,7 +19,7 @@ public abstract class PickaxeAbility extends HotmUpgrade {
     @SafeVarargs
     public PickaxeAbility(SkyblockPlayer player, Class<? extends HotmUpgrade>... priorUpgrades) {
         super(player, priorUpgrades);
-        ability = new ItemAbility<>(getName(), AbilityType.RIGHT_CLICK, _ -> {
+        ability = new ItemAbility<>(getName(), AbilityType.RIGHT_CLICK, ignored -> {
             player.sendMessage("§aYou used your §6" + (getName()) + " §aPickaxe Ability!");
             MinecraftServer.getSchedulerManager().buildTask(() -> player.sendMessage("§6" + (getName()) + " §ais now ready!")).delay(TaskSchedule.seconds(cooldown())).schedule();
             onInteract();

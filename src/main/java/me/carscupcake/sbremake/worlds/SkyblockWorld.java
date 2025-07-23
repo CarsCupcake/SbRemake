@@ -152,6 +152,12 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         public WorldProvider get() {
             return new CrimsonIsle();
         }
+    },
+    Dungeon("dungeon", FileEnding.ZIP) {
+        @Override
+        public WorldProvider get() {
+            throw new UnsupportedOperationException("Dungeon cant be instantiated");
+        }
     };
     private static final Object _lock = new Object();
     @Getter
@@ -468,6 +474,10 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
         }
 
 
+        public void init(@Nullable Runnable after) {
+            init(MinecraftServer.getInstanceManager().createInstanceContainer(getDimension()), after, true);
+        }
+
         public void init(InstanceContainer container, @Nullable Runnable after) {
             init(container, after, true);
         }
@@ -477,18 +487,20 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
                     new Pos(Math.max(pos1.x(), pos2.x()), 0, Math.max(pos1.z(), pos2.z())));
         }
 
-        private void init0(InstanceContainer container, @Nullable Runnable after, boolean async) {
+        protected void init0(InstanceContainer container, @Nullable Runnable after, boolean async) {
             Main.LOGGER.debug("Loading in dimension {}", getDimension().key().value());
             container.setChunkSupplier(LightingChunk::new);
             if (after != null)
                 onStart.add(after);
             try {
-                File f = type().updateFiles();
-                if (this instanceof PrivateIsle pI)
-                    f = pI.findWorldFolder();
+                if (type() != Dungeon) {
+                    File f = type().updateFiles();
+                    if (this instanceof PrivateIsle pI)
+                        f = pI.findWorldFolder();
 
-                var loader = new AnvilLoader(f.toPath());
-                container.setChunkLoader(loader);
+                    var loader = new AnvilLoader(f.toPath());
+                    container.setChunkLoader(loader);
+                }
                 var chunks = new ArrayList<CompletableFuture<Chunk>>();
                 var span = getChunksToLoad();
                 for (int chunkX = span.getFirst().chunkX();  chunkX <= span.getSecond().chunkX(); chunkX++)

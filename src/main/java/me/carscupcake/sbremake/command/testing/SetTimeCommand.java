@@ -12,7 +12,7 @@ public class SetTimeCommand extends Command {
         super("settime");
         ArgumentNumber<Integer> hour = new ArgumentInteger("hour").min(0).max(23);
         ArgumentNumber<Integer> minute = new ArgumentInteger("minute").min(0).max(5);
-        addSyntax((_, context) -> {
+        addSyntax((ignored, context) -> {
             Time.hour = context.get(hour);
             Time.minute = context.get(minute) * 10;
             if (Time.hour < 6) {
