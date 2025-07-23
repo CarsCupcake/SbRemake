@@ -20,20 +20,21 @@ public class DungeonTests {
 
     @Test
     public void testDungeon() {
-        var generation = new Generator(new Room[6][6]);
+        var generation = new Generator(new Room[6][6], 0);
         for (var x : generation.getRooms()) {
             for (var z : x) {
                 var s = z.shape().toString();
                 var len = 7 - s.length();
-                if (len / 2 != 0) System.out.print("  ".repeat(len / 2));
+                if (len / 2 != 0) System.out.print("-".repeat(len / 2));
                 if (z.type() == RoomType.Blood) System.out.print(ANSI_RED);
                 if (z.type() == RoomType.Entrance) System.out.print(ANSI_GREEN);
                 if (z.type() == RoomType.Fairy)  System.out.print(ANSI_PURPLE);
                 if (z.type() == RoomType.Trap) System.out.print(ANSI_WHITE);
                 if (z.type() == RoomType.Mini)   System.out.print(ANSI_YELLOW);
+                if (z.type() == RoomType.Puzzle)   System.out.print(ANSI_BLUE);
                 System.out.print("[" + s + "]");
-                if (len / 2 != 0) System.out.print(" ".repeat(len / 2));
                 if (z.type() != RoomType.Room) System.out.print(ANSI_RESET);
+                if (len / 2 != 0) System.out.print("-".repeat(len / 2));
             }
             System.out.println();
         }
