@@ -41,14 +41,23 @@ public class DungeonTests {
                 if (z.pos().z() == 5) continue;
                 if (generation.getDoorsVertical()[z.pos().x()][z.pos().z()] == null) {
                     System.out.print("|");
-                } else System.out.print("-");
+                } else {
+                    var type = generation.getDoorsVertical()[z.pos().x()][z.pos().z()];
+                    if (type == DoorType.Wither || type == DoorType.Fairy) System.out.print(ANSI_BLACK);
+                    System.out.print("-");
+                    if (type == DoorType.Wither || type == DoorType.Fairy) System.out.print(ANSI_RESET);
+                }
             }
+
             System.out.println();
             for (var z : x) {
                 if (z.pos().x() == 5) continue;
                 System.out.print("-".repeat(4));
                 if (generation.getDoorsHorizontal()[z.pos().x()][z.pos().z()] != null) {
+                    var type = generation.getDoorsHorizontal()[z.pos().x()][z.pos().z()];
+                    if (type == DoorType.Wither || type == DoorType.Fairy) System.out.print(ANSI_BLACK);
                     System.out.print("|");
+                    if (type == DoorType.Wither || type == DoorType.Fairy) System.out.print(ANSI_RESET);
                 } else System.out.print("-");
                 System.out.print("-".repeat(4));
                 if (z.pos().z() == 5) continue;
@@ -64,4 +73,6 @@ public class DungeonTests {
         var gen2  = new Generator(new Room[6][6], 1);
         Assert.assertArrayEquals(gen1.getRooms(), gen2.getRooms());
     }
+
+
 }

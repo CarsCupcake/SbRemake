@@ -60,7 +60,7 @@ public class Paster {
                     final var isHard = new Random().nextBoolean();
                     threads.add(Thread.startVirtualThread(() -> {
                         paste(room.pos(), room.rotation(), room.shape(), isHard ? "trap-very-hard-3" : "trap-hard-4", room.type());
-                        Main.LOGGER.debug("{}/{}", i.addAndGet(1), total);
+                        Main.LOGGER.debug("Trap: {}/{}", i.addAndGet(1), total);
                         System.gc();
                     }));
                     continue;
@@ -70,7 +70,7 @@ public class Paster {
                     final var puzzle = puzzles[new Random().nextInt(puzzles.length)];
                     threads.add(Thread.startVirtualThread(() -> {
                         paste(room.pos(), room.rotation(), room.shape(), puzzle, room.type());
-                        Main.LOGGER.debug("{}/{}", i.addAndGet(1), total);
+                        Main.LOGGER.debug("Puzzle: {}/{}", i.addAndGet(1), total);
                         System.gc();
                     }));
                     continue;
