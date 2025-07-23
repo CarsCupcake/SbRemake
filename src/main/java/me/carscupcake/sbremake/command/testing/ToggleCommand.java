@@ -10,7 +10,7 @@ public class ToggleCommand extends Command {
     public ToggleCommand() {
         super("toggle");
         toggles = new ArgumentEnum<>("toggles", Toggles.class);
-        addSyntax((_, commandContext) -> {
+        addSyntax((ignored, commandContext) -> {
             commandContext.get(toggles).toggle();
         }, toggles);
     }

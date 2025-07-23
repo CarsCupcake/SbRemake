@@ -199,7 +199,7 @@ public abstract class ISkill implements SkyblockXpTask {
         Gui gui = new Gui(builder.build());
         gui.setCancelled(true);
         if (status != -1)
-            gui.getClickEvents().add(50, _ -> {
+            gui.getClickEvents().add(50, ignored -> {
                 openInventory(status, player);
                 return true;
             });

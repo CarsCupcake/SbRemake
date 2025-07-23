@@ -9,6 +9,6 @@ import org.jetbrains.annotations.Nullable;
 public class ShowUpgradeGuiCommand extends Command {
     public ShowUpgradeGuiCommand() {
         super("upgradeitem");
-        setDefaultExecutor((sender, _) -> StarUpgradable.showStarUpgradingGui((SkyblockPlayer) sender));
+        setDefaultExecutor((sender, ignored) -> StarUpgradable.showStarUpgradingGui((SkyblockPlayer) sender));
     }
 }

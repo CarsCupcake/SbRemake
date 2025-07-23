@@ -40,7 +40,7 @@ public class Orbiter extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7When mining ores, you have a §a%p%% §7chance to get a random amount of experiences orbs..", Map.of("%p%", (_, _) -> StringUtils.cleanDouble(bonus(level))));
+        return new Lore("§7When mining ores, you have a §a%p%% §7chance to get a random amount of experiences orbs..", Map.of("%p%", (ignored, ignored2) -> StringUtils.cleanDouble(bonus(level))));
     }
 
     public double bonus(int level) {

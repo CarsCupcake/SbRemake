@@ -41,7 +41,7 @@ public class LuckOfTheCave extends HotmUpgrade {
     @Override
     public Lore lore(int level) {
         return new Lore(List.of("§7Increases the chance for you to", "§7trigger rare occurrences in", "§2Dwarven Mines §7by §a%p%%§7.", " ", "§7Rare occurances include:",
-                "§7 • §6Golden Goblins", "§7 • §5Fallen Stars", "§7 • §6Powder Ghasts"), Map.of("%p%", (_, _) -> String.valueOf(bonus(level))));
+                "§7 • §6Golden Goblins", "§7 • §5Fallen Stars", "§7 • §6Powder Ghasts"), Map.of("%p%", (ignored, ignored2) -> String.valueOf(bonus(level))));
     }
 
     public int bonus(int level) {

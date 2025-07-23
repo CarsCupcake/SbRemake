@@ -6,7 +6,7 @@ import net.minestom.server.command.builder.Command;
 public class PetsMenuCommand extends Command {
     public PetsMenuCommand() {
         super("petsmenu", "petmenu", "pets");
-        setDefaultExecutor((commandSender, _) -> {
+        setDefaultExecutor((commandSender, ignored) -> {
             ((SkyblockPlayer) commandSender).openPetsMenu();
         });
     }

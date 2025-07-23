@@ -40,8 +40,8 @@ public class Crystallized extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Grants §a+%speed% " + (Stat.MiningSpeed) + " §7and §a+%fortune% " + (Stat.MiningFortune) + " §7near §5Fallen Stars§7.", Map.of("%speed%", (_, _) -> String.valueOf(miningSpeed(level)),
-                "%fortune%", (_, _) -> String.valueOf(miningFortune(level))));
+        return new Lore("§7Grants §a+%speed% " + (Stat.MiningSpeed) + " §7and §a+%fortune% " + (Stat.MiningFortune) + " §7near §5Fallen Stars§7.", Map.of("%speed%", (ignored, ignored2) -> String.valueOf(miningSpeed(level)),
+                "%fortune%", (ignored, ignored2) -> String.valueOf(miningFortune(level))));
     }
 
     public int miningSpeed(int level) {

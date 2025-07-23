@@ -41,7 +41,7 @@ public class DeadMansChest extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Gain a §a%b%% §7chance to spawn §a1 §7additional §bFrozen Corpse §7when you enter a §bGlacite Mineshaft§7.", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
+        return new Lore("§7Gain a §a%b%% §7chance to spawn §a1 §7additional §bFrozen Corpse §7when you enter a §bGlacite Mineshaft§7.", Map.of("%b%", (ignored, ignored2) -> StringUtils.cleanDouble(getBonus(level), 1)));
     }
 
     public double getBonus(int level) {

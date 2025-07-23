@@ -56,10 +56,10 @@ public class Gui {
 
         }
     });
-    private Function<InventoryPreClickEvent, Boolean> generalClickEvent = _ -> false;
-    private Consumer<InventoryClickEvent> postClickEvent = (_) -> {
+    private Function<InventoryPreClickEvent, Boolean> generalClickEvent = ignored -> false;
+    private Consumer<InventoryClickEvent> postClickEvent = (ignored) -> {
     };
-    private Consumer<InventoryItemChangeEvent> itemChangeEvent = (_) -> {
+    private Consumer<InventoryItemChangeEvent> itemChangeEvent = (ignored) -> {
     };
     private Returnable<Boolean> closeEvent = () -> false;
     private final MapList<Integer, Function<Click, Boolean>> clickEvents = new MapList<>();

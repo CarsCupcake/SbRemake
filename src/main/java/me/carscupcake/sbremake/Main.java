@@ -114,7 +114,7 @@ public class Main {
         Recipe.init();
         LOGGER.info("Loaded {} Crafting Recipes in {}ms", Recipe.craftingRecipes.size(), System.currentTimeMillis() - time);
         MiningBlock.init();
-        MinecraftServer.getPacketListenerManager().setConfigurationListener(ClientConfigurationAckPacket.class, (_, player) -> {
+        MinecraftServer.getPacketListenerManager().setConfigurationListener(ClientConfigurationAckPacket.class, (ignored, player) -> {
             System.out.println("IN: " + player.getName());
         });
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, new PlayerBlockPlaceListener());
@@ -143,7 +143,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(Minion.LISTENER);
         MinecraftServer.getGlobalEventHandler().addListener(ServerTickMonitorEvent.class, serverTickMonitorEvent -> tickDelay = (long) serverTickMonitorEvent.getTickMonitor().getTickTime());
         for (Potion potion : Potion.values()) IPotion.potions.put(potion.getId(), potion);
-        MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (_, player) -> {
+        MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (ignored, player) -> {
             //TODO return Debug Sample Packet
             player.sendPacket(new DebugSamplePacket(new long[]{tickDelay, tickDelay, 0, 50 - tickDelay}, DebugSamplePacket.Type.TICK_TIME));
         });
@@ -208,7 +208,7 @@ public class Main {
         }
         try {
             isCracked = Boolean.parseBoolean(args[1]);
-        } catch (Exception _) {
+        } catch (Exception ignored) {
         }
         if (!isCracked) MojangAuth.init();
         else crackedRegistry = new ConfigFile("cracked-players");
@@ -216,7 +216,7 @@ public class Main {
         int port = 25565;
         try {
             port = Integer.parseInt(args[0]);
-        } catch (Exception _) {
+        } catch (Exception ignored) {
         }
         var key = Key.key("skyblock", "moonglare");
         Galatea.MOONGLARE_KEY = MinecraftServer.getBiomeRegistry().register(key, Galatea.MOONGLARE);

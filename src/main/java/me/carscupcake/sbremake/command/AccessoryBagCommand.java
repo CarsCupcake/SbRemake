@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 public class AccessoryBagCommand extends Command {
     public AccessoryBagCommand() {
         super("accessorybag", "accessories");
-        setDefaultExecutor((sender, _) -> {
+        setDefaultExecutor((sender, ignored) -> {
             ((SkyblockPlayer) sender).getAccessoryBag().openInventory((SkyblockPlayer) sender);
         });
     }

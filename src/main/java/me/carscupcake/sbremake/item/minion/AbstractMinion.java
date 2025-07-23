@@ -381,7 +381,7 @@ public abstract class AbstractMinion implements Minion {
             }
             return true;
         });
-        gui.getClickEvents().add(48, _ -> {
+        gui.getClickEvents().add(48, ignored -> {
             for (int j = 0; j < inventory.size(); j++) {
                 var item = inventory.get(j);
                 if (player.addItem(item)) {
@@ -399,7 +399,7 @@ public abstract class AbstractMinion implements Minion {
             startWorking();
             return true;
         });
-        gui.getClickEvents().add(53, _ -> {
+        gui.getClickEvents().add(53, ignored -> {
             var isle = (PrivateIsle) player.getWorldProvider();
             isle.pickupMinion(this);
             player.closeInventory();

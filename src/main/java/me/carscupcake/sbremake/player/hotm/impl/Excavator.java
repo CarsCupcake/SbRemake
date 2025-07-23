@@ -41,7 +41,7 @@ public class Excavator extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§9Suspicious Scraps §7are §a%b%% §7more likely to contain a fossil.", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
+        return new Lore("§9Suspicious Scraps §7are §a%b%% §7more likely to contain a fossil.", Map.of("%b%", (ignored, ignored2) -> StringUtils.cleanDouble(getBonus(level), 1)));
     }
 
     public double getBonus(int level) {

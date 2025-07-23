@@ -49,7 +49,7 @@ public class PromisingPickaxe implements ISbItem, ISbItem.StatProvider, NpcSella
 
     @Override
     public Lore getLore() {
-        return new Lore(List.of("§7Gains §ßEfficiency I§7 after breaking §a50", "§ablocks§7!", " ", "§7Blocks Broken: §a%b%"), Map.of("%b%", (item, _) -> String.valueOf((Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt()).getInt("blocks", 0))));
+        return new Lore(List.of("§7Gains §ßEfficiency I§7 after breaking §a50", "§ablocks§7!", " ", "§7Blocks Broken: §a%b%"), Map.of("%b%", (item, ignored) -> String.valueOf((Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt()).getInt("blocks", 0))));
     }
 
     @Override

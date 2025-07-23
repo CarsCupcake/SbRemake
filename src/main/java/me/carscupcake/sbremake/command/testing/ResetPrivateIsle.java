@@ -22,7 +22,7 @@ public class ResetPrivateIsle extends Command {
     public ResetPrivateIsle() {
         super("resetprivateisle", "resetis");
         ArgumentString arg = new ArgumentString("target");
-        addSyntax((commandSender, _) -> resetIsle(((SkyblockPlayer) commandSender).getUuid()));
+        addSyntax((commandSender, ignored) -> resetIsle(((SkyblockPlayer) commandSender).getUuid()));
         addSyntax((e, c) -> {
             HttpClient client = HttpClient.newHttpClient();
             try {

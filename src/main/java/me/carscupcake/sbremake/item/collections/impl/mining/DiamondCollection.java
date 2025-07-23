@@ -57,8 +57,8 @@ public class DiamondCollection extends Collection {
                 if (i.getMaterial() == Material.DIAMOND) yield 1;
                 yield 0;
             }
-            case EnchantedDiamond _ -> 160;
-            case EnchantedBlockOfCoal _ -> 160 * 160;
+            case EnchantedDiamond ignored -> 160;
+            case EnchantedBlockOfCoal ignored -> 160 * 160;
             case null, default -> 0;
         };
     }

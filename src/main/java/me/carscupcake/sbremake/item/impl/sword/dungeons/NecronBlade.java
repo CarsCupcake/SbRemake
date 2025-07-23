@@ -47,7 +47,7 @@ public class NecronBlade implements ISbItem, ISbItem.StatProvider, Dungeonizable
         if (totalEntities.get() != 0)
             event.player().sendMessage("§7Your Implosion hit §c" + totalEntities.get() + "§7 enemy" + (totalEntities.get() > 1 ? "s" : "") + " for §c" + StringUtils.toFormatedNumber(total) + "§7 damage.");
     }, new Lore("§7Deals §c%d% §7to nearby enemies.", "%d%", new Lore.AbilityDamagePlaceholder(10_000, 0.3)), new ManaRequirement<>(300), new CooldownRequirement<>(10));
-    public static final ItemAbility<PlayerInteractEvent> SHADOW_WARP = new ItemAbility<>("Shadow Warp", AbilityType.RIGHT_CLICK, _ -> {
+    public static final ItemAbility<PlayerInteractEvent> SHADOW_WARP = new ItemAbility<>("Shadow Warp", AbilityType.RIGHT_CLICK, ignored -> {
 
     }, new Lore("§7Created a spacial distortion §e10§7 blocks ahead of you that sucks all enemies around it. Using this ability again with §e5§7 seconds to detonate the warp and deal §c%d%§7 damage to enemies near it.", "%d%", new Lore.AbilityDamagePlaceholder(10_000, 0.3)), new ManaRequirement<>(300), new CooldownRequirement<>(10));
     private static final Set<SkyblockPlayer> witherShields = new HashSet<>();
@@ -202,16 +202,16 @@ public class NecronBlade implements ISbItem, ISbItem.StatProvider, Dungeonizable
                 return;
             }
             switch (event.getItemStack().sbItem()) {
-                case Hyperion _ -> {
+                case Hyperion ignored -> {
                     if (event.getStat() == Stat.Intelligence) event.addValue(catalevel * 2);
                 }
-                case Valkyrie _ -> {
+                case Valkyrie ignored -> {
                     if (event.getStat() == Stat.Strength) event.addValue(catalevel);
                 }
-                case Scylla _ -> {
+                case Scylla ignored -> {
                     if (event.getStat() == Stat.CritDamage) event.addValue(catalevel);
                 }
-                case Astraea _ -> {
+                case Astraea ignored -> {
                     if (event.getStat() == Stat.Defense) event.addValue(catalevel * 2);
                 }
                 default -> {

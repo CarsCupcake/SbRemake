@@ -19,4 +19,7 @@ public record Pos2d(int x, int z) {
     public Pos2d add(int x, int z) {
         return new Pos2d(this.x + x, this.z + z);
     }
+    public Pos2d sub(Pos2d other) {
+        return new Pos2d(this.x - other.x, this.z - other.z);
+    }
 }

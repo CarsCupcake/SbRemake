@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.worlds.impl.dungeon;
 
 import lombok.Getter;
 import me.carscupcake.sbremake.util.Pos2d;
+import net.minestom.server.coordinate.Pos;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -106,7 +107,36 @@ public class Generator {
         var shapes = new RoomShape[]{RoomShape.ONE_BY_TWO, RoomShape.ONE_BY_THREE,  RoomShape.ONE_BY_FOUR, RoomShape.L_SHAPE, RoomShape.TWO_BY_TWO};
         shuffleArray(shapes);
         for (RoomShape shape : shapes) {
-            if (shape.tryInsert(rooms, pos2d, Rotation.values()[random.nextInt(4)])) return;
+            var rot = Rotation.values()[random.nextInt(4)];
+            if (shape.tryInsert(rooms, pos2d, rot)) {
+                if (shape == RoomShape.TWO_BY_TWO) {
+                    doorsHorizontal[pos2d.x()][pos2d.z()] = DoorType.Bridge;
+                    doorsVertical[pos2d.x()][pos2d.z()] = DoorType.Bridge;
+                    doorsHorizontal[pos2d.x()][pos2d.z()+1] = DoorType.Bridge;
+                    doorsVertical[pos2d.x()+1][pos2d.z()] = DoorType.Bridge;
+                } else {
+                    Pos2d prev = null;
+                    for (var children : shape.children(pos2d, rot)) {
+                        if (shape == RoomShape.ONE_BY_TWO || shape == RoomShape.ONE_BY_THREE || shape == RoomShape.ONE_BY_FOUR) {
+                            if (rot == Rotation.NE || rot == Rotation.SW) {
+                                doorsVertical[children.x()][children.z() - 1] = DoorType.Bridge;
+                            } else if (rot == Rotation.SE || rot == Rotation.NW) {
+                                doorsHorizontal[children.x() - 1][children.z()] = DoorType.Bridge;
+                            }
+                        } else if (shape == RoomShape.L_SHAPE) {
+                            var off = prev == null ? children : prev;
+                            var abs = off.sub(pos2d);
+                            if (abs.x() != 0) {
+                                doorsHorizontal[abs.x() < 0 ? 0 : 1][abs.z()] = DoorType.Bridge;
+                            } else {
+                                doorsVertical[abs.x()][abs.z() < 0 ? 0 : 1] = DoorType.Bridge;
+                            }
+                            prev = children;
+                        }
+                    }
+                }
+                return;
+            }
         }
     }
 
@@ -131,38 +161,55 @@ public class Generator {
     }
 
     public void generateDoors(Pos2d start) {
-        int count = 0;
         boolean[][] discovered = new boolean[rooms.length][rooms[0].length];
         var posebilities = new LinkedList<Pos2d>();
        posebilities.add(start);
        while (!posebilities.isEmpty()) {
            var current = getFromPos(posebilities.pop());
-           if (current.type() == RoomType.Entrance) {
-               doorsHorizontal[0][current.pos().z()] = DoorType.Start;
-               boolean[] booleans = discovered[current.pos().x() + 1];
-               if (!booleans[current.pos().z()] && testPos(current.pos(), 1, 0)) {
-                   var targetPos = new Pos2d(current.pos().x() + 1, current.pos().z());
-                   var target = getFromPos(targetPos);
-                   if (target.parent() != null) {
-                       target = getFromPos(target.parent());
-                   }
-                   for (var poses : target.children()) {
-                       posebilities.add(poses);
-                       discovered[poses.x()][poses.z()] = true;
-                       count++;
-                   }
-                   posebilities.add(target.pos());
-                   discovered[target.pos().x()][current.pos().z()] = true;
-                   count++;
-
-               }
+           if (current.type() != RoomType.Room && current.type() != RoomType.Fairy) {
+               if (current.type() == RoomType.Entrance) doorsHorizontal[0][current.pos().z()] = DoorType.Start;
                continue;
            }
-
+           if (testPos(current.pos(), 1, 0, discovered)) {
+               addDoor(current.pos().add(1, 0), posebilities, discovered);
+               doorsHorizontal[current.pos().x()][current.pos().z()] = DoorType.Normal;
+           }
+           if (testPos(current.pos(), -1, 0, discovered)) {
+               addDoor(current.pos().add(-1, 0), posebilities, discovered);
+               doorsHorizontal[current.pos().x() - 1][current.pos().z()] = getFromPos(current.pos().add(-1, 0)).type() == RoomType.Entrance ? DoorType.Start : DoorType.Normal;
+           }
+           if (testPos(current.pos(), 0, 1, discovered)) {
+               addDoor(current.pos().add(0, 1), posebilities, discovered);
+               doorsVertical[current.pos().x()][current.pos().z()] = DoorType.Normal;
+           }
+           if (testPos(current.pos(), 0, -1, discovered)) {
+               addDoor(current.pos().add(0, -1), posebilities, discovered);
+               doorsVertical[current.pos().x()][current.pos().z() - 1] = DoorType.Normal;
+           }
        }
     }
 
-    private boolean testPos(Pos2d pos2d, int x, int z) {
-        return true;
+    private void addDoor(Pos2d targetPos, List<Pos2d> posebilities, boolean[][] discovered) {
+        discovered[targetPos.x()][targetPos.z()] = true;
+        var target = getFromPos(targetPos);
+        if (target.parent() != null) {
+            target = getFromPos(target.parent());
+        }
+        for (var poses : target.children()) {
+            if (!posebilities.contains(poses))
+                posebilities.add(poses);
+            discovered[poses.x()][poses.z()] = true;
+        }
+        if (!posebilities.contains(target))
+            posebilities.add(target.pos());
+    }
+
+    private boolean testPos(Pos2d pos2d, int x, int z, boolean[][] discovered) {
+        if (pos2d.x() + x < 0 || pos2d.z() + z < 0 || pos2d.x() + x >= rooms.length || pos2d.z() + z >= rooms[0].length) return false;
+        var door  = getFromPos(pos2d.add(x, z));
+        if (door.type() == RoomType.Entrance) {
+            if (x != -1) return false;
+        }
+        return !discovered[pos2d.x() + x][pos2d.z() + z];
     }
 }

@@ -35,8 +35,8 @@ public class CombatSkill extends ISkill {
 
     public CombatSkill(SkyblockPlayer player) {
         super(player, "combat", Material.STONE_SWORD, Material.DIAMOND_HELMET, new Lore(List.of("§7Fight mobs and special bosses to", "§7earn Combat XP!", "§7 ", "§eWarrior %level%", " §fDeal §a%bonus%% §fmore damage to mobs."), Map.of(
-                "%level%", (_, _) -> String.valueOf(player.getSkill(Skill.Combat).getLevel()),
-                "%bonus%", (_, _) -> String.valueOf(player.getSkill(Skill.Combat).getLevel() * 4)
+                "%level%", (ignored, ignored2) -> String.valueOf(player.getSkill(Skill.Combat).getLevel()),
+                "%bonus%", (ignored, ignored2) -> String.valueOf(player.getSkill(Skill.Combat).getLevel() * 4)
         )));
     }
 

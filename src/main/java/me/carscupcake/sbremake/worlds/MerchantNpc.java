@@ -13,7 +13,7 @@ import java.util.List;
 public class MerchantNpc extends Npc {
     public MerchantNpc(Pos pos, Instance instance, String name, PlayerSkin playerSkin, List<Pair<SbItemStack, Cost>> items) {
         super(pos, instance, name, playerSkin);
-        super.withInteraction((player, _) -> {
+        super.withInteraction((player, ignored) -> {
             ShopGui shopGui = ShopGui.createShopGui(items, name, player);
             shopGui.showGui(player);
         });

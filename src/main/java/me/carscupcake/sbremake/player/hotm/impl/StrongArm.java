@@ -41,7 +41,7 @@ public class StrongArm extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Gain §a+%b% " + (Stat.MiningSpeed) + " §7when mining Tungsten or Umber.", Map.of("%b%", (_, _) -> String.valueOf(getBonus(level))));
+        return new Lore("§7Gain §a+%b% " + (Stat.MiningSpeed) + " §7when mining Tungsten or Umber.", Map.of("%b%", (ignored, ignored2) -> String.valueOf(getBonus(level))));
     }
 
     public double getBonus(int level) {

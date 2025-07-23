@@ -1,6 +1,8 @@
 package me.carscupcake.junit;
 
+import me.carscupcake.sbremake.util.Pos2d;
 import me.carscupcake.sbremake.util.StringUtils;
+import me.carscupcake.sbremake.worlds.impl.dungeon.DoorType;
 import me.carscupcake.sbremake.worlds.impl.dungeon.Generator;
 import me.carscupcake.sbremake.worlds.impl.dungeon.Room;
 import me.carscupcake.sbremake.worlds.impl.dungeon.RoomType;
@@ -20,7 +22,8 @@ public class DungeonTests {
 
     @Test
     public void testDungeon() {
-        var generation = new Generator(new Room[6][6], 0);
+        var generation = new Generator(new Room[6][6]);
+        generation.generateDoors(new Pos2d(generation.getFairy().pos().x(), generation.getFairy().pos().z()));
         for (var x : generation.getRooms()) {
             for (var z : x) {
                 var s = z.shape().toString();
@@ -35,6 +38,21 @@ public class DungeonTests {
                 System.out.print("[" + s + "]");
                 if (z.type() != RoomType.Room) System.out.print(ANSI_RESET);
                 if (len / 2 != 0) System.out.print("-".repeat(len / 2));
+                if (z.pos().z() == 5) continue;
+                if (generation.getDoorsVertical()[z.pos().x()][z.pos().z()] == null) {
+                    System.out.print("|");
+                } else System.out.print("-");
+            }
+            System.out.println();
+            for (var z : x) {
+                if (z.pos().x() == 5) continue;
+                System.out.print("-".repeat(4));
+                if (generation.getDoorsHorizontal()[z.pos().x()][z.pos().z()] != null) {
+                    System.out.print("|");
+                } else System.out.print("-");
+                System.out.print("-".repeat(4));
+                if (z.pos().z() == 5) continue;
+                System.out.print("-");
             }
             System.out.println();
         }

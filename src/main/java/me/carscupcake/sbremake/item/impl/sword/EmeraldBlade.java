@@ -48,7 +48,7 @@ public class EmeraldBlade implements ISbItem, NpcSellable, Listener {
                 Recieve §4Curse of Greed §7when striking, §cCANCELLING §7any effect modifying your §6coins §7loss on §4death§7!
                 §8
                 §7Current Damage Bonus: §a%b%""",
-                "%b%", (_, player) -> StringUtils.cleanDouble(player == null ? 0 : bonus(player)));
+                "%b%", (ignored, player) -> StringUtils.cleanDouble(player == null ? 0 : bonus(player)));
 
     }
 

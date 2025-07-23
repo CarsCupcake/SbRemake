@@ -52,7 +52,7 @@ public class CobblestoneCollection extends Collection {
                 if (i.getMaterial() == Material.COBBLESTONE) yield 1;
                 yield 0;
             }
-            case EnchantedCobblestone _ -> 160;
+            case EnchantedCobblestone ignored -> 160;
             case null, default -> 0;
         };
     }

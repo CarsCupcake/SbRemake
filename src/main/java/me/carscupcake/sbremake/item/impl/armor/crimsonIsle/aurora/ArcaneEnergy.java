@@ -42,11 +42,11 @@ public class ArcaneEnergy extends FullSetBonus {
 
     @Override
     public Lore lore() {
-        return new Lore("§7Every §a%time%s§7, dealing §bMagic Damage§7 from an ability grants §c1§7 stack of§6 " + ArcaneEnergy + "§7.\n§8Lose 1 stack after %loss%s of not gaining a stack.", Map.of("%time%", (_, player) -> player == null ? "1" : switch (player.getFullSetBonusPieceAmount(INSTANCE)) {
+        return new Lore("§7Every §a%time%s§7, dealing §bMagic Damage§7 from an ability grants §c1§7 stack of§6 " + ArcaneEnergy + "§7.\n§8Lose 1 stack after %loss%s of not gaining a stack.", Map.of("%time%", (ignored, player) -> player == null ? "1" : switch (player.getFullSetBonusPieceAmount(INSTANCE)) {
             case 3 -> "0.7";
             case 4 -> "0.5";
             default -> "1";
-        }, "%loss%", (_, player) -> switch (player == null ? 0 : player.getFullSetBonusPieceAmount(INSTANCE)) {
+        }, "%loss%", (ignored, player) -> switch (player == null ? 0 : player.getFullSetBonusPieceAmount(INSTANCE)) {
             case 3 -> "7";
             case 4 -> "10";
             default -> "4";

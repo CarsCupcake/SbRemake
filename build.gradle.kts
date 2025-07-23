@@ -12,8 +12,8 @@ version = "0.0.10"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
-        sourceCompatibility = JavaVersion.VERSION_23
+        languageVersion = JavaLanguageVersion.of(21)
+        sourceCompatibility = JavaVersion.VERSION_21
     }
 }
 application {

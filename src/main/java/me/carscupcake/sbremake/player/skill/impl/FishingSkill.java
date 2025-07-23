@@ -40,8 +40,8 @@ public class FishingSkill extends ISkill {
     public FishingSkill(SkyblockPlayer player) {
         super(player, "fishing", Material.FISHING_ROD, Material.PRISMARINE,
                 new Lore("§7Visit your local pond to fish and earn Fishing XP!\n \n§eTreasure Hunter %level%\n§f Increases the chance to find\n treasures when fishing by §a%bonus%%§f.", Map.of(
-                        "%level%", (_, _) -> StringUtils.toRoman(player.getSkill(Skill.Fishing).getLevel()),
-                        "%bonus%", (_, _) -> {
+                        "%level%", (ignored, ignored2) -> StringUtils.toRoman(player.getSkill(Skill.Fishing).getLevel()),
+                        "%bonus%", (ignored, ignored2) -> {
                             int level = player.getSkill(Skill.Fishing).getLevel();
                             return String.valueOf(level * 0.2);
                         }

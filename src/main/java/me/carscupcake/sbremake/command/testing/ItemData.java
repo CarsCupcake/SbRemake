@@ -9,7 +9,7 @@ import net.minestom.server.entity.PlayerHand;
 public class ItemData extends Command {
     public ItemData() {
         super("itemdata");
-        addSyntax((commandSender, _) -> {
+        addSyntax((commandSender, ignored) -> {
             System.out.println(((SkyblockPlayer) commandSender).getSbItemInHand(PlayerHand.MAIN).item().toItemNBT());
         });
     }

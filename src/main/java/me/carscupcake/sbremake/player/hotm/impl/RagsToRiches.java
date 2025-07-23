@@ -42,7 +42,7 @@ public class RagsToRiches extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7GRants §a+%b% " + (Stat.MiningFortune) + " §7while inside a §bGlacite Mineshaft", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
+        return new Lore("§7GRants §a+%b% " + (Stat.MiningFortune) + " §7while inside a §bGlacite Mineshaft", Map.of("%b%", (ignored, ignored2) -> StringUtils.cleanDouble(getBonus(level), 1)));
     }
 
     public double getBonus(int level) {

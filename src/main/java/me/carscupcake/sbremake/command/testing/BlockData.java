@@ -10,7 +10,7 @@ import net.minestom.server.instance.block.Block;
 public class BlockData extends Command {
     public BlockData() {
         super("blockdata");
-        addSyntax((commandSender, _) -> {
+        addSyntax((commandSender, ignored) -> {
             BlockVec block = new BlockVec(((SkyblockPlayer) commandSender).getLineOfSight(5).getFirst());
             Block b = ((SkyblockPlayer) commandSender).getInstance().getBlock(block);
             commandSender.sendMessage("Properties: " + (b.properties().toString()));

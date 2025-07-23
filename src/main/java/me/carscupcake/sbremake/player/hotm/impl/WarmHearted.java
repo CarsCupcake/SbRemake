@@ -42,7 +42,7 @@ public class WarmHearted extends HotmUpgrade {
 
     @Override
     public Lore lore(int level) {
-        return new Lore("§7Grants §a+%b% " + (Stat.ColdResistance) + "§7.", Map.of("%b%", (_, _) -> StringUtils.cleanDouble(getBonus(level), 1)));
+        return new Lore("§7Grants §a+%b% " + (Stat.ColdResistance) + "§7.", Map.of("%b%", (ignored, ignored2) -> StringUtils.cleanDouble(getBonus(level), 1)));
     }
 
     public double getBonus(int level) {
