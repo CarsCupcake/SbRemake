@@ -3,10 +3,7 @@ package me.carscupcake.sbremake.command.testing;
 import me.carscupcake.sbremake.command.DebugCommand;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.Pos2d;
-import me.carscupcake.sbremake.worlds.impl.dungeon.Paster;
-import me.carscupcake.sbremake.worlds.impl.dungeon.Room;
-import me.carscupcake.sbremake.worlds.impl.dungeon.RoomShape;
-import me.carscupcake.sbremake.worlds.impl.dungeon.Rotation;
+import me.carscupcake.sbremake.worlds.impl.dungeon.*;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentEnum;
 import net.minestom.server.command.builder.arguments.number.ArgumentInteger;
@@ -30,7 +27,7 @@ public class PasteTest extends Command {
                 case ONE_BY_FOUR -> "mossy-4";
                 case TWO_BY_TWO -> "mithril-cave-10";
                 case L_SHAPE -> "dino-dig-site-4";
-            });
+            }, RoomType.Room);
         }, enumRoomShape, enumRotation);
         addSyntax((sender, context) -> {
             var paster = new Paster(new Room[0][0], ((SkyblockPlayer) sender).getInstance());
@@ -43,7 +40,7 @@ public class PasteTest extends Command {
                 case ONE_BY_FOUR -> "mossy-4";
                 case TWO_BY_TWO -> "mithril-cave-10";
                 case L_SHAPE -> "dino-dig-site-4";
-            });
+            }, RoomType.Room);
         }, enumRoomShape, enumRotation, xPos, zPos);
         System.gc();
 

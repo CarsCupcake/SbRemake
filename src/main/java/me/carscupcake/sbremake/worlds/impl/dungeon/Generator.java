@@ -47,6 +47,17 @@ public class Generator {
         blood = new Room(RoomType.Blood, RoomShape.ONE_BY_ONE, new Pos2d(redX, redZ),  Rotation.NW, List.of(), null);
         rooms[redX][redZ] = blood;
 
+        var puzzlesAmount = 2 + random.nextInt(3);
+        for  (int i = 0; i < puzzlesAmount; i++) {
+            int x;
+            int z;
+            do {
+                x = random.nextInt(rooms.length);
+                z = random.nextInt(rooms[0].length);
+            } while (!canPlacePuzzle(x, z));
+            new Room(RoomType.Puzzle, RoomShape.ONE_BY_ONE, new Pos2d(x, z),  Rotation.NW, List.of(), null); //TODO RoomData with puzzle data
+        }
+
         var fairyPossibilities = new ArrayList<Pos2d>();
         for (int x = 1; x < rooms.length - 1; x++) {
             for (int z = 1; z < rooms[x].length - 1; z++) {
@@ -80,6 +91,10 @@ public class Generator {
             }
     }
 
+    private boolean canPlacePuzzle(int x , int z) {
+        return (x + 1 == rooms.length || rooms[x+1][z] == null) && (x == 0 || rooms[x-1][z] == null);
+    }
+
     private void tryPlace(Pos2d pos2d) {
         var shapes = new RoomShape[]{RoomShape.ONE_BY_TWO, RoomShape.ONE_BY_THREE,  RoomShape.ONE_BY_FOUR, RoomShape.L_SHAPE, RoomShape.TWO_BY_TWO};
         shuffleArray(shapes);
@@ -102,5 +117,9 @@ public class Generator {
             ar[index] = ar[i];
             ar[i] = a;
         }
+    }
+
+    public GLFWFramebuffer getDrawing() {
+
     }
 }

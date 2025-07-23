@@ -102,12 +102,7 @@ public enum RoomShape {
     TWO_BY_TWO("2x2") {
         @Override
         public List<Pos2d> children(Pos2d target, Rotation rotation) {
-            return switch (rotation) {
-                case NE ->  List.of(target.add(1, 0), target.add(1, 1), target.add(0, 1));
-                case NW ->  List.of(target.add(0, -1), target.add(1, -1), target.add(1, 0));
-                case SW ->  List.of(target.add(-1, 0), target.add(-1, -1), target.add(0, -1));
-                case SE -> List.of(target.add(0, 1),  target.add(-1, 1), target.add(-1, 1));
-            };
+            return List.of(target.add(1, 0), target.add(1, 1), target.add(0, 1));
         }
 
         @Override

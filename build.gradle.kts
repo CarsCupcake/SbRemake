@@ -1,3 +1,5 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
     java
     application
@@ -15,7 +17,7 @@ java {
     }
 }
 application {
-    mainClass.set("me.carscupcake.sbremake.Main") // ⬅️ Configure here
+    mainClass.set("me.carscupcake.sbremake.Main")
 }
 
 repositories {
@@ -26,7 +28,9 @@ repositories {
     maven("https://repo.dmulloy2.net/repository/public/")
     maven("https://mvn.lumine.io/repository/maven-public/")
     maven("https://jitpack.io")
+    maven("https://libraries.minecraft.net")
 }
+
 
 dependencies {
     platform("com.intellectualsites.bom:bom-1.18.x:1.12")
