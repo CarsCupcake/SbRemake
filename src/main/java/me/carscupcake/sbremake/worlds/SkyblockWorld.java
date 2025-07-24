@@ -35,6 +35,7 @@ import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Chunk;
+import net.minestom.server.instance.IChunkLoader;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
@@ -381,6 +382,13 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             return summonArmorStandFixture(path, null);
         }
 
+        public IChunkLoader getChunkLoader() throws IOException {
+            File f = type().updateFiles();
+            if (this instanceof PrivateIsle pI)
+                f = pI.findWorldFolder();
+            return new AnvilLoader(f.toPath());
+        }
+
         protected List<LivingEntity> summonArmorStandFixture(String path, @Nullable Pos offset) {
             List<LivingEntity> entities = new ArrayList<>();
             try {
@@ -493,14 +501,7 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             if (after != null)
                 onStart.add(after);
             try {
-                if (type() != Dungeon) {
-                    File f = type().updateFiles();
-                    if (this instanceof PrivateIsle pI)
-                        f = pI.findWorldFolder();
-
-                    var loader = new AnvilLoader(f.toPath());
-                    container.setChunkLoader(loader);
-                }
+                container.setChunkLoader(getChunkLoader());
                 var chunks = new ArrayList<CompletableFuture<Chunk>>();
                 var span = getChunksToLoad();
                 for (int chunkX = span.getFirst().chunkX();  chunkX <= span.getSecond().chunkX(); chunkX++)

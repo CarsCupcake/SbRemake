@@ -61,7 +61,7 @@ public class Paster {
                     threads.add(Thread.startVirtualThread(() -> {
                         paste(room.pos(), room.rotation(), room.shape(), isHard ? "trap-very-hard-3" : "trap-hard-4", room.type());
                         Main.LOGGER.debug("Trap: {}/{}", i.addAndGet(1), total);
-                        System.gc();
+                        //System.gc();
                     }));
                     continue;
                 }
@@ -71,7 +71,7 @@ public class Paster {
                     threads.add(Thread.startVirtualThread(() -> {
                         paste(room.pos(), room.rotation(), room.shape(), puzzle, room.type());
                         Main.LOGGER.debug("Puzzle: {}/{}", i.addAndGet(1), total);
-                        System.gc();
+                        //System.gc();
                     }));
                     continue;
                 }
@@ -90,7 +90,7 @@ public class Paster {
                         default -> throw new IllegalStateException("Unexpected value: " + room.shape());
                     }, room.type());
                     Main.LOGGER.debug("{}/{}", i.addAndGet(1), total);
-                    System.gc();
+                    //System.gc();
                 }));
             }
         }

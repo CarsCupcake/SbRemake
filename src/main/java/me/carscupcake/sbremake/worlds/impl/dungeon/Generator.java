@@ -153,7 +153,7 @@ public class Generator {
         }
     }
 
-    private Room getFromPos(Pos2d pos2d) {
+    public Room getFromPos(Pos2d pos2d) {
         return rooms[pos2d.x()][pos2d.z()];
     }
 

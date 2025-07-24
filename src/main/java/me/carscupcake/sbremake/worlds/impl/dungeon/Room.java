@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.worlds.impl.dungeon;
 
 import me.carscupcake.sbremake.util.Pos2d;
+import me.carscupcake.sbremake.worlds.impl.dungeon.runtime.RoomData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
