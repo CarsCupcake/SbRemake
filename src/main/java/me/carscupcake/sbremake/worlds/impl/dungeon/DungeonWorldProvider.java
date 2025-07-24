@@ -2,11 +2,11 @@ package me.carscupcake.sbremake.worlds.impl.dungeon;
 
 import com.google.gson.JsonParser;
 import me.carscupcake.sbremake.Main;
-import me.carscupcake.sbremake.util.PalletItem;
+import me.carscupcake.sbremake.util.Pos2d;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
-import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.IChunkLoader;
 import net.minestom.server.instance.Instance;
@@ -21,13 +21,24 @@ import java.util.List;
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
-public record DungeonWorldProvider(Generator generator, String[][] ids) implements IChunkLoader {
+public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][] chunks) implements IChunkLoader {
+    public DungeonWorldProvider(Generator generator, String[][] ids) {
+        this(generator, ids, new Chunk[generator.getRooms().length * 2][generator.getRooms()[0].length * 2]);
+    }
 
     @Override
     public @Nullable Chunk loadChunk(@NotNull Instance instance, int chunkX, int chunkZ) {
         if (chunkX > generator.getRooms().length * 2 || chunkZ > generator.getRooms()[0].length * 2) return null;
+        if (chunkX < 0 || chunkZ < 0) return null;
+        if (chunks.length <= chunkX || chunks.length <= chunkZ) return null;
+        if (chunks[chunkX][chunkZ] != null) {
+            System.out.println("Load Existing " + chunkX + " " + chunkZ);
+            return chunks[chunkX][chunkZ];
+        }
         var chunk = instance.getChunkSupplier().createChunk(instance, chunkX, chunkZ);
+        var originRoomPos = new Pos2d(chunkX / 2, chunkZ / 2);
         var room = generator.getRooms()[chunkX / 2][chunkZ / 2];
+        if (room == null) return null;
         if (room.parent() != null) room = generator.getFromPos(room.parent());
         var id = ids[room.pos().x()][room.pos().z()];
         if (id == null) {
@@ -48,20 +59,18 @@ public record DungeonWorldProvider(Generator generator, String[][] ids) implemen
             }
 
 
-
-
-                if (id == null) return null;
+            if (id == null) return null;
             ids[room.pos().x()][room.pos().z()] = id;
         }
         try {
-            var path = "assets/shematics/dungeon/rooms/" + (room.type() == RoomType.Room ?  room.shape().toString() : room.type().toString().toLowerCase()) + "/" + id;
+            var path = "assets/shematics/dungeon/rooms/" + (room.type() == RoomType.Room ? room.shape().toString() : room.type().toString().toLowerCase()) + "/" + id;
             try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
                 try (GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {
                     var obj = JsonParser.parseReader(new InputStreamReader(gzipOut)).getAsJsonObject();
                     var origin = room.rotation().ordinal() - Rotation.fromName(obj.get("originRotation").getAsString()).ordinal();
                     if (origin < 0) origin += 4;
                     var jsonPallete = obj.get("pallete").getAsJsonArray();
-                    PalletItem[] blocks = new PalletItem[jsonPallete.size()];
+                    Block[] blocks = new Block[jsonPallete.size()];
                     for (int i = 0; i < blocks.length; i++) {
                         var object = jsonPallete.get(i).getAsJsonObject();
                         var map = new HashMap<String, String>();
@@ -99,31 +108,100 @@ public record DungeonWorldProvider(Generator generator, String[][] ids) implemen
                             }
                             map.put(name, value.toLowerCase());
                         }
-                        blocks[i] = new PalletItem(Block.fromKey(Key.key(object.get("id").getAsString())), map, object.get("id").getAsString().equals("minecraft:player_head") ?
-                                ((object.has("texture")) ? object.get("texture").getAsString() : null) : null);
+                        var b = Block.fromKey(Key.key(object.get("id").getAsString())).withProperties(map);
+
+                        if (object.has("texture")) {
+                            var textures = CompoundBinaryTag.empty().putString("name", "textures").putString("value", object.get("texture").getAsString());
+                            var properties = ListBinaryTag.from(List.of(textures));
+                            var profile = CompoundBinaryTag.empty().putString("name", "CarsCupcake").put("properties", properties);
+                            b = b.withNbt(CompoundBinaryTag.empty().put("profile", profile));
+                        }
+                        blocks[i] = b;
                     }
                     var xArr = obj.get("blocks").getAsJsonArray();
                     for (int x = 0; x < 16; x++) {
                         for (int y = 0; y < 140; y++) {
                             for (int z = 0; z < 16; z++) {
-                                var pos = new Pos(x + (chunkX * 16), y, z * (chunkZ * 16));
-                                var offset = room.shape().withRotationOffset(Pos.ZERO, room.rotation());
-                                var undoRotation = room.rotation().toRelative(room.pos(), pos.sub(offset));
-                                if (xArr.size() >= undoRotation.blockX()) continue;
-                                var yArr = xArr.get(x).getAsJsonArray();
-                                if (yArr.size() >= undoRotation.blockY()) continue;
-                                var zArr = yArr.get(y).getAsJsonArray();
-                                if (zArr.size() >= undoRotation.blockZ()) continue;
-                                var item = blocks[zArr.get(undoRotation.blockZ()).getAsInt()];
-                                var block = item.block().withProperties(item.propertyMap());
-                                if (item.headValue() != null) {
-                                    var textures = CompoundBinaryTag.empty().putString("name", "textures").putString("value", item.headValue());
-                                    var properties = ListBinaryTag.from(List.of(textures));
-                                    var profile = CompoundBinaryTag.empty().putString("name", "CarsCupcake").put("properties", properties);
-                                    block = block.withNbt(CompoundBinaryTag.empty().put("profile", profile));
+                                var pos = new Vec(x + (chunkX * 16), y, z + (chunkZ * 16));
+                                var undoRotation = room.shape().toRelative(room.pos(), pos, room.rotation());
+                                if (xArr.size() <= undoRotation.blockX() || undoRotation.blockX() < 0) {
+                                    continue;
+                                }
+                                var yArr = xArr.get(undoRotation.blockX()).getAsJsonArray();
+                                if (yArr.size() <= undoRotation.blockY() || undoRotation.blockY() < 0) {
+                                    continue;
+                                }
+                                var zArr = yArr.get(undoRotation.blockY()).getAsJsonArray();
+                                if (zArr.size() <= undoRotation.blockZ() || undoRotation.blockZ() < 0) {
+                                    continue;
+                                }
+                                var block = blocks[zArr.get(undoRotation.blockZ()).getAsInt()];
+                                if (block.isAir()) {
+                                    continue;
                                 }
                                 chunk.setBlock(x, y, z, block);
                             }
+                        }
+                    }
+                    if (chunkX % 2 != 0 && chunkZ % 2 == 0) {
+                        if (generator.getDoorsHorizontal().length > chunkX / 2 && generator.getDoorsHorizontal()[0].length > chunkZ / 2) {
+                            var type = generator.getDoorsHorizontal()[chunkX / 2][chunkZ / 2];
+                            var blockType = type == DoorType.Normal ? Block.STONE : type == DoorType.Wither ? Block.COAL_BLOCK : Block.AIR;
+                            chunk.setBlock(15, 68, 15, blockType);
+                            chunk.setBlock(15, 68, 14, blockType);
+                            chunk.setBlock(15, 69, 13, blockType);
+                            chunk.setBlock(15, 70, 13, blockType);
+                            chunk.setBlock(15, 71, 13, blockType);
+                            chunk.setBlock(15, 72, 13, blockType);
+                            chunk.setBlock(15, 73, 15, blockType);
+                            chunk.setBlock(15, 73, 14, blockType);
+                            blockType = type == DoorType.Normal ? Block.AIR : type == DoorType.Wither ? Block.COAL_BLOCK : Block.STONE;
+                            for (int x = 15; x >= 14; x--) {
+                                for (int y = 69; y < 73; y++)
+                                    for (int z = 15; z > 13; z--) {
+                                        var block = chunk.getBlock(x, y, z);
+                                        if (!block.isAir() && block.registry().equals(Block.IRON_BARS.registry()) && blockType == Block.STONE) break;
+                                        chunk.setBlock(x, y, z, blockType);
+                                }
+                            }
+                        }
+                    }
+                    if (chunkX % 2 != 0 && chunkZ % 2 != 0) {
+                        if (generator.getDoorsHorizontal().length > chunkX / 2 && generator.getDoorsHorizontal()[0].length > chunkZ / 2) {
+                            var type = generator.getDoorsHorizontal()[chunkX / 2][chunkZ / 2];
+                            var blockType = type == DoorType.Normal ? Block.STONE : type == DoorType.Wither ? Block.COAL_BLOCK : Block.AIR;
+                            chunk.setBlock(15, 68, 0, blockType);
+                            chunk.setBlock(15, 69, 1, blockType);
+                            chunk.setBlock(15, 70, 1, blockType);
+                            chunk.setBlock(15, 71, 1, blockType);
+                            chunk.setBlock(15, 72, 1, blockType);
+                            chunk.setBlock(15, 73, 0, blockType);
+                        }
+                    }
+                    if (chunkX % 2 == 0 && chunkZ % 2 != 0) {
+                        if (generator.getDoorsVertical().length > chunkX / 2 && generator.getDoorsVertical()[0].length > chunkZ / 2) {
+                            var type = generator.getDoorsVertical()[chunkX / 2][chunkZ / 2];
+                            var blockType = type == DoorType.Normal ? Block.STONE : type == DoorType.Wither ? Block.COAL_BLOCK : Block.AIR;
+                            chunk.setBlock(15, 68, 15, blockType);
+                            chunk.setBlock(14, 68, 15, blockType);
+                            chunk.setBlock(13, 69, 15, blockType);
+                            chunk.setBlock(13, 70, 15, blockType);
+                            chunk.setBlock(13, 71, 15, blockType);
+                            chunk.setBlock(13, 72, 15, blockType);
+                            chunk.setBlock(15, 73, 15, blockType);
+                            chunk.setBlock(14, 73, 15, blockType);
+                        }
+                    }
+                    if (chunkX % 2 != 0 && chunkZ % 2 != 0) {
+                        if (generator.getDoorsVertical().length > chunkX / 2 && generator.getDoorsVertical()[0].length > chunkZ / 2) {
+                            var type = generator.getDoorsVertical()[chunkX / 2][chunkZ / 2];
+                            var blockType = type == DoorType.Normal ? Block.STONE : type == DoorType.Wither ? Block.COAL_BLOCK : Block.AIR;
+                            chunk.setBlock(0, 68, 15, blockType);
+                            chunk.setBlock(1, 69, 15, blockType);
+                            chunk.setBlock(1, 70, 15, blockType);
+                            chunk.setBlock(1, 71, 15, blockType);
+                            chunk.setBlock(1, 72, 15, blockType);
+                            chunk.setBlock(0, 73, 15, blockType);
                         }
                     }
                 }
@@ -132,7 +210,7 @@ public record DungeonWorldProvider(Generator generator, String[][] ids) implemen
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Load " + chunkX + " " + chunkZ);
+        chunks[chunkX][chunkZ] = chunk;
         return chunk;
     }
 

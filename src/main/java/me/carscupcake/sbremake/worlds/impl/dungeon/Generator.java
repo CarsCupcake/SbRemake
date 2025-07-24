@@ -1,15 +1,19 @@
 package me.carscupcake.sbremake.worlds.impl.dungeon;
 
 import lombok.Getter;
+import lombok.Setter;
+import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.util.Pos2d;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.item.enchant.Enchantment;
 
 import java.util.*;
 
 @Getter
 public class Generator {
     private final Random random;
-    private final Room[][] rooms;
+    @Setter //DEBUG ONLY!!!!!!!!!
+    private Room[][] rooms;
     private final DoorType[][] doorsVertical; // The doors with the vertical rotation
     private final DoorType[][] doorsHorizontal; // The doors with the horizontal rotation
     private final Room entrance;
@@ -24,7 +28,7 @@ public class Generator {
         this.doorsVertical = new DoorType[rooms.length][rooms[0].length - 1];
         this.doorsHorizontal = new DoorType[rooms.length - 1][rooms[0].length];
         this.random = new Random(seed);
-        System.out.println("Rooms seed " + seed);
+        Main.LOGGER.info("Rooms seed {}", seed);
         var xEs = new Integer[dimensions.length];
         int zLength = dimensions[0].length;
         for (int i = 0; i < dimensions.length; i++) {
@@ -186,7 +190,7 @@ public class Generator {
        }
        dijkstraPath(entrance.pos(), fairy.pos());
        dijkstraPath(fairy.pos(), blood.pos());
-        fixSpecialRoomRotations();
+       fixSpecialRoomRotations();
     }
 
     private void addDoor(Pos2d targetPos, List<Pos2d> posebilities, boolean[][] discovered) {

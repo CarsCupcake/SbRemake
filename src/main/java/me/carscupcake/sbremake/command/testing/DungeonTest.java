@@ -1,8 +1,11 @@
 package me.carscupcake.sbremake.command.testing;
 
+import com.google.common.base.Stopwatch;
+import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.command.DebugCommand;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.Pos2d;
+import me.carscupcake.sbremake.worlds.WarpLocation;
 import me.carscupcake.sbremake.worlds.impl.Dungeon;
 import me.carscupcake.sbremake.worlds.impl.dungeon.*;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -10,8 +13,13 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.LivingEntity;
+import net.minestom.server.instance.IChunkLoader;
+import net.minestom.server.item.component.TooltipDisplay;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @DebugCommand
 public class DungeonTest extends Command {
@@ -73,12 +81,15 @@ public class DungeonTest extends Command {
                 }
                 System.out.println();
             }
+            var watch = System.currentTimeMillis();
             var dungeon = new Dungeon(generator);
+            var player = ((SkyblockPlayer) sender);
             dungeon.init(() -> {
-                ((SkyblockPlayer) sender).setWorldProvider(dungeon);
-
-
-                ((SkyblockPlayer) sender).setInstance(dungeon.container, new Pos(0, 140, 0));
+                synchronized (player) {
+                    player.setWorldProvider(dungeon, WarpLocation.Dungeon);
+                    var milies = System.currentTimeMillis() - watch;
+                    Main.LOGGER.debug("Dungeon init time: {}s", ((double) milies) / 1000d);
+                }
             });
         });
     }

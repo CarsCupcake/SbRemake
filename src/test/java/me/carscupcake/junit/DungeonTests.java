@@ -2,10 +2,9 @@ package me.carscupcake.junit;
 
 import me.carscupcake.sbremake.util.Pos2d;
 import me.carscupcake.sbremake.util.StringUtils;
-import me.carscupcake.sbremake.worlds.impl.dungeon.DoorType;
-import me.carscupcake.sbremake.worlds.impl.dungeon.Generator;
-import me.carscupcake.sbremake.worlds.impl.dungeon.Room;
-import me.carscupcake.sbremake.worlds.impl.dungeon.RoomType;
+import me.carscupcake.sbremake.worlds.impl.dungeon.*;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -72,6 +71,36 @@ public class DungeonTests {
         var gen1  = new Generator(new Room[6][6], 1);
         var gen2  = new Generator(new Room[6][6], 1);
         Assert.assertArrayEquals(gen1.getRooms(), gen2.getRooms());
+    }
+
+    @Test
+    public void testRelativeCalculation() {
+        for (int x = 0; x < 20; x++)
+            for (int y = 0; y < 20; y++)
+                for (int z = 0; z < 20; z++) {
+                    var point = new Pos(x, y, z);
+                    for (int mapX = 0; mapX < 6; mapX++) {
+                        for (int mapZ = 0; mapZ < 6; mapZ++)
+                        for (var shape : RoomShape.values()){
+                            for (var dir : Rotation.values()) {
+                            var pos = new Vec(x, y, z);
+                            Assert.assertEquals(pos, shape.toRelative(new Pos2d(1, 2), shape.toActual(new Pos2d(1, 2), pos, dir), dir));
+                        }
+                        }
+                    }
+                }
+    }
+
+    @Test
+    public void testDirectionCalculations() {
+        for (int x = 0; x < 20; x++)
+            for (int y = 0; y < 20; y++)
+                for (int z = 0; z < 20; z++) {
+                    for (var dir : Rotation.values()) {
+                        var pos = new Vec(x, y, z);
+                        Assert.assertEquals(pos, dir.toRelative(new Pos2d(1, 2), dir.toActual(new Pos2d(1, 2), pos)));
+                    }
+                }
     }
 
 

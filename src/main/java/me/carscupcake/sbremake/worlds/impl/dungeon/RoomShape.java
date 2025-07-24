@@ -2,6 +2,8 @@ package me.carscupcake.sbremake.worlds.impl.dungeon;
 
 import me.carscupcake.sbremake.util.Pos2d;
 import net.minestom.server.coordinate.Point;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 
 import java.util.List;
 
@@ -143,4 +145,14 @@ public enum RoomShape {
     }
     public abstract List<Pos2d> children(Pos2d target, Rotation rotation);
     public abstract Point withRotationOffset(Point point, Rotation rotation);
+
+    public Point toActual(Pos2d target, Point blockPos, Rotation rotation) {
+        var pos = rotation.toActual(target, blockPos);
+        return withRotationOffset(pos, rotation);
+    }
+    public Point toRelative(Pos2d target, Point actualPos, Rotation rotation) {
+        var rotOffset = withRotationOffset(Pos.ZERO, rotation);
+        var pos = actualPos.sub(rotOffset);
+        return rotation.toRelative(target, pos);
+    }
 }

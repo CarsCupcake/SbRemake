@@ -24,6 +24,7 @@ public enum WarpLocation {
     SpidersDenTopOfTheNest("top", SkyblockWorld.SpidersDen, new Pos(-189, 176, -310, 43.5f, 0)),
     End("end", SkyblockWorld.End, new Pos(-503, 101.5, -275.5, 90, 0)),
     Galatea("galatea", SkyblockWorld.Galatea, me.carscupcake.sbremake.worlds.impl.Galatea.spawnPos),
+    Dungeon("dungeon", SkyblockWorld.Dungeon, new Pos(0, 140, 0)),
     CrimsonIsle("crimson_isle", SkyblockWorld.CrimsonIsle, me.carscupcake.sbremake.worlds.impl.CrimsonIsle.SPAWN_POS, "nether", "crimson") {};
     private final String id;
     private final SkyblockWorld world;
