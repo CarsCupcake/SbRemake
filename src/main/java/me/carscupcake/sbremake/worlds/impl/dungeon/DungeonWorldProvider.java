@@ -2,11 +2,15 @@ package me.carscupcake.sbremake.worlds.impl.dungeon;
 
 import com.google.gson.JsonParser;
 import me.carscupcake.sbremake.Main;
+import me.carscupcake.sbremake.util.Lazy;
 import me.carscupcake.sbremake.util.Pos2d;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import net.minestom.server.coordinate.Vec;
+import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.IChunkLoader;
 import net.minestom.server.instance.Instance;
@@ -42,14 +46,8 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
         if (room.parent() != null) room = generator.getFromPos(room.parent());
         var id = ids[room.pos().x()][room.pos().z()];
         if (id == null) {
-            id = switch (room.shape()) {
-                case ONE_BY_ONE -> "overgrown-3";
-                case ONE_BY_TWO -> "pedestal-5";
-                case ONE_BY_THREE -> "wizard-4";
-                case ONE_BY_FOUR -> "mossy-4";
-                case TWO_BY_TWO -> "mithril-cave-10";
-                case L_SHAPE -> "dino-dig-site-4";
-            };
+            var typess = room.shape().getSchematics();
+            id = room.shape().getSchematics().get()[generator.getRandom().nextInt(room.shape().getSchematics().get().length)];
             if (room.type() != RoomType.Room) {
                 id = switch (room.type()) {
                     case Trap -> "trap-hard-4";
