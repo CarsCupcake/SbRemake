@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.spidersDen;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
@@ -15,7 +16,7 @@ public class SplitterSpiderSilverfish extends SkyblockEntity implements SkillXpD
     private final int tier;
 
     public SplitterSpiderSilverfish(@Range(from = 1, to = 4) int tier) {
-        super(EntityType.SILVERFISH);
+        super(EntityType.SILVERFISH, MobType.Arthropod);
         this.tier = tier;
         level = switch (tier) {
             case 1 -> 2;

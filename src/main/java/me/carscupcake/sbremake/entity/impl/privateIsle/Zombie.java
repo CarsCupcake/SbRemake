@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.privateIsle;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.minion.MinionEntity;
@@ -18,7 +19,7 @@ public class Zombie extends SkyblockEntity implements MinionEntity {
             .addLoot(new ItemLoot(Material.POTATO, 1, 1, 0.1))
             .addLoot(new ItemLoot(Material.CARROT, 1, 1, 0.1));
     public Zombie() {
-        super(EntityType.ZOMBIE, lootTable);
+        super(EntityType.ZOMBIE, lootTable, MobType.Undead);
     }
 
     @Override

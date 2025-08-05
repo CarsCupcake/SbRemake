@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.slayer.zombie;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.slayer.ISlayer;
 import me.carscupcake.sbremake.entity.slayer.SlayerEntity;
 import me.carscupcake.sbremake.entity.slayer.Slayers;
@@ -32,7 +33,7 @@ public class RevenantHorrorI extends SlayerEntity implements SkillXpDropper {
     }
 
     public RevenantHorrorI(SkyblockPlayer owner) {
-        super(EntityType.ZOMBIE, lootTable, owner);
+        super(EntityType.ZOMBIE, lootTable, owner, MobType.Undead);
         setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture("eyJ0aW1lc3RhbXAiOjE1NjgwMzY3MjYwNjYsInByb2ZpbGVJZCI6IjQxZDNhYmMyZDc0OTQwMGM5MDkwZDU0MzRkMDM4MzFiIiwicHJvZmlsZU5hbWUiOiJNZWdha2xvb24iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzFmYzAxODQ0NzNmZTg4MmQyODk1Y2U3Y2JjODE5N2JkNDBmZjcwYmYxMGQzNzQ1ZGU5N2I2YzJhOWM1ZmM3OGYifX19").build());
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
         setEquipment(EquipmentSlot.LEGGINGS, new ItemBuilder(Material.CHAINMAIL_LEGGINGS).setGlint(true).build());

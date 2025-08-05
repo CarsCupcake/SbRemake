@@ -9,6 +9,7 @@ import me.carscupcake.sbremake.util.TemplateItems;
 import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.util.item.InventoryBuilder;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 

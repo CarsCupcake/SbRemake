@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.deepCaverns;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
@@ -13,7 +14,7 @@ import net.minestom.server.item.Material;
 
 public class MinerZombie20 extends SkyblockEntity implements SkillXpDropper {
     public MinerZombie20() {
-        super(EntityType.ZOMBIE);
+        super(EntityType.ZOMBIE, MobType.Undead);
         getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
         setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.DIAMOND_BLOCK).setGlint(true).build());
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());

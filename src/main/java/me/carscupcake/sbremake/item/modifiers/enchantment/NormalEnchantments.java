@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.item.modifiers.enchantment;
 
 import lombok.Getter;
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -26,7 +27,7 @@ public enum NormalEnchantments implements SkyblockEnchantment {
     Smite("Smite", "smite", 5,7, ItemType.Sword, ItemType.Longsword) {
         @Override
         public Lore getDescription() {
-            return new Lore("§7Increases damage dealt to Skeletons, Zombie Pigmen, Withers and Zombies by §a%bonus%%§7.", Map.of("%bonus%", (item, ignored) ->
+            return new Lore("§7Increases damage dealt to " + MobType.Undead + " §7mobs by §a%bonus%%§7.", Map.of("%bonus%", (item, ignored) ->
                     StringUtils.cleanDouble(100 * EnchantmentUtils.getSharpnessBonus(item.getEnchantmentLevel(this)))));
         }
     },
@@ -38,7 +39,7 @@ public enum NormalEnchantments implements SkyblockEnchantment {
         }
     },
     BaneOfArthropods("Bane Of Arthropods", "BANE_OF_ARTHROPODS", 5, 7, ItemType.SWORDS){
-        private static final Lore lore = new Lore("§7Increases damage dealt to Cave Spiders, Spiders, and Silverfish by §a%d%§7.",
+        private static final Lore lore = new Lore("§7Increases damage dealt to " + MobType.Arthropod + " §7Mobs by §a%d%§7.",
                 "%d%", new LevelToBonusPlaceholder(BaneOfArthropods, integer -> StringUtils.cleanDouble(100 * EnchantmentUtils.getBaneOfArthropodsBonus(integer))));
         @Override
         public Lore getDescription() {
@@ -61,7 +62,7 @@ public enum NormalEnchantments implements SkyblockEnchantment {
         }
     },
     Cubism("Cubism", "Cubism", 5, 6, ItemType.Sword, ItemType.Longsword, ItemType.FishingRod){
-        private static final Lore lore = new Lore("§7Increases damage dealt to Magma Cubes, Creepers, and Slimes by §a!d!%.",
+        private static final Lore lore = new Lore("§7Increases damage dealt to " + MobType.Cubic + " §7Mobs by §a!d!%.",
                 "!d!", new LevelToBonusPlaceholder(Cubism, integer -> StringUtils.cleanDouble(100 * EnchantmentUtils.getCubismBonus(integer))));
         @Override
         public Lore getDescription() {
@@ -76,17 +77,17 @@ public enum NormalEnchantments implements SkyblockEnchantment {
             return lore;
         }
     },
-    DragonHunter("Dragon Hunter", "DRAGON_HUNTER", 5, ItemType.Sword, ItemType.Longsword, ItemType.Bow, ItemType.Gauntlet, ItemType.FishingRod) {
-        private static final Lore lore = new Lore("§7Increases damage dealt to Ender Dragons by §a!d!%§7.",
-                "!d!", new LevelToBonusPlaceholder(DragonHunter, integer -> StringUtils.cleanDouble(100 * EnchantmentUtils.getDragonHunterBonus(integer))));
+    Gravity("Gravity", "DRAGON_HUNTER", 5, ItemType.Sword, ItemType.Longsword, ItemType.Bow, ItemType.Gauntlet, ItemType.FishingRod) {
+        private static final Lore lore = new Lore("§7Increases damage dealt to " + MobType.Airborne + " §7Mobs by §a!d!%§7.",
+                "!d!", new LevelToBonusPlaceholder(Gravity, integer -> StringUtils.cleanDouble(100 * EnchantmentUtils.getDragonHunterBonus(integer))));
         @Override
         public Lore getDescription() {
             return lore;
         }
     },
     EnderSlayer("Ender Slayer", "ENDER_SLAYER", 5, 7, ItemType.Sword, ItemType.Longsword, ItemType.Gauntlet, ItemType.FishingRod) {
-        private static final Lore lore = new Lore("§7Increases damage dealt to Ender Dragons, Endermen, and Endermites by §a!d!%§7.",
-                "!d!", new LevelToBonusPlaceholder(DragonHunter, integer -> StringUtils.cleanDouble(100 * EnchantmentUtils.getEnderSlayerBonus(integer))));
+        private static final Lore lore = new Lore("§7Increases damage dealt to " + MobType.Ender + " §7Mobs by §a!d!%§7.",
+                "!d!", new LevelToBonusPlaceholder(Gravity, integer -> StringUtils.cleanDouble(100 * EnchantmentUtils.getEnderSlayerBonus(integer))));
         @Override
         public Lore getDescription() {
             return lore;
@@ -94,7 +95,7 @@ public enum NormalEnchantments implements SkyblockEnchantment {
     },
     Execute("Execute", "Execute", 5, 6, ItemType.Sword, ItemType.Longsword, ItemType.Gauntlet, ItemType.FishingRod) {
         private static final Lore lore = new Lore("§7Increases damage dealt by §a!d!%§7 for each percent of health missing on your target.",
-                "!d!", new LevelToBonusPlaceholder(DragonHunter, integer -> StringUtils.cleanDouble(100 * EnchantmentUtils.getExecuteBonus(integer))));
+                "!d!", new LevelToBonusPlaceholder(Gravity, integer -> StringUtils.cleanDouble(100 * EnchantmentUtils.getExecuteBonus(integer))));
         @Override
         public Lore getDescription() {
             return lore;
@@ -109,7 +110,7 @@ public enum NormalEnchantments implements SkyblockEnchantment {
     },
     Prosecute("Prosecute", "Prosecute", 5, 6, ItemType.Sword, ItemType.Longsword, ItemType.Gauntlet, ItemType.FishingRod) {
         private static final Lore lore = new Lore("§7Increases damage dealt by §a!d!%§7 for each percent of health your target has.",
-                "!d!", new LevelToBonusPlaceholder(DragonHunter, integer -> StringUtils.cleanDouble(100 * EnchantmentUtils.getProsecuteBonus(integer))));
+                "!d!", new LevelToBonusPlaceholder(Gravity, integer -> StringUtils.cleanDouble(100 * EnchantmentUtils.getProsecuteBonus(integer))));
         @Override
         public Lore getDescription() {
             return lore;

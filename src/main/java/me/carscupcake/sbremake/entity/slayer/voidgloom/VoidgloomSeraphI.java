@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.entity.slayer.voidgloom;
 
 import lombok.Getter;
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.slayer.ISlayer;
 import me.carscupcake.sbremake.entity.slayer.SlayerEntity;
@@ -40,7 +41,7 @@ public class VoidgloomSeraphI extends SlayerEntity implements SkillXpDropper {
     }
 
     public VoidgloomSeraphI(SkyblockPlayer owner, SlayerLootTable lootTable, int tier) {
-        super(EntityType.ENDERMAN, getLootTable(lootTable, tier), owner);
+        super(EntityType.ENDERMAN, getLootTable(lootTable, tier), owner, MobType.Ender);
     }
 
     public static SlayerLootTable getLootTable(SlayerLootTable lootTable, int tier) {

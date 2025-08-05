@@ -60,8 +60,8 @@ public class Paster {
                     final var isHard = new Random().nextBoolean();
                     threads.add(Thread.startVirtualThread(() -> {
                         paste(room.pos(), room.rotation(), room.shape(), isHard ? "trap-very-hard-3" : "trap-hard-4", room.type());
-                        Main.LOGGER.debug("{}/{}", i.addAndGet(1), total);
-                        System.gc();
+                        Main.LOGGER.debug("Trap: {}/{}", i.addAndGet(1), total);
+                        //System.gc();
                     }));
                     continue;
                 }
@@ -70,8 +70,8 @@ public class Paster {
                     final var puzzle = puzzles[new Random().nextInt(puzzles.length)];
                     threads.add(Thread.startVirtualThread(() -> {
                         paste(room.pos(), room.rotation(), room.shape(), puzzle, room.type());
-                        Main.LOGGER.debug("{}/{}", i.addAndGet(1), total);
-                        System.gc();
+                        Main.LOGGER.debug("Puzzle: {}/{}", i.addAndGet(1), total);
+                        //System.gc();
                     }));
                     continue;
                 }
@@ -90,7 +90,7 @@ public class Paster {
                         default -> throw new IllegalStateException("Unexpected value: " + room.shape());
                     }, room.type());
                     Main.LOGGER.debug("{}/{}", i.addAndGet(1), total);
-                    System.gc();
+                    //System.gc();
                 }));
             }
         }
@@ -113,7 +113,7 @@ public class Paster {
                     var origin = rotation.ordinal() - Rotation.fromName(obj.get("originRotation").getAsString()).ordinal();
                     if (origin < 0) origin += 4;
                     var jsonPallete = obj.get("pallete").getAsJsonArray();
-                    PalletItem[] blocks = new PalletItem[jsonPallete.size()];
+                    Block[] blocks = new Block[jsonPallete.size()];
                     for (int i = 0; i < blocks.length; i++) {
                         var object = jsonPallete.get(i).getAsJsonObject();
                         var map = new HashMap<String, String>();
@@ -151,8 +151,15 @@ public class Paster {
                             }
                             map.put(name, value.toLowerCase());
                         }
-                        blocks[i] = new PalletItem(Block.fromKey(Key.key(object.get("id").getAsString())), map, object.get("id").getAsString().equals("minecraft:player_head") ?
-                                ((object.has("texture")) ? object.get("texture").getAsString() : null) : null);
+                        var b = Block.fromKey(Key.key(object.get("id").getAsString())).withProperties(map);
+
+                        if (object.has("texture")) {
+                            var textures = CompoundBinaryTag.empty().putString("name", "textures").putString("value", object.get("texture").getAsString());
+                            var properties = ListBinaryTag.from(List.of(textures));
+                            var profile = CompoundBinaryTag.empty().putString("name", "CarsCupcake").put("properties", properties);
+                            b = b.withNbt(CompoundBinaryTag.empty().put("profile", profile));
+                        }
+                        blocks[i] = b;
                     }
                     var xArr = obj.get("blocks").getAsJsonArray();
                     for (var x = 0; x < xArr.size(); x++) {
@@ -160,16 +167,7 @@ public class Paster {
                         for (var y = 0; y < yArr.size(); y++) {
                             var zArr = yArr.get(y).getAsJsonArray();
                             for (var z = 0; z < zArr.size(); z++) {
-                                var item = blocks[zArr.get(z).getAsInt()];
-                                var block = item.block().withProperties(item.propertyMap());
-                                if (item.headValue() != null) {
-                                    var textures = CompoundBinaryTag.empty().putString("name", "textures").putString("value", item.headValue());
-                                    var properties = ListBinaryTag.from(List.of(textures));
-                                    var profile = CompoundBinaryTag.empty().putString("name", "CarsCupcake").put("properties", properties);
-                                    block = block.withNbt(CompoundBinaryTag.empty().put("profile", profile));
-                                }
-                                var pos = rotation.toActual(pos2d, new Vec(x, y, z));
-                                instance.setBlock(shape.withRotationOffset(pos, rotation), block, false);
+                                instance.setBlock(shape.toActual(pos2d, new Vec(x, y, z), rotation), blocks[zArr.get(z).getAsInt()], false);
                             }
                         }
                     }

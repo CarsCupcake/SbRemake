@@ -1,0 +1,362 @@
+{
+  "playerPos": {
+    "x": -11.98515332920566,
+    "y": 201.0,
+    "z": -99.87823462781003,
+    "yaw": -45.450047,
+    "pitch": 50.850513
+  },
+  "stands": [
+    {
+      "small": true,
+      "leftArm": {
+        "yaw": 0.0,
+        "pitch": -10.0,
+        "roll": -10.0
+      },
+      "rightArm": {
+        "yaw": 0.0,
+        "pitch": -15.0,
+        "roll": 10.0
+      },
+      "leftLeg": {
+        "yaw": 0.0,
+        "pitch": -1.0,
+        "roll": -1.0
+      },
+      "rightLeg": {
+        "yaw": 0.0,
+        "pitch": 1.0,
+        "roll": 1.0
+      },
+      "head": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "body": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "invisible": false,
+      "marker": false,
+      "arms": true,
+      "equipment": {
+        "mainHand": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "offHand": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "helmet": {
+          "id": "minecraft:player_head",
+          "glint": false,
+          "textures": {
+            "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTkyN2U0YjhjMzc1ODY4Nzk1YzNiNTBkNzExYThiZWM0NTgzZTVmMjdkMmJkMThkNmYxYzBjYzQ2YTA2N2VlIn19fQo\u003d"
+          }
+        },
+        "chestplate": {
+          "id": "minecraft:leather_chestplate",
+          "glint": false
+        },
+        "leggings": {
+          "id": "minecraft:leather_leggings",
+          "glint": false
+        },
+        "boots": {
+          "id": "minecraft:leather_boots",
+          "glint": false
+        }
+      },
+      "relativePos": {
+        "x": 0.48515332920566046,
+        "y": 1.0,
+        "z": 1.3782346278100306,
+        "yaw": 135.0,
+        "pitch": 0.0
+      }
+    },
+    {
+      "small": false,
+      "leftArm": {
+        "yaw": 6.0,
+        "pitch": -10.0,
+        "roll": -20.0
+      },
+      "rightArm": {
+        "yaw": 0.0,
+        "pitch": -12.0,
+        "roll": 90.0
+      },
+      "leftLeg": {
+        "yaw": 0.0,
+        "pitch": -1.0,
+        "roll": -1.0
+      },
+      "rightLeg": {
+        "yaw": 0.0,
+        "pitch": 1.0,
+        "roll": 1.0
+      },
+      "head": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "body": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "invisible": true,
+      "marker": false,
+      "arms": true,
+      "equipment": {
+        "mainHand": {
+          "id": "minecraft:iron_pickaxe",
+          "glint": true
+        },
+        "offHand": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "helmet": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "chestplate": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "leggings": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "boots": {
+          "id": "minecraft:air",
+          "glint": false
+        }
+      },
+      "relativePos": {
+        "x": 2.3914033292056605,
+        "y": -0.40625,
+        "z": -2.4030153721899694,
+        "yaw": 45.0,
+        "pitch": 0.0
+      }
+    },
+    {
+      "small": false,
+      "leftArm": {
+        "yaw": 0.0,
+        "pitch": -10.0,
+        "roll": -10.0
+      },
+      "rightArm": {
+        "yaw": 0.0,
+        "pitch": -99.0,
+        "roll": -1.0
+      },
+      "leftLeg": {
+        "yaw": 0.0,
+        "pitch": -1.0,
+        "roll": -1.0
+      },
+      "rightLeg": {
+        "yaw": 0.0,
+        "pitch": 1.0,
+        "roll": 1.0
+      },
+      "head": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "body": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "invisible": true,
+      "marker": false,
+      "arms": true,
+      "equipment": {
+        "mainHand": {
+          "id": "minecraft:stone_pickaxe",
+          "glint": true
+        },
+        "offHand": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "helmet": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "chestplate": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "leggings": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "boots": {
+          "id": "minecraft:air",
+          "glint": false
+        }
+      },
+      "relativePos": {
+        "x": 2.7039033292056605,
+        "y": -0.59375,
+        "z": -1.0280153721899694,
+        "yaw": 0.0,
+        "pitch": 0.0
+      }
+    },
+    {
+      "small": false,
+      "leftArm": {
+        "yaw": 0.0,
+        "pitch": -10.0,
+        "roll": -10.0
+      },
+      "rightArm": {
+        "yaw": 0.0,
+        "pitch": -98.0,
+        "roll": 10.0
+      },
+      "leftLeg": {
+        "yaw": 0.0,
+        "pitch": -1.0,
+        "roll": -1.0
+      },
+      "rightLeg": {
+        "yaw": 0.0,
+        "pitch": 1.0,
+        "roll": 1.0
+      },
+      "head": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "body": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "invisible": true,
+      "marker": false,
+      "arms": true,
+      "equipment": {
+        "mainHand": {
+          "id": "minecraft:stone_pickaxe",
+          "glint": true
+        },
+        "offHand": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "helmet": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "chestplate": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "leggings": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "boots": {
+          "id": "minecraft:air",
+          "glint": false
+        }
+      },
+      "relativePos": {
+        "x": 2.5476533292056605,
+        "y": -0.625,
+        "z": -1.9967653721899694,
+        "yaw": 0.0,
+        "pitch": 0.0
+      }
+    },
+    {
+      "small": true,
+      "leftArm": {
+        "yaw": 0.0,
+        "pitch": -10.0,
+        "roll": -10.0
+      },
+      "rightArm": {
+        "yaw": 0.0,
+        "pitch": -15.0,
+        "roll": 10.0
+      },
+      "leftLeg": {
+        "yaw": 0.0,
+        "pitch": -1.0,
+        "roll": -1.0
+      },
+      "rightLeg": {
+        "yaw": 0.0,
+        "pitch": 1.0,
+        "roll": 1.0
+      },
+      "head": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "body": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "invisible": false,
+      "marker": false,
+      "arms": true,
+      "equipment": {
+        "mainHand": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "offHand": {
+          "id": "minecraft:air",
+          "glint": false
+        },
+        "helmet": {
+          "id": "minecraft:player_head",
+          "glint": false,
+          "textures": {
+            "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODQ5ODBmNzQ0OWY0MWIxZTk1NDU4MjE1OTcxYTQxMTkwZjc1NGMwODA1ZmQ3N2JlZDA1OTEzY2MxOTE2ODQwZiJ9fX0K"
+          }
+        },
+        "chestplate": {
+          "id": "minecraft:leather_chestplate",
+          "glint": false
+        },
+        "leggings": {
+          "id": "minecraft:leather_leggings",
+          "glint": false
+        },
+        "boots": {
+          "id": "minecraft:leather_boots",
+          "glint": false
+        }
+      },
+      "relativePos": {
+        "x": -0.5148466707943395,
+        "y": 1.0,
+        "z": 2.3782346278100306,
+        "yaw": 135.0,
+        "pitch": 0.0
+      }
+    }
+  ]
+}

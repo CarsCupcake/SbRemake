@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.hub;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -18,7 +19,8 @@ public class GoldenGhoul extends SkyblockEntity implements SkillXpDropper {
     public GoldenGhoul() {
         super(EntityType.ZOMBIE, new LootTable<SbItemStack>().addLoot(new ItemLoot(SbItemStack.base(Material.ROTTEN_FLESH), 2, 2, 1))
                 .addLoot(new ItemLoot(SbItemStack.base(Material.GOLD_INGOT), 1, 9, 1))
-                .addLoot(new CoinLoot(100)));
+                .addLoot(new CoinLoot(100)),
+                MobType.Undead);
         getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.2f);
         setBoots(ItemStack.of(Material.GOLDEN_BOOTS));
         setLeggings(ItemStack.of(Material.GOLDEN_LEGGINGS));

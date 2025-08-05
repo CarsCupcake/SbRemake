@@ -1,9 +1,22 @@
 package me.carscupcake.sbremake.worlds.impl.dungeon;
 
+import lombok.Getter;
+import me.carscupcake.sbremake.Main;
+import me.carscupcake.sbremake.util.Lazy;
 import me.carscupcake.sbremake.util.Pos2d;
 import net.minestom.server.coordinate.Point;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.*;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public enum RoomShape {
     ONE_BY_ONE("1x1") {
@@ -115,10 +128,30 @@ public enum RoomShape {
             };
         }
     };
-    final String shape;
+    private final String shape;
+
+    @Getter
+    private final Lazy<String[]> schematics;
 
     RoomShape(String shape) {
         this.shape = shape;
+        schematics = new Lazy<>(() -> {
+            var inResourcesPath = "assets/shematics/dungeon/rooms/" + shape + "/";
+            URI uri = null;
+            try {
+                uri = Objects.requireNonNull(Main.class.getClassLoader().getResource(inResourcesPath)).toURI();
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+            try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+                Path folderRootPath = fileSystem.getPath(inResourcesPath);
+                try (Stream<Path> walk = Files.walk(folderRootPath, 1)) {
+                    return walk.map(Path::getFileName).map(Path::toString).filter(s -> !s.equals(shape)).toArray(String[]::new);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -143,4 +176,14 @@ public enum RoomShape {
     }
     public abstract List<Pos2d> children(Pos2d target, Rotation rotation);
     public abstract Point withRotationOffset(Point point, Rotation rotation);
+
+    public Point toActual(Pos2d target, Point blockPos, Rotation rotation) {
+        var pos = rotation.toActual(target, blockPos);
+        return withRotationOffset(pos, rotation);
+    }
+    public Point toRelative(Pos2d target, Point actualPos, Rotation rotation) {
+        var rotOffset = withRotationOffset(Pos.ZERO, rotation);
+        var pos = actualPos.sub(rotOffset);
+        return rotation.toRelative(target, pos);
+    }
 }

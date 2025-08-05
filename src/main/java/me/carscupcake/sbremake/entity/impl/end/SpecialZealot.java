@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.end;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.entity.EntityType;
@@ -10,7 +11,7 @@ public class SpecialZealot extends SkyblockEntity {
     private final SkyblockPlayer owner;
 
     public SpecialZealot(SkyblockPlayer owner) {
-        super(EntityType.ENDERMAN);
+        super(EntityType.ENDERMAN, MobType.Ender);
         this.owner = owner;
         ((EndermanMeta) this.entityMeta).setCarriedBlockID(Block.END_PORTAL_FRAME.id());
     }

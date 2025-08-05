@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.spidersDen;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
@@ -16,7 +17,7 @@ public class SpiderJockey extends SkyblockEntity implements SkillXpDropper {
     private final boolean inSpidersMound;
 
     public SpiderJockey(boolean inSpidersMound) {
-        super(EntityType.SPIDER);
+        super(EntityType.SPIDER, MobType.Arthropod);
         this.inSpidersMound = inSpidersMound;
     }
 

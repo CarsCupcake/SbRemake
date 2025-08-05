@@ -13,6 +13,7 @@ public class PasteTest extends Command {
     public PasteTest() {
         super("pastetest");
         var enumRoomShape = new ArgumentEnum<>("type", RoomShape.class);
+        var enumRoomType = new ArgumentEnum<>("roomType", RoomType.class);
         var enumRotation = new ArgumentEnum<>("rotation", Rotation.class);
         var xPos = new ArgumentInteger("x");
         var zPos = new ArgumentInteger("z");
@@ -42,6 +43,16 @@ public class PasteTest extends Command {
                 case L_SHAPE -> "dino-dig-site-4";
             }, RoomType.Room);
         }, enumRoomShape, enumRotation, xPos, zPos);
+        addSyntax((sender, context) -> {
+            var paster = new Paster(new Room[0][0], ((SkyblockPlayer) sender).getInstance());
+            var rotation = context.get(enumRotation);
+            var roomType = context.get(enumRoomType);
+            paster.paste(new Pos2d(0, 0), rotation, RoomShape.ONE_BY_ONE, switch (roomType) {
+                case Trap -> "trap-hard-4";
+                case Puzzle -> "boxes-room";
+                default -> throw new IllegalArgumentException("Not a valid room type");
+            }, roomType);
+        }, enumRoomType, enumRotation);
         System.gc();
 
     }

@@ -63,6 +63,20 @@ public interface Modifier<T> {
             return SbItemStack.from(item.with(DataComponents.CUSTOM_DATA, new CustomData(tag.putString("reforge", reforge.getId()))));
         }
     };
+    Modifier<Boolean> DUNGEON_ITEM = new Modifier<>() {
+        @Override
+        public Boolean getFromNbt(SbItemStack item) {
+            if (item == SbItemStack.AIR) return null;
+            return Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt().getBoolean("dungeon_item", false);
+        }
+
+        @Override
+        public SbItemStack toNbt(Boolean isDungeonItem, SbItemStack itemStack) {
+            ItemStack item = itemStack.item();
+            CompoundBinaryTag tag = Objects.requireNonNull(item.get(DataComponents.CUSTOM_DATA)).nbt();
+            return SbItemStack.from(item.with(DataComponents.CUSTOM_DATA, new CustomData(tag.putBoolean("dungeon_item", isDungeonItem))));
+        }
+    };
     Modifier<Map<SkyblockEnchantment, Integer>> ENCHANTMENTS = new Modifier<>() {
         @Override
         public Map<SkyblockEnchantment, Integer> getFromNbt(SbItemStack item) {

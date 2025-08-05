@@ -6,5 +6,6 @@ public enum DoorType {
     Start,
     Normal,
     Wither,
+    Fairy,
     Blood
 }

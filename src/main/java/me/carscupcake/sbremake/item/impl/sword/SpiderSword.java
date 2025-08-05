@@ -1,8 +1,10 @@
 package me.carscupcake.sbremake.item.impl.sword;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.item.*;
+import me.carscupcake.sbremake.util.ArrayUtil;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
@@ -44,13 +46,13 @@ public class SpiderSword implements ISbItem, Listener, NpcSellable {
 
     @Override
     public Lore getLore() {
-        return new Lore("§7Deals §a+100% §7damage to Spiders, Cave Spiders and Silverfish.");
+        return new Lore("§7Deals §a+100% §7damage to " + MobType.Arthropod + " §7Mobs.");
     }
 
     @Override
     public EventNode<Event> node() {
         return EventNode.all("spider_sword").addListener(PlayerMeleeDamageEntityEvent.class, event -> {
-            if (!(event.getTarget().getEntityType() == EntityType.SPIDER || event.getTarget().getEntityType() == EntityType.CAVE_SPIDER || event.getTarget().getEntityType() == EntityType.SILVERFISH))
+            if (!ArrayUtil.contains(event.getTarget().getMobTypes(), MobType.Arthropod))
                 return;
             SbItemStack stack = event.getPlayer().getSbItemInHand(PlayerHand.MAIN);
             if (stack == null) return;

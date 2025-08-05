@@ -60,14 +60,26 @@ public abstract class SkyblockEntity extends EntityCreature {
     @Setter
     private SkyblockPlayer lastDamager;
 
+    @Getter
+    private final MobType[] mobTypes;
+    private final String mobTypesNameTag;
+
     private final Object _lock = new Object();
 
-    public SkyblockEntity(@NotNull EntityType entityType) {
-        this(entityType, null);
+    public SkyblockEntity(@NotNull EntityType entityType, MobType... mobTypes) {
+        this(entityType, null, mobTypes);
     }
 
-    public SkyblockEntity(@NotNull EntityType entityType, ILootTable<SbItemStack> lootTable) {
+    public SkyblockEntity(@NotNull EntityType entityType, ILootTable<SbItemStack> lootTable, MobType... mobTypes) {
         super(entityType, UUID.randomUUID());
+        this.mobTypes = mobTypes == null ? new MobType[0] : mobTypes;
+        var builder = new StringBuilder();
+        for (MobType mobType : this.mobTypes) {
+            builder.append(mobType.getColor())
+                    .append(mobType.getIcon());
+        }
+        var b = builder.toString();
+        mobTypesNameTag = b;
         this.lootTable = lootTable == null ? new LootTable<>() : lootTable;
         getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.15f);
         setCustomNameVisible(true);
@@ -417,7 +429,9 @@ public abstract class SkyblockEntity extends EntityCreature {
         Basic() {
             @Override
             public String apply(SkyblockEntity skyblockEntity) {
-                return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] §c" + (skyblockEntity.getName()) + " §a" + ((skyblockEntity.getHealth() >= 100_000 ?  StringUtils.toShortNumber(skyblockEntity.getHealth()) : StringUtils.toFormatedNumber(skyblockEntity.getHealth()))) + "§7/§a" + (skyblockEntity.getMaxHealth() >= 100_000 ?  StringUtils.toShortNumber(skyblockEntity.getMaxHealth()) : StringUtils.toFormatedNumber(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol());
+                var builder = new StringBuilder();
+                return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] " + (skyblockEntity.mobTypesNameTag == null || skyblockEntity.mobTypesNameTag.isEmpty() ? "" : (skyblockEntity.mobTypesNameTag + " "))  +
+                "§c" + (skyblockEntity.getName()) + " §a" + ((skyblockEntity.getHealth() >= 100_000 ?  StringUtils.toShortNumber(skyblockEntity.getHealth()) : StringUtils.toFormatedNumber(skyblockEntity.getHealth()))) + "§7/§a" + (skyblockEntity.getMaxHealth() >= 100_000 ?  StringUtils.toShortNumber(skyblockEntity.getMaxHealth()) : StringUtils.toFormatedNumber(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol());
             }
         }, Slayer() {
             @Override

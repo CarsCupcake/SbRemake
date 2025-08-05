@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.crimsonIsle.miniBoss;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
@@ -23,7 +24,8 @@ import java.util.function.Function;
 public class Bladesoul extends CrimonIsleBossEntity implements SkillXpDropper {
     private final LivingEntity blazeHelmet;
     public Bladesoul() {
-        super(EntityType.WITHER_SKELETON);
+        super(EntityType.WITHER_SKELETON,
+                MobType.Wither, MobType.Skeletal, MobType.Arcane);
         setEquipment(EquipmentSlot.MAIN_HAND, ItemStack.of(Material.GOLDEN_AXE));
         setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.PLAYER_HEAD)
                 .setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTYzMDA5NGYyN2IxMWEyZTkwMmUyNmMxNmZlNWRmZTM1ZmI0OTMxYWI1Zjk0N2JiYzlhY2NhYjJlZTUwMTcwNCJ9fX0=")

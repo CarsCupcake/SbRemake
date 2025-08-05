@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.slayer.zombie.minibosses;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -17,7 +18,8 @@ import net.minestom.server.item.Material;
 
 public class AtonedChampion extends SkyblockEntity implements SkillXpDropper {
     public AtonedChampion() {
-        super(EntityType.ZOMBIE, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(RevenantFlesh.class), 2, 1)));
+        super(EntityType.ZOMBIE, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(RevenantFlesh.class), 2, 1))
+        , MobType.Undead);
         setBoots(ItemStack.of(Material.IRON_BOOTS));
         setLeggings(new ItemBuilder(Material.CHAINMAIL_LEGGINGS).setGlint(true).build());
         setChestplate(new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());
