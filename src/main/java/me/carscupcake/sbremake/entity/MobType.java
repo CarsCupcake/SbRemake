@@ -37,4 +37,9 @@ public enum MobType {
         this.icon = icon;
         this.color = color;
     }
+
+    @Override
+    public String toString() {
+        return getColor() + getIcon() + " " + getName();
+    }
 }

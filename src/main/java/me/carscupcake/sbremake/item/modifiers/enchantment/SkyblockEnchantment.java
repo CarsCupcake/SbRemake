@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.item.modifiers.enchantment;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.event.GetItemStatEvent;
 import me.carscupcake.sbremake.event.PlayerDamageEntityEvent;
@@ -8,6 +9,7 @@ import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.item.ItemType;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.SbItemStack;
+import me.carscupcake.sbremake.util.ArrayUtil;
 import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.PlayerDamageEntityListener;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -21,7 +23,6 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.CustomData;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
-import net.minestom.server.tag.Tag;
 
 import java.util.*;
 
@@ -80,20 +81,20 @@ public interface SkyblockEnchantment {
             if (enchantments.containsKey(NormalEnchantments.Sharpness))
                 event.addAdditiveMultiplier(EnchantmentUtils.getSharpnessBonus(enchantments.get(NormalEnchantments.Sharpness)));
 
-            if (enchantments.containsKey(NormalEnchantments.Smite) && EnchantmentUtils.SMITE_TYPES.contains(event.getTarget().getEntityType()))
+            if (enchantments.containsKey(NormalEnchantments.Smite) && ArrayUtil.contains(event.getTarget().getMobTypes(), MobType.Undead))
                 event.addAdditiveMultiplier(EnchantmentUtils.getSmiteBonus(enchantments.get(NormalEnchantments.Smite)));
 
-            if (enchantments.containsKey(NormalEnchantments.BaneOfArthropods) && EnchantmentUtils.BASE_OF_ARTHROPODS_TYPES.contains(event.getTarget().getEntityType()))
+            if (enchantments.containsKey(NormalEnchantments.BaneOfArthropods) && ArrayUtil.contains(event.getTarget().getMobTypes(), MobType.Arthropod))
                 event.addAdditiveMultiplier(EnchantmentUtils.getBaneOfArthropodsBonus(enchantments.get(NormalEnchantments.BaneOfArthropods)));
 
-            if (enchantments.containsKey(NormalEnchantments.EnderSlayer) && EnchantmentUtils.ENDER_SLAYER_TYPES.contains(event.getTarget().getEntityType()))
+            if (enchantments.containsKey(NormalEnchantments.EnderSlayer) && ArrayUtil.contains(event.getTarget().getMobTypes(), MobType.Ender))
                 event.addAdditiveMultiplier(EnchantmentUtils.getEnderSlayerBonus(enchantments.get(NormalEnchantments.EnderSlayer)));
 
-            if (enchantments.containsKey(NormalEnchantments.Cubism) && EnchantmentUtils.CUBISM_TYPES.contains(event.getTarget().getEntityType()))
+            if (enchantments.containsKey(NormalEnchantments.Cubism) && ArrayUtil.contains(event.getTarget().getMobTypes(), MobType.Cubic))
                 event.addAdditiveMultiplier(EnchantmentUtils.getEnderSlayerBonus(enchantments.get(NormalEnchantments.Cubism)));
 
-            if (enchantments.containsKey(NormalEnchantments.DragonHunter) && event.getTarget().getEntityType() == EntityType.ENDER_DRAGON)
-                event.addAdditiveMultiplier(EnchantmentUtils.getDragonHunterBonus(enchantments.get(NormalEnchantments.DragonHunter)));
+            if (enchantments.containsKey(NormalEnchantments.Gravity) && ArrayUtil.contains(event.getTarget().getMobTypes(), MobType.Airborne))
+                event.addAdditiveMultiplier(EnchantmentUtils.getDragonHunterBonus(enchantments.get(NormalEnchantments.Gravity)));
 
             if (enchantments.containsKey(NormalEnchantments.Execute)) {
                 double missingHealth =  1 - event.getTarget().getHealth() / event.getTarget().getMaxHealth();

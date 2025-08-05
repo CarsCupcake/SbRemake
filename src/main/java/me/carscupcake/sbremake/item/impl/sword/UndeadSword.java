@@ -1,9 +1,11 @@
 package me.carscupcake.sbremake.item.impl.sword;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.impl.sword.slayer.zombie.RevenantFalchion;
+import me.carscupcake.sbremake.util.ArrayUtil;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerHand;
@@ -45,13 +47,13 @@ public class UndeadSword implements ISbItem, Listener, NpcSellable {
 
     @Override
     public Lore getLore() {
-        return new Lore("§7Deals §a+100% §7damage to Zombie Pigmen, Skeletons, Whithers and Zombies.");
+        return new Lore("§7Deals §a+100% §7damage to " + MobType.Undead + " §7Mobs.");
     }
 
     @Override
     public EventNode<Event> node() {
         return EventNode.all("undead_sword").addListener(PlayerMeleeDamageEntityEvent.class, event -> {
-            if (!(event.getTarget().getEntityType() == EntityType.ZOMBIFIED_PIGLIN || event.getTarget().getEntityType() == EntityType.SKELETON || event.getTarget().getEntityType() == EntityType.WITHER || event.getTarget().getEntityType() == EntityType.ZOMBIE))
+            if (!ArrayUtil.contains(event.getTarget().getMobTypes(), MobType.Undead))
                 return;
             SbItemStack stack = event.getPlayer().getSbItemInHand(PlayerHand.MAIN);
             if (stack == null) return;
