@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.crimsonIsle;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -41,7 +42,8 @@ public class WitherSpectre extends SkyblockEntity implements SkillXpDropper {
     private final Entity nameTag = new Entity(EntityType.ARMOR_STAND);
 
     public WitherSpectre() {
-        super(EntityType.WITHER_SKELETON, new LootTable<SbItemStack>().addLoot(new ItemLoot(Material.GUNPOWDER)).addLoot(new CoinLoot(20)));
+        super(EntityType.WITHER_SKELETON, new LootTable<SbItemStack>().addLoot(new ItemLoot(Material.GUNPOWDER)).addLoot(new CoinLoot(20)),
+                MobType.Wither, MobType.Arcane);
         setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture(HEAD_VALUE).build());
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(CHESTPLATE_COLOR).build());
         setItemInHand(PlayerHand.MAIN, new ItemBuilder(Material.STONE_SWORD).build());

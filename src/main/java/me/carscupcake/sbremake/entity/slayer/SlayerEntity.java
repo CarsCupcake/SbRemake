@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.entity.slayer;
 
 import lombok.Getter;
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -19,8 +20,8 @@ import java.util.function.Function;
 public abstract class SlayerEntity extends SkyblockEntity {
     protected final SkyblockPlayer owner;
 
-    public SlayerEntity(@NotNull EntityType entityType, ILootTable<SbItemStack> lootTable, SkyblockPlayer owner) {
-        super(entityType, lootTable);
+    public SlayerEntity(@NotNull EntityType entityType, ILootTable<SbItemStack> lootTable, SkyblockPlayer owner, MobType... mobTypes) {
+        super(entityType, lootTable, mobTypes);
         this.owner = owner;
         if (owner.getSlayerQuest() == null) {
             owner.setSlayerQuest(new SlayerQuest(owner.getSlayers().get(getSlayer()), getTier(), 0));

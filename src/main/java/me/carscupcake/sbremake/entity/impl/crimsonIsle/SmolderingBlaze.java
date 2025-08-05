@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.crimsonIsle;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.goal.BlazeGoal;
 import me.carscupcake.sbremake.item.ISbItem;
@@ -29,7 +30,8 @@ public class SmolderingBlaze extends SkyblockEntity implements SkillXpDropper {
     public SmolderingBlaze(Region guardingRegion) {
         super(EntityType.BLAZE, new LootTable<SbItemStack>().addLoot(new ItemLoot(Material.BLAZE_ROD, 2, 3, 1))
                 .addLoot(new ItemLoot(BlazeAshes.class, 1, 0.2))
-                .addLoot(new ItemLoot(NetherrackLookingSunshade.class, 1, 0.01)));
+                .addLoot(new ItemLoot(NetherrackLookingSunshade.class, 1, 0.01)),
+                MobType.Infernal, MobType.Subterranean);
     }
 
     @Override

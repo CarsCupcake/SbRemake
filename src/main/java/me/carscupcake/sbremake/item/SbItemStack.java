@@ -16,7 +16,10 @@ import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.item.smithing.SmithingItem;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.PickaxeAbility;
+import me.carscupcake.sbremake.player.skill.Skill;
+import me.carscupcake.sbremake.player.skill.impl.Dungeoneering;
 import me.carscupcake.sbremake.util.StringUtils;
+import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import net.kyori.adventure.nbt.StringBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
@@ -334,7 +337,14 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         GemstoneSlot[] gemstoneSlots = getModifier(Modifier.GEMSTONE_SLOTS);
         double gemstoneValue = 0;
         gemstoneValue = getGemstoneStat(stat, gemstoneValue, gemstoneSlots);
-        return ((value < 0) ? "" : "+") + (StringUtils.cleanDouble(value, 1)) + ((stat.isPercentValue()) ? "%" : "") + (reforgeValue != 0 ? " §9(" + (value < 0 ? "" : "+") + (StringUtils.cleanDouble(reforgeValue, 1)) + (stat.isPercentValue() ? "%" : "") + ")" : "") + (gemstoneValue != 0 ? " §d(+" + (StringUtils.cleanDouble(gemstoneValue, 1)) + ")" : "");
+        var dungeonValue = 0d;
+        if (isDungeonItem() && (player == null || player.getWorldProvider().type() != SkyblockWorld.Dungeon)) {
+            var stars = getModifier(Modifier.STARS);
+            var mult = calculatePlayerDungeonBonus(player);
+            dungeonValue = (value - value * ((StarUpgradable) sbItem).getBonus(player, stars)) * (1 + mult);
+        }
+        return ((value < 0) ? "" : "+") + (StringUtils.cleanDouble(value, 1)) + ((stat.isPercentValue()) ? "%" : "") + (reforgeValue != 0 ? " §9(" + (value < 0 ? "" : "+") + (StringUtils.cleanDouble(reforgeValue, 1)) + (stat.isPercentValue() ? "%" : "") + ")" : "") + (gemstoneValue != 0 ? " §d(+" + (StringUtils.cleanDouble(gemstoneValue, 1)) + ")" : "")
+                + (dungeonValue != 0 ? " §8(+" + (StringUtils.cleanDouble(dungeonValue, 1)) + (stat.isPercentValue() ? "%" : "") + ")" : "");
     }
 
     public ItemRarity getRarity() {
@@ -373,10 +383,20 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             if (petInfo.pet() != null) baseStat += petInfo.pet().getStat(stat, petInfo);
         }
         GetItemStatEvent event = new GetItemStatEvent(this, stat, baseStat, player);
-        if (sbItem instanceof StarUpgradable starUpgradable)
-            event.setMultiplier(event.getMultiplier() + starUpgradable.getBonus(player, getModifier(Modifier.STARS)));
+        if (sbItem instanceof StarUpgradable starUpgradable) {
+            if ((isDungeonItem() || getModifier(Modifier.DUNGEON_ITEM)) && player != null && player.getWorldProvider().type() == SkyblockWorld.Dungeon)
+                event.setMultiplier(event.getMultiplier() + calculatePlayerDungeonBonus(player));
+            else
+                event.setMultiplier(event.getMultiplier() + starUpgradable.getBonus(player, getModifier(Modifier.STARS)));
+        }
         MinecraftServer.getGlobalEventHandler().call(event);
         return event.getValue() * event.getMultiplier();
+    }
+
+    private double calculatePlayerDungeonBonus(SkyblockPlayer player) {
+        var stars = getModifier(Modifier.STARS);
+        var playerDungeon = player != null ? player.getSkill(Skill.Dungeneering).getLevel() : 1;
+        return stars * 0.1d + ((double) Dungeoneering.dungeonItemStatBonus(playerDungeon)) / 100d;
     }
 
     private double getGemstoneStat(Stat stat, double baseStat, GemstoneSlot[] gemstoneSlots) {

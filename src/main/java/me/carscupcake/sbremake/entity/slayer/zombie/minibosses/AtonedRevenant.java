@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.slayer.zombie.minibosses;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -17,7 +18,7 @@ import net.minestom.server.item.Material;
 
 public class AtonedRevenant extends SkyblockEntity implements SkillXpDropper {
     public AtonedRevenant() {
-        super(EntityType.ZOMBIE, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(RevenantFlesh.class), 5, 1)));
+        super(EntityType.ZOMBIE, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(RevenantFlesh.class), 5, 1)), MobType.Undead);
         setBoots(new ItemBuilder(Material.LEATHER_BOOTS).setGlint(true).setLeatherColor(new Color(0xFFFFFF)).build());
         setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).setGlint(true).setLeatherColor(new Color(0xFFFFFF)).build());
         setChestplate(new ItemBuilder(Material.LEATHER_CHESTPLATE).setGlint(true).setLeatherColor(new Color(0xFFFFFF)).build());

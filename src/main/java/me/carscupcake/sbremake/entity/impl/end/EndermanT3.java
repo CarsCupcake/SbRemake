@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.end;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -18,7 +19,7 @@ public class EndermanT3 extends SkyblockEntity {
                 .addLootTable(new LootTable<SbItemStack>().addLoot(new ItemLoot(EnderHelmet.class))
                         .addLoot(new ItemLoot(EnderChestplate.class))
                         .addLoot(new ItemLoot(EnderLeggings.class))
-                        .addLoot(new ItemLoot(EnderBoots.class)).setSingleLoot(), 0.1));
+                        .addLoot(new ItemLoot(EnderBoots.class)).setSingleLoot(), 0.1), MobType.Ender);
     }
 
     @Override

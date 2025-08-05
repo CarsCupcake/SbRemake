@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.end;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.entity.EntityType;
@@ -11,7 +12,7 @@ public class Zealot extends SkyblockEntity {
     private static final Random RANDOM = new Random();
 
     public Zealot() {
-        super(EntityType.ENDERMAN);
+        super(EntityType.ENDERMAN, MobType.Ender);
     }
 
     @Override

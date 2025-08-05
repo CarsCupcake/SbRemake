@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.entity.impl.spidersDen;
 
 import me.carscupcake.sbremake.entity.MeleeAttackGoalEntity;
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.impl.SpidersDen;
@@ -19,7 +20,7 @@ public class DasherSpider extends SkyblockEntity implements MeleeAttackGoalEntit
     private final int tier;
 
     public DasherSpider(int tier) {
-        super(EntityType.SPIDER);
+        super(EntityType.SPIDER, MobType.Arthropod);
         this.tier = tier;
         maxHealth = switch (tier) {
             case 1 -> 170;

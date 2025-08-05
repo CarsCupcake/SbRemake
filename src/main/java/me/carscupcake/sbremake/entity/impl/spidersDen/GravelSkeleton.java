@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.spidersDen;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
@@ -11,7 +12,7 @@ import net.minestom.server.item.Material;
 
 public class GravelSkeleton extends SkyblockEntity implements SkillXpDropper {
     public GravelSkeleton() {
-        super(EntityType.SKELETON);
+        super(EntityType.SKELETON, MobType.Skeletal);
         setEquipment(EquipmentSlot.MAIN_HAND, ItemStack.builder(Material.BOW).build());
     }
 

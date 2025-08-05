@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.deepCaverns;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
@@ -21,7 +22,7 @@ public class RedstonePigman extends SkyblockEntity {
     public static final Set<Entity> attacked = new HashSet<>();
 
     public RedstonePigman() {
-        super(EntityType.ZOMBIFIED_PIGLIN);
+        super(EntityType.ZOMBIFIED_PIGLIN, MobType.Undead);
     }
 
     @Override

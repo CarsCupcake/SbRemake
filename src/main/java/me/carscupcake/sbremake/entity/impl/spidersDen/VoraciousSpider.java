@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.spidersDen;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.worlds.impl.SpidersDen;
 import net.minestom.server.entity.EntityType;
@@ -11,7 +12,7 @@ public class VoraciousSpider extends SkyblockEntity {
     private final int tier;
 
     public VoraciousSpider(int tier) {
-        super(EntityType.SPIDER);
+        super(EntityType.SPIDER, MobType.Arthropod);
         this.tier = tier;
         maxHealth = switch (tier) {
             case 1 -> 300;

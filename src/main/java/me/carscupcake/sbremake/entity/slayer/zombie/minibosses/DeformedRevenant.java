@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.slayer.zombie.minibosses;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -18,7 +19,7 @@ import net.minestom.server.item.Material;
 
 public class DeformedRevenant extends SkyblockEntity implements SkillXpDropper {
     public DeformedRevenant() {
-        super(EntityType.ZOMBIE, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(RevenantFlesh.class), 5, 1)));
+        super(EntityType.ZOMBIE, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(RevenantFlesh.class), 5, 1)), MobType.Undead);
         setBoots(ItemStack.of(Material.DIAMOND_BOOTS));
         setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new Color(0xFF0000)).setGlint(true).build());
         setChestplate(new ItemBuilder(Material.DIAMOND_CHESTPLATE).setGlint(true).build());

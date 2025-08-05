@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.deepCaverns;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -30,7 +31,7 @@ public class LapisZombies extends SkyblockEntity implements SkillXpDropper {
                                 .addLoot(new ItemLoot(ISbItem.get(LapisChestplate.class), 1, 0.01d))
                                 .addLoot(new ItemLoot(ISbItem.get(LapisHelmet.class), 1, 0.01d))
                                 .setSingleLoot()
-                        , 0.01));
+                        , 0.01), MobType.Undead);
         setEquipment(EquipmentSlot.HELMET, ItemStack.of(Material.BLUE_STAINED_GLASS));
         setEquipment(EquipmentSlot.CHESTPLATE, new ItemBuilder(Material.LEATHER_CHESTPLATE).setLeatherColor(new Color(0x0000ff)).build());
         setEquipment(EquipmentSlot.LEGGINGS, new ItemBuilder(Material.LEATHER_LEGGINGS).setLeatherColor(new Color(0x0000ff)).build());

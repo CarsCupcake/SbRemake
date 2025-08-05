@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.end;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
@@ -12,7 +13,7 @@ public class Endermite extends SkyblockEntity implements SkillXpDropper {
     private final int level;
 
     public Endermite(boolean hard) {
-        super(EntityType.ENDERMITE);
+        super(EntityType.ENDERMITE, MobType.Ender);
         maxHealth = (hard) ? 2_300 : 2_000;
         damage = (hard) ? 475 : 400;
         level = (hard) ? 40 : 37;

@@ -25,4 +25,10 @@ public class DwarvenMines extends SkyblockWorld.WorldProvider {
     public Pair<Pos, Pos> getChunksToLoad() {
         return toMinMaxPair(new Pos(-235, 0, 300), new Pos(300, 0, -200));
     }
+
+    @Override
+    protected void register() {
+        super.register();
+        summonArmorStandFixture("assets/armorstands/mines/shoparea.json");
+    }
 }

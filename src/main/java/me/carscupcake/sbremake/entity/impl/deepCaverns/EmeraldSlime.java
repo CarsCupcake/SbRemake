@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.impl.deepCaverns;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.goal.SlimeAttackGoal;
 import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
@@ -14,7 +15,7 @@ public class EmeraldSlime extends SkyblockEntity {
     private final int level;
 
     public EmeraldSlime(int level) {
-        super(EntityType.SLIME);
+        super(EntityType.SLIME, MobType.Cubic);
         this.level = level;
         setHealth(getMaxHealth());
         editEntityMeta(SlimeMeta.class, slimeMeta -> slimeMeta.setSize(switch (level) {
