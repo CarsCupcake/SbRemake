@@ -95,6 +95,7 @@ import java.lang.reflect.Modifier;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Slf4j
@@ -1698,10 +1699,16 @@ public class SkyblockPlayer extends Player {
     }
 
     public void damage(double damage, double trueDamage) {
+        damage(damage, trueDamage, true);
+    }
+
+    public void damage(double damage, double trueDamage, boolean callEvent) {
         PlayerSelfDamageEvent event = new PlayerSelfDamageEvent(this, damage, trueDamage);
-        MinecraftServer.getGlobalEventHandler().call(event);
-        if (event.isCancelled()) return;
-        sendPacket(new DamageEventPacket(getEntityId(), 0, getEntityId(), 0, getPosition()));
+        if (callEvent) {
+            MinecraftServer.getGlobalEventHandler().call(event);
+            if (event.isCancelled()) return;
+            sendPacket(new DamageEventPacket(getEntityId(), 0, getEntityId(), 0, getPosition()));
+        }
         dealDamage(event);
     }
 
@@ -1716,6 +1723,7 @@ public class SkyblockPlayer extends Player {
     public void forceDamage(double amount) {
         sendPacket(new DamageEventPacket(getEntityId(), 0, getEntityId(), 0, getPosition()));
         dealDamage(new IDamageEvent() {
+            private final Set<Consumer<Double>> damageFinalizer = new HashSet<>();
             @Override
             public double getCachedDamage() {
                 return amount;
@@ -1724,6 +1732,16 @@ public class SkyblockPlayer extends Player {
             @Override
             public double getMultiplier() {
                 return 1;
+            }
+
+            @Override
+            public void onDamageFinalize(Consumer<Double> consumer) {
+                damageFinalizer.add(consumer);
+            }
+
+            @Override
+            public void triggerFinalizer(double damage) {
+                damageFinalizer.forEach(consumer -> consumer.accept(damage));
             }
 
             @Override
@@ -1765,6 +1783,7 @@ public class SkyblockPlayer extends Player {
 
     private void dealDamage(IDamageEvent event) {
         double finalDamage = event.calculateDamage();
+        event.triggerFinalizer(finalDamage);
         event.spawnDamageTag();
         if (absorption > 0) {
             if (absorption - finalDamage <= 0) {

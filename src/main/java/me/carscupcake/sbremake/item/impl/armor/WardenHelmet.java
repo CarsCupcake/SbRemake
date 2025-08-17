@@ -8,7 +8,7 @@ import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.FullSetBonus;
 import me.carscupcake.sbremake.item.requirements.SlayerRequirement;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.PlayerDamageEntityListener;
+import me.carscupcake.sbremake.event.eventBinding.PlayerDamageEntityBinding;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.Material;
@@ -76,7 +76,7 @@ public class WardenHelmet implements ISbItem, HeadWithValue, Listener {
             if (event.player().getFullSetBonusPieceAmount(BruteForce.instance) != 1) return;
             event.modifiers().add(new PlayerStatEvent.BasicModifier("Brute Force", 0.5, PlayerStatEvent.Type.MultiplicativeMultiplier, PlayerStatEvent.StatsCategory.Ability));
         });
-        events.register(new PlayerDamageEntityListener(event -> {
+        events.register(new PlayerDamageEntityBinding(event -> {
             if (event.getPlayer().getFullSetBonusPieceAmount(BruteForce.instance) != 1) return;
             var speed = event.getPlayer().getStat(Stat.Speed);
             var mult = 1 + (0.2 * ((int) (speed / 35)));

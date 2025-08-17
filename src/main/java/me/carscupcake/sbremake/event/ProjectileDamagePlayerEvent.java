@@ -8,6 +8,10 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.event.trait.CancellableEvent;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
+
 @Setter
 @Getter
 public class ProjectileDamagePlayerEvent implements CancellableEvent, IDamageEvent {
@@ -17,6 +21,7 @@ public class ProjectileDamagePlayerEvent implements CancellableEvent, IDamageEve
     private double trueDamage;
     private double multiplier = 1;
     private boolean cancelled = false;
+    private final Set<Consumer<Double>> finalizers = new HashSet<>();
 
     public ProjectileDamagePlayerEvent(SkyblockEntityProjectile entity, SkyblockPlayer player) {
         this.player = player;
@@ -55,5 +60,16 @@ public class ProjectileDamagePlayerEvent implements CancellableEvent, IDamageEve
     @Override
     public double getTargetTrueDefense() {
         return player.getStat(Stat.TrueDefense);
+    }
+
+
+    @Override
+    public void onDamageFinalize(Consumer<Double> consumer) {
+        finalizers.add(consumer);
+    }
+
+    @Override
+    public void triggerFinalizer(double damage) {
+        finalizers.forEach(consumer -> consumer.accept(damage));
     }
 }

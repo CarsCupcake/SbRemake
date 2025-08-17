@@ -1,4 +1,4 @@
-package me.carscupcake.sbremake.util;
+package me.carscupcake.sbremake.event.eventBinding;
 
 import me.carscupcake.sbremake.event.*;
 import net.minestom.server.event.Event;
@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-public record PlayerDamageEntityListener(
+public record PlayerDamageEntityBinding(
         Consumer<PlayerToEntityDamageEvent> consumer) implements EventBinding<PlayerToEntityDamageEvent> {
     @Override
     public @NotNull Collection<Class<? extends Event>> eventTypes() {
