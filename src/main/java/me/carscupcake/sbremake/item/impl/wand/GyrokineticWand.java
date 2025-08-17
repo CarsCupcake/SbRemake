@@ -29,7 +29,6 @@ public class GyrokineticWand implements ISbItem, Listener {
     private final static Block[] BLOCK_TYPES = {Block.PURPLE_STAINED_GLASS, Block.OBSIDIAN};
     private final List<Ability> abilities = List.of(
             new ItemAbility<>("Gravity Storm", AbilityType.LEFT_CLICK, event -> {
-                System.out.println("Start");
                 var middle = event.block() == null ? event.getPlayer().getPosition().add(0, -0.5, 0) : event.block().add(0.5, 0.5, 0.5);
                 var pulling = Vec.fromPoint(middle.add(0, 1, 0));
                 var instance = event.getPlayer().getInstance();

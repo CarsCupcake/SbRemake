@@ -176,7 +176,11 @@ public class SkyblockPlayer extends Player {
                 }
                         /*Entity result = player.getLineOfSightEntity(player.getStat(Stat.SwingRange), entity -> entity.getEntityType() != EntityType.PLAYER && entity instanceof LivingEntity);
                         SkyblockEntity entity = (result instanceof SkyblockEntity sb) ? sb : null;*/
-                MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, entity, PlayerInteractEvent.Interaction.Left));
+                if (player.blockInteractBuffer == 0){
+                    MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, entity, PlayerInteractEvent.Interaction.Left));
+                    player.lastInteractPacket = System.currentTimeMillis();
+                } else player.blockInteractBuffer--;
+
                 if (delta >= player.attackCooldown()) {
                     if (entity != null && entity.getEntityType() != EntityType.PLAYER) {
                         player.lastAttack = time;
@@ -227,6 +231,8 @@ public class SkyblockPlayer extends Player {
             }
             if (packet.status() == ClientPlayerDiggingPacket.Status.STARTED_DIGGING) {
                 MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, packet.blockPosition(), packet.blockFace(), PlayerInteractEvent.Interaction.Left));
+                player.lastInteractPacket = System.currentTimeMillis();
+                player.blockInteractBuffer = 3;
                 if (!player.getWorldProvider().useCustomMining()) {
                     Block block = player.getInstance().getBlock(packet.blockPosition());
                     double hardness = block.registry().hardness();
@@ -607,6 +613,9 @@ public class SkyblockPlayer extends Player {
     private BankAccountType bankAccountType;
     @Getter
     private LimitedList<BankRecord> lastBankTransactions = new LimitedList<>(10);
+    @Getter
+    @Setter
+    private int blockInteractBuffer = 0;
 
     /**
      * This is to set up stuff, when the player gets spawned (respawn or server join)
