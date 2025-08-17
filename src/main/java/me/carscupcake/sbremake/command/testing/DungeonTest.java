@@ -47,8 +47,9 @@ public class DungeonTest extends Command {
                         } else {
                             var type = generator.getDoorsVertical()[z.pos().x()][z.pos().z()];
                             if (type == DoorType.Wither || type == DoorType.Fairy) System.out.print(ANSI_BLACK);
+                            if (type == DoorType.Bridge) System.out.print(ANSI_CYAN);
                             System.out.print("-");
-                            if (type == DoorType.Wither || type == DoorType.Fairy) System.out.print(ANSI_RESET);
+                            if (type == DoorType.Wither || type == DoorType.Fairy || type == DoorType.Bridge) System.out.print(ANSI_RESET);
                         }
                     }
                     var s = z.shape().toString();
@@ -72,8 +73,9 @@ public class DungeonTest extends Command {
                     if (generator.getDoorsHorizontal()[z.pos().x()][z.pos().z()] != null) {
                         var type = generator.getDoorsHorizontal()[z.pos().x()][z.pos().z()];
                         if (type == DoorType.Wither || type == DoorType.Fairy) System.out.print(ANSI_BLACK);
+                        if (type == DoorType.Bridge) System.out.print(ANSI_CYAN);
                         System.out.print("|");
-                        if (type == DoorType.Wither || type == DoorType.Fairy) System.out.print(ANSI_RESET);
+                        if (type == DoorType.Wither || type == DoorType.Fairy || type == DoorType.Bridge) System.out.print(ANSI_RESET);
                     } else System.out.print("-");
                     System.out.print("-".repeat(4));
                     if (z.pos().z() == 5) continue;

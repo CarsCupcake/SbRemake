@@ -3,11 +3,7 @@ package me.carscupcake.sbremake.worlds.impl.dungeon;
 import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
 import me.carscupcake.sbremake.Main;
-import me.carscupcake.sbremake.util.PalletItem;
 import me.carscupcake.sbremake.util.Pos2d;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.ListBinaryTag;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
@@ -114,53 +110,7 @@ public class Paster {
                     if (origin < 0) origin += 4;
                     var jsonPallete = obj.get("pallete").getAsJsonArray();
                     Block[] blocks = new Block[jsonPallete.size()];
-                    for (int i = 0; i < blocks.length; i++) {
-                        var object = jsonPallete.get(i).getAsJsonObject();
-                        var map = new HashMap<String, String>();
-                        for (var e : object.get("properties").getAsJsonArray()) {
-                            var prop = e.getAsJsonObject();
-                            var name = prop.get("name").getAsString();
-                            var value = prop.get("value").getAsString().toLowerCase();
-                            if (name.equals("rotation")) {
-                                var intValue = Integer.parseInt(value);
-                                value = String.valueOf((intValue + 4) % 16);
-                            } else if (name.equals("facing")) {
-                                var en = FacingDirection.fromId(value);
-                                for (int j = 0; j < origin; j++) {
-                                    en = en.next();
-                                }
-                                value = en.getId();
-                            } else if (name.equals("axis") && !value.equals("y")) {
-                                if (origin % 2 != 0) value = value.equals("x") ? "z" : "x";
-                            } else {
-                                if (prop.get("type").getAsString().equals("class_4778")) {
-                                    var en = FacingDirection.fromId(name);
-                                    for (int j = 0; j < origin; j++) {
-                                        en = en.next();
-                                    }
-                                    name = en.getId();
-                                } else if (prop.get("type").getAsString().equals("Boolean")) {
-                                    var en = FacingDirection.fromId(name);
-                                    if (en != null) {
-                                        for (int j = 0; j < origin; j++) {
-                                            en = en.next();
-                                        }
-                                        name = en.getId();
-                                    }
-                                }
-                            }
-                            map.put(name, value.toLowerCase());
-                        }
-                        var b = Block.fromKey(Key.key(object.get("id").getAsString())).withProperties(map);
-
-                        if (object.has("texture")) {
-                            var textures = CompoundBinaryTag.empty().putString("name", "textures").putString("value", object.get("texture").getAsString());
-                            var properties = ListBinaryTag.from(List.of(textures));
-                            var profile = CompoundBinaryTag.empty().putString("name", "CarsCupcake").put("properties", properties);
-                            b = b.withNbt(CompoundBinaryTag.empty().put("profile", profile));
-                        }
-                        blocks[i] = b;
-                    }
+                    DungeonWorldProvider.loadPalette(origin, jsonPallete, blocks);
                     var xArr = obj.get("blocks").getAsJsonArray();
                     for (var x = 0; x < xArr.size(); x++) {
                         var yArr = xArr.get(x).getAsJsonArray();

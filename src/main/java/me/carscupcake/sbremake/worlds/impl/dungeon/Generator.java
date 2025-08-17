@@ -298,14 +298,8 @@ public class Generator {
     private List<Node> reconstructPath(Node[][] parent, Node endNode) {
         List<Node> path = new ArrayList<>();
         Node current = endNode;
-
-        // Traverse back from the end node to the start node using parent pointers
         while (current != null) {
             path.add(current);
-            // The start node will have a null parent, which breaks the loop
-            // For the very first node (start node), its parent will remain null
-            // unless we initialize it specially. So, we make sure parent[startR][startC]
-            // is null or somehow distinguishable. In this setup, it naturally is.
             var o = current;
             var oo = new Pos2d(current.row, current.col);
             current = parent[current.row][current.col];
@@ -313,14 +307,18 @@ public class Generator {
                 var curr = new Pos2d(current.row, current.col);
                 var diff = oo.sub(curr);
                 if (diff.x() != 0) {
-                    doorsHorizontal[curr.x() + (diff.x() > 0 ? 0 : -1)][curr.z()] = o == endNode ? DoorType.Fairy : DoorType.Wither;
+                    int i = curr.x() + (diff.x() > 0 ? 0 : -1);
+                    if (doorsHorizontal[i][curr.z()] == DoorType.Normal)
+                        doorsHorizontal[i][curr.z()] = o == endNode ? DoorType.Fairy : DoorType.Wither;
                 } else {
-                    doorsVertical[curr.x()][curr.z() + (diff.z() > 0 ? 0 : -1)] = o == endNode ? DoorType.Fairy : DoorType.Wither;
+                    int i = curr.z() + (diff.z() > 0 ? 0 : -1);
+                    if (doorsVertical[curr.x()][i] == DoorType.Normal)
+                        doorsVertical[curr.x()][i] = o == endNode ? DoorType.Fairy : DoorType.Wither;
                 }
             }
         }
 
-        Collections.reverse(path); // Reverse the list to get path from start to end
+        Collections.reverse(path);
         return path;
     }
 

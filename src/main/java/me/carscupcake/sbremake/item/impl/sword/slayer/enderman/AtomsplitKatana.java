@@ -24,18 +24,18 @@ public class AtomsplitKatana implements ISbItem, ISbItem.StatProvider, GemstoneS
     private final Lore lore =
             new Lore("§7Deals §a+300% §7damage to Endermen. Receive §a12%§7 less damage from Endermen when held.\n§7Gain " + Stat.CombatWisdom.getPrefix() + "+45 " + Stat.CombatWisdom + "§7 agains Enderman");
     private final List<Ability> ability = List.of(new ItemAbility<>("Soulcry", AbilityType.RIGHT_CLICK, new SoulcryAbility(400), new Lore("§7Gain " +
-                                                                                                                                                  "§c+400 ⫽Ferocity§7 against Endermen for §a4s§7."), new SoulcryAbility(0), new ManaRequirement<>(200), new CooldownRequirement<>(4), new SoulflowRequirement<>(2)));
+            "§c+400 ⫽Ferocity§7 against Endermen for §a4s§7."), new SoulcryAbility(0), new ManaRequirement<>(200), new CooldownRequirement<>(4), new SoulflowRequirement<>(2)));
     private final GemstoneSlotType[] slots = {GemstoneSlotType.Jasper, GemstoneSlotType.Sapphire, GemstoneSlotType.Sapphire};
     private final boolean[] unlocked = {false, false, false};
     private final Cost[][] costs = {{new CoinsCost(50_000), new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Jasper).get(Gemstone.Quality.Fine)
-                                                                                 .asItem(), 20)}, {new CoinsCost(100_000),
+            .asItem(), 20)}, {new CoinsCost(100_000),
             new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Sapphire)
-                                 .get(Gemstone.Quality.Fine)
-                                 .asItem(), 40)},
+                    .get(Gemstone.Quality.Fine)
+                    .asItem(), 40)},
             {new CoinsCost(250_000),
                     new ItemCost(GemstoneItem.gemstones.get(Gemstone.Type.Sapphire)
-                                         .get(Gemstone.Quality.Flawless)
-                                         .asItem(), 2)}};
+                            .get(Gemstone.Quality.Flawless)
+                            .asItem(), 2)}};
 
     @Override
     public String getId() {
