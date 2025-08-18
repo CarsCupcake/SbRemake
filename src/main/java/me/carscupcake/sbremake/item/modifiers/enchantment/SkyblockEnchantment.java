@@ -11,11 +11,10 @@ import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.util.ArrayUtil;
 import me.carscupcake.sbremake.util.EnchantmentUtils;
-import me.carscupcake.sbremake.util.PlayerDamageEntityListener;
+import me.carscupcake.sbremake.event.eventBinding.PlayerDamageEntityBinding;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.component.DataComponents;
-import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -73,7 +72,7 @@ public interface SkyblockEnchantment {
             });
 
     static void initListener() {
-        LISTENER.register(new PlayerDamageEntityListener(event -> {
+        LISTENER.register(new PlayerDamageEntityBinding(event -> {
             SbItemStack item = event.getPlayer().getSbItemInHand(PlayerHand.MAIN);
             if (item == null) return;
             Map<SkyblockEnchantment, Integer> enchantments = item.getEnchantments();

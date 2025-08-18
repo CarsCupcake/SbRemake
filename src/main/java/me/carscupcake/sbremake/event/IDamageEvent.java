@@ -6,10 +6,12 @@ import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
+import net.minestom.server.event.Event;
 
 import java.time.Duration;
+import java.util.function.Consumer;
 
-public interface IDamageEvent {
+public interface IDamageEvent extends Event {
     default void spawnDamageTag() {
         LivingEntity e = new LivingEntity(EntityType.ARMOR_STAND);
         e.setCustomName(Component.text("§7" + (StringUtils.cleanDouble(getCachedDamage(), 0))));
@@ -50,4 +52,7 @@ public interface IDamageEvent {
         setCachedDamage(((getNormalDamage() * (1d - damageReduction)) + (getTrueDamage() * (1d - trueDamageReduction))) * getMultiplier());
         return getCachedDamage();
     }
+
+    void onDamageFinalize(Consumer<Double> consumer);
+    void triggerFinalizer(double damage);
 }

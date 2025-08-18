@@ -5,7 +5,7 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.ability.Requirement;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.PlayerDamageEntityListener;
+import me.carscupcake.sbremake.event.eventBinding.PlayerDamageEntityBinding;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import net.minestom.server.entity.EntityType;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public record SoulcryAbility(int ferocity) implements Consumer<PlayerInteractEvent>, Requirement<PlayerInteractEvent> {
     public static final Map<SkyblockPlayer, Integer> items = new HashMap<>();
     public static final EventNode<Event> LISTENER =
-            EventNode.all("ability.soulcry").register(new PlayerDamageEntityListener(event -> {
+            EventNode.all("ability.soulcry").register(new PlayerDamageEntityBinding(event -> {
                 if (event.getTarget().getEntityType() != EntityType.ENDERMAN) return;
                 var ferocity = items.get(event.getPlayer());
                 if (ferocity == null) return;

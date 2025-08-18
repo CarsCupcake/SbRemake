@@ -171,6 +171,7 @@ public enum RoomShape {
         rooms[target.x()][target.z()] = roomBase;
         for (var child : children) {
             rooms[child.x()][child.z()] = new Room(RoomType.Room, this, child, rotation, List.of(), target);
+
         }
         return true;
     }

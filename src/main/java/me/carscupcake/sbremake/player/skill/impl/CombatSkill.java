@@ -8,7 +8,7 @@ import me.carscupcake.sbremake.player.skill.ISkill;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.rewards.Reward;
 import me.carscupcake.sbremake.rewards.impl.SkyblockXpReward;
-import me.carscupcake.sbremake.util.PlayerDamageEntityListener;
+import me.carscupcake.sbremake.event.eventBinding.PlayerDamageEntityBinding;
 import me.carscupcake.sbremake.util.StringUtils;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -25,7 +25,7 @@ public class CombatSkill extends ISkill {
             if (event.stat() != Stat.CritChance) return;
             event.modifiers().add(new PlayerStatEvent.BasicModifier("Combat Skill", event.player().getSkill(Skill.Combat).getLevel() * 0.5, PlayerStatEvent.Type.Value, PlayerStatEvent.StatsCategory.Skills));
         });
-        LISTENER.register(new PlayerDamageEntityListener(CombatSkill::process));
+        LISTENER.register(new PlayerDamageEntityBinding(CombatSkill::process));
     }
 
     private static void process(PlayerToEntityDamageEvent event) {

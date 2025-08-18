@@ -1,7 +1,6 @@
 package me.carscupcake.junit;
 
 import me.carscupcake.sbremake.util.Pos2d;
-import me.carscupcake.sbremake.util.StringUtils;
 import me.carscupcake.sbremake.worlds.impl.dungeon.*;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
@@ -30,10 +29,10 @@ public class DungeonTests {
                 if (len / 2 != 0) System.out.print("-".repeat(len / 2));
                 if (z.type() == RoomType.Blood) System.out.print(ANSI_RED);
                 if (z.type() == RoomType.Entrance) System.out.print(ANSI_GREEN);
-                if (z.type() == RoomType.Fairy)  System.out.print(ANSI_PURPLE);
+                if (z.type() == RoomType.Fairy) System.out.print(ANSI_PURPLE);
                 if (z.type() == RoomType.Trap) System.out.print(ANSI_WHITE);
-                if (z.type() == RoomType.Mini)   System.out.print(ANSI_YELLOW);
-                if (z.type() == RoomType.Puzzle)   System.out.print(ANSI_BLUE);
+                if (z.type() == RoomType.Mini) System.out.print(ANSI_YELLOW);
+                if (z.type() == RoomType.Puzzle) System.out.print(ANSI_BLUE);
                 System.out.print("[" + s + "]");
                 if (z.type() != RoomType.Room) System.out.print(ANSI_RESET);
                 if (len / 2 != 0) System.out.print("-".repeat(len / 2));
@@ -68,8 +67,8 @@ public class DungeonTests {
 
     @Test
     public void testIsDeterministic() {
-        var gen1  = new Generator(new Room[6][6], 1);
-        var gen2  = new Generator(new Room[6][6], 1);
+        var gen1 = new Generator(new Room[6][6], 1);
+        var gen2 = new Generator(new Room[6][6], 1);
         Assert.assertArrayEquals(gen1.getRooms(), gen2.getRooms());
     }
 
@@ -78,15 +77,14 @@ public class DungeonTests {
         for (int x = 0; x < 20; x++)
             for (int y = 0; y < 20; y++)
                 for (int z = 0; z < 20; z++) {
-                    var point = new Pos(x, y, z);
                     for (int mapX = 0; mapX < 6; mapX++) {
                         for (int mapZ = 0; mapZ < 6; mapZ++)
-                        for (var shape : RoomShape.values()){
-                            for (var dir : Rotation.values()) {
-                            var pos = new Vec(x, y, z);
-                            Assert.assertEquals(pos, shape.toRelative(new Pos2d(1, 2), shape.toActual(new Pos2d(1, 2), pos, dir), dir));
-                        }
-                        }
+                            for (var shape : RoomShape.values()) {
+                                for (var dir : Rotation.values()) {
+                                    var pos = new Vec(x, y, z);
+                                    Assert.assertEquals(pos, shape.toRelative(new Pos2d(1, 2), shape.toActual(new Pos2d(1, 2), pos, dir), dir));
+                                }
+                            }
                     }
                 }
     }
