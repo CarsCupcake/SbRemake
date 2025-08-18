@@ -12,13 +12,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public record CooldownRequirement<T extends PlayerEvent>(long cooldown,
-                                                         ChronoUnit timeUnit) implements Requirement<T> {
+                                                         ChronoUnit timeUnit, Map<SkyblockPlayer, Long> cooldowns) implements Requirement<T> {
 
     public CooldownRequirement(double seconds) {
         this((long) (seconds * 1000), ChronoUnit.MILLIS);
     }
-
-    public static Map<SkyblockPlayer, Long> cooldowns = new HashMap<>();
+    public CooldownRequirement(long time,
+                               ChronoUnit timeUnit) {
+        this(time, timeUnit, new HashMap<>());
+    }
 
     @Override
     public boolean requirement(T t) {

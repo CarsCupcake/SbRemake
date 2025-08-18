@@ -29,9 +29,18 @@ public class GyrokineticWand implements ISbItem, Listener {
     private final static Block[] BLOCK_TYPES = {Block.PURPLE_STAINED_GLASS, Block.OBSIDIAN};
     private final List<Ability> abilities = List.of(
             new ItemAbility<>("Gravity Storm", AbilityType.LEFT_CLICK, event -> {
-                var middle = event.block() == null ? event.getPlayer().getPosition().add(0, -0.5, 0) : event.block().add(0.5, 0.5, 0.5);
+                var middle = event.block() == null ? null : event.block();
+                if (middle == null) {
+                    middle = event.player().getTargetBlockPosition(24);
+                    if (middle == null) {
+
+                        return;
+                    }
+                }
+                middle = middle.add(0.5, 0.7, 0.5);
                 var pulling = Vec.fromPoint(middle.add(0, 1, 0));
                 var instance = event.getPlayer().getInstance();
+                var finalMiddle = middle;
                 new TaskScheduler() {
                     private final Random random = new Random();
                     private int ticks = 20;
@@ -40,7 +49,7 @@ public class GyrokineticWand implements ISbItem, Listener {
                     @Override
                     public void run() {
                         if (tot % 2 == 0) {
-                            instance.playSound(SoundType.ENTITY_ENDERMAN_TELEPORT.create(1, 1.5f - ((float) ticks / 20)), middle);
+                            instance.playSound(SoundType.ENTITY_ENDERMAN_TELEPORT.create(1, 1.5f - ((float) ticks / 20)), finalMiddle);
                             var unit = new Vec((double) ticks / 2, 0, 0);
                             for (int i = 0; i < 10; i++) {
                                 var pos = unit.rotateAroundY(random.nextDouble() * 360);
@@ -54,7 +63,7 @@ public class GyrokineticWand implements ISbItem, Listener {
                                 };
                                 var meta = (FallingBlockMeta) entity.getEntityMeta();
                                 meta.setBlock(BLOCK_TYPES[random.nextInt(BLOCK_TYPES.length)]);
-                                entity.setInstance(instance, middle.add(pos));
+                                entity.setInstance(instance, finalMiddle.add(pos));
                                 entity.setVelocity(new Vec((random.nextDouble() - 0.5) * 10, 1, (random.nextDouble() - 0.5) * 10));
                                 entity.setNoGravity(false);
                                 entity.scheduleRemove(Duration.ofSeconds(2));
@@ -68,7 +77,7 @@ public class GyrokineticWand implements ISbItem, Listener {
                         }
                         for (int i = 0; i < 360; i += 10) {
                             var pos = new Vec((double) ticks / 2, 1, 0).rotateAroundY(i + (tot % 2 == 0 ? 5 : 0));
-                            ParticleUtils.spawnParticle(instance, middle.add(pos), Particle.WITCH, 1);
+                            ParticleUtils.spawnParticle(instance, finalMiddle.add(pos), Particle.WITCH, 1);
                         }
                         for (var entity : instance.getNearbyEntities(pulling, 10)) {
                             if (!(entity instanceof SkyblockEntity)) continue;
@@ -84,7 +93,7 @@ public class GyrokineticWand implements ISbItem, Listener {
                     }
                 }.repeatTask(0, 1);
             }, new Lore("§7Create a large §5rift §7at the aimed location, pulling all mobs together.\n§8Regen mana 10x slower for 3s after cast."),
-                    new CooldownRequirement<>(30), new ManaRequirement<>(1200), new SoulflowRequirement<>(10)),
+                    new CooldownRequirement<>(30), new ManaRequirement<>(1200), new SoulflowRequirement<>(10), event -> event.block() != null || event.player().getTargetBlockPosition(24) != null),
             new ItemAbility<>("Cells Alignment", AbilityType.RIGHT_CLICK, event -> {
                 var other = event.player().getInstance().getPlayers().stream().filter(player -> player.getPosition().distanceSquared(event.player().getPosition()) <= 400).limit(4).toList();
                 var all = new HashSet<SkyblockPlayer>();
