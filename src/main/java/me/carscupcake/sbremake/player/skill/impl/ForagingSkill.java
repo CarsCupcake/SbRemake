@@ -75,6 +75,11 @@ public class ForagingSkill extends ISkill {
         return List.of(new LoggerReward(level), makeCoinReward(level), new SkyblockXpReward(xpFromLevel(level)));
     }
 
+    @Override
+    public Skill getSkill() {
+        return Skill.Foraging;
+    }
+
     public record LoggerReward(int level) implements Reward {
 
         @Override

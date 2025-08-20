@@ -76,6 +76,10 @@ public abstract class ISkill implements SkyblockXpTask {
                 .build();
     }
 
+    public double getPercentages() {
+        return (xp / nextLevelXp[level]) * 100;
+    }
+
     public abstract int getMaxLevel();
 
     public abstract String getName();
@@ -232,4 +236,6 @@ public abstract class ISkill implements SkyblockXpTask {
     public long getTotalXp() {
         return getSkyblockXpForLevel(level);
     }
+
+    public abstract Skill getSkill();
 }

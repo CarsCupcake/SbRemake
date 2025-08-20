@@ -45,6 +45,7 @@ import me.carscupcake.sbremake.util.item.Gui;
 import me.carscupcake.sbremake.util.item.InventoryBuilder;
 import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.quest.Dialog;
+import me.carscupcake.sbremake.widgets.WidgetContainer;
 import me.carscupcake.sbremake.worlds.*;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.sound.Sound;
@@ -624,6 +625,9 @@ public class SkyblockPlayer extends Player {
     private double lastAbsorbtion = 0;
     private double lastSpeed = 0;
     private boolean noSave = false;
+
+    @Getter
+    private WidgetContainer widgetContainer;
 
     public SkyblockPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile, UUID configId) {
         super(playerConnection, gameProfile);
@@ -1407,6 +1411,11 @@ public class SkyblockPlayer extends Player {
         this.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((float) (0.1 * (speed / 100d)));
         this.getAttribute(Attribute.FLYING_SPEED).setBaseValue((float) (0.1 * (speed / 100d)));
         this.sendPacket(new PlayerAbilitiesPacket(this.getGameMode() == GameMode.CREATIVE ? PlayerAbilitiesPacket.FLAG_ALLOW_FLYING : (byte) 0, 0.05f, (float) (0.1 * (speed / 100d))));
+
+        if (widgetContainer == null) {
+            widgetContainer = new WidgetContainer(this);
+            widgetContainer.repeatTask(20, 20);
+        }
     }
 
     public float getMaxHealth() {
@@ -1647,6 +1656,12 @@ public class SkyblockPlayer extends Player {
             }
         }
         return true;
+    }
+
+    @Override
+    public void remove(boolean permanent) {
+        super.remove(permanent);
+        widgetContainer.cancel();
     }
 
     public void setSbHealth(double health) {

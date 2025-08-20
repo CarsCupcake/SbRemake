@@ -79,6 +79,11 @@ public class Dungeoneering extends ISkill {
         return List.of(new HealthReward(level), new SkyblockXpReward(xpFromLevel(level)), new DungeonStatReward(level));
     }
 
+    @Override
+    public Skill getSkill() {
+        return Skill.Dungeneering;
+    }
+
     public record HealthReward(int level) implements Reward {
 
         @Override
