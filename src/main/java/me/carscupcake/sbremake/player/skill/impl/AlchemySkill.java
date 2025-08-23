@@ -53,6 +53,11 @@ public class AlchemySkill extends ISkill {
         return List.of(new IntelligenceReward(level), new SkyblockXpReward(xpFromLevel(level)), new DungeonStatReward(level));
     }
 
+    @Override
+    public Skill getSkill() {
+        return Skill.Alchemy;
+    }
+
     public record IntelligenceReward(int level) implements Reward {
 
         @Override

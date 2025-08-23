@@ -60,6 +60,11 @@ public class CombatSkill extends ISkill {
         return List.of(new WarriorReward(level), makeCoinReward(level), new SkyblockXpReward(xpFromLevel(level)));
     }
 
+    @Override
+    public Skill getSkill() {
+        return Skill.Combat;
+    }
+
     public record WarriorReward(int level) implements Reward {
 
         @Override

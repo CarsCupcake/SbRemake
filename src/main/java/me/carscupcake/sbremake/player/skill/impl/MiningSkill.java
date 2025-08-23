@@ -68,6 +68,11 @@ public class MiningSkill extends ISkill {
         return List.of(new SpelunkerReward(level), makeCoinReward(level), new SkyblockXpReward(xpFromLevel(level)));
     }
 
+    @Override
+    public Skill getSkill() {
+        return Skill.Mining;
+    }
+
     public record SpelunkerReward(int level) implements Reward {
 
         @Override

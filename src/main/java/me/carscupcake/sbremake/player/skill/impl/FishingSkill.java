@@ -68,6 +68,11 @@ public class FishingSkill extends ISkill {
         return List.of(new TreasureHunterReward(level), makeCoinReward(level), new SkyblockXpReward(xpFromLevel(level)));
     }
 
+    @Override
+    public Skill getSkill() {
+        return Skill.Fishing;
+    }
+
     public record TreasureHunterReward(int level) implements Reward {
 
         @Override

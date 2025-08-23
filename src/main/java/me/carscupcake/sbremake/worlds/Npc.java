@@ -31,7 +31,7 @@ public class Npc extends AbstractNpc {
         PlayerInfoUpdatePacket.Property property = new PlayerInfoUpdatePacket.Property("textures", playerSkin.textures(), playerSkin.signature());
         this.entry = new PlayerInfoUpdatePacket.Entry(UuidCreator.getDceSecurity(UuidCreator.LOCAL_DOMAIN_PERSON, entityId),
                 name, List.of(property),
-                false, 0, GameMode.CREATIVE, Component.text(name), null, 0);
+                false, 0, GameMode.CREATIVE, Component.text(name), null, 0, false);
 
     }
 

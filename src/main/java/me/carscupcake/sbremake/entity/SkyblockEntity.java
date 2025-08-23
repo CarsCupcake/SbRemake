@@ -668,6 +668,10 @@ public abstract class SkyblockEntity extends EntityCreature {
 
         @Override
         public void run() {
+            if (instance == null) {
+                self.cancel();
+                return;
+            }
             ticks--;
             damage(player, false);
             Particle.Dust dust = Particle.Dust.DUST.withColor(new Color(0xFF0000));

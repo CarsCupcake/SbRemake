@@ -69,7 +69,7 @@ import java.util.zip.ZipInputStream;
 
 @Getter
 public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, WorldSelector {
-    PrivateIsle("private_isle", FileEnding.ZIP) {
+    PrivateIsle("Private Isle", "private_isle", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             throw new UnsupportedOperationException();
@@ -91,70 +91,70 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
             }
         }
     },
-    Hub("hub", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
+    Hub("Hub", "hub", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
         public WorldProvider get() {
             return new Hub();
         }
-    }, GoldMines("gold", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
+    }, GoldMines("Gold Mines", "gold", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
         public WorldProvider get() {
             return new GoldMines();
         }
-    }, DeepCaverns("deep", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
+    }, DeepCaverns("Deep Caverns", "deep", FileEnding.ZIP, WorldProvider.VANILLA_ORES) {
         @Override
         public WorldProvider get() {
             return new DeepCaverns();
         }
-    }, DwarvenMines("mines", FileEnding.ZIP, new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre(), new BlueMithril(), new CyanTerracottaMithril(), new DarkPrismarineMithril(), new GrayWoolMithril(), new PrismarineBrickMithril(), new PrismarineMithril(), new Titanium()) {
+    }, DwarvenMines("Dwarven Mines", "mines", FileEnding.ZIP, new Stone(), new Cobblestone(), new CoalOre(), new IronOre(), new GoldOre(), new LapisLazuliOre(), new RedstoneOre(), new EmeraldOre(), new DiamondBlock(), new DiamondOre(), new BlueMithril(), new CyanTerracottaMithril(), new DarkPrismarineMithril(), new GrayWoolMithril(), new PrismarineBrickMithril(), new PrismarineMithril(), new Titanium()) {
         @Override
         public WorldProvider get() {
             return new DwarvenMines();
         }
     },
-    LegacyPark("park", FileEnding.ZIP) {
+    LegacyPark("Legacy Park", "park", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             return new LegacyPark();
         }
     },
-    ThePark("the_park", FileEnding.ZIP) {
+    ThePark("Park", "the_park", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             return new ThePark();
         }
     },
-    Galatea("galatea", FileEnding.ZIP) {
+    Galatea("Galatea", "galatea", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             return new Galatea();
         }
     },
-    FarmingIsles("farming_isles", FileEnding.ZIP) {
+    FarmingIsles("Farming Isles", "farming_isles", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             return new FarmingIsles();
         }
     },
-    SpidersDen("spiders_den", FileEnding.ZIP) {
+    SpidersDen("Spiders Den", "spiders_den", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             return new SpidersDen();
         }
     },
-    End("end", FileEnding.ZIP) {
+    End("End", "end", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             return new End();
         }
     },
-    CrimsonIsle("crimson_isle", FileEnding.ZIP) {
+    CrimsonIsle("Crimson Isle", "crimson_isle", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             return new CrimsonIsle();
         }
     },
-    Dungeon("dungeon", FileEnding.ZIP) {
+    Dungeon("Dungeon", "dungeon", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {
             throw new UnsupportedOperationException("Dungeon cant be instantiated");
@@ -166,9 +166,11 @@ public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, Wo
     private final String id;
     private final FileEnding fileEnding;
     private final MiningBlock[] ores;
+    private final String name;
 
-    SkyblockWorld(String id, FileEnding fileEnding, MiningBlock... ores) {
+    SkyblockWorld(String name, String id, FileEnding fileEnding, MiningBlock... ores) {
         this.id = id;
+        this.name = name;
         this.fileEnding = fileEnding;
         this.ores = (ores == null) ? new MiningBlock[0] : ores;
     }
