@@ -53,6 +53,8 @@ public class WidgetContainer extends TaskScheduler {
         registerWidget(WidgetTypes.Skills.create(player, config));
         registerWidget(new SingleTabAllocation("", PlayerListingColor.Gray));
         registerWidget(WidgetTypes.Stats.create(player, config));
+        registerWidget(new SingleTabAllocation("", PlayerListingColor.Gray));
+        registerWidget(WidgetTypes.Collections.create(player, config));
     }
 
     public void updateName(int i, TabListItem item) {

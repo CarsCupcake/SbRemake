@@ -30,7 +30,7 @@ public class StatsWidget implements IWidget {
             var s = player.getStat(stat);
             if (s != cachedSkillValues.getOrDefault(stat, -1d)) {
                 cachedSkillValues.put(stat, s);
-                allocated.get(i + 1).updateName(Component.text(" " + stat.getName() + ": " + stat.getPrefix() + stat.getSymbol() + " " + StringUtils.toFormatedNumber(s)));
+                allocated.get(i + 1).updateName(Component.text(" " + stat.getName() + ": " + stat.getPrefix() + stat.getSymbol() +  StringUtils.toFormatedNumber(s)));
             }
             i++;
         }
@@ -48,7 +48,7 @@ public class StatsWidget implements IWidget {
 
     @Override
     public WidgetTypes type() {
-        return null;
+        return WidgetTypes.Stats;
     }
 
     @Override

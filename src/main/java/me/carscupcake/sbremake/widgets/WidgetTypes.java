@@ -7,6 +7,7 @@ import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.widgets.impl.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public enum WidgetTypes {
     GeneralInfo {
@@ -47,6 +48,13 @@ public enum WidgetTypes {
                 list.add(Stat.valueOf(skill));
             }
             return new StatsWidget(player, list);
+        }
+    },
+    Collections {
+        @Override
+        IWidget create(SkyblockPlayer player, ConfigSection config) {
+            var collectionArray = config.get("collections", ConfigSection.STRING_ARRAY, new String[]{"COAL", "COBBLESTONE", "OAK_WOOD"});
+            return new CollectionsWidget(Arrays.stream(collectionArray).map(s -> player.getCollections().get(s)).toList());
         }
     };
 
