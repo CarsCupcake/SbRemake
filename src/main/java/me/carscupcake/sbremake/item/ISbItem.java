@@ -144,6 +144,7 @@ public interface ISbItem {
     }
 
     static void init() {
+        MinecraftServer.getGlobalEventHandler().addChild(DungeonItem.LISTENER);
         UltimateEnchantment.ULTIMATE_ENCHANTMENTS.addAll(Arrays.asList(UltimateEnchantments.values()));
         for (Material material : Material.values()) {
             String name = StringUtils.connect(material.key().value().split("_"), true);
