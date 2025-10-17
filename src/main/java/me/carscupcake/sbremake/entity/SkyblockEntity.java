@@ -527,6 +527,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         }
 
         private @NotNull List<Pos> getNearbyBlocks(int radius, boolean precompilePos) {
+            if (entity.getInstance() == null) return List.of();
             List<Pos> blocks = new ArrayList<>();
             for (int x = -radius; x <= radius; ++x) {
                 for (int y = -radius; y <= radius; ++y) {

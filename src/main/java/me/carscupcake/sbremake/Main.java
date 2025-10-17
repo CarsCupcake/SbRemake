@@ -33,6 +33,7 @@ import me.carscupcake.sbremake.worlds.impl.PrivateIsle;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import net.minestom.server.Auth;
 import net.minestom.server.LoggerProvider;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
@@ -43,12 +44,14 @@ import net.minestom.server.event.player.*;
 import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
+import net.minestom.server.extras.mojangAuth.MojangCrypt;
 import net.minestom.server.extras.velocity.VelocityProxy;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.client.play.ClientConfigurationAckPacket;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
 import net.minestom.server.timer.TaskSchedule;
+import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import org.slf4j.event.Level;
 
@@ -93,7 +96,32 @@ public class Main {
         MinecraftServer.LoggerProvider = new SkyblockLoggerProvider();
         LOGGER = (SkyblockSimpleLogger) MinecraftServer.LoggerProvider.getLogger(Main.class);
         MinecraftServer.LOGGER = LOGGER;
-        MinecraftServer server = MinecraftServer.init();
+        Auth auth = new Auth.Online();
+        var itt = Arrays.stream(args).iterator();
+        while (itt.hasNext()) {
+            var arg = itt.next();
+            if (arg.equals("--open-lan")) {
+                OpenToLAN.open();
+            }
+            if (arg.equals("-velocity")) {
+                var secret = itt.hasNext() ? itt.next() : null;
+                if (secret != null) {
+                    auth = new Auth.Velocity(secret);
+                    Main.LOGGER.info("Velocity Proxy enabled");
+                } else {
+                    Main.LOGGER.error("Please Provide a velocity secret!");
+                }
+            }
+        }
+        try {
+            isCracked = Boolean.parseBoolean(args[1]);
+        } catch (Exception ignored) {
+        }
+        if (isCracked) {
+            auth = new Auth.Offline();
+            crackedRegistry = new ConfigFile("cracked-players");
+        }
+        MinecraftServer server =  MinecraftServer.init(auth);
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
         for (var s : registerDefaultManagers)
             MinecraftServer.getBlockManager().registerHandler("minecraft:" + s, () -> () -> Key.key(s));
@@ -190,28 +218,6 @@ public class Main {
                 LOGGER.error("Error while instantiating {}", clazz, e);
             }
         }
-        var itt = Arrays.stream(args).iterator();
-        while (itt.hasNext()) {
-            var arg = itt.next();
-            if (arg.equals("--open-lan")) {
-                OpenToLAN.open();
-            }
-            if (arg.equals("-velocity")) {
-                var secret = itt.hasNext() ? itt.next() : null;
-                if (secret != null) {
-                    VelocityProxy.enable(secret);
-                    Main.LOGGER.info("Velocity Proxy enabled");
-                } else {
-                    Main.LOGGER.error("Please Provide a velocity secret!");
-                }
-            }
-        }
-        try {
-            isCracked = Boolean.parseBoolean(args[1]);
-        } catch (Exception ignored) {
-        }
-        if (!isCracked) MojangAuth.init();
-        else crackedRegistry = new ConfigFile("cracked-players");
         System.out.println("Starting...");
         int port = 25565;
         try {
@@ -319,7 +325,7 @@ public class Main {
 
         private final SkyblockSimpleLogger logger =  new SkyblockSimpleLogger();
         @Override
-        public ComponentLogger getLogger(Class<?> clazz) {
+        public @NotNull ComponentLogger getLogger(@NotNull Class<?> clazz) {
             return logger;
         }
     }
