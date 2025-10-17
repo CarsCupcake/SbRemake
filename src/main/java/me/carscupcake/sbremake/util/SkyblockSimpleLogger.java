@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.util;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
@@ -30,13 +31,13 @@ import java.util.zip.ZipOutputStream;
 
 @Getter
 public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogger {
-    private static final LegacyComponentSerializer SERIALIZER;
+    private static final ANSIComponentSerializer SERIALIZER;
 
     static {
         try {
             Field f = MinestomComponentLoggerProvider.class.getDeclaredField("SERIALIZER");
             f.setAccessible(true);
-            SERIALIZER = (LegacyComponentSerializer) f.get(null);
+            SERIALIZER = (ANSIComponentSerializer) f.get(null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

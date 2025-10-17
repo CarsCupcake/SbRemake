@@ -23,13 +23,13 @@ public class TabListItem {
 
     public void updateName(Component name) {
         this.name = name;
-        this.entity =  new PlayerInfoUpdatePacket.Entry(entity.uuid(), entity.username(), entity.properties(), entity.listed(), entity.latency(), entity.gameMode(), name, entity.chatSession(), entity.listOrder(), entity.hat());
+        this.entity =  new PlayerInfoUpdatePacket.Entry(entity.uuid(), entity.username(), entity.properties(), entity.listed(), entity.latency(), entity.gameMode(), name, entity.chatSession(), entity.listOrder(), entity.displayHat());
         container.updateName(index, this);
     }
 
     public void updateColor(PlayerListingColor color) {
         this.color = color;
-        this.entity =  new PlayerInfoUpdatePacket.Entry(entity.uuid(), entity.username(), List.of(color.getProperty()), entity.listed(), entity.latency(), entity.gameMode(), entity.displayName(), entity.chatSession(), entity.listOrder(), entity.hat());
+        this.entity =  new PlayerInfoUpdatePacket.Entry(entity.uuid(), entity.username(), List.of(color.getProperty()), entity.listed(), entity.latency(), entity.gameMode(), entity.displayName(), entity.chatSession(), entity.listOrder(), entity.displayHat());
         container.updateColor(index, this);
     }
 }

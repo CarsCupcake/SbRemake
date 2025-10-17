@@ -8,12 +8,12 @@ plugins {
 }
 
 group = "me.carscupcake"
-version = "0.0.10"
+version = "0.0.11"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-        sourceCompatibility = JavaVersion.VERSION_21
+        languageVersion = JavaLanguageVersion.of(25)
+        sourceCompatibility = JavaVersion.VERSION_25
     }
 }
 application {
@@ -45,8 +45,8 @@ dependencies {
     implementation("dev.hollowcube:polar:1.7.2")
     implementation(project(":minestom"))
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
-    compileOnly("org.projectlombok:lombok:1.18.36")
-    annotationProcessor("org.projectlombok:lombok:1.18.36")
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.slf4j:slf4j-api:2.0.13")
