@@ -86,5 +86,4 @@ public class Gui {
             if (clickEvent.apply(click)) cancelled = true;
         return cancelled;
     }
-
 }

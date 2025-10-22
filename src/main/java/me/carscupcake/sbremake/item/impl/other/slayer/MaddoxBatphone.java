@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.item.impl.other.slayer;
 
+import me.carscupcake.sbremake.entity.slayer.Slayers;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.AbilityType;
@@ -7,6 +8,11 @@ import me.carscupcake.sbremake.item.ability.ItemAbility;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TaskScheduler;
+import me.carscupcake.sbremake.util.TemplateItems;
+import me.carscupcake.sbremake.util.item.Gui;
+import me.carscupcake.sbremake.util.item.InventoryBuilder;
+import me.carscupcake.sbremake.util.item.ItemBuilder;
+import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,9 +81,38 @@ public class MaddoxBatphone implements ISbItem, HeadWithValue, ISoulbound {
     public List<Ability> getDefaultAbilities() {
         return abilities;
     }
-
+    private static final ItemStack NO_SLAYER = new ItemBuilder(Material.COAL_BLOCK)
+            .setName("§cNot released yet!")
+            .addLoreRow("§7This boss is still in development!")
+            .build();
     public static void open(SkyblockPlayer player) {
-
+        var gui = new Gui(new InventoryBuilder(4, "Slayer")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .fill(NO_SLAYER, 10, 16)
+                .setItem(Slayers.Zombie.getDisplayItem(player.getSlayers().get(Slayers.Zombie).getLevel()), 10)
+                .setItem(Slayers.Enderman.getDisplayItem(player.getSlayers().get(Slayers.Enderman).getLevel()), 13)
+                .setItem(TemplateItems.Close.getItem(), 31)
+                .setItem(new ItemBuilder(player.isAutoSlayerEnabled() ? Material.LIME_DYE : Material.GRAY_DYE)
+                        .setName("§bAuto-Slayer")
+                        .addLore("""
+                                §7Upon defeating a boss, §aautomatically§7 completes the quest and starts another of the same type if you have enough §6coins§7 in your purse or bank.
+                                """)
+                        .addLoreIf(player::isAutoSlayerEnabled, "§7Currently: §aEnabled")
+                        .addLoreIf(() -> !player.isAutoSlayerEnabled(), "§7Currently: §cDisabled")
+                        .addAllLore(" ", "§eClick to " + (player.isAutoSlayerEnabled() ? "disable!" : "enable!"))
+                        .build(), 28)
+                .build());
+        gui.getClickEvents().add(31, _ -> {
+            player.closeGui();
+            return true;
+        });
+        gui.getClickEvents().add(28, _ -> {
+            player.setAutoSlayerEnabled(!player.isAutoSlayerEnabled());
+            open(player);
+            return true;
+        });
+        gui.setCancelled(true);
+        gui.showGui(player);
     }
 
     @Override

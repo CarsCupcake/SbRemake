@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.entity.slayer;
 
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphI;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphII;
@@ -27,6 +28,7 @@ import net.kyori.adventure.sound.Sound;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.instance.Instance;
+import net.minestom.server.item.Material;
 import net.minestom.server.particle.Particle;
 
 import java.util.HashMap;
@@ -39,6 +41,11 @@ public enum Slayers implements ISlayer {
         private double rngXp(RngMeterEntry entry) {
             lootChancesEntries.put(entry, entry.calculateHighestChance(RevenantHorrorI.lootTable, RevenantHorrorII.lootTable, RevenantHorrorIII.lootTable, RevenantHorrorIV.lootTable, RevenantHorrorV.lootTable));
             return entry.calculateRequiredXp(50_000, RevenantHorrorI.lootTable, RevenantHorrorII.lootTable, RevenantHorrorIII.lootTable, RevenantHorrorIV.lootTable, RevenantHorrorV.lootTable);
+        }
+
+        @Override
+        public MobType getMobType() {
+            return MobType.Undead;
         }
 
         @Override
@@ -166,8 +173,24 @@ public enum Slayers implements ISlayer {
             return true;
         }
 
+        @Override
+        public Material getMaterial() {
+            return Material.ROTTEN_FLESH;
+        }
+
+        @Override
+        public List<String> getLore() {
+            return List.of("§7Abhorrent Zombie stuck between",
+                    "§7life and death for an eternity.");
+        }
+
 
     }, Enderman("Enderman", "Voidgloom Seraph") {
+        @Override
+        public MobType getMobType() {
+            return MobType.Ender;
+        }
+
         @Override
         public SlayerEntity getEntity(int tier, SkyblockPlayer player) {
             return switch (tier) {
@@ -304,6 +327,18 @@ public enum Slayers implements ISlayer {
                 case 4 -> 22_000;
                 default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
             };
+        }
+
+        @Override
+        public Material getMaterial() {
+            return Material.ENDER_PEARL;
+        }
+
+        @Override
+        public List<String> getLore() {
+            return List.of("§7If Necron is the right-hand of",
+                    "§7the Wither King, this dark",
+                    "§7demigod is the left-hand.");
         }
     };
     private final String name;
