@@ -1,9 +1,14 @@
 package me.carscupcake.sbremake.entity.slayer;
 
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.Characters;
+import me.carscupcake.sbremake.util.item.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerRngMeter;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
 
 import java.util.List;
 
@@ -13,6 +18,8 @@ public interface ISlayer {
     String getMobName();
 
     String getId();
+
+    MobType getMobType();
 
     SlayerEntity getEntity(int tier, SkyblockPlayer player);
 
@@ -42,4 +49,21 @@ public interface ISlayer {
     boolean addXp(SkyblockEntity entity, int tier);
 
     boolean startSlayerQuest(int tier, SkyblockPlayer player);
+
+    Material getMaterial();
+
+    List<String> getLore();
+
+    default ItemStack getDisplayItem(int tier) {
+        return new ItemBuilder(getMaterial())
+                .setName("§c" + Characters.Skull + " §e" + getMobName())
+                .addLoreRow(getMobType().toString())
+                .addLore("§7 ")
+                .addAllLore(getLore())
+                .addLoreRow(" ")
+                .addLoreRow("§7" + getName() + " Level: §e LVL " + tier)
+                .addLoreRow(" ")
+                .addLoreRow("§eClick to view boss!")
+                .build();
+    }
 }
