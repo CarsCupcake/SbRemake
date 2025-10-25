@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.blocks.MiningBlock;
 import me.carscupcake.sbremake.command.DebugCommand;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.entity.slayer.SlayerEntity;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.Recipe;
 import me.carscupcake.sbremake.item.ability.Ability;
@@ -173,6 +174,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(AccessoryBag.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(Galatea.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(Minion.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(SlayerEntity.LISTENER);
         MinecraftServer.getGlobalEventHandler().addListener(ServerTickMonitorEvent.class, serverTickMonitorEvent -> tickDelay = (long) serverTickMonitorEvent.getTickMonitor().getTickTime());
         for (Potion potion : Potion.values()) IPotion.potions.put(potion.getId(), potion);
         MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (ignored, player) -> {
