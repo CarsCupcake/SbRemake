@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public interface DefaultConfigItem extends ConfigItem {
+    default Map<String, Object> createConfigContext() {
+        return Map.of();
+    }
 
     static Class<?> getClass(Type type) {
         if (type instanceof Class<?>) {
@@ -69,6 +72,7 @@ public interface DefaultConfigItem extends ConfigItem {
     }
 
     default void load(ConfigSection section) {
+        var context = createConfigContext();
         for (var field : getAllFields(this.getClass())) {
             if (field.isAnnotationPresent(ConfigField.class)) {
                 ConfigField configField = field.getAnnotation(ConfigField.class);
@@ -100,6 +104,25 @@ public interface DefaultConfigItem extends ConfigItem {
                 field.setAccessible(true);
                 try {
                     field.set(this, this.fromClassWithDefault(field.getType(), field.get(this), file));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                field.setAccessible(false);
+            }
+            if (field.isAnnotationPresent(ConfigContext.class)) {
+                ConfigContext configContext = field.getAnnotation(ConfigContext.class);
+                field.setAccessible(true);
+                try {
+                    if (!context.containsKey(configContext.value())) {
+                        throw new RuntimeException("Context " + configContext.value() + " not found");
+                    }
+                    var c = context.get(configContext.value());
+                    if (!field.getType().isAssignableFrom(c.getClass())) {
+                        throw new RuntimeException("Context " + configContext.value() + " is not of type " + field.getType().getName());
+                    }
+                    field.set(this, c);
+                } catch (RuntimeException e) {
+                    throw e;
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -240,9 +263,31 @@ public interface DefaultConfigItem extends ConfigItem {
 
     default <T> T loadByConstructor(Constructor<T> constructor, ConfigSection section) {
         try {
+            if (section.element.getAsJsonObject().isEmpty()) return null;
+            var context = createConfigContext();
             Object[] args = new Object[constructor.getParameterCount()];
             int i = 0;
             for (var param : constructor.getParameters()) {
+
+                if (param.isAnnotationPresent(ConfigContext.class)) {
+                    ConfigContext configContext = param.getAnnotation(ConfigContext.class);
+                    try {
+                        if (!context.containsKey(configContext.value())) {
+                            throw new RuntimeException("Context " + configContext.value() + " not found");
+                        }
+                        var c = context.get(configContext.value());
+                        if (!param.getType().isAssignableFrom(c.getClass())) {
+                            throw new RuntimeException("Context " + configContext.value() + " is not of type " + param.getType().getName());
+                        }
+                        args[i++] = c;
+                    } catch (RuntimeException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    continue;
+                }
+
                 var ann = param.getAnnotation(ConfigParameter.class);
                 var name = ann.value();
                 args[i++] = evaluateField(section, param.getType(), param.getParameterizedType(), name, null);

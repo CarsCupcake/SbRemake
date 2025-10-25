@@ -28,6 +28,8 @@ public abstract class SlayerEntity extends SkyblockEntity {
                     player.getSlayerQuest().getEntity().remove();
                     player.getSlayerQuest().setEntity(null);
                     player.getSlayerQuest().setStage(SlayerQuest.SlayerQuestStage.Failed);
+                    player.sendMessage("§c§lSLAYER QUEST FAILED!");
+                    player.sendMessage("§5 » §7You died! What a noob!");
                 }
             });
 

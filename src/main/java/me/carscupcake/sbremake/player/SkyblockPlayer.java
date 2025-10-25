@@ -491,7 +491,13 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         event.player().playerFishingBobber = bobber;
         event.player().playSound(SoundType.ENTITY_FISHING_BOBBER_THROW.create(1));
     }).addListener(PlayerDeathEvent.class, event -> {
-        event.setChatMessage(Component.text("§c%s §7You Died!".formatted(Characters.Skull)));
+        event.setChatMessage(null);
+        event.getPlayer().sendMessage(Component.text("§c%s §7You Died!".formatted(Characters.Skull)));
+        Audiences.players().forEachAudience(audience -> {
+            var player = (SkyblockPlayer) audience;
+            if (player == event.getPlayer()) return;
+            event.getPlayer().sendMessage(Component.text("§c%s §7%s Died!".formatted(Characters.Skull, player.getName())));
+        });
         event.setDeathText(Component.text("You Died!"));
     });
     private static final UUID speedUUID = UUID.randomUUID();
@@ -607,6 +613,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     private double absorption;
     @Getter
     @Setter
+    @ConfigField
     private SlayerQuest slayerQuest = null;
     @Getter
     @ConfigField(name = "potions")
@@ -660,6 +667,11 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     }
 
     @Override
+    public Map<String, Object> createConfigContext() {
+        return Map.of("player", this);
+    }
+
+    @Override
     public ConfigSection.Data<?> resolveDatatype(Class<?> clazz, Type type) {
         if (type instanceof ParameterizedType parameterizedType) {
             if (List.class.isAssignableFrom(clazz) && parameterizedType.getActualTypeArguments()[0] == StoredPet.class)
@@ -670,6 +682,9 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
 
     @Override
     public void load(ConfigSection section) {
+        for (ISlayer s : Slayers.values()) {
+            slayers.put(s, new PlayerSlayer(this, s, section.get(s.key(), ConfigSection.SECTION, ConfigSection.empty())));
+        }
         DefaultConfigItem.super.load(section);
         for (Skill skill : Skill.values()) {
             var skillInstance = skill.instantiate(this, section);
@@ -695,9 +710,6 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         }
         if (section.get("equippedPet", ConfigSection.INTEGER, -1) >= 0) {
             pet = pets.get(section.get("equippedPet", ConfigSection.INTEGER));
-        }
-        for (ISlayer s : Slayers.values()) {
-            slayers.put(s, new PlayerSlayer(this, s, section.get(s.key(), ConfigSection.SECTION, ConfigSection.empty())));
         }
     }
 
