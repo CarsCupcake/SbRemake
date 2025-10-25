@@ -87,7 +87,7 @@ public class Main {
     public static volatile boolean isCracked = false;
     static long tickDelay = -1;
     private volatile static ConfigFile crackedRegistry;
-    public static final boolean IS_DEBUG = System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true");
+    public static boolean IS_DEBUG = System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true");
 
     public static void main(String[] args) throws Exception {
         MinecraftServer.LoggerProvider = new SkyblockLoggerProvider();
@@ -101,7 +101,7 @@ public class Main {
             if (arg.equals("--open-lan")) {
                 openToLan = true;
             }
-            if (arg.equals("-velocity")) {
+            if (arg.equals("--velocity") || arg.equals("-v")) {
                 var secret = itt.hasNext() ? itt.next() : null;
                 if (secret != null) {
                     auth = new Auth.Velocity(secret);
@@ -110,8 +110,11 @@ public class Main {
                     Main.LOGGER.error("Please Provide a velocity secret!");
                 }
             }
-            if (arg.equals("--cracked")) {
+            if (arg.equals("--cracked") || arg.equals("-c")) {
                 isCracked = true;
+            }
+            if (arg.equals("--debug") || arg.equals("-d")) {
+                IS_DEBUG = true;
             }
         }
         try {
