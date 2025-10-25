@@ -87,7 +87,7 @@ public class Main {
     public static volatile SkyblockSimpleLogger LOGGER;
     public static volatile boolean isCracked = false;
     static long tickDelay = -1;
-    private volatile static ConfigFile crackedRegistry;
+    public volatile static ConfigFile crackedRegistry;
     public static boolean IS_DEBUG = System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true");
 
     public static void main(String[] args) throws Exception {

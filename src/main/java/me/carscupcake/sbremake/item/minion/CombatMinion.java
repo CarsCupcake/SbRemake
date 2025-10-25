@@ -33,7 +33,7 @@ public class CombatMinion extends AbstractMinion {
      * @param minionIdentifier is a string for the minion. This is a random UUID from the method {@link UUID#randomUUID()} and is also used to load the minion from the file
      * @param placer           is the player who owns the isle
      */
-    public CombatMinion(int level, AbstractCombatMinionData base, Instance instance, Pos location, String minionIdentifier, SkyblockPlayer placer) {
+    public CombatMinion(int level, AbstractCombatMinionData base, Instance instance, Pos location, String minionIdentifier, UUID placer) {
         super(level, base, instance, location, minionIdentifier, placer);
         minion = base;
     }

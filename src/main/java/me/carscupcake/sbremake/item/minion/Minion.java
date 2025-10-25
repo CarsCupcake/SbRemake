@@ -9,6 +9,8 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.event.player.PlayerBlockPlaceEvent;
 import net.minestom.server.instance.Instance;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -21,7 +23,7 @@ public interface Minion {
      * Retrives the owner
      * @return the owner
      */
-    SkyblockPlayer getOwner();
+    UUID getOwner();
 
     /**
      * Starts the work progress
@@ -33,7 +35,7 @@ public interface Minion {
      *
      * @param removeReason is the remove reason
      */
-    void remove(MinionRemoveReason removeReason);
+    void remove(@Nullable("can be null if removeReson is not PICKUP_MINION") SkyblockPlayer player, MinionRemoveReason removeReason);
 
     /**
      * is a check if the inventory is full
@@ -53,7 +55,7 @@ public interface Minion {
     /**
      * Show the inventory of the minion
      */
-    void showInventory();
+    void showInventory(SkyblockPlayer player);
 
     /**
      * Gets the representive stand
@@ -64,7 +66,7 @@ public interface Minion {
 
     UUID getId();
 
-    static Minion getMinion(IMinionData base, int level, Instance instance, Pos location, String minionid, SkyblockPlayer player) {
+    static Minion getMinion(IMinionData base, int level, Instance instance, Pos location, String minionid, UUID player) {
         if (base instanceof AbstractMiningMinionData miningMinion)
             return new MiningMinion(level, miningMinion, instance, location, minionid, player);
         if (base instanceof AbstractCombatMinionData combatMinion)
@@ -72,7 +74,7 @@ public interface Minion {
         return null;
     }
 
-    EventNode<Event> LISTENER = EventNode.all("minions")
+    EventNode<@NotNull Event> LISTENER = EventNode.all("minions")
             .addListener(PlayerBlockBreakEvent.class, event -> {
                 if (!(((SkyblockPlayer) event.getPlayer()).getWorldProvider() instanceof PrivateIsle privateIsle)) return;
                 for (Minion minion : privateIsle.minions.values()){
@@ -95,8 +97,8 @@ public interface Minion {
                 if (event.interaction() != PlayerInteractEvent.Interaction.Right || event.entity() == null) return;
                 if (!(event.player().getWorldProvider() instanceof PrivateIsle)) return;
                 if(event.entity() instanceof MinionArmorStand minionArmorStand) {
-                    if (event.player().equals(minionArmorStand.getMinion().getOwner()))
-                        minionArmorStand.getMinion().showInventory();
+                    if (event.player().getUuid().equals(minionArmorStand.getMinion().getOwner()))
+                        minionArmorStand.getMinion().showInventory(event.player());
                 }
             });
 }

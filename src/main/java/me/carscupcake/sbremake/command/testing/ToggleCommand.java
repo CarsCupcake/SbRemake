@@ -2,10 +2,11 @@ package me.carscupcake.sbremake.command.testing;
 
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentEnum;
+import org.jetbrains.annotations.NotNull;
 
 public class ToggleCommand extends Command {
 
-    private final ArgumentEnum<Toggles> toggles;
+    private final ArgumentEnum<@NotNull Toggles> toggles;
 
     public ToggleCommand() {
         super("toggle");

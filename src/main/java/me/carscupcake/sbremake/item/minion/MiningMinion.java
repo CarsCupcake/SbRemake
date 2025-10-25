@@ -11,15 +11,12 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.server.play.BlockBreakAnimationPacket;
 import net.minestom.server.network.packet.server.play.WorldEventPacket;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MiningMinion extends AbstractMinion {
     private final AbstractMiningMinionData minion;
 
-    public MiningMinion(int level, AbstractMiningMinionData base, Instance instance, Pos location, String minionid, SkyblockPlayer player) {
+    public MiningMinion(int level, AbstractMiningMinionData base, Instance instance, Pos location, String minionid, UUID player) {
         super(level, base, instance, location, minionid, player);
         minion = base;
     }

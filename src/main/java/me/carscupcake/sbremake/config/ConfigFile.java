@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 @Getter
 public class ConfigFile extends ConfigSection {
@@ -24,6 +25,10 @@ public class ConfigFile extends ConfigSection {
 
     public ConfigFile(String name, SkyblockPlayer player) {
         this(new File(getConfigFolder(player), String.format("%s.json", name)));
+    }
+
+    public ConfigFile(String name, UUID configId) {
+        this(new File(getConfigFolder(configId), String.format("%s.json", name)));
     }
 
     public ConfigFile(String name) {
@@ -45,7 +50,11 @@ public class ConfigFile extends ConfigSection {
     }
 
     public static File getConfigFolder(SkyblockPlayer player) {
-        return new File(DATA_PATH, player.getConfigId().toString());
+        return getConfigFolder(player.getConfigId());
+    }
+
+    public static File getConfigFolder(UUID playerID) {
+        return new File(DATA_PATH, playerID.toString());
     }
 
     public void save() {

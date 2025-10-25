@@ -29,6 +29,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 
 import java.util.*;
@@ -44,7 +45,7 @@ public abstract class AbstractMinion implements Minion {
     protected MinionArmorStand stand;
     protected final Pos location;
     protected final String minionId;
-    protected final SkyblockPlayer player;
+    protected final UUID player;
     protected final ArrayList<SbItemStack> inventory = new ArrayList<>();
     protected int inventorySpace;
     protected int timeBetweenActions;
@@ -66,7 +67,7 @@ public abstract class AbstractMinion implements Minion {
      * @param minionIdentifier is a string for the minion. This is a random UUID from the method {@link UUID#randomUUID()} and is also used to load the minion from the file
      * @param placer           is the player who owns the isle
      */
-    public AbstractMinion(int level, IMinionData base, Instance instance, Pos location, String minionIdentifier, SkyblockPlayer placer) {
+    public AbstractMinion(int level, IMinionData base, Instance instance, Pos location, String minionIdentifier, UUID placer) {
         Assert.assertTrue(level <= base.getLevels());
         this.instance = instance;
         inventorySpace = getMinionInventorySpace(level);
@@ -83,7 +84,7 @@ public abstract class AbstractMinion implements Minion {
     }
 
     @Override
-    public SkyblockPlayer getOwner() {
+    public UUID getOwner() {
         return player;
     }
 
@@ -217,7 +218,7 @@ public abstract class AbstractMinion implements Minion {
     abstract int settableSpace();
 
     public void generateLoot() {
-        for (var drop : base.drops().loot(player)) {
+        for (var drop : base.drops().loot(null)) {
             if (drop.sbItem() instanceof ICoinItem) continue;
             if (!addItemToInventory(drop)) {
                 setFull();
@@ -272,7 +273,7 @@ public abstract class AbstractMinion implements Minion {
     }
 
     @Override
-    public void remove(MinionRemoveReason removeReason) {
+    public void remove(@Nullable SkyblockPlayer player, MinionRemoveReason removeReason) {
         setRunning(false);
         if (stand != null && !stand.isDead()) stand.remove();
         if(message != null && !message.isDead()) message.remove();
@@ -281,6 +282,7 @@ public abstract class AbstractMinion implements Minion {
             saveMinion();
         } else {
             if (removeReason == MinionRemoveReason.PICKUP_MINION) {
+                if (player == null) throw new IllegalArgumentException("Player cannot be null!");
                 for (var item : inventory)
                     player.addItem(item);
                 inventory.clear();
@@ -337,7 +339,7 @@ public abstract class AbstractMinion implements Minion {
     }
 
     @Override
-    public void showInventory() {
+    public void showInventory(SkyblockPlayer player) {
         InventoryBuilder builder = new InventoryBuilder(6, base.name() + " " + StringUtils.toRoman(level));
         builder.fill(TemplateItems.EmptySlot.getItem());
         builder.fill(ItemStack.AIR, 21, 25).fill(ItemStack.AIR, 30, 34).fill(ItemStack.AIR, 39, 43);
@@ -375,7 +377,7 @@ public abstract class AbstractMinion implements Minion {
                 var item = inventory.get(indexOf);
                 inventory.remove(indexOf);
                 player.addItem(item);
-                showInventory();
+                showInventory(player);
                 isFull();
                 startWorking();
             }
@@ -394,14 +396,14 @@ public abstract class AbstractMinion implements Minion {
             var remaining = inventory.stream().filter(x -> x != SbItemStack.AIR);
             inventory.clear();
             inventory.addAll(remaining.toList());
-            showInventory();
+            showInventory(player);
             isFull();
             startWorking();
             return true;
         });
         gui.getClickEvents().add(53, ignored -> {
             var isle = (PrivateIsle) player.getWorldProvider();
-            isle.pickupMinion(this);
+            isle.pickupMinion(player, this);
             player.closeInventory();
             return true;
         });
