@@ -1,10 +1,14 @@
 package me.carscupcake.sbremake.player;
 
+import me.carscupcake.sbremake.config.ConfigField;
+import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.config.DefaultConfigItem;
 import me.carscupcake.sbremake.event.SbEntityEquipEvent;
 import me.carscupcake.sbremake.item.SbItemStack;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.event.inventory.InventoryItemChangeEvent;
+import net.minestom.server.inventory.AbstractInventory;
 import net.minestom.server.inventory.PlayerInventory;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.utils.MathUtils;
@@ -16,9 +20,10 @@ import java.lang.invoke.VarHandle;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class SkyblockPlayerInventory extends PlayerInventory implements Iterable<SbItemStack> {
+public class SkyblockPlayerInventory extends PlayerInventory implements Iterable<SbItemStack>, DefaultConfigItem {
     private static final VarHandle ITEM_UPDATER = MethodHandles.arrayElementVarHandle(SbItemStack[].class);
-    private final SbItemStack[] itemStacks;
+    @ConfigField
+    private SbItemStack[] itemStacks;
     private final SkyblockPlayer player;
 
     public SkyblockPlayerInventory(@NotNull SkyblockPlayer player) {
@@ -26,6 +31,19 @@ public class SkyblockPlayerInventory extends PlayerInventory implements Iterable
         this.player = player;
         itemStacks = new SbItemStack[46];
         Arrays.fill(itemStacks, SbItemStack.AIR);
+    }
+
+    @Override
+    public void load(ConfigSection section) {
+        DefaultConfigItem.super.load(section);
+    }
+
+    public void updateSbItemStacks() {
+        for (int i = 0; i < itemStacks.length; i++) {
+            var item = itemStacks[i].update(player);
+            itemStacks[i] = item;
+            super.itemStacks[i] = item.item();
+        }
     }
 
     @Override

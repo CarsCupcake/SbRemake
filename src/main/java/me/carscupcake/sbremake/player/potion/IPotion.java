@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.player.potion;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.config.KeyClass;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import net.kyori.adventure.util.RGBLike;
@@ -8,10 +9,16 @@ import net.minestom.server.network.packet.server.play.RemoveEntityEffectPacket;
 import net.minestom.server.potion.PotionEffect;
 import org.jetbrains.annotations.Nullable;
 
+import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface IPotion {
+public interface IPotion extends KeyClass {
+    @Override
+    default String key() {
+        return getId();
+    }
+
     String getName();
 
     String getId();
@@ -53,4 +60,9 @@ public interface IPotion {
     byte getMaxLevel();
 
     HashMap<String, IPotion> potions = new HashMap<>();
+
+    @SuppressWarnings("unused")
+    static IPotion fromKey(String key) {
+        return potions.get(key);
+    }
 }

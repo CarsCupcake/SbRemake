@@ -42,10 +42,7 @@ import net.minestom.server.command.ConsoleSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.event.player.*;
 import net.minestom.server.event.server.ServerTickMonitorEvent;
-import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
-import net.minestom.server.extras.mojangAuth.MojangCrypt;
-import net.minestom.server.extras.velocity.VelocityProxy;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.client.play.ClientConfigurationAckPacket;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
@@ -97,11 +94,12 @@ public class Main {
         LOGGER = (SkyblockSimpleLogger) MinecraftServer.LoggerProvider.getLogger(Main.class);
         MinecraftServer.LOGGER = LOGGER;
         Auth auth = new Auth.Online();
+        boolean openToLan = false;
         var itt = Arrays.stream(args).iterator();
         while (itt.hasNext()) {
             var arg = itt.next();
             if (arg.equals("--open-lan")) {
-                OpenToLAN.open();
+                openToLan = true;
             }
             if (arg.equals("-velocity")) {
                 var secret = itt.hasNext() ? itt.next() : null;
@@ -111,6 +109,9 @@ public class Main {
                 } else {
                     Main.LOGGER.error("Please Provide a velocity secret!");
                 }
+            }
+            if (arg.equals("--cracked")) {
+                isCracked = true;
             }
         }
         try {
@@ -223,6 +224,9 @@ public class Main {
         try {
             port = Integer.parseInt(args[0]);
         } catch (Exception ignored) {
+        }
+        if (openToLan) {
+            OpenToLAN.open();
         }
         var key = Key.key("skyblock", "moonglare");
         Galatea.MOONGLARE_KEY = MinecraftServer.getBiomeRegistry().register(key, Galatea.MOONGLARE);

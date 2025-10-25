@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.item.impl.pets;
 
 import lombok.Getter;
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.config.KeyClass;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -16,7 +17,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public interface IPet {
+public interface IPet extends KeyClass {
+    @Override
+    default String key() {
+        return getId();
+    }
     String getName();
 
     String getId();
@@ -48,6 +53,11 @@ public interface IPet {
     }
 
     HashMap<String, IPet> pets = new HashMap<>();
+
+    @SuppressWarnings("unused")
+    static IPet fromKey(String key) {
+        return pets.get(key);
+    }
 
 
     default LevelingType getLevelingType() {

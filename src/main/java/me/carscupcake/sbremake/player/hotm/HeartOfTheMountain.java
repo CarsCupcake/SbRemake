@@ -1,8 +1,10 @@
 package me.carscupcake.sbremake.player.hotm;
 
 import lombok.Getter;
+import me.carscupcake.sbremake.config.ConfigField;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.config.DefaultConfigItem;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.impl.*;
 import me.carscupcake.sbremake.util.SoundType;
@@ -18,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class HeartOfTheMountain {
+public class HeartOfTheMountain implements DefaultConfigItem {
     private static final int[] XP = {0, 3_000, 9_000, 25_000, 60_000, 100_000, 150_000, 210_000, 290_000, 400_000};
     private static final List<Class<? extends HotmUpgrade>> UPGRADES = List.of(MiningSpeed.class, MiningFortune.class,
             TitaniumInsanium.class, QuickForge.class, MiningSpeedBoost.class, Pickobulus.class
@@ -31,22 +33,35 @@ public class HeartOfTheMountain {
             MineshaftMayhem.class, Surveyor.class, SubzeroMining.class, EagerAdventurer.class, GemstoneInfusion.class,
             GiftsFromTheDeparted.class, FrozenSolid.class, DeadMansChest.class, Excavator.class, RagsToRiches.class, HazardousMiner.class);
     private final SkyblockPlayer player;
+    @ConfigField(loadInPost = true)
     private final List<HotmUpgrade> upgrades = new ArrayList<>();
+    @ConfigField(name = "active_ability")
+    private String activeAbilityId = null;
     private PickaxeAbility activeAbility = null;
+    @ConfigField
     private int level;
+    @ConfigField
     private int xp;
     private int tokenOfTheMountain = 0;
 
     public HeartOfTheMountain(SkyblockPlayer player) {
         this.player = player;
-        ConfigFile file = new ConfigFile("hotm", player);
-        String activeId = file.get("active_ability", ConfigSection.STRING);
-        level = file.get("level", ConfigSection.INTEGER, 0);
-        xp = file.get("xp", ConfigSection.INTEGER, 0);
+    }
+
+    @Override
+    public void load(ConfigSection section) {
+        DefaultConfigItem.super.load(section);
         if (level > 0) {
             tokenOfTheMountain++;
             tokenOfTheMountain += (level - 1) * 2;
             if (level >= 7) tokenOfTheMountain++;
+        }
+        if (level >= 5) {
+            PeakOfTheMountain peakOfTheMountain = getUpgrade(PeakOfTheMountain.class);
+            tokenOfTheMountain++;
+            if (peakOfTheMountain.level >= 5) tokenOfTheMountain++;
+            if (peakOfTheMountain.level >= 7) tokenOfTheMountain++;
+            if (peakOfTheMountain.level >= 10) tokenOfTheMountain += 2;
         }
         for (Class<? extends HotmUpgrade> upgradeClass : UPGRADES) {
             try {
@@ -57,29 +72,17 @@ public class HeartOfTheMountain {
                 throw new RuntimeException(e);
             }
         }
-        if (level >= 5) {
-            PeakOfTheMountain peakOfTheMountain = getUpgrade(PeakOfTheMountain.class);
-            tokenOfTheMountain++;
-            if (peakOfTheMountain.level >= 5) tokenOfTheMountain++;
-            if (peakOfTheMountain.level >= 7) tokenOfTheMountain++;
-            if (peakOfTheMountain.level >= 10) tokenOfTheMountain += 2;
-        }
-        if (activeId != null) {
+        if (activeAbilityId != null) {
             for (HotmUpgrade upgrade : upgrades)
                 if (upgrade instanceof PickaxeAbility pickaxeAbility)
-                    if (upgrade.getId().equals(activeId))
+                    if (upgrade.getId().equals(activeAbilityId))
                         activeAbility = pickaxeAbility;
         }
     }
 
-    public void save() {
-        ConfigFile file = new ConfigFile("hotm", player);
-        for (HotmUpgrade upgrade : upgrades)
-            upgrade.save(file);
-        file.set("active_ability", (activeAbility == null) ? null : activeAbility.getId(), ConfigSection.STRING);
-        file.set("level", level, ConfigSection.INTEGER);
-        file.set("xp", xp, ConfigSection.INTEGER);
-        file.save();
+    @Override
+    public ConfigFile createFile(String name) {
+        return new ConfigFile(name, player);
     }
 
     public void addTokenOfTheMountain() {
@@ -201,6 +204,7 @@ public class HeartOfTheMountain {
                                     player.sendMessage("§cYou have selected this as your pickaxe ability!");
                                 else {
                                     this.activeAbility = ability;
+                                    this.activeAbilityId = ability.getId();
                                     player.sendMessage("§aYou have selected §e" + (ability.getName()) + " §aas your Pickaxe Ability. This ability will apply to all of your pickaxes!");
                                     updateAfterUpgrade(upgrade, slot, gui);
                                 }

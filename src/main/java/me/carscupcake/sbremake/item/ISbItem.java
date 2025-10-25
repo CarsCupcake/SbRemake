@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.item;
 
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.config.KeyClass;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.ability.AbilityType;
 import me.carscupcake.sbremake.item.ability.ItemAbility;
@@ -40,7 +41,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-public interface ISbItem {
+public interface ISbItem extends KeyClass {
+    @Override
+    default String key() {
+        return getId();
+    }
     String getId();
 
     String getName();
@@ -225,6 +230,15 @@ public interface ISbItem {
     static ISbItem get(Material material) {
         try {
             return SbItemStack.raw(material.key().value().toUpperCase());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    static ISbItem fromKey(String key) {
+        try {
+            return SbItemStack.raw(key);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

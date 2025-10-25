@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
-@SuppressWarnings("preview")
 public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
     Server {
         @Override
