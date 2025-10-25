@@ -247,7 +247,7 @@ public class Main {
                             MinecraftServer.getCommandManager().execute(console, in);
                         }
                     } else {
-                        System.out.println("The command " + (in.split(" ")[0]) + " is not existing!");
+                        System.out.println("The command " + (in.split(" ")[0]) + " does not exist!");
                     }
                 } catch (Exception e) {
                     if (!running.get()) return;
