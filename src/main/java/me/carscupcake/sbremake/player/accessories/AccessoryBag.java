@@ -3,7 +3,9 @@ package me.carscupcake.sbremake.player.accessories;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
+import me.carscupcake.sbremake.config.ConfigField;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.config.DefaultConfigItem;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.SbItemStack;
@@ -24,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Getter
-public class AccessoryBag {
+public class AccessoryBag implements DefaultConfigItem {
     public static final EventNode<Event> LISTENER = EventNode.all("player.accessorybag").addListener(PlayerStatEvent.class, event -> {
         if (event.player().getAccessoryBag() == null) return;
         for (var tuning : event.player().getAccessoryBag().getTunings().entrySet()) {
@@ -33,31 +35,15 @@ public class AccessoryBag {
         }
     });
 
-    private final List<SbItemStack> items;
+    @ConfigField
+    private List<SbItemStack> items;
     @Setter
+    @ConfigField
     private int capacity;
     private int magicalPower;
     @Setter
+    @ConfigField
     private Map<AccessoryStatTunings, Integer> tunings = new HashMap<>();
-
-    public AccessoryBag(ConfigSection config, int capacity) {
-        items = Arrays.stream(config.get("items", ConfigSection.ITEM_ARRAY, new SbItemStack[0])).parallel().collect(Collectors.toCollection(ArrayList::new));
-        this.capacity = capacity;
-        computeMagicalPower();
-        for (var elementEntry : config.get("tunings", ConfigSection.SECTION, new ConfigSection(new JsonObject())).getRawElement().getAsJsonObject().entrySet()) {
-            tunings.put(AccessoryStatTunings.valueOf(elementEntry.getKey()), elementEntry.getValue().getAsInt());
-        }
-    }
-
-    public ConfigSection save(ConfigSection config) {
-        config.set("items", items.toArray(SbItemStack[]::new), ConfigSection.ITEM_ARRAY);
-        var tuningSection = config.get("tunings", ConfigSection.SECTION, new  ConfigSection(new JsonObject()));
-        for (var tuning : tunings.entrySet()) {
-            tuningSection.set(tuning.getKey().name(), tuning.getValue(), ConfigSection.INTEGER);
-        }
-        config.set("tunings", tuningSection, ConfigSection.SECTION);
-        return config;
-    }
 
     private void computeMagicalPower() {
         AtomicInteger magicalPower = new AtomicInteger(0);

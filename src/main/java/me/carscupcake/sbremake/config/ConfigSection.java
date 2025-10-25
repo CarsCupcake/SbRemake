@@ -20,10 +20,8 @@ import net.minestom.server.item.enchant.Enchantment;
 import org.intellij.lang.annotations.Subst;
 import org.junit.Assert;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -64,6 +62,20 @@ public class ConfigSection {
     public static final Data<Float> FLOAT = new ClassicGetter<>(JsonElement::getAsFloat, JsonPrimitive::new);
     public static final Data<Double> DOUBLE = new ClassicGetter<>(JsonElement::getAsDouble, JsonPrimitive::new);
     public static final Data<Byte> BYTE = new ClassicGetter<>(JsonElement::getAsByte, JsonPrimitive::new);
+    public static final Data<Short> SHORT = new ClassicGetter<>(JsonElement::getAsShort, JsonPrimitive::new);
+    public static final Data<Character> CHARACTER = new ClassicGetter<>(JsonElement::getAsCharacter, JsonPrimitive::new);
+    public static final Data<List<String>> STRING_LIST = new ClassicGetter<>(jsonElement -> {
+        var array = jsonElement.getAsJsonArray();
+        var list = new ArrayList<String>(array.size());
+        for (var x : array)
+            list.add(x.toString());
+        return list;
+    }, strings -> {
+        var list = new JsonArray(strings.size());
+        for (var x : strings)
+            list.add(x);
+        return list;
+    });
     public static final Data<String[]> STRING_ARRAY = new ClassicGetter<>(element1 -> {
         assert element1.isJsonArray();
         JsonArray array = element1.getAsJsonArray();
@@ -104,12 +116,7 @@ public class ConfigSection {
         o.addProperty("roll", pos.z());
         return o;
     });
-    public static final Data<SbItemStack> ITEM = new ClassicGetter<>(element -> {
-        return jsonElementToItem(element);
-    }, stack -> {
-        return itemToJson(stack);
-    });
-
+    public static final Data<SbItemStack> ITEM = new ClassicGetter<>(ConfigSection::jsonElementToItem, ConfigSection::itemToJson);
     public static final Data<SbItemStack[]> ITEM_ARRAY = new ClassicGetter<>(jsonElement -> {
         if (!jsonElement.isJsonArray()) {
             return null;
@@ -131,17 +138,21 @@ public class ConfigSection {
 
     public static final Data<UUID> UUID = new ClassicGetter<>(jsonElement -> java.util.UUID.fromString(jsonElement.getAsString()), uuid -> new JsonPrimitive(uuid.toString()));
 
+    public static final Data<LocalDateTime> LOCAL_DATE_TIME = new ClassicGetter<>(jsonElement -> LocalDateTime.parse(jsonElement.getAsString()), localDateTime ->  new JsonPrimitive(localDateTime.toString()));
+
     public static JsonElement itemToJson(SbItemStack stack) {
         JsonObject object = new JsonObject();
         int size = stack.item().amount();
-        object.addProperty("size", size);
+        object.addProperty("size", stack == SbItemStack.AIR ? 0 : size);
+        if (stack == SbItemStack.AIR) return object;
         object.add("nbt", nbtCompoundToJson(Objects.requireNonNull(stack.item().get(DataComponents.CUSTOM_DATA)).nbt()));
         return object;
     }
 
     private static SbItemStack jsonElementToItem(JsonElement element) {
-        CompoundBinaryTag tag = computeTag(element.getAsJsonObject().get("nbt").getAsJsonObject());
         int size = element.getAsJsonObject().get("size").getAsInt();
+        if (size == 0) return SbItemStack.AIR;
+        CompoundBinaryTag tag = computeTag(element.getAsJsonObject().get("nbt").getAsJsonObject());
         String id = tag.getString("id");
         SbItemStack stack = SbItemStack.from(id);
         if (stack == null) {
@@ -313,6 +324,17 @@ public class ConfigSection {
         type.set(element, key, value);
     }
 
+    public void unsafeSet(String key, Object value, Data<Object> type) {
+        if (element == null) element = new JsonObject();
+        if (value == null) {
+            if (element instanceof JsonObject object)
+                if (object.has(key))
+                    object.remove(key);
+            return;
+        }
+        type.set(element, key, value);
+    }
+
     public <T> T as(ConfigFile.Data<T> data) {
         if (element == null) element = new JsonObject();
         return data.get(element, null);
@@ -333,7 +355,7 @@ public class ConfigSection {
 
     public void forEach(Consumer<ConfigSection> elementConsumer) {
         if (element == null) element = new JsonArray();
-        Assert.assertTrue("Json is not an array", element.isJsonArray());
+        if (!element.isJsonArray()) throw new IllegalStateException("Element is not an array");
         element.getAsJsonArray().forEach(element1 -> {
             elementConsumer.accept(new ConfigSection(element1));
         });

@@ -3,8 +3,10 @@ package me.carscupcake.sbremake.player.skill;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import me.carscupcake.sbremake.Stat;
+import me.carscupcake.sbremake.config.ConfigField;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.config.DefaultConfigItem;
 import me.carscupcake.sbremake.event.PlayerSkillXpEvent;
 import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
@@ -27,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public abstract class ISkill implements SkyblockXpTask {
+public abstract class ISkill implements SkyblockXpTask, DefaultConfigItem {
     public static final int[] nextLevelXp = {
             50, 125, 200, 300, 500, 750, 1000, 1500, 2000, 3500, 5000, 7500,
             10000, 15000, 20000, 30000, 50000, 75000, 100000, 200000,
@@ -39,7 +41,9 @@ public abstract class ISkill implements SkyblockXpTask {
             4600000, 4900000, 5200000, 5500000, 5800000, 6100000,
             6400000, 6700000, 7000000
     };
+    @ConfigField
     private int level;
+    @ConfigField
     private double xp;
     private final String id;
     private final SkyblockPlayer player;
@@ -53,10 +57,6 @@ public abstract class ISkill implements SkyblockXpTask {
         this.showItem = showItem;
         this.fiveLevelItem = fiveLevelItem;
         this.basicLore = basicLore;
-        ConfigFile file = new ConfigFile("skills", player);
-        ConfigSection section = file.get(id, ConfigSection.SECTION, new ConfigSection(new JsonObject()));
-        xp = section.get("xp", ConfigSection.DOUBLE, 0d);
-        level = section.get("level", ConfigSection.INTEGER, 0);
     }
 
     public ItemStack getSkillMenuItem() {

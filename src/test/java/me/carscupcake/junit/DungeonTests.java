@@ -1,11 +1,17 @@
 package me.carscupcake.junit;
 
+import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.util.Pos2d;
+import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
 import me.carscupcake.sbremake.worlds.impl.dungeon.*;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.slf4j.Marker;
+import org.slf4j.event.Level;
 
 public class DungeonTests {
     public static final String ANSI_RESET = "\u001B[0m";
@@ -17,6 +23,16 @@ public class DungeonTests {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
+
+    @BeforeClass
+    public static void oneTimeSetup() {
+        Main.LOGGER = new SkyblockSimpleLogger() {
+            @Override
+            protected void handleNormalizedLoggingCall(Level level, Marker marker, String messagePattern, Object[] arguments, Throwable throwable) {
+                System.out.printf((messagePattern) + "%n", arguments);
+            }
+        };
+    }
 
     @Test
     public void testDungeon() {

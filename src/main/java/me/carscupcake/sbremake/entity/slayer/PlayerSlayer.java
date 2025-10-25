@@ -2,8 +2,10 @@ package me.carscupcake.sbremake.entity.slayer;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
+import me.carscupcake.sbremake.config.ConfigField;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.config.DefaultConfigItem;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
@@ -18,22 +20,23 @@ import net.minestom.server.tag.Tag;
 import java.util.Map;
 
 @Getter
-public class PlayerSlayer {
+public class PlayerSlayer implements DefaultConfigItem {
     private final SkyblockPlayer player;
     private final ISlayer slayer;
     private int level = 0;
+    @ConfigField
     private int xp;
+    @ConfigField
     private final SlayerRngMeter meter;
 
-    public PlayerSlayer(SkyblockPlayer player, ISlayer slayer) {
+    public PlayerSlayer(SkyblockPlayer player, ISlayer slayer, ConfigSection section) {
         this.player = player;
         this.slayer = slayer;
-        ConfigSection file = new ConfigFile("slayer", player).get(slayer.getId(), ConfigSection.SECTION, new ConfigSection(new JsonObject()));
-        this.xp = file.get("xp", ConfigSection.INTEGER, 0);
+        this.xp = section.get("xp", ConfigSection.INTEGER, 0);
         for (int i = 0; i < slayer.getMaxLevel(); i++) {
             if (slayer.requiredXp(i) <= xp) level++;
         }
-        meter = slayer.createRngMeter(player);
+        meter = slayer.createRngMeter(player, section.get("meter", ConfigSection.SECTION, ConfigSection.empty()));
     }
 
 
@@ -63,13 +66,6 @@ public class PlayerSlayer {
         while (level < slayer.getMaxLevel() && xp >= slayer.requiredXp(level)) {
             level++;
         }
-    }
-
-    public void save(ConfigFile f) {
-        ConfigSection section = new ConfigSection(new JsonObject());
-        section.set("xp", xp, ConfigSection.INTEGER);
-        f.set(slayer.getId(), section, ConfigSection.SECTION);
-        meter.save();
     }
 
     public void openRngMeterMenu() {

@@ -1,8 +1,10 @@
 package me.carscupcake.sbremake.item.collections;
 
 import lombok.Getter;
+import me.carscupcake.sbremake.config.ConfigField;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.config.DefaultConfigItem;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.xp.SkyblockXpTask;
@@ -28,8 +30,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Getter
-public abstract class Collection implements SkyblockXpTask {
+public abstract class Collection implements SkyblockXpTask, DefaultConfigItem {
     private final SkyblockPlayer player;
+    @ConfigField
     private long progress;
     private final int[] levelProgress;
     private final List<List<Reward>> rewards;

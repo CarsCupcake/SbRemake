@@ -42,10 +42,7 @@ import net.minestom.server.command.ConsoleSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.event.player.*;
 import net.minestom.server.event.server.ServerTickMonitorEvent;
-import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.lan.OpenToLAN;
-import net.minestom.server.extras.mojangAuth.MojangCrypt;
-import net.minestom.server.extras.velocity.VelocityProxy;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.client.play.ClientConfigurationAckPacket;
 import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
@@ -90,20 +87,21 @@ public class Main {
     public static volatile boolean isCracked = false;
     static long tickDelay = -1;
     private volatile static ConfigFile crackedRegistry;
-    public static final boolean IS_DEBUG = System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true");
+    public static boolean IS_DEBUG = System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true");
 
     public static void main(String[] args) throws Exception {
         MinecraftServer.LoggerProvider = new SkyblockLoggerProvider();
         LOGGER = (SkyblockSimpleLogger) MinecraftServer.LoggerProvider.getLogger(Main.class);
         MinecraftServer.LOGGER = LOGGER;
         Auth auth = new Auth.Online();
+        boolean openToLan = false;
         var itt = Arrays.stream(args).iterator();
         while (itt.hasNext()) {
             var arg = itt.next();
             if (arg.equals("--open-lan")) {
-                OpenToLAN.open();
+                openToLan = true;
             }
-            if (arg.equals("-velocity")) {
+            if (arg.equals("--velocity") || arg.equals("-v")) {
                 var secret = itt.hasNext() ? itt.next() : null;
                 if (secret != null) {
                     auth = new Auth.Velocity(secret);
@@ -111,6 +109,12 @@ public class Main {
                 } else {
                     Main.LOGGER.error("Please Provide a velocity secret!");
                 }
+            }
+            if (arg.equals("--cracked") || arg.equals("-c")) {
+                isCracked = true;
+            }
+            if (arg.equals("--debug") || arg.equals("-d")) {
+                IS_DEBUG = true;
             }
         }
         try {
@@ -224,6 +228,9 @@ public class Main {
             port = Integer.parseInt(args[0]);
         } catch (Exception ignored) {
         }
+        if (openToLan) {
+            OpenToLAN.open();
+        }
         var key = Key.key("skyblock", "moonglare");
         Galatea.MOONGLARE_KEY = MinecraftServer.getBiomeRegistry().register(key, Galatea.MOONGLARE);
         server.start("127.0.0.1", port);
@@ -243,7 +250,7 @@ public class Main {
                             MinecraftServer.getCommandManager().execute(console, in);
                         }
                     } else {
-                        System.out.println("The command " + (in.split(" ")[0]) + " is not existing!");
+                        System.out.println("The command " + (in.split(" ")[0]) + " does not exist!");
                     }
                 } catch (Exception e) {
                     if (!running.get()) return;

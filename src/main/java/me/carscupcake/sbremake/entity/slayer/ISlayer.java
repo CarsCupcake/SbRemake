@@ -1,5 +1,7 @@
 package me.carscupcake.sbremake.entity.slayer;
 
+import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.config.KeyClass;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
@@ -7,7 +9,12 @@ import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerRngMeter;
 
 import java.util.List;
 
-public interface ISlayer {
+public interface ISlayer extends KeyClass {
+    @Override
+    default String key() {
+        return getId();
+    }
+
     String getName();
 
     String getMobName();
@@ -35,11 +42,19 @@ public interface ISlayer {
         };
     }
 
-    SlayerRngMeter createRngMeter(SkyblockPlayer player);
+    SlayerRngMeter createRngMeter(SkyblockPlayer player, ConfigSection section);
 
     List<RngMeterEntry> getRngMeterEntries();
 
     boolean addXp(SkyblockEntity entity, int tier);
 
     boolean startSlayerQuest(int tier, SkyblockPlayer player);
+
+    static ISlayer fromKey(String s) {
+        for (var slayer : Slayers.values()) {
+            if (slayer.key().equals(s))
+                return slayer;
+        }
+        return null;
+    }
 }

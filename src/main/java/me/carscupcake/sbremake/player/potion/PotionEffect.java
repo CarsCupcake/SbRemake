@@ -1,12 +1,16 @@
 package me.carscupcake.sbremake.player.potion;
 
 import com.google.gson.JsonObject;
+import me.carscupcake.sbremake.config.ConfigConstructor;
+import me.carscupcake.sbremake.config.ConfigParameter;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.config.DefaultConfigItem;
 
-public record PotionEffect(IPotion potion, long expiration, byte amplifier) {
-    public PotionEffect(String id, ConfigSection section) {
-        this(IPotion.potions.get(id), section.get("expiration", ConfigSection.LONG) + System.currentTimeMillis(), section.get("amplifier", ConfigSection.BYTE));
-    }
+public record  PotionEffect(@ConfigParameter("id") IPotion potion,
+                           @ConfigParameter("expiration") long expiration,
+                           @ConfigParameter("amplifier") byte amplifier) implements DefaultConfigItem {
+    @ConfigConstructor
+    public PotionEffect {}
 
     public void store(ConfigSection f) {
         ConfigSection section = new ConfigSection(new JsonObject());

@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.carscupcake.sbremake.config.*;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
@@ -15,17 +16,30 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class StoredPet {
+public class StoredPet implements DefaultConfigItem {
+    @ConfigField
     private final IPet pet;
+    @ConfigField
     private final UUID uuid;
+    @ConfigField
     private double xp;
+    @ConfigField
     private int level;
+    @ConfigField
     private ItemRarity rarity;
+    @ConfigField
     private PetItem petItem;
+    @ConfigField
     private int petCandyUsed;
     private double requiredXp = 0;
 
-    public StoredPet(IPet pet, double xp, ItemRarity rarity, PetItem petItem, int petCandyUsed, UUID uuid) {
+    @ConfigConstructor
+    public StoredPet(@ConfigParameter("pet") IPet pet,
+                     @ConfigParameter("xp") double xp,
+                     @ConfigParameter("rarity") ItemRarity rarity,
+                     @ConfigParameter("petItem") PetItem petItem,
+                     @ConfigParameter("petCandyUsed") int petCandyUsed,
+                     @ConfigParameter("uuid") UUID uuid) {
         this.pet = pet;
         this.xp = xp;
         this.rarity = rarity;

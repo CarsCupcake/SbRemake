@@ -111,6 +111,7 @@ buildNumber.properties
 
 # Common working directory
 run/
+run_bak/
 !/sbRemake/src/
 /.gradle/8.14.2/checksums/checksums.lock
 /.gradle/8.14.2/checksums/md5-checksums.bin

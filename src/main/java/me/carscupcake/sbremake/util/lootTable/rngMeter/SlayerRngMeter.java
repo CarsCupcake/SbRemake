@@ -2,46 +2,41 @@ package me.carscupcake.sbremake.util.lootTable.rngMeter;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.carscupcake.sbremake.config.ConfigField;
 import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.config.DefaultConfigItem;
 import me.carscupcake.sbremake.entity.slayer.ISlayer;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 
 import java.util.Map;
 
 @Getter
-public class SlayerRngMeter {
+public class SlayerRngMeter implements DefaultConfigItem {
     private final SkyblockPlayer player;
     private final ISlayer slayer;
     private final Map<RngMeterEntry, Double> lootTableGoals;
     private final Map<RngMeterEntry, Double> lootTableChances;
     @Setter
+    @ConfigField
     private double rngMeterXp;
-    @Setter
     private RngMeterEntry selected = null;
+    @ConfigField
+    private String selectedId = null;
 
-    public SlayerRngMeter(SkyblockPlayer player, ISlayer slayer, Map<RngMeterEntry, Double> lootTableGoal, Map<RngMeterEntry, Double> lootTableChances) {
+    public SlayerRngMeter(SkyblockPlayer player, ISlayer slayer, Map<RngMeterEntry, Double> lootTableGoal, Map<RngMeterEntry, Double> lootTableChances, ConfigSection section) {
         this.player = player;
         this.slayer = slayer;
         this.lootTableChances = lootTableChances;
         lootTableGoals = lootTableGoal;
-        ConfigFile file = new ConfigFile("rngmeters", player);
-        rngMeterXp = file.get(slayer.getId(), ConfigSection.DOUBLE, 0d);
-        String selected = file.get((slayer.getId()) + "_SELECTED", ConfigSection.STRING);
-        if (selected != null) {
+        load(section);
+        if (selectedId != null) {
             for (RngMeterEntry entry : lootTableGoals.keySet())
-                if (entry.id().equals(selected)) {
+                if (entry.id().equals(selectedId)) {
                     this.selected = entry;
                     break;
                 }
         }
-    }
-
-    public void save() {
-        ConfigFile file = new ConfigFile("rngmeters", player);
-        file.set(slayer.getId(), rngMeterXp, ConfigSection.DOUBLE);
-        file.set((slayer.getId()) + "_SELECTED", selected == null ? null : selected.id(), ConfigSection.STRING);
-        file.save();
     }
 
     public double calculateWeight(RngMeterLoot loot, double weight) {
@@ -65,5 +60,10 @@ public class SlayerRngMeter {
         for (RngMeterEntry entry : lootTableGoals.keySet())
             if (entry.id().equals(id)) return entry;
         return null;
+    }
+
+    public void setSelected(RngMeterEntry entry) {
+        this.selected = entry;
+        this.selectedId = entry.id();
     }
 }

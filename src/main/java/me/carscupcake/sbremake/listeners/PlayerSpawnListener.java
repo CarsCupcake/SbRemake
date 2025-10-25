@@ -24,15 +24,7 @@ public class PlayerSpawnListener implements Consumer<PlayerSpawnEvent> {
             for (PotionEffect effect : player.getPotionEffects()) {
                 player.initPotion(effect);
             }
-            ConfigFile file = new ConfigFile("inventory", player);
-            if (file.getRawElement() != null && !file.getRawElement().getAsJsonObject().isEmpty())
-            {
-                player.getPlayerInventory().clear();
-                for (int i = 0; i < player.getPlayerInventory().getSize(); i++) {
-                    if (file.has(Integer.toString(i)))
-                        player.getPlayerInventory().setItemStack(i, file.get(Integer.toString(i), ConfigSection.ITEM).update(player));
-                }
-            }
+            player.getPlayerInventory().update();
             player.getPlayerInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create());
             player.updateHpBar();
             player.getWorldProvider().addPlayer(player);

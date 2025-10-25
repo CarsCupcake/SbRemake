@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.player.skill;
 
 import lombok.Getter;
+import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.impl.*;
 
@@ -19,9 +20,11 @@ public enum Skill {
         this.clazz = clazz;
     }
 
-    public ISkill instantiate(SkyblockPlayer player) {
+    public ISkill instantiate(SkyblockPlayer player, ConfigSection configSection) {
         try {
-            return clazz.getConstructor(SkyblockPlayer.class).newInstance(player);
+            var instance = clazz.getConstructor(SkyblockPlayer.class).newInstance(player);
+            instance.load(configSection);
+            return instance;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.slayer;
 
+import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphI;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphII;
@@ -82,12 +83,12 @@ public enum Slayers implements ISlayer {
         }
 
         @Override
-        public SlayerRngMeter createRngMeter(SkyblockPlayer player) {
+        public SlayerRngMeter createRngMeter(SkyblockPlayer player, ConfigSection section) {
             if (rngMeterEntries.isEmpty()) {
                 for (RngMeterEntry entry : getRngMeterEntries())
                     addRngMeterEntry(entry);
             }
-            return new SlayerRngMeter(player, this, rngMeterEntries, lootChancesEntries);
+            return new SlayerRngMeter(player, this, rngMeterEntries, lootChancesEntries, section);
         }
 
         private final Lazy<List<RngMeterEntry>> entries = new Lazy<>(() -> List.of(RevenantHorrorII.FOUL_FLESH, RevenantHorrorII.PESTILENCE_RUNE,
@@ -237,12 +238,12 @@ public enum Slayers implements ISlayer {
         }
 
         @Override
-        public SlayerRngMeter createRngMeter(SkyblockPlayer player) {
+        public SlayerRngMeter createRngMeter(SkyblockPlayer player, ConfigSection section) {
             if (rngMeterEntries.isEmpty()) {
                 for (RngMeterEntry entry : getRngMeterEntries())
                     addRngMeterEntry(entry);
             }
-            return new SlayerRngMeter(player, this, rngMeterEntries, lootChancesEntries);
+            return new SlayerRngMeter(player, this, rngMeterEntries, lootChancesEntries, section);
         }
 
         private final Lazy<List<RngMeterEntry>> entries = new Lazy<>(() -> List.of(VoidgloomSeraphII.TWILIGHT_ARROW_POISON,

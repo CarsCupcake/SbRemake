@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.player;
 
+import me.carscupcake.sbremake.config.*;
 import me.carscupcake.sbremake.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +9,11 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Timer;
 
-public record BankRecord(double sum, LocalDateTime time) {
+public record BankRecord(@ConfigParameter("sum") double sum, @ConfigParameter("time") LocalDateTime time) implements DefaultConfigItem {
+
+    @ConfigConstructor
+    public BankRecord {}
+
     @Override
     public @NotNull String toString() {
         return (sum >= 0 ? "§a+" : "§c-") + " §6" + StringUtils.toFormatedNumber(Math.abs(sum)) + " §e" + formatTime();

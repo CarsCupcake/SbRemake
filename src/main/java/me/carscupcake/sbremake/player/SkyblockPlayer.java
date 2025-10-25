@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.player;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import jnr.ffi.annotations.In;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +11,7 @@ import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.blocks.Mining;
-import me.carscupcake.sbremake.config.ConfigFile;
-import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.config.*;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.SkyblockEntityProjectile;
 import me.carscupcake.sbremake.entity.slayer.ISlayer;
@@ -93,6 +93,8 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -102,7 +104,7 @@ import java.util.function.Function;
 @Slf4j
 @Getter
 @SuppressWarnings({"unused"})
-public class SkyblockPlayer extends Player {
+public class SkyblockPlayer extends Player implements DefaultConfigItem {
     public static final Comparator<StoredPet> PET_COMPARATOR = (o1, o2) -> {
         int rarity = o2.getRarity().ordinal() - o1.getRarity().ordinal();
         if (rarity != 0) return rarity;
@@ -500,16 +502,22 @@ public class SkyblockPlayer extends Player {
     private final ActionBar actionBar = new ActionBar(this);
     private final Map<FullSetBonus, Integer> fullSetBonuses = new HashMap<>();
     @Getter
+    @ConfigField(loadInPost = true)
     private final Map<String, me.carscupcake.sbremake.item.collections.Collection> collections = new HashMap<>();
+    @ConfigField(loadInPost = true)
     private final Map<Skill, ISkill> skills = new HashMap<>();
     @Getter
-    private final List<String> tags;
+    @ConfigField
+    private final List<String> tags = new ArrayList<>();
+    @ConfigField
     private final Map<Powder, Integer> powder = new HashMap<>();
     @Getter
-    private final HeartOfTheMountain hotm;
+    @ConfigFileField(name = "hotm")
+    private final HeartOfTheMountain hotm = new HeartOfTheMountain(this);
     @Getter
     private final PlayerModifierList temporaryModifiers = new PlayerModifierList();
     @Getter
+    @ConfigField
     private final Deque<Pair<SbItemStack, Integer>> sellHistory = new ArrayDeque<>() {
         @Override
         public void push(@NotNull Pair<SbItemStack, Integer> sbItemStackIntegerPair) {
@@ -520,17 +528,22 @@ public class SkyblockPlayer extends Player {
         }
     };
     @Getter
+    @ConfigField(name = "pets")
     private final ArrayList<StoredPet> pets = new ArrayList<>();
     @Getter
+    @ConfigField(loadInPost = true)
     private final Map<ISlayer, PlayerSlayer> slayers = new HashMap<>();
     @Getter
+    @ConfigField
     private final CountMap<Essence> essence = new CountMap<>();
     @Getter
     private final UUID configId;
     @Getter
+    @ConfigFileField(name = "inventory")
     private final SkyblockPlayerInventory playerInventory = new SkyblockPlayerInventory(this);
     @Getter
-    private final AccessoryBag accessoryBag;
+    @ConfigFileField(name = "accessoryBag")
+    private AccessoryBag accessoryBag;
     @Setter
     public UpdateHealthPacket lastHealthPacket = null;
     @Getter
@@ -561,7 +574,8 @@ public class SkyblockPlayer extends Player {
     @Getter
     @Setter
     @Range(from = 0, to = Long.MAX_VALUE)
-    private double coins;
+    @ConfigField
+    private double coins = 0;
     @Getter
     private Gui gui = null;
     @Getter
@@ -595,10 +609,12 @@ public class SkyblockPlayer extends Player {
     @Setter
     private SlayerQuest slayerQuest = null;
     @Getter
+    @ConfigField(name = "potions")
     private volatile TreeSet<me.carscupcake.sbremake.player.potion.PotionEffect> potionEffects = new TreeSet<>(Comparator.comparingLong(me.carscupcake.sbremake.player.potion.PotionEffect::expiration));
     @Getter
     @Setter
-    private int zealotPity;
+    @ConfigField
+    private int zealotPity = 0;
     @Getter
     @Setter
     private boolean inWorldTransfer;
@@ -608,11 +624,14 @@ public class SkyblockPlayer extends Player {
     @Getter
     private long skyblockXp = 0;
     @Getter
-    private double bankBalance;
+    @ConfigField
+    private double bankBalance = 0;
     @Getter
     @Setter
-    private BankAccountType bankAccountType;
+    @ConfigField
+    private BankAccountType bankAccountType = BankAccountType.Starter;
     @Getter
+    @ConfigField
     private LimitedList<BankRecord> lastBankTransactions = new LimitedList<>(10);
     @Getter
     @Setter
@@ -634,31 +653,29 @@ public class SkyblockPlayer extends Player {
         super.callSpawn = false;
         this.inventory = playerInventory;
         this.configId = configId;
-        ConfigFile file = new ConfigFile("defaults", this);
-        zealotPity = file.get("zealotPity", ConfigSection.INTEGER, 0);
-        coins = file.get("coins", ConfigSection.DOUBLE, 0d);
-        bankBalance = file.get("bankBalance", ConfigSection.DOUBLE, 0d);
-        bankAccountType = BankAccountType.valueOf(file.get("bankAccountType", ConfigSection.STRING, BankAccountType.Starter.name())) ;
-        tags = new ArrayList<>(List.of(file.get("tags", ConfigSection.STRING_ARRAY, new String[0])));
+        load(new ConfigFile("defaults", this));
+        getPlayerInventory().updateSbItemStacks();
+        sbHealth = getMaxSbHealth();
+        setNoGravity(true);
+    }
+
+    @Override
+    public ConfigSection.Data<?> resolveDatatype(Class<?> clazz, Type type) {
+        if (type instanceof ParameterizedType parameterizedType) {
+            if (List.class.isAssignableFrom(clazz) && parameterizedType.getActualTypeArguments()[0] == StoredPet.class)
+                return STORED_PET_LIST_DATA;
+        }
+        return DefaultConfigItem.super.resolveDatatype(clazz, type);
+    }
+
+    @Override
+    public void load(ConfigSection section) {
+        DefaultConfigItem.super.load(section);
         for (Skill skill : Skill.values()) {
-            var skillInstance = skill.instantiate(this);
+            var skillInstance = skill.instantiate(this, section);
             skills.put(skill, skillInstance);
             initSkyblockXpTask(skillInstance);
         }
-        ConfigSection section = file.get("powder", ConfigSection.SECTION, new ConfigSection(new JsonObject()));
-        for (Powder p : Powder.values()) {
-            powder.put(p, section.get(p.getId(), ConfigSection.INTEGER, 0));
-        }
-        ConfigSection potions = file.get("potions", ConfigSection.SECTION, new ConfigSection(new JsonObject()));
-        potions.forEntries((s, section1) -> {
-            me.carscupcake.sbremake.player.potion.PotionEffect effect = new me.carscupcake.sbremake.player.potion.PotionEffect(s, section1);
-            potionEffects.add(effect);
-        });
-        for (ISlayer s : Slayers.values()) {
-            slayers.put(s, new PlayerSlayer(this, s));
-        }
-        sbHealth = getMaxSbHealth();
-        setNoGravity(true);
         Reflections reflections = new Reflections("me.carscupcake.sbremake.item.collections.impl");
         for (Class<? extends me.carscupcake.sbremake.item.collections.Collection> clazz : reflections.getSubTypesOf(me.carscupcake.sbremake.item.collections.Collection.class)) {
             try {
@@ -672,12 +689,15 @@ public class SkyblockPlayer extends Player {
                 throw new RuntimeException(e);
             }
         }
-        this.accessoryBag = new AccessoryBag(new ConfigFile("accessoryBag", this), 3);
-        this.hotm = new HeartOfTheMountain(this);
-        ConfigFile f = new ConfigFile("pets", this);
-        pets.addAll(f.get("stored", STORED_PET_LIST_DATA, new ArrayList<>()));
-        if (f.get("equipped", ConfigSection.INTEGER, -1) >= 0) {
-            pet = pets.get(f.get("equipped", ConfigSection.INTEGER));
+        for (Powder p : Powder.values()) {
+            if (!powder.containsKey(p))
+                powder.put(p, 0);
+        }
+        if (section.get("equippedPet", ConfigSection.INTEGER, -1) >= 0) {
+            pet = pets.get(section.get("equippedPet", ConfigSection.INTEGER));
+        }
+        for (ISlayer s : Slayers.values()) {
+            slayers.put(s, new PlayerSlayer(this, s, section.get(s.key(), ConfigSection.SECTION, ConfigSection.empty())));
         }
     }
 
@@ -1259,7 +1279,10 @@ public class SkyblockPlayer extends Player {
 
     public void save() {
         if (noSave) return;
-        ConfigFile configFile = new ConfigFile("inventory", this);
+        ConfigFile defaults = new ConfigFile("defaults", this);
+        save(defaults);
+        defaults.save();
+        /*onfigFile configFile = new ConfigFile("inventory", this);
         configFile.setRawElement(new JsonObject());
         for (int i = 0; i < this.getInventory().getSize(); i++) {
             SbItemStack item = getPlayerInventory().getSbItemStack(i);
@@ -1270,7 +1293,6 @@ public class SkyblockPlayer extends Player {
         var accessoryBagConfig = new ConfigFile("accessoryBag", this);
         ((ConfigFile) accessoryBag.save(accessoryBagConfig)).save();
         ConfigFile defaults = new ConfigFile("defaults", this);
-        defaults.set("world", this.getWorldProvider().type().getId(), ConfigSection.STRING);
         defaults.set("coins", this.coins, ConfigSection.DOUBLE);
         defaults.set("bankBalance", this.bankBalance, ConfigSection.DOUBLE);
         defaults.set("bankAccountType", this.bankAccountType.name(), ConfigSection.STRING);
@@ -1291,14 +1313,19 @@ public class SkyblockPlayer extends Player {
         hotm.save();
         ConfigFile petsFile = new ConfigFile("pets", this);
         petsFile.set("stored", pets, STORED_PET_LIST_DATA);
-        petsFile.set("equipped", (pet == null) ? -1 : pets.indexOf(pet), ConfigSection.INTEGER);
         petsFile.save();
-        Main.LOGGER.info("Saved profile from {}", ((TextComponent) this.getName()).content());
 
         ConfigFile file = new ConfigFile("slayer", this);
         for (PlayerSlayer s : slayers.values())
-            s.save(file);
-        file.save();
+         s.save(file);*/
+    }
+
+    @Override
+    public void save(ConfigSection section) {
+        DefaultConfigItem.super.save(section);
+        section.set("world", this.getWorldProvider().type().getId(), ConfigSection.STRING);
+        Main.LOGGER.info("Saved profile from {}", ((TextComponent) this.getName()).content());
+        section.set("equippedPet", (pet == null) ? -1 : pets.indexOf(pet), ConfigSection.INTEGER);
     }
 
     public ISkill getSkill(Skill skill) {
@@ -1894,5 +1921,10 @@ public class SkyblockPlayer extends Player {
 
     public void playSound(@NotNull Pos position, SoundType soundType, float volume, float pitch) {
         this.playSound(soundType.create(volume, pitch), position);
+    }
+
+    @Override
+    public ConfigFile createFile(String name) {
+        return new ConfigFile(name, this);
     }
 }
