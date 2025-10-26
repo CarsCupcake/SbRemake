@@ -46,6 +46,8 @@ public interface ISlayer extends KeyClass {
 
     List<RngMeterEntry> getRngMeterEntries();
 
+    int getRequiredSlayerQuestXp(int tier);
+
     boolean addXp(SkyblockEntity entity, int tier);
 
     boolean startSlayerQuest(int tier, SkyblockPlayer player);

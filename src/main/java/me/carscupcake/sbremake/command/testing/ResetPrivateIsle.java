@@ -48,7 +48,7 @@ public class ResetPrivateIsle extends Command {
     }
 
     private static void resetIsle(UUID playerUUID) {
-        var opt = SkyblockWorld.getWorlds(SkyblockWorld.PrivateIsle).stream().filter(worldProvider -> worldProvider != null && ((PrivateIsle) worldProvider).getOwner().getUuid().equals(playerUUID)).findFirst();
+        var opt = SkyblockWorld.getWorlds(SkyblockWorld.PrivateIsle).stream().filter(worldProvider -> worldProvider != null && ((PrivateIsle) worldProvider).getOwner().equals(playerUUID)).findFirst();
         opt.ifPresent(SkyblockWorld.WorldProvider::remove);
         File dir = new File(ConfigFile.DATA_PATH, "/" + (playerUUID.toString()) + "/private_isle");
         if (dir.exists()) {

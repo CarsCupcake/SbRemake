@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.entity.slayer.SlayerQuest;
 import me.carscupcake.sbremake.event.*;
@@ -18,6 +19,7 @@ import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Point;
@@ -351,8 +353,9 @@ public abstract class SkyblockEntity extends EntityCreature {
             if (this instanceof SkillXpDropper dropper) {
                 dropper.apply(lastDamager);
                 if (dropper.type() == Skill.Combat && lastDamager.getSlayerQuest() != null && lastDamager.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.XpGathering) {
-                    if (lastDamager.getSlayerQuest().getSlayer().getSlayer().addXp(this, lastDamager.getSlayerQuest().getTier()))
+                    if (lastDamager.getSlayerQuest().getSlayer().getSlayer().addXp(this, lastDamager.getSlayerQuest().getTier())) {
                         lastDamager.getSlayerQuest().addXp(lastDamager.getSkill(Skill.Combat).calculateXp(dropper.amount(lastDamager)), getPosition());
+                    }
                 }
             }
             Set<SbItemStack> items = lootTable.loot(lastDamager);

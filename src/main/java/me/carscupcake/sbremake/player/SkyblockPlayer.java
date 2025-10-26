@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.player;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import jnr.ffi.annotations.In;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,6 +49,10 @@ import me.carscupcake.sbremake.util.quest.Dialog;
 import me.carscupcake.sbremake.widgets.WidgetContainer;
 import me.carscupcake.sbremake.worlds.*;
 import me.carscupcake.sbremake.worlds.region.Region;
+import net.kyori.adventure.Adventure;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.pointer.Pointer;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -91,10 +96,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import org.reflections.Reflections;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -491,7 +501,13 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         event.player().playerFishingBobber = bobber;
         event.player().playSound(SoundType.ENTITY_FISHING_BOBBER_THROW.create(1));
     }).addListener(PlayerDeathEvent.class, event -> {
-        event.setChatMessage(Component.text("§c%s §7You Died!".formatted(Characters.Skull)));
+        event.setChatMessage(null);
+        event.getPlayer().sendMessage(Component.text("§c%s §7You Died!".formatted(Characters.Skull)));
+        Audiences.players().forEachAudience(audience -> {
+            var player = (SkyblockPlayer) audience;
+            if (player == event.getPlayer()) return;
+            event.getPlayer().sendMessage(Component.text("§c%s §7%s Died!".formatted(Characters.Skull, player.getName())));
+        });
         event.setDeathText(Component.text("You Died!"));
     });
     private static final UUID speedUUID = UUID.randomUUID();
@@ -607,6 +623,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     private double absorption;
     @Getter
     @Setter
+    @ConfigField
     private SlayerQuest slayerQuest = null;
     @Getter
     @ConfigField(name = "potions")
@@ -660,6 +677,11 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     }
 
     @Override
+    public Map<String, Object> createConfigContext() {
+        return Map.of("player", this);
+    }
+
+    @Override
     public ConfigSection.Data<?> resolveDatatype(Class<?> clazz, Type type) {
         if (type instanceof ParameterizedType parameterizedType) {
             if (List.class.isAssignableFrom(clazz) && parameterizedType.getActualTypeArguments()[0] == StoredPet.class)
@@ -670,6 +692,9 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
 
     @Override
     public void load(ConfigSection section) {
+        for (ISlayer s : Slayers.values()) {
+            slayers.put(s, new PlayerSlayer(this, s, section.get(s.key(), ConfigSection.SECTION, ConfigSection.empty())));
+        }
         DefaultConfigItem.super.load(section);
         for (Skill skill : Skill.values()) {
             var skillInstance = skill.instantiate(this, section);
@@ -695,9 +720,6 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         }
         if (section.get("equippedPet", ConfigSection.INTEGER, -1) >= 0) {
             pet = pets.get(section.get("equippedPet", ConfigSection.INTEGER));
-        }
-        for (ISlayer s : Slayers.values()) {
-            slayers.put(s, new PlayerSlayer(this, s, section.get(s.key(), ConfigSection.SECTION, ConfigSection.empty())));
         }
     }
 
@@ -1926,5 +1948,31 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     @Override
     public ConfigFile createFile(String name) {
         return new ConfigFile(name, this);
+    }
+
+    public static UUID getUUID(String name) {
+        var player = MinecraftServer.getConnectionManager().getOnlinePlayers().stream().filter(p -> p.getUsername().equals(name)).findFirst();
+        if (player.isPresent()) return player.get().getUuid();
+        if (Main.isCracked) {
+            return Main.crackedRegistry.get(name, ConfigSection.UUID);
+        } else {
+            HttpClient client = HttpClient.newHttpClient();
+            try {
+                var response = client.send(HttpRequest.newBuilder(URI.create("https://api.mojang.com/users/profiles/minecraft/" + (name))).GET().build(), HttpResponse.BodyHandlers.ofString());
+                client.close();
+                if (response.statusCode() == 204) {
+                    return null;
+                }
+                if (response.statusCode() != 200) {
+                    Main.LOGGER.error("Unexpected Mojang API response: {}, Body: {}", response.statusCode(), response.body());
+                    return null;
+                }
+                return UUID.fromString(JsonParser.parseString(response.body()).getAsJsonObject().get("id").getAsString().replaceFirst(
+                        "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
+                ));
+            } catch (IOException | InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 }

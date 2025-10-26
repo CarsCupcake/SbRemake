@@ -8,12 +8,15 @@ import me.carscupcake.sbremake.item.impl.armor.enderArmor.EnderBoots;
 import me.carscupcake.sbremake.item.impl.armor.enderArmor.EnderChestplate;
 import me.carscupcake.sbremake.item.impl.armor.enderArmor.EnderHelmet;
 import me.carscupcake.sbremake.item.impl.armor.enderArmor.EnderLeggings;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.player.skill.Skill;
+import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.item.Material;
 
-public class EndermanT3 extends SkyblockEntity {
+public class EndermanT3 extends SkyblockEntity implements SkillXpDropper {
     public EndermanT3() {
         super(EntityType.ENDERMAN, new LootTable<SbItemStack>().addLoot(new ItemLoot(ISbItem.get(Material.ENDER_PEARL), 1, 3, 1))
                 .addLootTable(new LootTable<SbItemStack>().addLoot(new ItemLoot(EnderHelmet.class))
@@ -45,5 +48,15 @@ public class EndermanT3 extends SkyblockEntity {
     @Override
     public int getLevel() {
         return 50;
+    }
+
+    @Override
+    public Skill type() {
+        return Skill.Combat;
+    }
+
+    @Override
+    public double amount(SkyblockPlayer target) {
+        return 44;
     }
 }

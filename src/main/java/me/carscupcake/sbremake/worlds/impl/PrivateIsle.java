@@ -45,12 +45,12 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
                     }
                 }
             });
-    private final SkyblockPlayer owner;
     public final Map<UUID, Minion> minions = new HashMap<>();
+    private final UUID owner;
     @Setter
     private int maxMinions = 5;
 
-    public PrivateIsle(SkyblockPlayer owner) throws IOException {
+    public PrivateIsle(UUID owner) throws IOException {
         super(new EntityNpc[]{new EntityNpc(new Pos(9, 100, 33), null, "Jerry", EntityType.VILLAGER)});
         this.owner = owner;
         customEntry.put(SkyblockWorld.Hub, new Pos(6.5, 100, 40.5, 180, 0));
@@ -125,9 +125,14 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
             Main.LOGGER.debug("Created new isle");
         }
     }
+
+    public PrivateIsle(SkyblockPlayer owner) throws IOException {
+        this(owner.getUuid());
+    }
+
     @Override
     public Pair<Pos, Pos> getChunksToLoad() {
-        return new  Pair<>(new Pos(0, 0, 0), new Pos(0, 0, 0));
+        return new Pair<>(new Pos(0, 0, 0), new Pos(0, 0, 0));
     }
 
     @Override
@@ -164,7 +169,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
     @Override
     protected void unregister() {
         for (var minion : minions.values()) {
-            minion.remove(MinionRemoveReason.QUIT);
+            minion.remove(null, MinionRemoveReason.QUIT);
         }
         Path path = null;
         try {
@@ -189,6 +194,7 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
     public boolean useCustomMining() {
         return false;
     }
+
     public boolean addMinion(IMinionData minion, int level, Pos location) {
         UUID uuid = UUID.randomUUID();
         while (minions.containsKey(uuid)) uuid = UUID.randomUUID();
@@ -201,9 +207,9 @@ public class PrivateIsle extends SkyblockWorld.WorldProvider {
         return true;
     }
 
-    public void pickupMinion(Minion minion) {
+    public void pickupMinion(SkyblockPlayer player, Minion minion) {
         Assert.assertTrue(minions.containsValue(minion));
-        minion.remove(MinionRemoveReason.PICKUP_MINION);
+        minion.remove(player, MinionRemoveReason.PICKUP_MINION);
         minions.remove(minion.getId());
     }
 }
