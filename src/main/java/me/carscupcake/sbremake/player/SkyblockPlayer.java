@@ -650,6 +650,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     private int blockInteractBuffer = 0;
     @Getter
     @Setter
+    @ConfigField
     private boolean autoSlayerEnabled = false;
 
     /**
@@ -722,7 +723,6 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         if (section.get("equippedPet", ConfigSection.INTEGER, -1) >= 0) {
             pet = pets.get(section.get("equippedPet", ConfigSection.INTEGER));
         }
-        autoSlayerEnabled = f.get("autoSlayer", ConfigSection.BOOLEAN, false);
     }
 
     public void showBank() {

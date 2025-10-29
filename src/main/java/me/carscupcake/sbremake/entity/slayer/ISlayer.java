@@ -6,7 +6,7 @@ import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.Characters;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerRngMeter;
 import net.minestom.server.item.ItemStack;
@@ -70,7 +70,7 @@ public interface ISlayer extends KeyClass {
                 .addLore("§7 ")
                 .addAllLore(getLore())
                 .addLoreRow(" ")
-                .addLoreRow("§7" + getName() + " Level: §e LVL " + tier)
+                .addLoreRow("§7" + getName() + " Level: §eLVL " + tier)
                 .addLoreRow(" ")
                 .addLoreRow("§eClick to view boss!")
                 .build();
