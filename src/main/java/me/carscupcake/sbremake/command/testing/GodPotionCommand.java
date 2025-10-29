@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.player.potion.IPotion;
 import me.carscupcake.sbremake.player.potion.Potion;
 import me.carscupcake.sbremake.player.potion.PotionEffect;
 import me.carscupcake.sbremake.util.SoundType;
+import me.carscupcake.sbremake.worlds.impl.hub.CentauriToyBox;
 import net.kyori.adventure.sound.Sound;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.number.ArgumentInteger;
@@ -30,13 +31,6 @@ public class GodPotionCommand extends Command {
 
     public static void startPotion(SkyblockPlayer player, long ms) {
         ms += System.currentTimeMillis();
-        synchronized (player.getPotionEffects()) {
-            for (IPotion potion : Potion.values()) {
-                if (potion.isBuff() && !potion.isInstant()) {
-                    player.startPotionEffect(new PotionEffect(potion, ms++, potion.getMaxLevel()));
-                }
-            }
-            player.startPotionEffect(new PotionEffect(Potion.JumpBoost, ms, (byte) 6));
-        }
+        CentauriToyBox.giveGodPotionEffect(player, ms);
     }
 }

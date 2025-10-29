@@ -1,7 +1,10 @@
 package me.carscupcake.junit;
 
+import me.carscupcake.sbremake.util.ComponentUtil;
 import me.carscupcake.sbremake.util.TypeUtil;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;

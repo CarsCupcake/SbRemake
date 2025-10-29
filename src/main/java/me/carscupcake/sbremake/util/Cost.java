@@ -1,7 +1,7 @@
 package me.carscupcake.sbremake.util;
 
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 
 public interface Cost {
     boolean canPay(SkyblockPlayer player);

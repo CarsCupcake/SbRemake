@@ -12,7 +12,7 @@ import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.*;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterItemLoot;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerLootTable;

@@ -14,7 +14,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.Line;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.TaskScheduler;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterItemLoot;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerLootTable;

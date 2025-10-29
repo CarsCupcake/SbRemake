@@ -4,14 +4,13 @@ import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.Recipe;
 import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.SbItemStack;
-import me.carscupcake.sbremake.util.Returnable;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.item.component.CustomData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result, int amount, int prioritySlot,
                            Grid grid, Requirement... requirements) implements Recipe {
@@ -222,7 +221,7 @@ public record ShapedRecipe(List<CraftingIngredient> ingredients, ISbItem result,
             gridCombinations = new LinkedList<>(List.of(grids));
         }
 
-        Grid(Returnable<LinkedList<LinkedList<Integer>>> returnable) {
+        Grid(Supplier<LinkedList<LinkedList<Integer>>> returnable) {
             gridCombinations = returnable.get();
         }
 

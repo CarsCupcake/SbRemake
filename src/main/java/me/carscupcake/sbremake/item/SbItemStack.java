@@ -71,7 +71,10 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     }
 
     public static SbItemStack from(Class<? extends ISbItem> itemClass) {
-        return ISbItem.get(itemClass).create();
+        return from(ISbItem.get(itemClass));
+    }
+    public static SbItemStack from(ISbItem item) {
+        return item.create();
     }
 
     public static @Nullable SbItemStack from(String id) {
@@ -414,6 +417,9 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
 
     public static Set<String> getIds() {
         return items.keySet();
+    }
+    public static Collection<ISbItem> getRegisteredItems() {
+        return items.values();
     }
 
     public List<Ability> getAbilities(SkyblockPlayer player) {

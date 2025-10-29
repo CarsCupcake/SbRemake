@@ -6,10 +6,9 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.Cost;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TemplateItems;
-import me.carscupcake.sbremake.util.item.Gui;
-import me.carscupcake.sbremake.util.item.InventoryBuilder;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
-import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.util.gui.Gui;
+import me.carscupcake.sbremake.util.gui.InventoryBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 

@@ -10,4 +10,21 @@ public class NumberUtil {
     public static boolean inRange(double num, int min, int max) {
         return num >= min && num <= max;
     }
+
+    public static long fromShortenedString(String str) throws NumberFormatException {
+        long mult = 1;
+        if (str.endsWith("k")) {
+            mult = 1_000;
+            str = str.replace("k", "");
+        }
+        if (str.endsWith("m")) {
+            mult = 1_000_000;
+            str = str.replace("m", "");
+        }
+        if (str.endsWith("b")) {
+            mult = 1_000_000_000;
+            str = str.replace("b", "");
+        }
+        return Long.parseLong(str) * mult;
+    }
 }

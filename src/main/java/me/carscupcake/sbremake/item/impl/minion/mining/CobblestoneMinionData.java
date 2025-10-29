@@ -7,7 +7,7 @@ import me.carscupcake.sbremake.item.impl.other.mining.resources.EnchantedCobbles
 import me.carscupcake.sbremake.item.minion.AbstractMiningMinionData;
 import me.carscupcake.sbremake.item.minion.IMinionData;
 import me.carscupcake.sbremake.util.Cost;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;

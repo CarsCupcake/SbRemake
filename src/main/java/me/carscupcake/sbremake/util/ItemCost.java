@@ -3,7 +3,7 @@ package me.carscupcake.sbremake.util;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import net.minestom.server.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 

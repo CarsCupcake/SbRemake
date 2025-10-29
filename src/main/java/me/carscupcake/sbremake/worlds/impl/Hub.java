@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.entity.impl.hub.CryptGhoul;
 import me.carscupcake.sbremake.entity.impl.hub.GoldenGhoul;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
 import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.item.ItemFilter;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.arrows.FlintArrow;
 import me.carscupcake.sbremake.item.impl.bow.ArtisanalShortbow;
@@ -18,16 +19,22 @@ import me.carscupcake.sbremake.item.impl.sword.DiamondSword;
 import me.carscupcake.sbremake.item.impl.sword.EndSword;
 import me.carscupcake.sbremake.item.impl.sword.SpiderSword;
 import me.carscupcake.sbremake.item.impl.sword.UndeadSword;
+import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.CoinsCost;
 import me.carscupcake.sbremake.util.ItemCost;
 import me.carscupcake.sbremake.util.Pair;
+import me.carscupcake.sbremake.util.TemplateItems;
+import me.carscupcake.sbremake.util.gui.*;
 import me.carscupcake.sbremake.worlds.*;
+import me.carscupcake.sbremake.worlds.impl.hub.CentauriToyBox;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
 import me.carscupcake.sbremake.worlds.region.PolygonalRegion;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.PlayerSkin;
+import net.minestom.server.inventory.Inventory;
+import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
 import java.util.*;
@@ -98,7 +105,12 @@ public class Hub extends ForagingIsle {
                                 new Pair<>(ISbItem.get(WitherBow.class).create(), new CoinsCost(250)), new Pair<>(ISbItem.get(ArtisanalShortbow.class).create(), new CoinsCost(600)))),
         new Npc(new Pos(-24.5, 71, -58.5, 180, 0), container, "Banker", new PlayerSkin("eyJ0aW1lc3RhbXAiOjE1NTA2ODA4Mjg5MjMsInByb2ZpbGVJZCI6IjIzZjFhNTlmNDY5YjQzZGRiZGI1MzdiZmVjMTA0NzFmIiwicHJvZmlsZU5hbWUiOiIyODA3Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8zZjFlOGY5ZjVjZWE3YmFmNTZkOWUwNzkxMDU3YTdiMjNlNzkzNTZlNzY4M2VkM2Y0NzYwZWFhNmZjNWRjNGIxIn19fQ==",
                 "SkhUNSUjtfjFXHhfKO/Wsr0KYV96DzBjBlnzHbyvzHrY/xtHypc6qM8KB2TDPhNGlT3gNdjAyruf3rRaIeXZ9mpN1WdidPL4nYmGIDZRyxdMoEFuK20vHCg95gdg5sjVQyJmYjLzjAtOqBeZHfHiax8jTmuZjUEq94WiSzO5TkPNDwT9yu2hF51U4kvJKNIsdTsn6Y9Kkefx+mVSpd7UcsggmJ6uTEoP9aR9DeUwvaRA++1Ee5UyCURVFdIkGZrN52Ch63fbk9Gfr1XLThm6TYnUaIGatfrklW42KCkKhTuBNUeApAHiTd4lAApQJdqwRSMU4Z/L4THz0Kp64aHWOzqeY4ieW7PWxAS1f9grNRmM4wwlAKQEoyYW6YPpOhYCvHyxh9KlIix4g36sPj1xinmFuPKJMWwFSfMUZNQ/6D6QCejZcoY88ZL2bT3Q70jAl0vIqeS72dtlTjO33alTnkUIpxL7VWnRQSMWH1Q/LpcnLUkXTeJw07gX7C6oOH7nqmL6PTTrV+I5bZdgBYi9PDVj75iUBpWviODVIfQBr/Mzsbvv9KoDOttFjnXVX1l526whTbwnPyewq4rokqAuD5WXx22Rx6wAzQ/Z4SSNyV6oNm9RZWrcYIyvYXoj7sSgb3UsA9Qn+bmAoBMax0e43+Hy8QAn+vyzlqVgYTYruZM=")
-        ).withInteraction((player, ignored) -> player.showBank())};
+        ).withInteraction((player, ignored) -> player.showBank()),
+        new Npc(new Pos(-3.5, 70, -81.5), container, "§8§lCentauri", new PlayerSkin("ewogICJ0aW1lc3RhbXAiIDogMTU4ODkwMTI2MzYzOSwKICAicHJvZmlsZUlkIiA6ICI0ZDcwNDg2ZjUwOTI0ZDMzODZiYmZjOWMxMmJhYjRhZSIsCiAgInByb2ZpbGVOYW1lIiA6ICJzaXJGYWJpb3pzY2hlIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzRkNDdkYjcyMTkyNzQxNDk1ZTE1N2Y0YWJmYzJhZTEyMDJkMjkyNTBlYTAwNDdhNTJmYzgyMDQwODllMThlMTAiCiAgICB9CiAgfQp9", "T774DCoYhiL+fw88WvkQPpVY4XueW7L2emkokMwZWuhuJBcVpygKFFNtLfKHx+jagMB7IdJ/yrsClkfGRBapkSlvBKL2M7k33rEZtCn6QDwDg26SP726DCG9PvGqOstyY173pFTQp+0yfQp4xgYeAKcpU3el6HkFs/ht/k6SG4URCbtThK7hvLJbY1dsFdOUH8TN2Z5KHyW5wbHh0iaivb3K+7Xd0O10Ip3dBBFPG3Uyy6TQhOIbfZ9eVJyJ+YxTOOPcoBz3hI8UeutrgBqq3Xd3w2740ydz4SlFbOdT69KJuyUoxsYpLVUTFi/lhkGB+r5fuqM0i2qbMbtHWa3pXVE0Ayb+YOM5pkcAlfy3EjviEU4foKeaPcJj1nHzQdIBIoDwWOuBwup7nsgeL8FtWYgwd27maM6yH6hFvqoYGqvIpPaJiQDFypAtcddz8Q/DdowqtVpzBBJaR1c5t1DXroC8OUs1APWYt5jpTuK0OY0DRyUzzLIrCK9ZqFnZ2xuIbclgQnGOeZOktFkY95cVpY8S8+f8t0ryZb2x2PGwBkjzeHXohzjY9R0GQ/2bBc0c9IwxzlMTaNISSVcjyP0qblcXWI8kgEB8a++J+0UuRntKZksgPfzYtG2u0kZ8250GLYtEkZ31CzYbg7lX3WqW0ZkaeppdZ2kWZMKfbsjZIu0="))
+                .withInteraction((player, _) -> {
+                    player.sendMessage("§e[NPC] §8§lCentauri§r: Pro tip: use §7/centauri");
+                    openCentauriInventory(player);
+        })};
         summonArmorStandFixture("assets/armorstands/hub/rune_pedistal.json");
         summonArmorStandFixture("assets/armorstands/hub/hex.json");
         summonArmorStandFixture("assets/armorstands/hub/carpenter_sellplace.json");
@@ -106,6 +118,168 @@ public class Hub extends ForagingIsle {
         summonArmorStandFixture("assets/armorstands/hub/rosseta_assets.json");
         summonArmorStandFixture("assets/armorstands/hub/catacombs_entrance_assets.json");
         super.register();
+    }
+
+    public static void openCentauriInventory(SkyblockPlayer player) {
+        var gui = new Gui(new InventoryBuilder(4, "Centauri")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .setItem(11, new ItemBuilder(Material.FLINT)
+                        .setName("§aItems")
+                        .addAllLore("§7Get some fancy items to test out!", " ", "§eClick to view!")
+                        .build())
+                .setItem(13, new ItemBuilder(Material.GOLD_BLOCK)
+                        .setName("§6Coin Generator")
+                        .addAllLore("§7Generate Coins at the click of a", "§7button!", " ", "§eClick to open!")
+                        .build())
+                .setItem(15, new ItemBuilder(Material.CHEST)
+                        .setName("§aToy Box")
+                        .addAllLore("§7A variety of useful and cheaty", "§7utilities to make your life easier!", " ", "§eClick to view!")
+                        .build())
+                .setItem(31, TemplateItems.Close.getItem())
+                .build());
+        gui.setCancelled(true);
+        gui.getClickEvents().add(13, _ -> {
+            openCoinGenerator(player);
+            return true;
+        });
+        gui.getClickEvents().add(15, _ -> {
+            openToyBox(player);
+            return true;
+        });
+        gui.getClickEvents().add(11, _ -> {
+            ItemFilter.openGui(player);
+            return true;
+        });
+        gui.showGui(player);
+    }
+
+    private static final InputGui coinGeneratorCustom = new InputGui("", "^^^^^^^^^^^^^^", "Enter an", "amount!");
+
+    private static void openCoinGenerator(SkyblockPlayer player) {
+        var lore = """
+                
+                §7Generates a pre-defined amount of coins that are immediately deposited into your purse free of charge.
+                
+                §eClick to generate!
+                """;
+        var gui = new Gui(new InventoryBuilder(6, "Coin Generator")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .setItem(11, new ItemBuilder(Material.GOLD_NUGGET)
+                        .setName("§6Generate 1,000 Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(13, new ItemBuilder(Material.GOLD_INGOT)
+                        .setName("§6Generate 10,000 Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(15, new ItemBuilder(Material.GOLD_BLOCK)
+                        .setName("§6Generate 100,000 Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(19, new ItemBuilder(Material.DIAMOND)
+                        .setName("§6Generate 1M Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(21, new ItemBuilder(Material.DIAMOND_BLOCK)
+                        .setName("§6Generate 10M Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(23, new ItemBuilder(Material.EMERALD)
+                        .setName("§6Generate 100M Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(25, new ItemBuilder(Material.EMERALD_BLOCK)
+                        .setName("§6Generate 1B Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(31, new ItemBuilder(Material.OAK_SIGN)
+                        .setName("§aDefine Amount")
+                        .addLore(lore)
+                        .build())
+                .setItem(49, TemplateItems.Close.getItem())
+                .build());
+        gui.getClickEvents().add(49, _ -> {
+            player.closeGui();
+            return true;
+        });
+        gui.getClickEvents().add(11, _ -> {
+            player.addCoins(1000);
+            return true;
+        });
+        gui.getClickEvents().add(13, _ -> {
+            player.addCoins(10000);
+            return true;
+        });
+        gui.getClickEvents().add(15, _ -> {
+            player.addCoins(100000);
+            return true;
+        });
+        gui.getClickEvents().add(19, _ -> {
+            player.addCoins(1000000);
+            return true;
+        });
+        gui.getClickEvents().add(21, _ -> {
+            player.addCoins(10000000);
+            return true;
+        });
+        gui.getClickEvents().add(23, _ -> {
+            player.addCoins(100000000);
+            return true;
+        });
+        gui.getClickEvents().add(25, _ -> {
+            player.addCoins(1000000000);
+            return true;
+        });
+        gui.getClickEvents().add(31, _ -> {
+            coinGeneratorCustom.show(player, InputGui.SHORTENED_LONG_FORMAT, (input) -> {
+                if (input == null) {
+                    player.sendMessage("§cNot a number!");
+                    return;
+                }
+                if (input < 0) {
+                    player.sendMessage("§cNumber must be positive!");
+                    return;
+                }
+                player.addCoins(input);
+            });
+            return true;
+        });
+        gui.setCancelled(true);
+        gui.showGui(player);
+    }
+
+    private static void openToyBox(SkyblockPlayer player) {
+        var inventories = new ArrayList<Inventory>(CentauriToyBox.values().length % 7 == 0 ? CentauriToyBox.values().length / 7 : (CentauriToyBox.values().length / 7 + 1));
+        InventoryBuilder builder = null;
+        int page = 0;
+        for (int i = 0; i < CentauriToyBox.values().length; i++) {
+            if (builder == null) {
+                builder = new InventoryBuilder(3, "Toy Box").fill(TemplateItems.EmptySlot.getItem()).setItem(4, new ItemBuilder(Material.CHEST)
+                                .setName("§aToy Box")
+                        .build())
+                        .fill(ItemStack.AIR, 10, 16);
+            }
+            var counter = i - (7 * page);
+            builder.setItem(10 + counter, CentauriToyBox.values()[i].getShowItem());
+            if (counter == 6) {
+                page++;
+                inventories.add(builder.build());
+                builder = null;
+            }
+        }
+        if (builder != null)
+            inventories.add(builder.build());
+        var pageGui = new PageGui(inventories, PageGui.ItemSlotPosition.BottomRight, PageGui.ItemSlotPosition.BottomLeft);
+        pageGui.setCancelled(true);
+        pageGui.setGeneralClickEvent(event -> {
+            var slot = event.getSlot();
+            if (slot >= 10 && slot <= 17) {
+                var index = pageGui.getPage() * 7 + slot - 10;
+                CentauriToyBox.values()[index].executeToy(player);
+            }
+            return true;
+        });
+        pageGui.showGui(player);
     }
 
     @Override

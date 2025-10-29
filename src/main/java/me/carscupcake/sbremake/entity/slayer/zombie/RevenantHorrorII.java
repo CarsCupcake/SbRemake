@@ -18,7 +18,7 @@ import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.TaskScheduler;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterItemLoot;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerLootTable;

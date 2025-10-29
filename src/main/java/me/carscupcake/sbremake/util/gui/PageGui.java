@@ -1,4 +1,4 @@
-package me.carscupcake.sbremake.util.item;
+package me.carscupcake.sbremake.util.gui;
 
 import lombok.Getter;
 import me.carscupcake.sbremake.util.TemplateItems;
@@ -16,12 +16,16 @@ public class PageGui extends Gui {
     private final ItemSlotPosition nextItemSlot;
     private final ItemSlotPosition previousItemSlot;
     public PageGui(List<Inventory> inventory, ItemSlotPosition nextItemSlot, ItemSlotPosition previousItemSlot) {
+        this(inventory, nextItemSlot, previousItemSlot, 0);
+    }
+    public PageGui(List<Inventory> inventory, ItemSlotPosition nextItemSlot, ItemSlotPosition previousItemSlot, int page) {
         super(new Inventory(InventoryType.CHEST_1_ROW, ""));
         if (inventory.isEmpty()) throw new IllegalArgumentException("Inventories cant be empty!");
         inventories = prepareInventories(inventory, nextItemSlot, previousItemSlot);
         setInventory(inventories.getFirst());
         this.nextItemSlot = nextItemSlot;
         this.previousItemSlot = previousItemSlot;
+        this.page = page;
     }
 
     private static List<Inventory> prepareInventories(List<Inventory> inventories, ItemSlotPosition nextItemSlot, ItemSlotPosition previousItemSlot) {

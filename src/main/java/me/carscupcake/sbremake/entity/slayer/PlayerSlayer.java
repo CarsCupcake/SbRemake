@@ -1,18 +1,16 @@
 package me.carscupcake.sbremake.entity.slayer;
 
-import com.google.gson.JsonObject;
 import lombok.Getter;
 import me.carscupcake.sbremake.config.ConfigField;
-import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.config.DefaultConfigItem;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.StringUtils;
 import me.carscupcake.sbremake.util.TemplateItems;
-import me.carscupcake.sbremake.util.item.Gui;
-import me.carscupcake.sbremake.util.item.InventoryBuilder;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.Gui;
+import me.carscupcake.sbremake.util.gui.InventoryBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerRngMeter;
 import net.minestom.server.tag.Tag;

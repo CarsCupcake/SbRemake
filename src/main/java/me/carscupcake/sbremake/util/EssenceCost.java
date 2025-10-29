@@ -2,7 +2,7 @@ package me.carscupcake.sbremake.util;
 
 import me.carscupcake.sbremake.player.Essence;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import org.jetbrains.annotations.NotNull;
 
 public record EssenceCost(Essence essence, int amount) implements Cost {

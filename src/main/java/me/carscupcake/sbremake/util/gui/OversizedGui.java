@@ -1,4 +1,4 @@
-package me.carscupcake.sbremake.util.item;
+package me.carscupcake.sbremake.util.gui;
 
 import lombok.Getter;
 import me.carscupcake.sbremake.player.SkyblockPlayer;

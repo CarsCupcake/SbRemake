@@ -17,7 +17,6 @@ import me.carscupcake.sbremake.item.modifiers.reforges.Reforge;
 import me.carscupcake.sbremake.listeners.*;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.accessories.AccessoryBag;
-import me.carscupcake.sbremake.player.accessories.AccessoryBagPowers;
 import me.carscupcake.sbremake.player.hotm.HotmUpgrade;
 import me.carscupcake.sbremake.player.potion.IPotion;
 import me.carscupcake.sbremake.player.potion.Potion;
@@ -25,7 +24,8 @@ import me.carscupcake.sbremake.player.skill.impl.*;
 import me.carscupcake.sbremake.util.EnchantmentUtils;
 import me.carscupcake.sbremake.util.PlayerBrodcastOutputStream;
 import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
-import me.carscupcake.sbremake.util.item.Gui;
+import me.carscupcake.sbremake.util.gui.Gui;
+import me.carscupcake.sbremake.util.gui.InputGui;
 import me.carscupcake.sbremake.util.lootTable.blockLoot.BlockLootTable;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.Time;
@@ -175,6 +175,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(Galatea.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(Minion.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(SlayerEntity.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(InputGui.LISTENER);
         MinecraftServer.getGlobalEventHandler().addListener(ServerTickMonitorEvent.class, serverTickMonitorEvent -> tickDelay = (long) serverTickMonitorEvent.getTickMonitor().getTickTime());
         for (Potion potion : Potion.values()) IPotion.potions.put(potion.getId(), potion);
         MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (ignored, player) -> {
