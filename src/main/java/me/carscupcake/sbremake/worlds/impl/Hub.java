@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.entity.impl.hub.CryptGhoul;
 import me.carscupcake.sbremake.entity.impl.hub.GoldenGhoul;
 import me.carscupcake.sbremake.entity.impl.hub.GraveyardZombie;
 import me.carscupcake.sbremake.item.ISbItem;
+import me.carscupcake.sbremake.item.ItemFilter;
 import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.arrows.FlintArrow;
 import me.carscupcake.sbremake.item.impl.bow.ArtisanalShortbow;
@@ -143,6 +144,10 @@ public class Hub extends ForagingIsle {
         });
         gui.getClickEvents().add(15, _ -> {
             openToyBox(player);
+            return true;
+        });
+        gui.getClickEvents().add(11, _ -> {
+            ItemFilter.openGui(player);
             return true;
         });
         gui.showGui(player);
