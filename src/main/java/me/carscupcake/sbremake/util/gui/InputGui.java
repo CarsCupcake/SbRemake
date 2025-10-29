@@ -37,6 +37,10 @@ public record InputGui(List<String> prompt) {
         prompt = List.copyOf(prompt);
     }
 
+    public InputGui(String... strings) {
+        this(List.of(strings));
+    }
+
 
     /**
      * Prompts the player with the input

@@ -23,10 +23,7 @@ import me.carscupcake.sbremake.util.CoinsCost;
 import me.carscupcake.sbremake.util.ItemCost;
 import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.util.TemplateItems;
-import me.carscupcake.sbremake.util.gui.Gui;
-import me.carscupcake.sbremake.util.gui.InventoryBuilder;
-import me.carscupcake.sbremake.util.gui.ItemBuilder;
-import me.carscupcake.sbremake.util.gui.PageGui;
+import me.carscupcake.sbremake.util.gui.*;
 import me.carscupcake.sbremake.worlds.*;
 import me.carscupcake.sbremake.worlds.impl.hub.CentauriToyBox;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
@@ -140,10 +137,109 @@ public class Hub extends ForagingIsle {
                 .setItem(31, TemplateItems.Close.getItem())
                 .build());
         gui.setCancelled(true);
+        gui.getClickEvents().add(13, _ -> {
+            openCoinGenerator(player);
+            return true;
+        });
         gui.getClickEvents().add(15, _ -> {
             openToyBox(player);
             return true;
         });
+        gui.showGui(player);
+    }
+
+    private static final InputGui coinGeneratorCustom = new InputGui("", "^^^^^^^^^^^^^^", "Enter an", "amount!");
+
+    private static void openCoinGenerator(SkyblockPlayer player) {
+        var lore = """
+                
+                §7Generates a pre-defined amount of coins that are immediately deposited into your purse free of charge.
+                
+                §eClick to generate!
+                """;
+        var gui = new Gui(new InventoryBuilder(6, "Coin Generator")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .setItem(11, new ItemBuilder(Material.GOLD_NUGGET)
+                        .setName("§6Generate 1,000 Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(13, new ItemBuilder(Material.GOLD_INGOT)
+                        .setName("§6Generate 10,000 Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(15, new ItemBuilder(Material.GOLD_BLOCK)
+                        .setName("§6Generate 100,000 Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(19, new ItemBuilder(Material.DIAMOND)
+                        .setName("§6Generate 1M Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(21, new ItemBuilder(Material.DIAMOND_BLOCK)
+                        .setName("§6Generate 10M Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(23, new ItemBuilder(Material.EMERALD)
+                        .setName("§6Generate 100M Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(25, new ItemBuilder(Material.EMERALD_BLOCK)
+                        .setName("§6Generate 1B Coins")
+                        .addLore(lore)
+                        .build())
+                .setItem(31, new ItemBuilder(Material.OAK_SIGN)
+                        .setName("§aDefine Amount")
+                        .addLore(lore)
+                        .build())
+                .setItem(49, TemplateItems.Close.getItem())
+                .build());
+        gui.getClickEvents().add(49, _ -> {
+            player.closeGui();
+            return true;
+        });
+        gui.getClickEvents().add(11, _ -> {
+            player.addCoins(1000);
+            return true;
+        });
+        gui.getClickEvents().add(13, _ -> {
+            player.addCoins(10000);
+            return true;
+        });
+        gui.getClickEvents().add(15, _ -> {
+            player.addCoins(100000);
+            return true;
+        });
+        gui.getClickEvents().add(19, _ -> {
+            player.addCoins(1000000);
+            return true;
+        });
+        gui.getClickEvents().add(21, _ -> {
+            player.addCoins(10000000);
+            return true;
+        });
+        gui.getClickEvents().add(23, _ -> {
+            player.addCoins(100000000);
+            return true;
+        });
+        gui.getClickEvents().add(25, _ -> {
+            player.addCoins(1000000000);
+            return true;
+        });
+        gui.getClickEvents().add(31, _ -> {
+            coinGeneratorCustom.show(player, InputGui.SHORTENED_LONG_FORMAT, (input) -> {
+                if (input == null) {
+                    player.sendMessage("§cNot a number!");
+                    return;
+                }
+                if (input < 0) {
+                    player.sendMessage("§cNumber must be positive!");
+                    return;
+                }
+                player.addCoins(input);
+            });
+            return true;
+        });
+        gui.setCancelled(true);
         gui.showGui(player);
     }
 
