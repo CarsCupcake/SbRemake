@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import jnr.ffi.annotations.In;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -42,17 +41,13 @@ import me.carscupcake.sbremake.player.skill.ISkill;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.xp.SkyblockXpTask;
 import me.carscupcake.sbremake.util.*;
-import me.carscupcake.sbremake.util.item.Gui;
-import me.carscupcake.sbremake.util.item.InventoryBuilder;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.Gui;
+import me.carscupcake.sbremake.util.gui.InventoryBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.quest.Dialog;
 import me.carscupcake.sbremake.widgets.WidgetContainer;
 import me.carscupcake.sbremake.worlds.*;
 import me.carscupcake.sbremake.worlds.region.Region;
-import net.kyori.adventure.Adventure;
-import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.pointer.Pointer;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -696,17 +691,20 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
             slayers.put(s, new PlayerSlayer(this, s, section.get(s.key(), ConfigSection.SECTION, ConfigSection.empty())));
         }
         DefaultConfigItem.super.load(section);
+        var skillSection = section.get("skills", ConfigSection.SECTION, ConfigSection.empty());
         for (Skill skill : Skill.values()) {
-            var skillInstance = skill.instantiate(this, section);
+            var skillInstance = skill.instantiate(this, skillSection.get(skill.name(), ConfigSection.SECTION, ConfigSection.empty()));
             skills.put(skill, skillInstance);
             initSkyblockXpTask(skillInstance);
         }
+        var collectionSection = section.get("collections", ConfigSection.SECTION, ConfigSection.empty());
         Reflections reflections = new Reflections("me.carscupcake.sbremake.item.collections.impl");
         for (Class<? extends me.carscupcake.sbremake.item.collections.Collection> clazz : reflections.getSubTypesOf(me.carscupcake.sbremake.item.collections.Collection.class)) {
             try {
                 if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) continue;
                 Constructor<? extends me.carscupcake.sbremake.item.collections.Collection> constructor = clazz.getConstructor(SkyblockPlayer.class);
                 var collection = constructor.newInstance(this);
+                collection.load(collectionSection.get(collection.getId(), ConfigSection.SECTION, ConfigSection.empty()));
                 collections.put(collection.getId(), collection);
                 initSkyblockXpTask(collection);
             } catch (Exception e) {

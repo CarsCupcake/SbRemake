@@ -3,7 +3,7 @@ package me.carscupcake.sbremake.blocks;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.TaskScheduler;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;

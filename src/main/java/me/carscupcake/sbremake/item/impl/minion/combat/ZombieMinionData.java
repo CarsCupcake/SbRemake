@@ -8,7 +8,7 @@ import me.carscupcake.sbremake.item.minion.AbstractCombatMinionData;
 import me.carscupcake.sbremake.item.minion.IMinionData;
 import me.carscupcake.sbremake.item.minion.MinionEntity;
 import me.carscupcake.sbremake.util.Cost;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.ILootTable;
 import net.minestom.server.color.Color;
 import net.minestom.server.entity.EquipmentSlot;

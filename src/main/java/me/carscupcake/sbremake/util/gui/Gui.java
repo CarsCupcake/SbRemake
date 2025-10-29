@@ -1,10 +1,9 @@
-package me.carscupcake.sbremake.util.item;
+package me.carscupcake.sbremake.util.gui;
 
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.MapList;
-import me.carscupcake.sbremake.util.Returnable;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -15,12 +14,12 @@ import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.inventory.AbstractInventory;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.click.Click;
-import net.minestom.server.inventory.click.ClickType;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Getter
 @Setter
@@ -61,7 +60,7 @@ public class Gui {
     };
     private Consumer<InventoryItemChangeEvent> itemChangeEvent = (ignored) -> {
     };
-    private Returnable<Boolean> closeEvent = () -> false;
+    private Supplier<Boolean> closeEvent = () -> false;
     private final MapList<Integer, Function<Click, Boolean>> clickEvents = new MapList<>();
     private Inventory inventory;
     private boolean cancelled = false;

@@ -2,7 +2,7 @@ package me.carscupcake.sbremake.event;
 
 import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.trait.PlayerEvent;
 import net.minestom.server.item.ItemStack;

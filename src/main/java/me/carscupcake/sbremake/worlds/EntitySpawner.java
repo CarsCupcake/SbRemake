@@ -1,13 +1,13 @@
 package me.carscupcake.sbremake.worlds;
 
 import me.carscupcake.sbremake.entity.SkyblockEntity;
-import me.carscupcake.sbremake.util.Returnable;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class EntitySpawner {
     private TaskScheduler scheduler;
@@ -57,7 +57,7 @@ public class EntitySpawner {
         SkyblockEntity construct(Pos pos, Instance instance);
     }
 
-    public record BasicConstructor(Returnable<SkyblockEntity> entityReturnable) implements EntityConstructor {
+    public record BasicConstructor(Supplier<SkyblockEntity> entityReturnable) implements EntityConstructor {
         @Override
         public SkyblockEntity construct(Pos pos, Instance instance) {
             SkyblockEntity entity = entityReturnable.get();

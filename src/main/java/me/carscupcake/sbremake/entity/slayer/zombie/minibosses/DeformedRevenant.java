@@ -8,7 +8,7 @@ import me.carscupcake.sbremake.item.impl.other.slayer.zombie.RevenantFlesh;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import net.minestom.server.color.Color;

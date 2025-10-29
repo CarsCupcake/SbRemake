@@ -9,10 +9,9 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.impl.*;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.TemplateItems;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
-import me.carscupcake.sbremake.util.item.OversizedGui;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.OversizedGui;
 import net.minestom.server.inventory.click.Click;
-import net.minestom.server.inventory.click.ClickType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
@@ -51,6 +50,15 @@ public class HeartOfTheMountain implements DefaultConfigItem {
     @Override
     public void load(ConfigSection section) {
         DefaultConfigItem.super.load(section);
+        for (Class<? extends HotmUpgrade> upgradeClass : UPGRADES) {
+            try {
+                HotmUpgrade upgrade = upgradeClass.getConstructor(SkyblockPlayer.class).newInstance(player);
+                upgrades.add(upgrade);
+                if (upgrade.level > 0 && !(upgrade instanceof PeakOfTheMountain)) tokenOfTheMountain--;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         if (level > 0) {
             tokenOfTheMountain++;
             tokenOfTheMountain += (level - 1) * 2;
@@ -62,15 +70,6 @@ public class HeartOfTheMountain implements DefaultConfigItem {
             if (peakOfTheMountain.level >= 5) tokenOfTheMountain++;
             if (peakOfTheMountain.level >= 7) tokenOfTheMountain++;
             if (peakOfTheMountain.level >= 10) tokenOfTheMountain += 2;
-        }
-        for (Class<? extends HotmUpgrade> upgradeClass : UPGRADES) {
-            try {
-                HotmUpgrade upgrade = upgradeClass.getConstructor(SkyblockPlayer.class).newInstance(player);
-                upgrades.add(upgrade);
-                if (upgrade.level > 0 && !(upgrade instanceof PeakOfTheMountain)) tokenOfTheMountain--;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         }
         if (activeAbilityId != null) {
             for (HotmUpgrade upgrade : upgrades)

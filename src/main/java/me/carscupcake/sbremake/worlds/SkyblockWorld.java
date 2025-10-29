@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.worlds;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.Getter;
@@ -16,8 +15,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Pair;
-import me.carscupcake.sbremake.util.Returnable;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.worlds.impl.*;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.kyori.adventure.key.Key;
@@ -25,7 +23,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.color.Color;
-import net.minestom.server.component.DataComponent;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
@@ -64,11 +61,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Getter
-public enum SkyblockWorld implements Returnable<SkyblockWorld.WorldProvider>, WorldSelector {
+public enum SkyblockWorld implements Supplier<SkyblockWorld.WorldProvider>, WorldSelector {
     PrivateIsle("Private Isle", "private_isle", FileEnding.ZIP) {
         @Override
         public WorldProvider get() {

@@ -7,32 +7,22 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.ParticleUtils;
-import me.carscupcake.sbremake.util.TaskScheduler;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.CoinLoot;
 import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
 import me.carscupcake.sbremake.worlds.region.Region;
-import net.kyori.adventure.text.Component;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
-import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.item.Material;
-import net.minestom.server.network.packet.server.play.EntityEffectPacket;
 import net.minestom.server.particle.Particle;
-import net.minestom.server.potion.Potion;
-import net.minestom.server.potion.PotionEffect;
 import net.minestom.server.utils.time.TimeUnit;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
-
-import static net.minestom.server.potion.Potion.INFINITE_DURATION;
 
 public class WitherSpectre extends SkyblockEntity implements SkillXpDropper {
     private static final String HEAD_VALUE = "ewogICJ0aW1lc3RhbXAiIDogMTYzOTUxMjkwNTczNywKICAicHJvZmlsZUlkIiA6ICI3MzgyZGRmYmU0ODU0NTVjODI1ZjkwMGY4OGZkMzJmOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJCdUlJZXQiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjZhYTVhY2ZkOTczZjY3YmE4ZTI0OWFlMDdhMTFhZTdjYTcxM2M5MDBkOTBkMDljZTA5MDNjNzlkZGQ3ZGQ5ZSIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9";

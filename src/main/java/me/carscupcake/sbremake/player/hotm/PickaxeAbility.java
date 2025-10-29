@@ -6,7 +6,7 @@ import me.carscupcake.sbremake.item.ability.AbilityType;
 import me.carscupcake.sbremake.item.ability.CooldownRequirement;
 import me.carscupcake.sbremake.item.ability.ItemAbility;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;

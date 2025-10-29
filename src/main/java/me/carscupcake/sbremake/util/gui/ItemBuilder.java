@@ -1,10 +1,9 @@
-package me.carscupcake.sbremake.util.item;
+package me.carscupcake.sbremake.util.gui;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.Lore;
-import me.carscupcake.sbremake.util.Returnable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -19,6 +18,7 @@ import net.minestom.server.item.enchant.Enchantment;
 import net.minestom.server.registry.RegistryKey;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 @Slf4j
 @Getter
@@ -94,28 +94,28 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addLoreIf(Returnable<Boolean> predicate, String... lore) {
+    public ItemBuilder addLoreIf(Supplier<Boolean> predicate, String... lore) {
         if (!predicate.get()) return this;
         for (String l : lore)
             addLoreRow(l);
         return this;
     }
 
-    public ItemBuilder addLoreIf(Returnable<Boolean> predicate, List<String> lore) {
+    public ItemBuilder addLoreIf(Supplier<Boolean> predicate, List<String> lore) {
         if (!predicate.get()) return this;
         for (String l : lore)
             addLoreRow(l);
         return this;
     }
 
-    public ItemBuilder addLoreIf(Returnable<Boolean> predicate, TextComponent... lore) {
+    public ItemBuilder addLoreIf(Supplier<Boolean> predicate, TextComponent... lore) {
         if (!predicate.get()) return this;
         for (TextComponent l : lore)
             addLoreRow(l);
         return this;
     }
 
-    public ItemBuilder addLoreIf(Returnable<Boolean> predicate, Returnable<String> l) {
+    public ItemBuilder addLoreIf(Supplier<Boolean> predicate, Supplier<String> l) {
         if (!predicate.get()) return this;
         addLore(l.get());
         return this;

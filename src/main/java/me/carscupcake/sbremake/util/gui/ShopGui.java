@@ -1,4 +1,4 @@
-package me.carscupcake.sbremake.util.item;
+package me.carscupcake.sbremake.util.gui;
 
 import me.carscupcake.sbremake.item.NpcSellable;
 import me.carscupcake.sbremake.item.Requirement;

@@ -42,7 +42,7 @@ public class Npc extends AbstractNpc {
         new TaskScheduler() {
             @Override
             public void run() {
-                player.sendPacket(new EntityMetaDataPacket(entityId, Map.of(17, Metadata.Byte(b))));
+                player.sendPacket(new EntityMetaDataPacket(entityId, Map.of(17, Metadata.Byte(b), 2, Metadata.OptChat(Component.text(getName())), 3, Metadata.Boolean(true))));
             }
         }.delayTask(10);
     }

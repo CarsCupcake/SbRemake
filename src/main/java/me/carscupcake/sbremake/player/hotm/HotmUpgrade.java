@@ -16,7 +16,7 @@ import me.carscupcake.sbremake.player.hotm.impl.MiningFortune2;
 import me.carscupcake.sbremake.player.hotm.impl.MiningSpeed;
 import me.carscupcake.sbremake.player.hotm.impl.MiningSpeed2;
 import me.carscupcake.sbremake.util.StringUtils;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.item.ItemStack;

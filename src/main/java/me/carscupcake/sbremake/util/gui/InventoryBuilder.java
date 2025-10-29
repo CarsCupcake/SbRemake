@@ -1,4 +1,4 @@
-package me.carscupcake.sbremake.util.item;
+package me.carscupcake.sbremake.util.gui;
 
 import me.carscupcake.sbremake.item.ISbItem;
 import net.minestom.server.inventory.Inventory;

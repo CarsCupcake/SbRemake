@@ -1,10 +1,8 @@
 package me.carscupcake.sbremake.player.accessories;
 
-import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.config.ConfigField;
-import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.config.DefaultConfigItem;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
 import me.carscupcake.sbremake.item.ItemRarity;
@@ -12,10 +10,9 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import me.carscupcake.sbremake.item.impl.AbstractAccessory;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.TemplateItems;
-import me.carscupcake.sbremake.util.item.InventoryBuilder;
-import me.carscupcake.sbremake.util.item.PageGui;
+import me.carscupcake.sbremake.util.gui.InventoryBuilder;
+import me.carscupcake.sbremake.util.gui.PageGui;
 import net.minestom.server.event.Event;
-import net.minestom.server.event.EventListener;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.item.ItemStack;

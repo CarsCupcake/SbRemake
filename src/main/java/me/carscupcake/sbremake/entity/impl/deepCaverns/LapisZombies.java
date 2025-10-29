@@ -11,7 +11,7 @@ import me.carscupcake.sbremake.item.impl.armor.lapisArmor.LapisLeggings;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
-import me.carscupcake.sbremake.util.item.ItemBuilder;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.ItemLoot;
 import me.carscupcake.sbremake.util.lootTable.LootTable;
 import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
