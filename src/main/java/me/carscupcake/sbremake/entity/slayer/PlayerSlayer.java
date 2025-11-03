@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.entity.slayer;
 
 import lombok.Getter;
+import me.carscupcake.sbremake.Stat;
 import me.carscupcake.sbremake.config.ConfigField;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.config.DefaultConfigItem;
@@ -13,6 +14,8 @@ import me.carscupcake.sbremake.util.gui.InventoryBuilder;
 import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerRngMeter;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
 import net.minestom.server.tag.Tag;
 
 import java.util.Map;
@@ -67,9 +70,38 @@ public class PlayerSlayer implements DefaultConfigItem {
     }
 
     public void openSlayerMenu() {
+        var lore =  slayer.getAbilityLore();
+        var slayernames = slayer.getSlayerGuiNames();
         var builder = new InventoryBuilder(6, slayer.getMobName())
                 .fill(TemplateItems.EmptySlot.getItem());
-
+        if (lore.size() != 5)
+            builder.setItem(new ItemBuilder(Material.COAL_BLOCK)
+                            .setName("§5" + slayer.getMobName())
+                            .addLore("This excrutiating difficult boss will be added later!")
+                    .build(), 15);
+        for (int i = 0; i < lore.size(); i++) {
+            var item = new ItemBuilder(slayer.getMaterial())
+                    .setName("§5" + slayer.getMobName() + " " + StringUtils.toRoman(i + 1))
+                    .addLoreRow("§7" + slayernames[i])
+                    .addAllLore(" ",
+                            "§7Health: §c" + StringUtils.toFormatedNumber(slayer.getHealth(i+1)) + Stat.Health.getSymbol(),
+                            "§7Damage: §c" + StringUtils.toFormatedNumber(slayer.getDamage(i+1)) + " §7per second",
+                            " ")
+                    .addAllLore(lore.get(i).build(null, player))
+                    .addAllLore(" ",
+                            "§7Rewards: §d" + slayer.getSlayerXp(i+1) + " " + slayer.getName() + " Slayer XP",
+                            " §8+ Boss Drops",
+                            " ",
+                            "§7Cost to start: §6" + StringUtils.toFormatedNumber(slayer.getSlayerCost(i+1)) + " Coins",
+                            " ",
+                            "§eClick to slay!")
+                    .setAmount(i+1)
+                    .build();
+            builder.setItem(item, i + 11);
+        }
+        var gui = new Gui(builder.build());
+        gui.setCancelled(true);
+        gui.showGui(player);
     }
 
     public void openRngMeterMenu() {

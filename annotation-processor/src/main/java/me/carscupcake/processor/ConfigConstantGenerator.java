@@ -2,34 +2,25 @@ package me.carscupcake.processor;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.palantir.javapoet.FieldSpec;
-import com.palantir.javapoet.JavaFile;
-import com.palantir.javapoet.TypeName;
-import com.palantir.javapoet.TypeSpec;
+import com.palantir.javapoet.*;
 
 import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 public class ConfigConstantGenerator {
-    private static final String CONFIG_FILE = "constants.json";
     private JsonObject configFile;
 
-    public void process(Path outputDir) {
-        var path = "src/main/resources/" + CONFIG_FILE;
+    public void process(InputStream stream, Path outputDir) {
         try {
-            var file = new File(path);
-            if (!file.exists()) {
-                System.out.println("Config file not found: " + path);
-                return;
-            }
-            try (var reader = new java.io.FileReader(file)) {
+            try (var reader = new java.io.InputStreamReader(stream)) {
                 configFile = JsonParser.parseReader(reader).getAsJsonObject();
             }
 
         } catch (Exception e) {
-            System.err.println("Failed to read config file: " + path);
+            System.err.println("Failed to read config file");
             e.printStackTrace(System.err);
         }
         if (configFile == null) return;
@@ -37,8 +28,9 @@ public class ConfigConstantGenerator {
             System.out.println("No config options found!");
             return;
         }
-        var classBuilder = generateClass("Constants", configFile);
-        var javaFile = JavaFile.builder("me.carscupcake.config", classBuilder).build();
+        var classBuilder = generateClass("Constants", configFile).toBuilder().addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
+                .addMember("value", "$S", "unused").build());
+        var javaFile = JavaFile.builder("me.carscupcake.config", classBuilder.build()).build();
         try {
             javaFile.writeTo(outputDir);
             System.out.println("Generated Constants class");
@@ -78,11 +70,48 @@ public class ConfigConstantGenerator {
                     classBuilder.addField(filedBuilder.build());
                 }
             } else if (element.isJsonArray()) {
-                System.err.println("Arrays are not supported yet");
-                var filedBuilder = FieldSpec.builder(String[].class, fieldName, modifiers)
-                        .initializer("$L", "null")
-                        .addJavadoc("The value of the config option $L - No Support in version 0.0.11", elements.getKey());
-                classBuilder.addField(filedBuilder.build());
+                var array = element.getAsJsonArray();
+                if (array.isEmpty()) continue;
+                var firstElement = array.get(0);
+                if (firstElement.isJsonPrimitive()) {
+                    if (firstElement.getAsJsonPrimitive().isString()) {
+                        var strs = new String[array.size()];
+                        for (int i = 0; i < array.size(); i++) {
+                            strs[i] = array.get(i).getAsString();
+                        }
+                        var filedBuilder = FieldSpec.builder(String[].class, fieldName, modifiers)
+                                .initializer("new String[]{" + "$S,".repeat(strs.length).substring(0, strs.length * 3 - 1) + "}", (Object[]) strs)
+                                .addJavadoc("The value of the config option $L", elements.getKey());
+                        classBuilder.addField(filedBuilder.build());
+                    } else if (firstElement.getAsJsonPrimitive().isNumber()) {
+                        Class<?> type;
+                        if (array.get(0).getAsJsonPrimitive().getAsNumber() instanceof Integer) {
+                            type = int[].class;
+                        } else if (array.get(0).getAsJsonPrimitive().getAsNumber() instanceof Long) {
+                            type = long[].class;
+                        } else if (array.get(0).getAsJsonPrimitive().getAsNumber() instanceof Float) {
+                            type = float[].class;
+                        } else  {
+                            type = double[].class;
+                        }
+                        var numbers = new Object[array.size()+1];
+                        numbers[0] = type;
+                        for (int i = 0; i < array.size(); i++) {
+                            StringBuilder s = new StringBuilder(array.get(i).getAsNumber() + "");
+                            if ((type == float[].class ||type == double[].class) && !s.toString().contains(".")) {
+                                s.append(".");
+                                if (type == float[].class) s.append("0f");
+                            }
+                            numbers[i+1] = s.toString();
+                        }
+                        var filedBuilder = FieldSpec.builder(type, fieldName, modifiers)
+                                .initializer("new $T{" + "$L,".repeat(numbers.length).substring(0, numbers.length * 3 - 4) + "}", (Object[]) numbers)
+                                .addJavadoc("The value of the config option $L", elements.getKey());
+                        classBuilder.addField(filedBuilder.build());
+                    }
+                } else {
+                    System.err.println("Only string arrays are supported yet");
+                }
             } else if (element.isJsonNull()) {
                 var filedBuilder = FieldSpec.builder(String.class, fieldName, modifiers)
                         .initializer("$L", "null")

@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.entity.slayer;
 
 import lombok.Getter;
+import me.carscupcake.config.Constants;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
@@ -39,7 +40,11 @@ import java.util.Map;
 import java.util.Random;
 
 public enum Slayers implements ISlayer {
-    Zombie("Zombie Slayer", "Revenant Horror") {
+    Zombie("Zombie Slayer", "Revenant Horror", new Lore(Constants.SLAYER.ZOMBIE.LIFEDRAIN),
+            new Lore(Constants.SLAYER.ZOMBIE.LIFEDRAIN + "\n \n" + Constants.SLAYER.ZOMBIE.PESTILENCE),
+            new Lore(Constants.SLAYER.ZOMBIE.LIFEDRAIN + "\n \n" + Constants.SLAYER.ZOMBIE.PESTILENCE + "\n \n" + Constants.SLAYER.ZOMBIE.ENRAGE),
+            new Lore(Constants.SLAYER.ZOMBIE.LIFEDRAIN + "\n \n" + Constants.SLAYER.ZOMBIE.PESTILENCE + "\n \n" + Constants.SLAYER.ZOMBIE.ENRAGE),
+            new Lore(Constants.SLAYER.ZOMBIE.REDEMPTION + "\n \n" + Constants.SLAYER.ZOMBIE.EXPLOSIVE_ASSAULT + "\n \n" + Constants.SLAYER.ZOMBIE.THERMONUCLEAR)) {
         private double rngXp(RngMeterEntry entry) {
             lootChancesEntries.put(entry, entry.calculateHighestChance(RevenantHorrorI.lootTable, RevenantHorrorII.lootTable, RevenantHorrorIII.lootTable, RevenantHorrorIV.lootTable, RevenantHorrorV.lootTable));
             return entry.calculateRequiredXp(50_000, RevenantHorrorI.lootTable, RevenantHorrorII.lootTable, RevenantHorrorIII.lootTable, RevenantHorrorIV.lootTable, RevenantHorrorV.lootTable);
@@ -60,6 +65,11 @@ public enum Slayers implements ISlayer {
                 case 5 -> new RevenantHorrorV(player);
                 default -> throw new IllegalArgumentException("Zombie Slayer Tier " + (tier) + " does not exsist");
             };
+        }
+
+        @Override
+        public String[] getSlayerGuiNames() {
+            return Constants.SLAYER.ZOMBIE.SLAYER_NAMES;
         }
 
         private final int[] xp = new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000};
@@ -186,11 +196,32 @@ public enum Slayers implements ISlayer {
                     "§7life and death for an eternity.");
         }
 
+        @Override
+        public double getHealth(int tier) {
+            return Constants.SLAYER.ZOMBIE.HEALTH[tier - 1];
+        }
 
-    }, Enderman("Enderman", "Voidgloom Seraph") {
+        @Override
+        public double getDamage(int tier) {
+            return Constants.SLAYER.ZOMBIE.DAMAGE[tier - 1];
+        }
+    }, Enderman("Enderman", "Voidgloom Seraph", new Lore(Constants.SLAYER.ENDERMAN.MALEVOLENT_HITSHIELD),
+            new Lore(Constants.SLAYER.ENDERMAN.MALEVOLENT_HITSHIELD + "\n \n" + Constants.SLAYER.ENDERMAN.YANG_GLYPHS),
+            new Lore(Constants.SLAYER.ENDERMAN.MALEVOLENT_HITSHIELD + "\n \n" + Constants.SLAYER.ENDERMAN.YANG_GLYPHS + "\n \n" + Constants.SLAYER.ENDERMAN.NUKEKUBI_FIXATIONS),
+            new Lore(Constants.SLAYER.ENDERMAN.MALEVOLENT_HITSHIELD + "\n \n" + Constants.SLAYER.ENDERMAN.YANG_GLYPHS + "\n \n" + Constants.SLAYER.ENDERMAN.NUKEKUBI_FIXATIONS + "\n \n" + Constants.SLAYER.ENDERMAN.BROKEN_HEART_RADIATION)) {
         @Override
         public MobType getMobType() {
             return MobType.Ender;
+        }
+
+        @Override
+        public double getHealth(int tier) {
+            return Constants.SLAYER.ENDERMAN.HEALTH[tier - 1];
+        }
+
+        @Override
+        public double getDamage(int tier) {
+            return Constants.SLAYER.ENDERMAN.DAMAGE[tier - 1];
         }
 
         @Override
@@ -202,6 +233,11 @@ public enum Slayers implements ISlayer {
                 case 4 -> new VoidgloomSeraphIV(player);
                 default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
             };
+        }
+
+        @Override
+        public String[] getSlayerGuiNames() {
+            return Constants.SLAYER.ENDERMAN.SLAYER_NAMES;
         }
 
         private final int[] xp = new int[]{10, 30, 250, 1_500, 5_000, 20_000, 100_000, 400_000, 1_000_000};

@@ -110,6 +110,14 @@ public class MaddoxBatphone implements ISbItem, HeadWithValue, ISoulbound {
             open(player);
             return true;
         });
+        gui.getClickEvents().add(13, _ -> {
+            player.getSlayers().get(Slayers.Enderman).openSlayerMenu();
+            return true;
+        });
+        gui.getClickEvents().add(10, _ -> {
+            player.getSlayers().get(Slayers.Zombie).openSlayerMenu();
+            return true;
+        });
         gui.setCancelled(true);
         gui.showGui(player);
     }

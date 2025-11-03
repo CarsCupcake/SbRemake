@@ -91,7 +91,6 @@ public class Main {
     public static boolean IS_DEBUG = System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true");
 
     public static void main(String[] args) throws Exception {
-        me.carscupcake.config.Constants lol = null;
         MinecraftServer.LoggerProvider = new SkyblockLoggerProvider();
         LOGGER = (SkyblockSimpleLogger) MinecraftServer.LoggerProvider.getLogger(Main.class);
         MinecraftServer.LOGGER = LOGGER;

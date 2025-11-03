@@ -1,6 +1,8 @@
 package me.carscupcake.processor;
 
+import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class Generators {
     static void main(String[] args) {
@@ -9,6 +11,10 @@ public class Generators {
             return;
         }
         Path outputFolder = Path.of(args[0]);
-        new ConfigConstantGenerator().process(outputFolder);
+        new ConfigConstantGenerator().process(resource("constants.json"), outputFolder);
+    }
+
+    private static InputStream resource(String name) {
+        return Objects.requireNonNull(Generators.class.getResourceAsStream("/" + name), "Cannot find resource: %s".formatted(name));
     }
 }

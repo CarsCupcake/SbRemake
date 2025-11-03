@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.slayer;
 
+import me.carscupcake.config.Constants;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.config.KeyClass;
 import me.carscupcake.sbremake.entity.MobType;
@@ -50,6 +51,13 @@ public interface ISlayer extends KeyClass {
         };
     }
 
+    default double getSlayerCost(int tier) {
+        return Constants.SLAYER.SLAYERQUEST_COSTS[tier-1];
+    }
+
+    double getDamage(int tier);
+    double getHealth(int tier);
+
     SlayerRngMeter createRngMeter(SkyblockPlayer player, ConfigSection section);
 
     List<RngMeterEntry> getRngMeterEntries();
@@ -64,6 +72,7 @@ public interface ISlayer extends KeyClass {
 
     List<String> getLore();
     List<Lore> getAbilityLore();
+    String[] getSlayerGuiNames();
 
     default ItemStack getDisplayItem(int tier) {
         return new ItemBuilder(getMaterial())
