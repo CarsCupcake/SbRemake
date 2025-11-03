@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.entity.slayer;
 
+import lombok.Getter;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
@@ -12,6 +13,7 @@ import me.carscupcake.sbremake.entity.slayer.voidgloom.miniboss.VoidlingDevotee;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.miniboss.VoidlingRadical;
 import me.carscupcake.sbremake.entity.slayer.zombie.*;
 import me.carscupcake.sbremake.entity.slayer.zombie.minibosses.*;
+import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.requirements.SkillRequirement;
 import me.carscupcake.sbremake.item.requirements.SlayerRequirement;
@@ -309,7 +311,7 @@ public enum Slayers implements ISlayer {
                 return false;
             }
 
-            for (Requirement r : getRequirements(tier))
+            for (var r : getRequirements(tier))
                 if (!r.canUse(player, null))
                     return false;
 
@@ -344,11 +346,14 @@ public enum Slayers implements ISlayer {
     private final String name;
     private final String mobName;
     private final String id;
+    @Getter
+    private final List<Lore> abilityLore;
 
-    Slayers(String name, String mobName) {
+    Slayers(String name, String mobName, Lore... abilityLore) {
         this.name = name;
         this.id = name.toLowerCase().replace(' ', '_');
         this.mobName = mobName;
+        this.abilityLore = List.of(abilityLore);
     }
 
     @Override

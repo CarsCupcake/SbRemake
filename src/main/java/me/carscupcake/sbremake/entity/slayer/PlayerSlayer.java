@@ -66,6 +66,12 @@ public class PlayerSlayer implements DefaultConfigItem {
         }
     }
 
+    public void openSlayerMenu() {
+        var builder = new InventoryBuilder(6, slayer.getMobName())
+                .fill(TemplateItems.EmptySlot.getItem());
+
+    }
+
     public void openRngMeterMenu() {
         InventoryBuilder builder = new InventoryBuilder(6, "Rng Meter").fill(TemplateItems.EmptySlot.getItem(), 0, 8).fill(TemplateItems.EmptySlot.getItem(), 45, 53).setItem(TemplateItems.EmptySlot.getItem(), 9).setItem(TemplateItems.EmptySlot.getItem(), 18).setItem(TemplateItems.EmptySlot.getItem(), 27).setItem(TemplateItems.EmptySlot.getItem(), 36).setItem(TemplateItems.EmptySlot.getItem(), 8).setItem(TemplateItems.EmptySlot.getItem(), 17).setItem(TemplateItems.EmptySlot.getItem(), 26).setItem(TemplateItems.EmptySlot.getItem(), 35).setItem(TemplateItems.EmptySlot.getItem(), 44);
         int i = 10;

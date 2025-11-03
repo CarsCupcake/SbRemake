@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.config.KeyClass;
 import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
+import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.Characters;
 import me.carscupcake.sbremake.util.gui.ItemBuilder;
@@ -62,6 +63,7 @@ public interface ISlayer extends KeyClass {
     Material getMaterial();
 
     List<String> getLore();
+    List<Lore> getAbilityLore();
 
     default ItemStack getDisplayItem(int tier) {
         return new ItemBuilder(getMaterial())
