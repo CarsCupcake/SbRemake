@@ -18,6 +18,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.palantir.javapoet:javapoet:0.7.0")
     implementation(project(":"))
+    implementation(project(":minestom"))
 }
 
 java {
