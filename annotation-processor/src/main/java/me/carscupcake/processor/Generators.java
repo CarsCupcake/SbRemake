@@ -12,6 +12,7 @@ public class Generators {
         }
         Path outputFolder = Path.of(args[0]);
         new ConfigConstantGenerator().process(resource("constants.json"), outputFolder);
+        new ShardGenerator().process(resource("shards.json"), outputFolder);
     }
 
     private static InputStream resource(String name) {

@@ -5,6 +5,33 @@ import java.lang.SuppressWarnings;
 
 @SuppressWarnings("unused")
 public final class Constants {
+  public static final class ATTRIBUTE_LEVELLING {
+    /**
+     * The value of the config option COMMON
+     */
+    public static final double[] COMMON = new double[]{1.,3.,5.,6.,7.,8.,10.,14.,18.,24.};
+
+    /**
+     * The value of the config option UNCOMMON
+     */
+    public static final double[] UNCOMMON = new double[]{1.,2.,3.,4.,5.,6.,7.,8.,12.,16.};
+
+    /**
+     * The value of the config option RARE
+     */
+    public static final double[] RARE = new double[]{1.,2.,3.,3.,4.,4.,5.,6.,8.,12.};
+
+    /**
+     * The value of the config option EPIC
+     */
+    public static final double[] EPIC = new double[]{1.,1.,2.,2.,3.,3.,4.,4.,5.,7.};
+
+    /**
+     * The value of the config option LEGENDARY
+     */
+    public static final double[] LEGENDARY = new double[]{1.,1.,1.,2.,2.,2.,3.,3.,4.,5.};
+  }
+
   public static final class SLAYER {
     /**
      * The value of the config option slayerquest-costs
