@@ -57,7 +57,6 @@ public class Npc extends AbstractNpc {
             @Override
             public void run() {
                 player.sendPacket(new EntityMetaDataPacket(entityId, Map.of(17, Metadata.Byte(b))));
-                //player.sendPacket(new PlayerInfoRemovePacket(entry.uuid()));
                 player.sendPacket(new TeamsPacket(fakeName, new TeamsPacket.CreateTeamAction(Component.text(fakeName), (byte) 0, TeamsPacket.NameTagVisibility.NEVER, TeamsPacket.CollisionRule.NEVER, NamedTextColor.BLACK, Component.empty(), Component.empty(), List.of(fakeName))));
             }
         }.delayTask(10);
@@ -65,6 +64,11 @@ public class Npc extends AbstractNpc {
 
     public Dialog buildDialog() {
         return new Dialog("§e[NPC] " + (StringUtils.stripeColorCodes(entry.username())) + "§f:", 20);
+    }
+
+    @Override
+    public Pos getEyePosition() {
+        return getPos().add(0, 1.75, 0);
     }
 
     private static final Random random = new Random();

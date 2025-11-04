@@ -15,6 +15,7 @@ import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.DownloadUtil;
 import me.carscupcake.sbremake.util.MapList;
 import me.carscupcake.sbremake.util.Pair;
+import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.worlds.impl.*;
 import me.carscupcake.sbremake.worlds.region.Region;
@@ -39,6 +40,9 @@ import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.server.play.DestroyEntitiesPacket;
+import net.minestom.server.network.packet.server.play.EntityHeadLookPacket;
+import net.minestom.server.network.packet.server.play.EntityPositionPacket;
+import net.minestom.server.network.packet.server.play.EntityRotationPacket;
 import net.minestom.server.registry.RegistryKey;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
@@ -365,6 +369,21 @@ public enum SkyblockWorld implements Supplier<SkyblockWorld.WorldProvider>, Worl
         protected HashMap<SkyblockWorld, Pos> customEntry = new HashMap<>();
         @Getter
         public volatile InstanceContainer container;
+        private final TaskScheduler npcTask = new TaskScheduler() {
+            @Override
+            public void run() {
+                for (var npc : npcs) {
+                    for (var player : players) {
+                        var dis = npc.getPos().distanceSquared(player.getPosition());
+                        if (dis > 8*8) continue;
+                        var dir = player.getPosition().add(0, player.getEyeHeight(), 0).sub(npc.getEyePosition());
+                        var rot = npc.getPos().withDirection(dir);
+                        player.sendPacket(new EntityRotationPacket(npc.getEntityId(), rot.yaw(), rot.pitch(), true));
+                        player.sendPacket(new EntityHeadLookPacket(npc.getEntityId(), rot.yaw()));
+                    }
+                }
+            }
+        };
 
         public void relight() {
             isRelight = true;
@@ -601,6 +620,8 @@ public enum SkyblockWorld implements Supplier<SkyblockWorld.WorldProvider>, Worl
                     shutdownTask.cancel();
                     shutdownTask = null;
                 }
+                if (!npcTask.isRunning())
+                    npcTask.repeatTask(1);
                 player.setWarping(true);
                 if (player.getInstance() != container) {
                     player.setInstance(getContainer(), spawn).thenRun(() -> player.spawn(spawn));
@@ -630,6 +651,8 @@ public enum SkyblockWorld implements Supplier<SkyblockWorld.WorldProvider>, Worl
             player.sendPacket(new DestroyEntitiesPacket(ids));
             if (players.isEmpty()) {
                 shutdownTask = MinecraftServer.getSchedulerManager().buildTask(this::remove).delay(Duration.ofMinutes(5)).schedule();
+                if (npcTask.isRunning())
+                    npcTask.cancel();
             }
         }
 

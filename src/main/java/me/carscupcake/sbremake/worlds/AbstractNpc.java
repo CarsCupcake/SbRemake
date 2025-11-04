@@ -51,6 +51,8 @@ public abstract class AbstractNpc {
         return withSubTag("§e§lCLICK");
     }
 
+    public abstract Pos getEyePosition();
+
     public AbstractNpc withSubTag(String s) {
         this.subTag = s;
         var stand = new LivingEntity(EntityType.ARMOR_STAND);
