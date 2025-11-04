@@ -30,7 +30,8 @@ public enum ItemType {
     ReforgeStone(false, true, "Reforge Stone"),
     Minion(false, true, "Minion"),
     ArrowPoison(false, false, "Arrow Poison"),
-    Wand(false, true, "Wand");
+    Wand(false, true, "Wand"),
+    AttributeShard(false, true, "Attribute Shard");
 
     public static final ItemType[] SWORDS = {Sword, Longsword};
     public static final ItemType[] ARMOR = {Helmet, Chestplate, Leggings, Boots};
