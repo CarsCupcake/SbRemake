@@ -12,6 +12,7 @@ import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.impl.shard.IAttributeShard;
 import me.carscupcake.sbremake.item.impl.shard.ShardCategory;
 import me.carscupcake.sbremake.item.impl.shard.ShardFamily;
+import net.minestom.server.item.Material;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -43,6 +44,8 @@ public class ShardGenerator {
         enumBuilder.addField(abilityNameField.build());
         var loreField = FieldSpec.builder(Lore.class, "lore", Modifier.PRIVATE, javax.lang.model.element.Modifier.FINAL);
         enumBuilder.addField(loreField.build());
+        var headValueField = FieldSpec.builder(String.class, "headValue", Modifier.PRIVATE, javax.lang.model.element.Modifier.FINAL);
+        enumBuilder.addField(headValueField.build());
         var constructor = MethodSpec.constructorBuilder()
                 .addParameter(String.class, "id")
                 .addParameter(String.class, "displayName")
@@ -52,6 +55,7 @@ public class ShardGenerator {
                 .addParameter(String.class, "shardId")
                 .addParameter(String.class, "abilityName")
                 .addParameter(String[].class, "loreRows")
+                .addParameter(String.class, "headValue")
                 .addStatement("this.id = $L", "id")
                 .addStatement("this.displayName = $L", "displayName")
                 .addStatement("this.rarity = $L", "rarity")
@@ -60,6 +64,7 @@ public class ShardGenerator {
                 .addStatement("this.shardId = $L", "shardId")
                 .addStatement("this.abilityName = $L", "abilityName")
                 .addStatement("this.lore = new $T($T.of($L))", Lore.class, List.class, "loreRows")
+                .addStatement("this.headValue = $L", "headValue")
                 .build();
         enumBuilder.addMethod(constructor);
         for (var element : shards) {
@@ -81,7 +86,7 @@ public class ShardGenerator {
                 lastEmptyIndex = loreRows.lastIndexOf("§eRight-click to send to Hunting Box!");
             loreRows.subList(lastEmptyIndex - 1, loreRows.size()).clear();
             loreRows.removeFirst();
-            var objects = familyArray.length == 0 ? new Object[10 + loreRows.size()] : new Object[10 + familyArray.length * 2 + loreRows.size()];
+            var objects = familyArray.length == 0 ? new Object[11 + loreRows.size()] : new Object[11 + familyArray.length * 2 + loreRows.size()];
             objects[0] = id.replace("'", "");
             objects[1] = displayName.replace("'", "\\'");
             objects[2] = ItemRarity.class;
@@ -99,11 +104,23 @@ public class ShardGenerator {
             objects[7 + familyArray.length * 2] = shardId;
             objects[8 + familyArray.length * 2] = abilityName;
             objects[9 + familyArray.length * 2] = String[].class;
-            builder.append("$S,".repeat(loreRows.size()).substring(0, loreRows.size() * 3 - 1)).append("}");
+            builder.append("$S,".repeat(loreRows.size()).substring(0, loreRows.size() * 3 - 1)).append("}, $S");
             for (int i = 0; i < loreRows.size(); i++) {
                 objects[10 + i + familyArray.length * 2] = loreRows.get(i).toString();
             }
-            enumBuilder.addEnumConstant(GeneratorUtils.spacedToUpperCamelCase(abilityName.replace("\\", "").replace("'", "")), TypeSpec.anonymousClassBuilder(builder.toString(), objects).build());
+            var textures = shard.get("textures");
+            var headValue = textures != null ? textures.getAsJsonObject().get("value").getAsString() : null;
+            objects[10 + loreRows.size() + familyArray.length * 2] = headValue;
+            var enumType = TypeSpec.anonymousClassBuilder(builder.toString(), objects);
+            if (headValue == null) {
+                enumType.addMethod(MethodSpec.methodBuilder("getMaterial")
+                                .returns(Material.class)
+                                .addModifiers(Modifier.PUBLIC)
+                                .addAnnotation(Override.class)
+                                .addStatement("return $T.$L", Material.class, shard.get("material").getAsString().toUpperCase())
+                        .build());
+            }
+            enumBuilder.addEnumConstant(GeneratorUtils.spacedToUpperCamelCase(abilityName.replace("\\", "").replace("'", "")), enumType.build());
         }
         enumBuilder.addMethod(MethodSpec.methodBuilder("getDisplayName")
                 .returns(String.class)
@@ -152,6 +169,18 @@ public class ShardGenerator {
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addStatement("return this.lore")
+                .build());
+        enumBuilder.addMethod(MethodSpec.methodBuilder("getHeadValue")
+                .returns(String.class)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("return this.headValue")
+                .build());
+        enumBuilder.addMethod(MethodSpec.methodBuilder("getMaterial")
+                .returns(Material.class)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("return $T.$L", Material.class, "PLAYER_HEAD")
                 .build());
         enumBuilder.addModifiers(Modifier.PUBLIC);
         var javaFile = JavaFile.builder("me.carscupcake.sbremake.item.impl.shard", enumBuilder.build()).build();
