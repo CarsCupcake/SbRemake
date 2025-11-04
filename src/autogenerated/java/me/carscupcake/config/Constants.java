@@ -11,6 +11,15 @@ public final class Constants {
      */
     public static final double[] SLAYERQUEST_COSTS = new double[]{2000.,7500.,20000.,50000.,150000.};
 
+    /**
+     * The value of the config option rngmeter-lore
+     */
+    public static final String RNGMETER_LORE = "§8%mobname%\n"
+        + " \n"
+        + "§7Your §dRNG Meter §7fills with §d%slayer% XP §7every time you defeat §a%mobname% III§7 or higher!\n"
+        + " \n"
+        + "When your meter is full, your selected drop will be guaranteed to drop the next time you defeat the boss!";
+
     public static final class ZOMBIE {
       /**
        * The value of the config option health

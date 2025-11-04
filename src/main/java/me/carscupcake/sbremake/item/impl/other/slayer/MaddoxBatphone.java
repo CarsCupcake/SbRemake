@@ -7,6 +7,7 @@ import me.carscupcake.sbremake.item.ability.AbilityType;
 import me.carscupcake.sbremake.item.ability.ItemAbility;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.SoundType;
+import me.carscupcake.sbremake.util.StringUtils;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.util.TemplateItems;
 import me.carscupcake.sbremake.util.gui.Gui;
@@ -85,7 +86,7 @@ public class MaddoxBatphone implements ISbItem, HeadWithValue, ISoulbound {
             .addLoreRow("§7This boss is still in development!")
             .build();
     public static void open(SkyblockPlayer player) {
-        var gui = new Gui(new InventoryBuilder(4, "Slayer")
+        var inventoryBuilder = new InventoryBuilder(4, "Slayer")
                 .fill(TemplateItems.EmptySlot.getItem())
                 .fill(NO_SLAYER, 10, 16)
                 .setItem(Slayers.Zombie.getDisplayItem(player.getSlayers().get(Slayers.Zombie).getLevel()), 10)
@@ -99,7 +100,16 @@ public class MaddoxBatphone implements ISbItem, HeadWithValue, ISoulbound {
                         .addLoreIf(player::isAutoSlayerEnabled, "§7Currently: §aEnabled")
                         .addLoreIf(() -> !player.isAutoSlayerEnabled(), "§7Currently: §cDisabled")
                         .addAllLore(" ", "§eClick to " + (player.isAutoSlayerEnabled() ? "disable!" : "enable!"))
-                        .build(), 28)
+                        .build(), 28);
+        if (player.getSlayerQuest() != null) {
+            inventoryBuilder.setItem(35, player.getSlayerQuest().getSlayer().getRngMeterDisplayItem());
+            inventoryBuilder.setItem(34, new ItemBuilder(player.getSlayerQuest().getISlayer().getMaterial())
+                            .setName("§aOngoing Slayer Quest")
+                            .addAllLore("§7You have an active Slayer quest.",  " ", "§7Boss: §5" + player.getSlayerQuest().getISlayer().getMobName() + " " + StringUtils.toRoman(player.getSlayerQuest().getTier()),
+                                    " ", "§eClick to cancel the quest!")
+                    .build());
+        }
+        var gui = new Gui(inventoryBuilder
                 .build());
         gui.getClickEvents().add(31, _ -> {
             player.closeGui();
@@ -118,7 +128,47 @@ public class MaddoxBatphone implements ISbItem, HeadWithValue, ISoulbound {
             player.getSlayers().get(Slayers.Zombie).openSlayerMenu();
             return true;
         });
+        if (player.getSlayerQuest() != null) {
+            gui.getClickEvents().add(35, _ -> {
+                player.getSlayerQuest().getSlayer().openRngMeterMenu();
+                return true;
+            });
+            gui.getClickEvents().add(34, _ -> {
+                cancelConfirmation(player);
+                return true;
+            });
+        }
         gui.setCancelled(true);
+        gui.showGui(player);
+    }
+
+    private static void cancelConfirmation(SkyblockPlayer player) {
+
+        var gui = new Gui(new InventoryBuilder(3, "Confirm")
+                .fill(TemplateItems.EmptySlot.getItem())
+                .setItem(11, new ItemBuilder(Material.LIME_TERRACOTTA)
+                        .setName("§aConfirm")
+                        .addLore("""
+                                §cClears §7the progress towards the current Slayer quest to let you pick a different one.
+                                
+                                §c§lCANCELING THE QUEST!
+                                §eClick to cancel the quest.
+                                """)
+                        .build())
+                .setItem(15, new ItemBuilder(Material.RED_TERRACOTTA)
+                        .setName("§cCancel")
+                        .build())
+                .build());
+        gui.setCancelled(true);
+        gui.getClickEvents().add(11, _ -> {
+            player.closeGui();
+            player.setSlayerQuest(null);
+            return true;
+        });
+        gui.getClickEvents().add(15, _ -> {
+            open(player);
+            return true;
+        });
         gui.showGui(player);
     }
 

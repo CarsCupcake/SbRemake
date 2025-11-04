@@ -42,17 +42,18 @@ public enum DefaultScoreboard implements Function<SkyblockPlayer, String[]> {
         public String[] apply(SkyblockPlayer player) {
             if (player.getSlayerQuest() == null)
                 return new String[0];
+            var slayerName = player.getSlayerQuest().getSlayer().getSlayer().getMobName() + " " + StringUtils.toRoman(player.getSlayerQuest().getTier());
             return switch (player.getSlayerQuest().getStage()) {
                 case XpGathering ->
-                        new String[]{" ", "§fSlayer Quest", "§5" + (player.getSlayerQuest().getSlayer().getSlayer().getName()),
+                        new String[]{" ", "§fSlayer Quest", "§5" + slayerName,
                                 player.getSlayerQuest().getLastXp() <= 0 ? "§7(§e" + (StringUtils.toShortNumber(player.getSlayerQuest().getXp())) + "§7/§c" + (StringUtils.toShortNumber(player.getSlayerQuest().getRequiredXp())) + "§7) Combat Xp"
                                         : "§7(§e" + ((int) (player.getSlayerQuest().getXp() / player.getSlayerQuest().getLastXp())) + "§7/§c" + ((int) (player.getSlayerQuest().getRequiredXp() / player.getSlayerQuest().getLastXp())) + "§7) Combat Xp"};
                 case MobKilling ->
-                        new String[]{" ", "§fSlayer Quest", "§5" + (player.getSlayerQuest().getSlayer().getSlayer().getName()), "§eSlay the boss!"};
+                        new String[]{" ", "§fSlayer Quest", "§5" + slayerName, "§eSlay the boss!"};
                 case Completed ->
-                        new String[]{" ", "§fSlayer Quest", "§a" + (player.getSlayerQuest().getSlayer().getSlayer().getName()), "§eBoss Slain!"};
+                        new String[]{" ", "§fSlayer Quest", "§a" + slayerName, "§eBoss Slain!"};
                 case Failed ->
-                        new String[]{" ", "§fSlayer Quest", "§c" + (player.getSlayerQuest().getSlayer().getSlayer().getName()), "§eQuest Failed!"};
+                        new String[]{" ", "§fSlayer Quest", "§c" + slayerName, "§eQuest Failed!"};
             };
         }
     },

@@ -59,6 +59,7 @@
       20000,
       50000,
       150000
-    ]
+    ],
+    "rngmeter-lore": "§8%mobname%\n \n§7Your §dRNG Meter §7fills with §d%slayer% XP §7every time you defeat §a%mobname% III§7 or higher!\n \nWhen your meter is full, your selected drop will be guaranteed to drop the next time you defeat the boss!"
   }
 }

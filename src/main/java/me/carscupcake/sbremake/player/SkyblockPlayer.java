@@ -691,8 +691,9 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
 
     @Override
     public void load(ConfigSection section) {
+        var slayersSection = section.get("slayers", ConfigSection.SECTION, ConfigSection.empty());
         for (ISlayer s : Slayers.values()) {
-            slayers.put(s, new PlayerSlayer(this, s, section.get(s.key(), ConfigSection.SECTION, ConfigSection.empty())));
+            slayers.put(s, new PlayerSlayer(this, s, slayersSection.get(s.key(), ConfigSection.SECTION, ConfigSection.empty())));
         }
         DefaultConfigItem.super.load(section);
         var skillSection = section.get("skills", ConfigSection.SECTION, ConfigSection.empty());
