@@ -1,6 +1,9 @@
 package me.carscupcake.sbremake.entity.slayer;
 
+import lombok.Getter;
+import me.carscupcake.config.Constants;
 import me.carscupcake.sbremake.config.ConfigSection;
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphI;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.VoidgloomSeraphII;
@@ -11,6 +14,7 @@ import me.carscupcake.sbremake.entity.slayer.voidgloom.miniboss.VoidlingDevotee;
 import me.carscupcake.sbremake.entity.slayer.voidgloom.miniboss.VoidlingRadical;
 import me.carscupcake.sbremake.entity.slayer.zombie.*;
 import me.carscupcake.sbremake.entity.slayer.zombie.minibosses.*;
+import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.item.Requirement;
 import me.carscupcake.sbremake.item.requirements.SkillRequirement;
 import me.carscupcake.sbremake.item.requirements.SlayerRequirement;
@@ -27,6 +31,7 @@ import net.kyori.adventure.sound.Sound;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.instance.Instance;
+import net.minestom.server.item.Material;
 import net.minestom.server.particle.Particle;
 
 import java.util.HashMap;
@@ -35,10 +40,19 @@ import java.util.Map;
 import java.util.Random;
 
 public enum Slayers implements ISlayer {
-    Zombie("Zombie Slayer", "Revenant Horror") {
+    Zombie("Zombie Slayer", "Revenant Horror", new Lore(Constants.SLAYER.ZOMBIE.LIFEDRAIN),
+            new Lore(Constants.SLAYER.ZOMBIE.LIFEDRAIN + "\n \n" + Constants.SLAYER.ZOMBIE.PESTILENCE),
+            new Lore(Constants.SLAYER.ZOMBIE.LIFEDRAIN + "\n \n" + Constants.SLAYER.ZOMBIE.PESTILENCE + "\n \n" + Constants.SLAYER.ZOMBIE.ENRAGE),
+            new Lore(Constants.SLAYER.ZOMBIE.LIFEDRAIN + "\n \n" + Constants.SLAYER.ZOMBIE.PESTILENCE + "\n \n" + Constants.SLAYER.ZOMBIE.ENRAGE),
+            new Lore(Constants.SLAYER.ZOMBIE.REDEMPTION + "\n \n" + Constants.SLAYER.ZOMBIE.EXPLOSIVE_ASSAULT + "\n \n" + Constants.SLAYER.ZOMBIE.THERMONUCLEAR)) {
         private double rngXp(RngMeterEntry entry) {
             lootChancesEntries.put(entry, entry.calculateHighestChance(RevenantHorrorI.lootTable, RevenantHorrorII.lootTable, RevenantHorrorIII.lootTable, RevenantHorrorIV.lootTable, RevenantHorrorV.lootTable));
             return entry.calculateRequiredXp(50_000, RevenantHorrorI.lootTable, RevenantHorrorII.lootTable, RevenantHorrorIII.lootTable, RevenantHorrorIV.lootTable, RevenantHorrorV.lootTable);
+        }
+
+        @Override
+        public MobType getMobType() {
+            return MobType.Undead;
         }
 
         @Override
@@ -51,6 +65,11 @@ public enum Slayers implements ISlayer {
                 case 5 -> new RevenantHorrorV(player);
                 default -> throw new IllegalArgumentException("Zombie Slayer Tier " + (tier) + " does not exsist");
             };
+        }
+
+        @Override
+        public String[] getSlayerGuiNames() {
+            return Constants.SLAYER.ZOMBIE.SLAYER_NAMES;
         }
 
         private final int[] xp = new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000};
@@ -166,8 +185,45 @@ public enum Slayers implements ISlayer {
             return true;
         }
 
+        @Override
+        public Material getMaterial() {
+            return Material.ROTTEN_FLESH;
+        }
 
-    }, Enderman("Enderman", "Voidgloom Seraph") {
+        @Override
+        public List<String> getLore() {
+            return List.of("§7Abhorrent Zombie stuck between",
+                    "§7life and death for an eternity.");
+        }
+
+        @Override
+        public double getHealth(int tier) {
+            return Constants.SLAYER.ZOMBIE.HEALTH[tier - 1];
+        }
+
+        @Override
+        public double getDamage(int tier) {
+            return Constants.SLAYER.ZOMBIE.DAMAGE[tier - 1];
+        }
+    }, Enderman("Enderman", "Voidgloom Seraph", new Lore(Constants.SLAYER.ENDERMAN.MALEVOLENT_HITSHIELD),
+            new Lore(Constants.SLAYER.ENDERMAN.MALEVOLENT_HITSHIELD + "\n \n" + Constants.SLAYER.ENDERMAN.YANG_GLYPHS),
+            new Lore(Constants.SLAYER.ENDERMAN.MALEVOLENT_HITSHIELD + "\n \n" + Constants.SLAYER.ENDERMAN.YANG_GLYPHS + "\n \n" + Constants.SLAYER.ENDERMAN.NUKEKUBI_FIXATIONS),
+            new Lore(Constants.SLAYER.ENDERMAN.MALEVOLENT_HITSHIELD + "\n \n" + Constants.SLAYER.ENDERMAN.YANG_GLYPHS + "\n \n" + Constants.SLAYER.ENDERMAN.NUKEKUBI_FIXATIONS + "\n \n" + Constants.SLAYER.ENDERMAN.BROKEN_HEART_RADIATION)) {
+        @Override
+        public MobType getMobType() {
+            return MobType.Ender;
+        }
+
+        @Override
+        public double getHealth(int tier) {
+            return Constants.SLAYER.ENDERMAN.HEALTH[tier - 1];
+        }
+
+        @Override
+        public double getDamage(int tier) {
+            return Constants.SLAYER.ENDERMAN.DAMAGE[tier - 1];
+        }
+
         @Override
         public SlayerEntity getEntity(int tier, SkyblockPlayer player) {
             return switch (tier) {
@@ -177,6 +233,11 @@ public enum Slayers implements ISlayer {
                 case 4 -> new VoidgloomSeraphIV(player);
                 default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
             };
+        }
+
+        @Override
+        public String[] getSlayerGuiNames() {
+            return Constants.SLAYER.ENDERMAN.SLAYER_NAMES;
         }
 
         private final int[] xp = new int[]{10, 30, 250, 1_500, 5_000, 20_000, 100_000, 400_000, 1_000_000};
@@ -286,7 +347,7 @@ public enum Slayers implements ISlayer {
                 return false;
             }
 
-            for (Requirement r : getRequirements(tier))
+            for (var r : getRequirements(tier))
                 if (!r.canUse(player, null))
                     return false;
 
@@ -305,15 +366,30 @@ public enum Slayers implements ISlayer {
                 default -> throw new IllegalStateException("Tier " + (tier) + " does not exist!");
             };
         }
+
+        @Override
+        public Material getMaterial() {
+            return Material.ENDER_PEARL;
+        }
+
+        @Override
+        public List<String> getLore() {
+            return List.of("§7If Necron is the right-hand of",
+                    "§7the Wither King, this dark",
+                    "§7demigod is the left-hand.");
+        }
     };
     private final String name;
     private final String mobName;
     private final String id;
+    @Getter
+    private final List<Lore> abilityLore;
 
-    Slayers(String name, String mobName) {
+    Slayers(String name, String mobName, Lore... abilityLore) {
         this.name = name;
         this.id = name.toLowerCase().replace(' ', '_');
         this.mobName = mobName;
+        this.abilityLore = List.of(abilityLore);
     }
 
     @Override

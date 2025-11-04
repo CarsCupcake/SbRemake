@@ -19,6 +19,7 @@ import net.minestom.server.registry.RegistryKey;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
@@ -71,7 +72,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setLore(Lore lore) {
-        this.lore = lore.build(null, null).stream().map(s -> (Component) Component.text(s)).toList();
+        this.lore = lore.build(null, null).stream().map(s -> (Component) Component.text(s)).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
         return this;
     }
 

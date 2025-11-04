@@ -4,7 +4,12 @@ import lombok.Getter;
 import me.carscupcake.sbremake.event.PlayerInteractEvent;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.quest.Dialog;
+import net.kyori.adventure.text.Component;
+import net.minestom.server.component.DataComponent;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.instance.Instance;
 
 import java.util.HashMap;
@@ -16,6 +21,7 @@ public abstract class AbstractNpc {
     private final Pos pos;
     private final Instance instance;
     private Interaction interaction = null;
+    protected String subTag = null;
 
     public AbstractNpc(Pos pos, Instance instance, String name) {
         this.pos = pos;
@@ -39,5 +45,23 @@ public abstract class AbstractNpc {
 
     public interface Interaction {
         void interact(SkyblockPlayer player, PlayerInteractEvent.Interaction interaction);
+    }
+
+    public AbstractNpc withClickTag() {
+        return withSubTag("§e§lCLICK");
+    }
+
+    public abstract Pos getEyePosition();
+
+    public AbstractNpc withSubTag(String s) {
+        this.subTag = s;
+        var stand = new LivingEntity(EntityType.ARMOR_STAND);
+        stand.setInvisible(true);
+        stand.setNoGravity(true);
+        stand.setInvulnerable(true);
+        stand.set(DataComponents.CUSTOM_NAME, Component.text(s));
+        stand.setCustomNameVisible(true);
+        stand.setInstance(instance, pos.sub(0, 0.25, 0));
+        return this;
     }
 }

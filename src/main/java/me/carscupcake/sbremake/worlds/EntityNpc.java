@@ -29,6 +29,11 @@ public class EntityNpc extends AbstractNpc {
         return entity.getEntityId();
     }
 
+    @Override
+    public Pos getEyePosition() {
+        return getPos().add(0, entity.getEyeHeight(), 0);
+    }
+
     private static class NpcEntity extends Entity {
 
         public NpcEntity(@NotNull EntityType entityType) {

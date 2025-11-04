@@ -1,0 +1,65 @@
+{
+  "slayer": {
+    "zombie": {
+      "health": [
+        500,
+        20000,
+        400000,
+        1500000,
+        10000000
+      ],
+      "damage": [
+        15,
+        25,
+        120,
+        400,
+        2400
+      ],
+      "lifedrain": "§cLife Drain\n§7Drains health every few second.",
+      "pestilence": "§aPestilence\n§7Deals AOE damage every second, shredding armor by 25%.",
+      "enrage": "§cEnrage\n§7Gets real mad once in a while.",
+      "redemption": "§aRedemption\n§7Heals rapidly.",
+      "explosive-assault": "§cExplosive Assault\n§7Throws explosive TNT.",
+      "thermonuclear": "§5Thermonuclear\n§7Charges up and releases a massive explosion.",
+      "slayer-names": [
+        "Beginner",
+        "Strong",
+        "Challenging",
+        "Deadly",
+        "Excruciating"
+      ]
+    },
+    "enderman": {
+      "health": [
+        300000,
+        12000000,
+        50000000,
+        210000000
+      ],
+      "damage": [
+        1200,
+        5000,
+        12000,
+        21000
+      ],
+      "malevolent-hitshield": "§aMalevolent Hitshield\n§8At 100%/66%/33% HP\n§7Gain a shield for 15 hits, reduced on hit regardless of damage.\nReceives §c-75% ⫽Ferocity§7 from your hits while the shield is NOT active.",
+      "yang-glyphs": "§5Yang Glyphs\n§8Starting at 50% HP\n§7Throws glyphs down.\nStand next to them or die.",
+      "nukekubi-fixations": "§eNukekubi Fixations\n§8Starting at 33% HP\n§7Spawns weard heads.\nClear them by looking at them or suffer damage.",
+      "broken-heart-radiation": "§dBroken Heart Radiation\n§8Halfway between Hitshields\n§7Spins lasers, dont hit them!",
+      "slayer-names": [
+        "Beginner",
+        "Strong",
+        "Challenging",
+        "Guaranteed-Doom"
+      ]
+    },
+    "slayerquest-costs": [
+      2000,
+      7500,
+      20000,
+      50000,
+      150000
+    ],
+    "rngmeter-lore": "§8%mobname%\n \n§7Your §dRNG Meter §7fills with §d%slayer% XP §7every time you defeat §a%mobname% III§7 or higher!\n \nWhen your meter is full, your selected drop will be guaranteed to drop the next time you defeat the boss!"
+  }
+}

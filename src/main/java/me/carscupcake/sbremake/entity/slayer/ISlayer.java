@@ -1,11 +1,18 @@
 package me.carscupcake.sbremake.entity.slayer;
 
+import me.carscupcake.config.Constants;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.config.KeyClass;
+import me.carscupcake.sbremake.entity.MobType;
 import me.carscupcake.sbremake.entity.SkyblockEntity;
+import me.carscupcake.sbremake.item.Lore;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.Characters;
+import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterEntry;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerRngMeter;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
 
 import java.util.List;
 
@@ -20,6 +27,8 @@ public interface ISlayer extends KeyClass {
     String getMobName();
 
     String getId();
+
+    MobType getMobType();
 
     SlayerEntity getEntity(int tier, SkyblockPlayer player);
 
@@ -42,6 +51,13 @@ public interface ISlayer extends KeyClass {
         };
     }
 
+    default double getSlayerCost(int tier) {
+        return Constants.SLAYER.SLAYERQUEST_COSTS[tier-1];
+    }
+
+    double getDamage(int tier);
+    double getHealth(int tier);
+
     SlayerRngMeter createRngMeter(SkyblockPlayer player, ConfigSection section);
 
     List<RngMeterEntry> getRngMeterEntries();
@@ -51,6 +67,25 @@ public interface ISlayer extends KeyClass {
     boolean addXp(SkyblockEntity entity, int tier);
 
     boolean startSlayerQuest(int tier, SkyblockPlayer player);
+
+    Material getMaterial();
+
+    List<String> getLore();
+    List<Lore> getAbilityLore();
+    String[] getSlayerGuiNames();
+
+    default ItemStack getDisplayItem(int tier) {
+        return new ItemBuilder(getMaterial())
+                .setName("§c" + Characters.Skull + " §e" + getMobName())
+                .addLoreRow(getMobType().toString())
+                .addLore("§7 ")
+                .addAllLore(getLore())
+                .addLoreRow(" ")
+                .addLoreRow("§7" + getName() + " Level: §eLVL " + tier)
+                .addLoreRow(" ")
+                .addLoreRow("§eClick to view boss!")
+                .build();
+    }
 
     static ISlayer fromKey(String s) {
         for (var slayer : Slayers.values()) {

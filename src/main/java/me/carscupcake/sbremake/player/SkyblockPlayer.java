@@ -648,6 +648,10 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     @Getter
     @Setter
     private int blockInteractBuffer = 0;
+    @Getter
+    @Setter
+    @ConfigField
+    private boolean autoSlayerEnabled = false;
 
     /**
      * This is to set up stuff, when the player gets spawned (respawn or server join)
@@ -687,8 +691,9 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
 
     @Override
     public void load(ConfigSection section) {
+        var slayersSection = section.get("slayers", ConfigSection.SECTION, ConfigSection.empty());
         for (ISlayer s : Slayers.values()) {
-            slayers.put(s, new PlayerSlayer(this, s, section.get(s.key(), ConfigSection.SECTION, ConfigSection.empty())));
+            slayers.put(s, new PlayerSlayer(this, s, slayersSection.get(s.key(), ConfigSection.SECTION, ConfigSection.empty())));
         }
         DefaultConfigItem.super.load(section);
         var skillSection = section.get("skills", ConfigSection.SECTION, ConfigSection.empty());
@@ -1327,6 +1332,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         for (me.carscupcake.sbremake.player.potion.PotionEffect potionEffect : potionEffects)
             potionEffect.store(potions);
         defaults.set("potions", potions, ConfigSection.SECTION);
+        defaults.set("autoSlayer", autoSlayerEnabled, ConfigSection.BOOLEAN);
         defaults.save();
         for (ISkill skill : this.skills.values()) skill.save();
         collections.values().forEach(me.carscupcake.sbremake.item.collections.Collection::save);
