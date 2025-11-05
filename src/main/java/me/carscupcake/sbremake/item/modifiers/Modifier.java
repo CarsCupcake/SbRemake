@@ -7,6 +7,7 @@ import me.carscupcake.sbremake.item.impl.pets.IPet;
 import me.carscupcake.sbremake.item.impl.pets.Pet;
 import me.carscupcake.sbremake.item.impl.pets.PetItem;
 import me.carscupcake.sbremake.item.impl.rune.Rune;
+import me.carscupcake.sbremake.item.impl.shard.IAttributeShard;
 import me.carscupcake.sbremake.item.modifiers.attributes.AbstractAttribute;
 import me.carscupcake.sbremake.item.modifiers.attributes.Attribute;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
@@ -298,6 +299,28 @@ public interface Modifier<T> {
         @Override
         public SbItemStack toNbt(Integer i, SbItemStack itemStack) {
             return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt().putInt("rarity_upgrades", i))));
+        }
+    };
+
+    Modifier<IAttributeShard> ATTRIBUTE = new Modifier<>() {
+        @Override
+        public @Nullable IAttributeShard getFromNbt(SbItemStack item) {
+            var extraAttributes = Objects.requireNonNull(item.item().get(DataComponents.CUSTOM_DATA)).nbt();
+            var attributes = extraAttributes.getCompound("attributes");
+            if (attributes.size() != 1) return null;
+            var items = attributes.iterator().next();
+            return IAttributeShard.fromKey(items.getKey());
+        }
+
+        @Override
+        public SbItemStack toNbt(IAttributeShard iAttributeShard, SbItemStack itemStack) {
+            var extraAttributes = Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt();
+            if (iAttributeShard == null)
+                return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(extraAttributes.remove("attributes"))));
+            return SbItemStack.from(itemStack.item().with(DataComponents.CUSTOM_DATA, new CustomData(extraAttributes.put("attributes",
+                    CompoundBinaryTag.builder()
+                            .putInt(iAttributeShard.getId(), 1)
+                            .build()))));
         }
     };
 

@@ -23,7 +23,7 @@ public class ShardItem implements ISbItem {
 
     @Override
     public ItemType getType() {
-        return ItemType.Wand;
+        return ItemType.AttributeShard;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package me.carscupcake.sbremake.item.impl.shard;
 
+import lombok.Getter;
+
 public enum ShardFamily {
     Elemental,
     Reptile,
@@ -23,10 +25,21 @@ public enum ShardFamily {
     Squid,
     Phantom,
     Drowned,
-    TropicalFish,
-    TreasureFish,
-    CaveDweller,
+    TropicalFish( "Tropical Fish"),
+    TreasureFish( "Treasure Fish"),
+    CaveDweller( "Cave Dweller"),
     Frog,
-    Axolotl
+    Axolotl;
+    private final String name;
+    ShardFamily() {
+        this.name = null;
+    }
 
+    ShardFamily(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name == null ? name() : name;
+    }
 }
