@@ -30,6 +30,9 @@ import me.carscupcake.sbremake.item.impl.other.*;
 import me.carscupcake.sbremake.item.impl.pets.IPet;
 import me.carscupcake.sbremake.item.impl.pets.Pet;
 import me.carscupcake.sbremake.item.impl.pets.PetItem;
+import me.carscupcake.sbremake.item.impl.shard.AttributeEntry;
+import me.carscupcake.sbremake.item.impl.shard.AttributeMenu;
+import me.carscupcake.sbremake.item.impl.shard.IAttributeShard;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.item.modifiers.potion.PotionInfo;
 import me.carscupcake.sbremake.player.accessories.AccessoryBag;
@@ -652,6 +655,14 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     @Setter
     @ConfigField
     private boolean autoSlayerEnabled = false;
+    @Getter
+    @ConfigField
+    private final CountMap<IAttributeShard> huntingBox = new CountMap<>(true);
+    @Getter
+    @ConfigField
+    private final Map<IAttributeShard, AttributeEntry> attributesShards = new HashMap<>();
+    @Getter
+    private final AttributeMenu attributeMenu = new AttributeMenu(this);
 
     /**
      * This is to set up stuff, when the player gets spawned (respawn or server join)

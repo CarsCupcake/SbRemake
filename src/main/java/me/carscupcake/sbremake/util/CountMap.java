@@ -1,15 +1,33 @@
 package me.carscupcake.sbremake.util;
 
 
+import lombok.Getter;
+import lombok.With;
+import lombok.experimental.WithBy;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings("unused")
 public class CountMap<T> extends HashMap<T, Integer> {
+    @Getter
+    @With
+    private boolean removeWhenZero = false;
+    public CountMap() {}
+
+    public CountMap(boolean removeWhenZero) {
+        this.removeWhenZero = removeWhenZero;
+    }
+
     public void add(T type, int amount) {
-        if (super.containsKey(type))
-            super.replace(type, super.get(type) + amount);
+        if (super.containsKey(type)) {
+            var newAmount = super.get(type) + amount;
+            if (newAmount == 0 && removeWhenZero)
+                super.remove(type);
+            else super.replace(type, newAmount);
+        }
         else put(type, amount);
     }
 
