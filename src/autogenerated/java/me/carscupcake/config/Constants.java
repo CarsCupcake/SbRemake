@@ -7,29 +7,29 @@ import java.lang.SuppressWarnings;
 public final class Constants {
   public static final class ATTRIBUTE_LEVELLING {
     /**
-     * The value of the config option COMMON
+     * The value of the config option COMMON@int
      */
-    public static final double[] COMMON = new double[]{1.,3.,5.,6.,7.,8.,10.,14.,18.,24.};
+    public static final int[] COMMON = new int[]{1,3,5,6,7,8,10,14,18,24};
 
     /**
-     * The value of the config option UNCOMMON
+     * The value of the config option UNCOMMON@int
      */
-    public static final double[] UNCOMMON = new double[]{1.,2.,3.,4.,5.,6.,7.,8.,12.,16.};
+    public static final int[] UNCOMMON = new int[]{1,2,3,4,5,6,7,8,12,16};
 
     /**
-     * The value of the config option RARE
+     * The value of the config option RARE@int
      */
-    public static final double[] RARE = new double[]{1.,2.,3.,3.,4.,4.,5.,6.,8.,12.};
+    public static final int[] RARE = new int[]{1,2,3,3,4,4,5,6,8,12};
 
     /**
-     * The value of the config option EPIC
+     * The value of the config option EPIC@int
      */
-    public static final double[] EPIC = new double[]{1.,1.,2.,2.,3.,3.,4.,4.,5.,7.};
+    public static final int[] EPIC = new int[]{1,1,2,2,3,3,4,4,5,7};
 
     /**
-     * The value of the config option LEGENDARY
+     * The value of the config option LEGENDARY@int
      */
-    public static final double[] LEGENDARY = new double[]{1.,1.,1.,2.,2.,2.,3.,3.,4.,5.};
+    public static final int[] LEGENDARY = new int[]{1,1,1,2,2,2,3,3,4,5};
   }
 
   public static final class SLAYER {
