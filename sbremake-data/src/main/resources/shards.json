@@ -12,7 +12,7 @@
       "internalName": "ATTRIBUTE_SHARD_ACCESSORY_SIZE;1",
       "lore": [
         "§6Accessory Size I",
-        "§7Grants §a+1 §7extra §aAccessory Bag",
+        "§7Grants §a+$$l$$ §7extra §aAccessory Bag",
         "§7slots.",
         "",
         "§7You can Syphon this shard from",
@@ -44,7 +44,7 @@
       "internalName": "ATTRIBUTE_SHARD_ALMIGHTY;1",
       "lore": [
         "§6Almighty I",
-        "§7Your \"Unlimited\" Attributes are §a+5%",
+        "§7Your \"Unlimited\" Attributes are §a+$$l*5$$%",
         "§7stronger.",
         "",
         "§7You can Syphon this shard from",
@@ -75,7 +75,7 @@
       "internalName": "ATTRIBUTE_SHARD_ANIMAL_EXPERTISE;1",
       "lore": [
         "§6Animal Expertise I",
-        "§7Grants §6+10 ☘ Foraging Fortune§7.",
+        "§7Grants §6+$$l*10$$ ☘ Foraging Fortune§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -103,7 +103,7 @@
       "internalName": "ATTRIBUTE_SHARD_ARACHNO;1",
       "lore": [
         "§6Arthropod Ruler I",
-        "§7Grants §a+3% §7more §c❁ Damage §7against §4Ж",
+        "§7Grants §a+$$l*3$$% §7more §c❁ Damage §7against §4Ж",
         "§4Arthropod §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -131,7 +131,7 @@
       "internalName": "ATTRIBUTE_SHARD_ARACHNO_RESISTANCE;1",
       "lore": [
         "§6Arthropod Resistance I",
-        "§7Grants §a+4 ❈ Defense §7against §4Ж",
+        "§7Grants §a+$$l*4$$ ❈ Defense §7against §4Ж",
         "§4Arthropod §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -161,7 +161,7 @@
       "internalName": "ATTRIBUTE_SHARD_ATOMIZED_CRYSTALS;1",
       "lore": [
         "§6Atomized Crystals I",
-        "§7Gain §a+1% §7extra §dGemstone Powder§7.",
+        "§7Gain §a+$$l$$% §7extra §dGemstone Powder§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -191,7 +191,7 @@
       "internalName": "ATTRIBUTE_SHARD_ATOMIZED_GLACITE;1",
       "lore": [
         "§6Atomized Glacite I",
-        "§7Gain §a+1% §7extra §bGlacite Powder§7.",
+        "§7Gain §a+$$l*1$$% §7extra §bGlacite Powder§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -219,7 +219,7 @@
       "internalName": "ATTRIBUTE_SHARD_ATOMIZED_MITHRIL;1",
       "lore": [
         "§6Atomized Mithril I",
-        "§7Gain §a+1% §7extra §2Mithril Powder§7.",
+        "§7Gain §a+$$l*1$$% §7extra §2Mithril Powder§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -249,7 +249,7 @@
       "internalName": "ATTRIBUTE_SHARD_ATTACK_SPEED;1",
       "lore": [
         "§6Attack Speed I",
-        "§7Grants §e+1 ⚔ Bonus Attack Speed§7.",
+        "§7Grants §e+$$l*1$$ ⚔ Bonus Attack Speed§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -280,7 +280,7 @@
       "internalName": "ATTRIBUTE_SHARD_BATTLE_EXPERIENCE;1",
       "lore": [
         "§6Battle Experience I",
-        "§7Pets gain §a+1%§7 more EXP from Combat.",
+        "§7Pets gain §a+$$l*1$$%§7 more EXP from Combat.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -311,7 +311,7 @@
       "internalName": "ATTRIBUTE_SHARD_BATTLE_FROG;1",
       "lore": [
         "§6Battle Frog I",
-        "§7Your Frog Pet gains §c+3 ❁ Strength§7.",
+        "§7Your Frog Pet gains §c+$$l*3$$ ❁ Strength§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -342,7 +342,7 @@
       "lore": [
         "§6Beacon Zealot I",
         "§7The effects of §2Galatea's §7beacons",
-        "§7are §a10% §7stronger on you. Gain a §a0.1%",
+        "§7are §a10% §7stronger on you. Gain a §a$$l*0.1$$%",
         "§7chance to find §6Signal Enhancers §7in",
         "§2Tree Gifts§7.",
         "",
@@ -374,7 +374,7 @@
       "internalName": "ATTRIBUTE_SHARD_BERRY_ENJOYER;1",
       "lore": [
         "§6Berry Enjoyer I",
-        "§7Berries have a §a+10%§7 chance to",
+        "§7Berries have a §a+$$l*10$$%§7 chance to",
         "§7grant you double points in §dStarlyn",
         "§dContests§7.",
         "",
@@ -407,7 +407,7 @@
       "internalName": "ATTRIBUTE_SHARD_BERRY_MOGUL;1",
       "lore": [
         "§6Berry Mogul I",
-        "§7Your Salts last §a+1%§7 longer.",
+        "§7Your Salts last §a+$$l*1$$%§7 longer.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -437,7 +437,7 @@
       "internalName": "ATTRIBUTE_SHARD_BIGGER_BOX;1",
       "lore": [
         "§6Bigger Box I",
-        "§7Grants a §a+5%§7 chance to find an",
+        "§7Grants a §a+$$l*5$$%§7 chance to find an",
         "§7extra item in Treasure Chests and",
         "§7the Crystal Nucleus.",
         "",
@@ -467,7 +467,7 @@
       "internalName": "ATTRIBUTE_SHARD_BLAZING;1",
       "lore": [
         "§6Blazing I",
-        "§7Grants §a+3% §7more §c❁ Damage §7against",
+        "§7Grants §a+$$l*3$$% §7more §c❁ Damage §7against",
         "§4♨ Infernal §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -495,7 +495,7 @@
       "internalName": "ATTRIBUTE_SHARD_BLAZING_FORTUNE;1",
       "lore": [
         "§6Blazing Fortune I",
-        "§7Grants §b+1 ✯ Magic Find §7on §c♆",
+        "§7Grants §b+$$l*1$$ ✯ Magic Find §7on §c♆",
         "§cMagmatic §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -523,7 +523,7 @@
       "internalName": "ATTRIBUTE_SHARD_BLAZING_RESISTANCE;1",
       "lore": [
         "§6Blazing Resistance I",
-        "§7Grants §a+4 ❈ Defense §7against §4♨",
+        "§7Grants §a+$$l*4$$ ❈ Defense §7against §4♨",
         "§4Infernal §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -553,7 +553,7 @@
       "internalName": "ATTRIBUTE_SHARD_BONE_FONT;1",
       "lore": [
         "§6Bone Font I",
-        "§7Grants a §a+2% §7extra chance of",
+        "§7Grants a §a+$$l*2$$% §7extra chance of",
         "§7finding §aLevel 6+ §7books or higher in",
         "§dSuperpairs§7.",
         "",
@@ -583,7 +583,7 @@
       "internalName": "ATTRIBUTE_SHARD_BOOK_WISDOM;1",
       "lore": [
         "§6Book Wisdom I",
-        "§7Grants §3+0.5 ☯ Enchanting Wisdom§7.",
+        "§7Grants §3+$$l*0.5$$ ☯ Enchanting Wisdom§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -613,7 +613,7 @@
         "§6Breeze I",
         "§7When you haven't been damaged in",
         "§7the last §a5s §7or more, your mana",
-        "§7costs are decreased by §a+1%§7.",
+        "§7costs are decreased by §a+$$l*1$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -642,7 +642,7 @@
       "internalName": "ATTRIBUTE_SHARD_BUCKET_LOVER;1",
       "lore": [
         "§6Bucket Lover I",
-        "§7You have a §a+5% §7chance to gain extra",
+        "§7You have a §a+$$l*5$$% §7chance to gain extra",
         "§7Chums.",
         "",
         "§7You can Syphon this shard from",
@@ -703,7 +703,7 @@
       "internalName": "ATTRIBUTE_SHARD_CAVERN_WISDOM;1",
       "lore": [
         "§6Cavern Wisdom I",
-        "§7Grants §3+0.5 ☯ Mining Wisdom§7.",
+        "§7Grants §3+$$l*0.5$$ ☯ Mining Wisdom§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -734,7 +734,7 @@
       "internalName": "ATTRIBUTE_SHARD_CHARMED;1",
       "lore": [
         "§6Charmed I",
-        "§7Grants a §a+0.05% §7chance to charm the",
+        "§7Grants a §a+$$l*0.05$$% §7chance to charm the",
         "§9Shard §7of monsters you kill.",
         "",
         "§7You can Syphon this shard from",
@@ -765,7 +765,7 @@
       "internalName": "ATTRIBUTE_SHARD_CHEAPSTAKE;1",
       "lore": [
         "§6Cheapstake I",
-        "§7Gain §a+1% §7more §6Coins §7from fishing",
+        "§7Gain §a+$$l*1$$% §7more §6Coins §7from fishing",
         "§7treasures.",
         "",
         "§7You can Syphon this shard from",
@@ -796,7 +796,7 @@
       "internalName": "ATTRIBUTE_SHARD_CLOAK_IMPROVEMENT;1",
       "lore": [
         "§6Cloak Improvement I",
-        "§7Your §fDavid's Cloak §7gains §f+1 ❂ True",
+        "§7Your §fDavid's Cloak §7gains §f+$$l*1$$ ❂ True",
         "§fDefense§7.",
         "",
         "§7You can Syphon this shard from",
@@ -825,7 +825,7 @@
       "internalName": "ATTRIBUTE_SHARD_COMBO;1",
       "lore": [
         "§6Combo I",
-        "§7Deal §a+0.1% §7more §c❁ Damage §7per",
+        "§7Deal §a+$$l*0.1$$% §7more §c❁ Damage §7per",
         "§7Grandma Wolf pet combo. §8(Max 50",
         "§8combo)",
         "",
@@ -888,7 +888,7 @@
       "lore": [
         "§6Crimson Serendipity I",
         "§7Increase the odds of finding a",
-        "§5Vanquisher §7by §a+2%§7.",
+        "§5Vanquisher §7by §a+$$l*2$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -919,7 +919,7 @@
       "lore": [
         "§6Crop Bug I",
         "§7Increased the odds of finding a",
-        "§7Cropie, Squash or Fermento by §a+2%§7.",
+        "§7Cropie, Squash or Fermento by §a+$$l*2$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -949,7 +949,7 @@
       "internalName": "ATTRIBUTE_SHARD_CRYSTAL_SERENDIPITY;1",
       "lore": [
         "§6Crystal Serendipity I",
-        "§7Grants a §a+2%§7 chance to double any",
+        "§7Grants a §a+$$l*2$$%§7 chance to double any",
         "§7loot from §5Crystal Hollows §7Treasure",
         "§7Chests.",
         "",
@@ -980,7 +980,7 @@
       "lore": [
         "§6Deadeye I",
         "§7Increases damage from ranged",
-        "§7weapons by §a+2.5%§7.",
+        "§7weapons by §a+$$l*2.5$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -1010,7 +1010,7 @@
       "internalName": "ATTRIBUTE_SHARD_DECENT_KARMA;1",
       "lore": [
         "§6Decent Karma I",
-        "§7Grants §d+2 ☘ Hunter Fortune",
+        "§7Grants §d+$$l*2$$ ☘ Hunter Fortune",
         "§7towards §f§lCOMMON §7Attributes.",
         "",
         "§7You can Syphon this shard from",
@@ -1038,7 +1038,7 @@
       "internalName": "ATTRIBUTE_SHARD_DEEP_DIVING;1",
       "lore": [
         "§6Deep Diving I",
-        "§7Grants §3+5 ⚶ Respiration§7.",
+        "§7Grants §3+$$l*5$$ ⚶ Respiration§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -1068,7 +1068,7 @@
       "internalName": "ATTRIBUTE_SHARD_DEEP_TECHNIQUE;1",
       "lore": [
         "§6Deep Technique I",
-        "§7Each block you mine has a §a+1%",
+        "§7Each block you mine has a §a+$$l*1$$%",
         "§7chance to grant 1 extra §5✧ Pristine",
         "§7for that block.",
         "",
@@ -1098,7 +1098,7 @@
       "internalName": "ATTRIBUTE_SHARD_DOMINANCE;1",
       "lore": [
         "§6Dominance I",
-        "§7Gain §a+1.5% §7more §c❁ Damage §7when at",
+        "§7Gain §a+$$l*1.5$$% §7more §c❁ Damage §7when at",
         "§7full health.",
         "",
         "§7You can Syphon this shard from",
@@ -1126,7 +1126,7 @@
       "internalName": "ATTRIBUTE_SHARD_DOUBLE_HOOK;1",
       "lore": [
         "§6Crimson Hook I",
-        "§7Grants §9+0.5 ⚓ Double Hook Chance",
+        "§7Grants §9+$$l*0.5$$ ⚓ Double Hook Chance",
         "§7while on the §cCrimson Isle§7.",
         "",
         "§7You can Syphon this shard from",
@@ -1156,7 +1156,7 @@
       "internalName": "ATTRIBUTE_SHARD_DRAGON_ESSENCE;1",
       "lore": [
         "§6Essence of Dragons I",
-        "§7Gain §a+1% §7more §5Dragon Essence§7.",
+        "§7Gain §a+$$l*1$$% §7more §5Dragon Essence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -1184,7 +1184,7 @@
       "internalName": "ATTRIBUTE_SHARD_DRAGON_SHORTBOW_IMPROVEMENT;1",
       "lore": [
         "§6Dragon Shortbow Improvement I",
-        "§7Your §5Dragon Shortbow §7gains §a+2%",
+        "§7Your §5Dragon Shortbow §7gains §a+$$l*2$$%",
         "§7more §c❁ Damage §7while in §dThe End§7.",
         "",
         "§7You can Syphon this shard from",
@@ -1216,7 +1216,7 @@
       "lore": [
         "§6Dwarven Serendipity I",
         "§7Increases the chance to find Golden",
-        "§7and Diamond Goblins by §a+10%§7.",
+        "§7and Diamond Goblins by §a+$$l*10$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -1246,7 +1246,7 @@
       "internalName": "ATTRIBUTE_SHARD_EARTH_ELEMENTAL;1",
       "lore": [
         "§6Earth Elemental I",
-        "§7Grants §c+2 ❤ Health§7.",
+        "§7Grants §c+$$l*2$$ ❤ Health§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -1277,7 +1277,7 @@
       "internalName": "ATTRIBUTE_SHARD_ECHO_OF_ATOMIZED;1",
       "lore": [
         "§6Echo of Atomized I",
-        "§7Your Atomized Attributes are §a+2%",
+        "§7Your Atomized Attributes are §a+$$l*2$$%",
         "§7stronger.",
         "",
         "§7You can Syphon this shard from",
@@ -1309,7 +1309,7 @@
       "internalName": "ATTRIBUTE_SHARD_ECHO_OF_BOXES;1",
       "lore": [
         "§6Echo of Boxes I",
-        "§7Your \"Box\" Attributes are §a+2%",
+        "§7Your \"Box\" Attributes are §a+$$l*2$$%",
         "§7stronger.",
         "",
         "§7You can Syphon this shard from",
@@ -1341,7 +1341,7 @@
       "internalName": "ATTRIBUTE_SHARD_ECHO_OF_ECHOES;1",
       "lore": [
         "§6Echo of Echoes I",
-        "§7Your Echo Attributes are §a+5%",
+        "§7Your Echo Attributes are §a+$$l*5$$%",
         "§7stronger.",
         "",
         "§7You can Syphon this shard from",
@@ -1373,7 +1373,7 @@
       "lore": [
         "§6Echo of Elemental I",
         "§7Buffs all other shards in the",
-        "§aElemental §7Family by §a+2%§7.",
+        "§aElemental §7Family by §a+$$l*2$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -1404,7 +1404,7 @@
       "internalName": "ATTRIBUTE_SHARD_ECHO_OF_ESSENCE;1",
       "lore": [
         "§6Echo of Essence I",
-        "§7Your Essence Attributes are §a+2%",
+        "§7Your Essence Attributes are §a+$$l*2$$%",
         "§7stronger.",
         "",
         "§7You can Syphon this shard from",
@@ -1437,7 +1437,7 @@
       "internalName": "ATTRIBUTE_SHARD_ECHO_OF_HUNTER;1",
       "lore": [
         "§6Echo of Hunter I",
-        "§7Your Hunter Attributes are §a+2%",
+        "§7Your Hunter Attributes are §a+$$l*2$$%",
         "§7stronger.",
         "",
         "§7You can Syphon this shard from",
@@ -1469,7 +1469,7 @@
       "internalName": "ATTRIBUTE_SHARD_ECHO_OF_RESISTANCE;1",
       "lore": [
         "§6Echo of Resistance I",
-        "§7Your Resistance Attributes are §a+2%",
+        "§7Your Resistance Attributes are §a+$$l*2$$%",
         "§7stronger.",
         "",
         "§7You can Syphon this shard from",
@@ -1501,7 +1501,7 @@
       "internalName": "ATTRIBUTE_SHARD_ECHO_OF_RULER;1",
       "lore": [
         "§6Echo of Ruler I",
-        "§7Your Ruler Attributes are §a+2%",
+        "§7Your Ruler Attributes are §a+$$l*2$$%",
         "§7stronger.",
         "",
         "§7You can Syphon this shard from",
@@ -1533,7 +1533,7 @@
       "internalName": "ATTRIBUTE_SHARD_ECHO_OF_SHARPENING;1",
       "lore": [
         "§6Echo of Sharpening I",
-        "§7Your Sharpening Attributes are §a+2%",
+        "§7Your Sharpening Attributes are §a+$$l*2$$%",
         "§7stronger.",
         "",
         "§7You can Syphon this shard from",
@@ -1565,7 +1565,7 @@
       "internalName": "ATTRIBUTE_SHARD_ECHO_OF_WISDOM;1",
       "lore": [
         "§6Echo of Wisdom I",
-        "§7Your Wisdom Attributes are §a+2%",
+        "§7Your Wisdom Attributes are §a+$$l*2$$%",
         "§7stronger.",
         "",
         "§7You can Syphon this shard from",
@@ -1597,7 +1597,7 @@
       "internalName": "ATTRIBUTE_SHARD_EELASTIC;1",
       "lore": [
         "§6Eelastic I",
-        "§7Increase Pull by §b+1 §7when using your",
+        "§7Increase Pull by §b+$$l*1$$ §7when using your",
         "§7Fishing Nets.",
         "",
         "§7You can Syphon this shard from",
@@ -1628,7 +1628,7 @@
       "internalName": "ATTRIBUTE_SHARD_ELITE;1",
       "lore": [
         "§6Elite I",
-        "§7Grants §a+3% §7more §c❁ Damage §7against",
+        "§7Grants §a+$$l*3$$% §7more §c❁ Damage §7against",
         "§abosses §7and §amini-bosses§7.",
         "",
         "§7You can Syphon this shard from",
@@ -1656,7 +1656,7 @@
       "internalName": "ATTRIBUTE_SHARD_ENDER;1",
       "lore": [
         "§6Ender Ruler I",
-        "§7Grants §a+3% §7more §c❁ Damage §7against",
+        "§7Grants §a+$$l*3$$% §7more §c❁ Damage §7against",
         "§5⊙ Ender §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -1684,7 +1684,7 @@
       "internalName": "ATTRIBUTE_SHARD_ENDER_RESISTANCE;1",
       "lore": [
         "§6Ender Resistance I",
-        "§7Grants §a+4 ❈ Defense §7against §5⊙",
+        "§7Grants §a+$$l*4$$ ❈ Defense §7against §5⊙",
         "§5Ender §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -1715,7 +1715,7 @@
       "internalName": "ATTRIBUTE_SHARD_EXCELLENT_KARMA;1",
       "lore": [
         "§6Excellent Karma I",
-        "§7Grants §d+1 ☘ Hunter Fortune",
+        "§7Grants §d+$$l*1$$ ☘ Hunter Fortune",
         "§7towards §5§lEPIC §7Attributes.",
         "",
         "§7You can Syphon this shard from",
@@ -1746,7 +1746,7 @@
       "internalName": "ATTRIBUTE_SHARD_EXPERIENCE;1",
       "lore": [
         "§6Experience I",
-        "§7Grants §a+10% §7more experience orbs",
+        "§7Grants §a+$$l*10$$% §7more experience orbs",
         "§7from killing mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -1773,7 +1773,7 @@
       "internalName": "ATTRIBUTE_SHARD_EXTREME_PRESSURE;1",
       "lore": [
         "§6Extreme Pressure I",
-        "§7Grants §9+5 ❍ Pressure Resistance§7.",
+        "§7Grants §9+$$l*5$$ ❍ Pressure Resistance§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -1801,7 +1801,7 @@
       "internalName": "ATTRIBUTE_SHARD_FAKER;1",
       "lore": [
         "§6Faker I",
-        "§7Dungeon Blessings are §a+1% §7stronger",
+        "§7Dungeon Blessings are §a+$$l*1$$% §7stronger",
         "§7on you.",
         "",
         "§7You can Syphon this shard from",
@@ -1833,7 +1833,7 @@
       "lore": [
         "§6Fancy Visit I",
         "§9§lRARE §7and above §aGarden Visitors",
-        "§7have a §a+1% §7higher chance to arrive.",
+        "§7have a §a+$$l*1$$% §7higher chance to arrive.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -1863,7 +1863,7 @@
       "internalName": "ATTRIBUTE_SHARD_FIG_COLLECTOR;1",
       "lore": [
         "§6Fig Collector I",
-        "§7Grants §6+1 ☘ Fig Fortune§7 for every",
+        "§7Grants §6+$$l*1$$ ☘ Fig Fortune§7 for every",
         "§7digit in your Fig Log collection. §8(Max",
         "§810M collection)",
         "",
@@ -1895,7 +1895,7 @@
       "internalName": "ATTRIBUTE_SHARD_FIG_SHARPENING;1",
       "lore": [
         "§6Fig Sharpening I",
-        "§7Grants §2+5 ∮ Sweep §7towards Fig",
+        "§7Grants §2+$$l*5$$ ∮ Sweep §7towards Fig",
         "§7Trees.",
         "",
         "§7You can Syphon this shard from",
@@ -1925,7 +1925,7 @@
       "internalName": "ATTRIBUTE_SHARD_FISHERMAN;1",
       "lore": [
         "§6Fisherman I",
-        "§7Has a §a+1% §7chance not to consume",
+        "§7Has a §a+$$l*1$$% §7chance not to consume",
         "§7any bait.",
         "",
         "§7You can Syphon this shard from",
@@ -1953,7 +1953,7 @@
       "internalName": "ATTRIBUTE_SHARD_FISHING_EXPERIENCE;1",
       "lore": [
         "§6Sea Wisdom I",
-        "§7Grants §3+0.5 ☯ Fishing Wisdom§7.",
+        "§7Grants §3+$$l*0.5$$ ☯ Fishing Wisdom§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -1980,7 +1980,7 @@
       "internalName": "ATTRIBUTE_SHARD_FISHING_SPEED;1",
       "lore": [
         "§6Fishing Speed I",
-        "§7Grants §b+3 ☂ Fishing Speed§7.",
+        "§7Grants §b+$$l*3$$ ☂ Fishing Speed§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2009,7 +2009,7 @@
       "internalName": "ATTRIBUTE_SHARD_FOG_ELEMENTAL;1",
       "lore": [
         "§6Fog Elemental I",
-        "§7Grants §b+1 ✎ Intelligence§7.",
+        "§7Grants §b+$$l*1$$ ✎ Intelligence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2038,7 +2038,7 @@
       "internalName": "ATTRIBUTE_SHARD_FORAGING_WISDOM;1",
       "lore": [
         "§6Foraging Wisdom I",
-        "§7Grants §3+0.5 ☯ Foraging Wisdom§7.",
+        "§7Grants §3+$$l*0.5$$ ☯ Foraging Wisdom§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2068,7 +2068,7 @@
       "internalName": "ATTRIBUTE_SHARD_FOREST_ELEMENTAL;1",
       "lore": [
         "§6Forest Elemental I",
-        "§7Grants §c+2 ❤ Health§7.",
+        "§7Grants §c+$$l*2$$ ❤ Health§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2098,7 +2098,7 @@
       "internalName": "ATTRIBUTE_SHARD_FOREST_ESSENCE;1",
       "lore": [
         "§6Essence of the Forest I",
-        "§7Gain §a+1% §7more §2Forest Essence§7.",
+        "§7Gain §a+$$l*1$$% §7more §2Forest Essence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2128,7 +2128,7 @@
       "internalName": "ATTRIBUTE_SHARD_FOREST_FISHING;1",
       "lore": [
         "§6Forest Fishing I",
-        "§7Grants §b+3 ☂ Fishing Speed§7 while on",
+        "§7Grants §b+$$l*3$$ ☂ Fishing Speed§7 while on",
         "§2Foraging Islands§7.",
         "",
         "§7You can Syphon this shard from",
@@ -2158,7 +2158,7 @@
       "internalName": "ATTRIBUTE_SHARD_FOREST_STRENGTH;1",
       "lore": [
         "§6Forest Strength I",
-        "§7Grants §c+5 ❁ Strength§7 while on",
+        "§7Grants §c+$$l*5$$ ❁ Strength§7 while on",
         "§2Foraging Islands§7.",
         "",
         "§7You can Syphon this shard from",
@@ -2190,7 +2190,7 @@
       "lore": [
         "§6Forest Trap I",
         "§7Forest Shards get caught by Traps",
-        "§a+1%§7 faster.",
+        "§a+$$l*1$$%§7 faster.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2219,7 +2219,7 @@
       "lore": [
         "§6Paramount Fortitude I",
         "§7Your §a❈ Defense §7is increased by",
-        "§a+0.2%§7.",
+        "§a+$$l*0.2$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2249,7 +2249,7 @@
       "internalName": "ATTRIBUTE_SHARD_FROG_LEGS;1",
       "lore": [
         "§6Frog Legs I",
-        "§7Frogs have a §a+10% §7chance to jump 1",
+        "§7Frogs have a §a+$$l*10$$% §7chance to jump 1",
         "§7less time.",
         "",
         "§7You can Syphon this shard from",
@@ -2280,7 +2280,7 @@
       "internalName": "ATTRIBUTE_SHARD_FROST_ELEMENTAL;1",
       "lore": [
         "§6Frost Elemental I",
-        "§7Grants §b+1 ✎ Intelligence§7.",
+        "§7Grants §b+$$l*1$$ ✎ Intelligence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2309,7 +2309,7 @@
       "internalName": "ATTRIBUTE_SHARD_FUNGY_LUCK;1",
       "lore": [
         "§6Fungy Luck I",
-        "§7Gain a §a+10% §7chance to gain an",
+        "§7Gain a §a+$$l*10$$% §7chance to gain an",
         "§7additional Chisel §echarge §7upon",
         "§7starting the §6Fossil Excavator§7.",
         "",
@@ -2341,7 +2341,7 @@
       "internalName": "ATTRIBUTE_SHARD_GARDEN_WISDOM;1",
       "lore": [
         "§6Garden Wisdom I",
-        "§7Grants §3+0.5 ☯ Farming Wisdom§7.",
+        "§7Grants §3+$$l*0.5$$ ☯ Farming Wisdom§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2401,7 +2401,7 @@
       "internalName": "ATTRIBUTE_SHARD_GOOD_KARMA;1",
       "lore": [
         "§6Good Karma I",
-        "§7Grants §d+2 ☘ Hunter Fortune",
+        "§7Grants §d+$$l*2$$ ☘ Hunter Fortune",
         "§7towards §a§lUNCOMMON §7Attributes.",
         "",
         "§7You can Syphon this shard from",
@@ -2433,7 +2433,7 @@
       "internalName": "ATTRIBUTE_SHARD_GREAT_KARMA;1",
       "lore": [
         "§6Great Karma I",
-        "§7Grants §d+1 ☘ Hunter Fortune",
+        "§7Grants §d+$$l*1$$ ☘ Hunter Fortune",
         "§7towards §9§lRARE §7Attributes.",
         "",
         "§7You can Syphon this shard from",
@@ -2464,7 +2464,7 @@
       "internalName": "ATTRIBUTE_SHARD_HAPPY_BOX;1",
       "lore": [
         "§6Happy Box I",
-        "§7Grants a §a+2% §7chance to obtain an",
+        "§7Grants a §a+$$l*2$$% §7chance to obtain an",
         "§7extra §fWinter Gift §7when finding one.",
         "",
         "§7You can Syphon this shard from",
@@ -2492,7 +2492,7 @@
       "internalName": "ATTRIBUTE_SHARD_HUMANOID_RULER;1",
       "lore": [
         "§6Humanoid Ruler I",
-        "§7Grants §a+3% §7more §c❁ Damage §7against",
+        "§7Grants §a+$$l*3$$% §7more §c❁ Damage §7against",
         "§e✰ Humanoid §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -2521,7 +2521,7 @@
       "internalName": "ATTRIBUTE_SHARD_HUNTER;1",
       "lore": [
         "§6Creature Fisher I",
-        "§7Grants §3+0.5 α Sea Creature Chance§7.",
+        "§7Grants §3+$$l*0.5$$ α Sea Creature Chance§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2551,7 +2551,7 @@
       "internalName": "ATTRIBUTE_SHARD_HUNTER_KARMA;1",
       "lore": [
         "§6Hunter's Karma I",
-        "§7Grants §d+1 ☘ Hunter Fortune§7.",
+        "§7Grants §d+$$l*1$$ ☘ Hunter Fortune§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2582,7 +2582,7 @@
       "internalName": "ATTRIBUTE_SHARD_HUNTERS_FANGS;1",
       "lore": [
         "§6Hunter's Fang I",
-        "§7Your Hunting Axes gain §a+1% §7more",
+        "§7Your Hunting Axes gain §a+$$l*1$$% §7more",
         "§7stats from the weapon they hold.",
         "",
         "§7You can Syphon this shard from",
@@ -2614,7 +2614,7 @@
       "internalName": "ATTRIBUTE_SHARD_HUNTERS_GRASP;1",
       "lore": [
         "§6Hunter's Grasp I",
-        "§7Your Black Holes gain §d+1% ☘ Hunter",
+        "§7Your Black Holes gain §d+$$l*1$$% ☘ Hunter",
         "§dFortune§7.",
         "",
         "§7You can Syphon this shard from",
@@ -2647,7 +2647,7 @@
       "lore": [
         "§6Hunter's Pressure I",
         "§7Your Black Holes capture creatures",
-        "§a+5% §7faster.",
+        "§a+$$l*5$$% §7faster.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2678,7 +2678,7 @@
       "internalName": "ATTRIBUTE_SHARD_HUNTERS_SUPPRESS;1",
       "lore": [
         "§6Hunter's Suppress I",
-        "§7Lassos deplete Stamina §a+2% §7faster.",
+        "§7Lassos deplete Stamina §a+$$l*2$$% §7faster.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2709,7 +2709,7 @@
       "internalName": "ATTRIBUTE_SHARD_HUNT_WISDOM;1",
       "lore": [
         "§6Hunt Wisdom I",
-        "§7Grants §3+0.5 ☯ Hunting Wisdom§7.",
+        "§7Grants §3+$$l*0.5$$ ☯ Hunting Wisdom§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2737,7 +2737,7 @@
       "internalName": "ATTRIBUTE_SHARD_ICE_ESSENCE;1",
       "lore": [
         "§6Essence of Ice I",
-        "§7Gain §a+1% §7more §bIce Essence§7.",
+        "§7Gain §a+$$l*1$$% §7more §bIce Essence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2764,7 +2764,7 @@
         "§6Ignition I",
         "§7Increases the duration of fire",
         "§7damage that you inflict on enemies by",
-        "§a+30%§7.",
+        "§a+$$l*30$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2792,7 +2792,7 @@
       "lore": [
         "§6Infection I",
         "§7Increases the chance of catching",
-        "§7corrupted Sea Creatures by §a+0.2%§7.",
+        "§7corrupted Sea Creatures by §a+$$l*0.2$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2821,7 +2821,7 @@
       "internalName": "ATTRIBUTE_SHARD_INFILTRATION;1",
       "lore": [
         "§6Infiltration I",
-        "§7Grants §6+3 ☘ Farming Fortune§7 if",
+        "§7Grants §6+$$l*3$$ ☘ Farming Fortune§7 if",
         "§7your Garden Plot currently has a §2ൠ",
         "§2Pest §7in it.",
         "",
@@ -2853,7 +2853,7 @@
       "internalName": "ATTRIBUTE_SHARD_INSECT_POWER;1",
       "lore": [
         "§6Insect Power I",
-        "§7Your Vacuum deals §a+10% §7extra §c❁",
+        "§7Your Vacuum deals §a+$$l*10$$% §7extra §c❁",
         "§cDamage§7.",
         "",
         "§7You can Syphon this shard from",
@@ -2884,7 +2884,7 @@
       "internalName": "ATTRIBUTE_SHARD_KAT_FAVORITE;1",
       "lore": [
         "§6Kat's Favorite I",
-        "§bKat §7takes §a+1%§7 less time to upgrade a",
+        "§bKat §7takes §a+$$l*1$$%§7 less time to upgrade a",
         "§7Pet.",
         "",
         "§7You can Syphon this shard from",
@@ -2915,7 +2915,7 @@
       "internalName": "ATTRIBUTE_SHARD_KUUDRA_BOX;1",
       "lore": [
         "§6Kuudra's Box I",
-        "§7Gives §a+5%§7 chance to have an extra",
+        "§7Gives §a+$$l*5$$%§7 chance to have an extra",
         "§5Kuudra Teeth §7in the Paid Reward",
         "§7Chest.",
         "",
@@ -2947,7 +2947,7 @@
         "§6Lifeline I",
         "§7When under §c20% §7maximum HP, your §c❁",
         "§cDamage §7and §a❈ Defense §7increase by",
-        "§a+2.5%§7.",
+        "§a+$$l*2.5$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -2974,7 +2974,7 @@
       "internalName": "ATTRIBUTE_SHARD_LIFE_RECOVERY;1",
       "lore": [
         "§6Life Recovery I",
-        "§7Heals for §a+0.1% §7of your max health",
+        "§7Heals for §a+$$l*0.1$$% §7of your max health",
         "§7each time you kill a mob.",
         "",
         "§7You can Syphon this shard from",
@@ -3002,7 +3002,7 @@
       "internalName": "ATTRIBUTE_SHARD_LIFE_REGENERATION;1",
       "lore": [
         "§6Help From Above I",
-        "§7Grants §c+1.25 ❣ Health Regen§7.",
+        "§7Grants §c+$$l*1.25$$ ❣ Health Regen§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3031,7 +3031,7 @@
       "internalName": "ATTRIBUTE_SHARD_LIGHT_ELEMENTAL;1",
       "lore": [
         "§6Light Elemental I",
-        "§7Grants §c+1 ❁ Strength§7.",
+        "§7Grants §c+$$l*1$$ ❁ Strength§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3060,7 +3060,7 @@
       "internalName": "ATTRIBUTE_SHARD_LIGHTNING_ELEMENTAL;1",
       "lore": [
         "§6Lightning Elemental I",
-        "§7Grants §c+1 ❁ Strength§7.",
+        "§7Grants §c+$$l*1$$ ❁ Strength§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3088,7 +3088,7 @@
       "internalName": "ATTRIBUTE_SHARD_LOST_AND_FOUND;1",
       "lore": [
         "§6Lost and Found I",
-        "§7Grants a §a+0.1% §7chance to find a §5Wet",
+        "§7Grants a §a+$$l*0.1$$% §7chance to find a §5Wet",
         "§5Book§7 when fishing a Treasure.",
         "",
         "§7You can Syphon this shard from",
@@ -3120,7 +3120,7 @@
       "internalName": "ATTRIBUTE_SHARD_LUCKY_ROD;1",
       "lore": [
         "§6Lucky Rod I",
-        "§7Fish Treasure Shards are §a+1%",
+        "§7Fish Treasure Shards are §a+$$l*1$$%",
         "§7easier to find.",
         "",
         "§7You can Syphon this shard from",
@@ -3151,7 +3151,7 @@
       "internalName": "ATTRIBUTE_SHARD_LUNAR_POWER;1",
       "lore": [
         "§6Lunar Power I",
-        "§7Grants §6+5 ☘ Farming Fortune§7 during",
+        "§7Grants §6+$$l*5$$ ☘ Farming Fortune§7 during",
         "§7the Night.",
         "",
         "§7You can Syphon this shard from",
@@ -3180,7 +3180,7 @@
       "internalName": "ATTRIBUTE_SHARD_MAGIC_FIND;1",
       "lore": [
         "§6Magic Find I",
-        "§7Grants §b+0.5 ✯ Magic Find§7.",
+        "§7Grants §b+$$l*0.5$$ ✯ Magic Find§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3209,7 +3209,7 @@
       "internalName": "ATTRIBUTE_SHARD_MAGMATIC_RULER;1",
       "lore": [
         "§6Magmatic Ruler I",
-        "§7Grants §a+3% §7more §c❁ Damage §7against",
+        "§7Grants §a+$$l*3$$% §7more §c❁ Damage §7against",
         "§c♆ Magmatic §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -3239,7 +3239,7 @@
       "lore": [
         "§6Mana Regeneration I",
         "§7Increases your Mana regeneration",
-        "§7by §a+1%§7.",
+        "§7by §a+$$l*1$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3266,7 +3266,7 @@
       "internalName": "ATTRIBUTE_SHARD_MANA_STEAL;1",
       "lore": [
         "§6Mana Steal I",
-        "§7Regain §a+0.5 §7Mana every time you hit a",
+        "§7Regain §a+$$l*0.5$$ §7Mana every time you hit a",
         "§7monster.",
         "",
         "§7You can Syphon this shard from",
@@ -3296,7 +3296,7 @@
       "internalName": "ATTRIBUTE_SHARD_MANGROVE_COLLECTOR;1",
       "lore": [
         "§6Mangrove Collector I",
-        "§7Grants §6+1 ☘ Mangrove Fortune§7 for",
+        "§7Grants §6+$$l*1$$ ☘ Mangrove Fortune§7 for",
         "§7every digit in your Mangrove Log",
         "§7collection. §8(Max 10M collection)",
         "",
@@ -3328,7 +3328,7 @@
       "internalName": "ATTRIBUTE_SHARD_MANGROVE_SHARPENING;1",
       "lore": [
         "§6Mangrove Sharpening I",
-        "§7Grants §2+10 ∮ Sweep §7towards",
+        "§7Grants §2+$$l*10$$ ∮ Sweep §7towards",
         "§7Mangrove Trees.",
         "",
         "§7You can Syphon this shard from",
@@ -3357,7 +3357,7 @@
       "internalName": "ATTRIBUTE_SHARD_MATRIARCH_CUBS;1",
       "lore": [
         "§6Matriarch Cubs I",
-        "§7Grants a §a+2% §7chance to get a",
+        "§7Grants a §a+$$l*2$$% §7chance to get a",
         "§7second §6Heavy Pearl§7.",
         "",
         "§7You can Syphon this shard from",
@@ -3387,7 +3387,7 @@
       "lore": [
         "§6Maximal Torment I",
         "§7Your §b✎ Intelligence §7is increased by",
-        "§b+0.1%§7.",
+        "§b+$$l*0.1$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3417,7 +3417,7 @@
       "internalName": "ATTRIBUTE_SHARD_MENDING;1",
       "lore": [
         "§6Vitality I",
-        "§7Grants §4+2 ♨ Vitality§7.",
+        "§7Grants §4+$$l*2$$ ♨ Vitality§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3444,7 +3444,7 @@
       "internalName": "ATTRIBUTE_SHARD_MIDAS_TOUCH;1",
       "lore": [
         "§6Midas Touch I",
-        "§7Grants §6+1 Coin §7per kill.",
+        "§7Grants §6+$$l*1$$ Coin §7per kill.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3473,7 +3473,7 @@
       "internalName": "ATTRIBUTE_SHARD_MOONGLADE_MASTERY;1",
       "lore": [
         "§6Moonglade Mastery I",
-        "§7Grants §6+10 ☘ Fig Fortune §7and §6+10",
+        "§7Grants §6+$$l*10$$ ☘ Fig Fortune §7and §6+10",
         "§6☘ Mangrove Fortune§7.",
         "",
         "§7You can Syphon this shard from",
@@ -3505,7 +3505,7 @@
         "§6Moonglade Serendipity I",
         "§7Increases the odds of finding rare",
         "§7items in §2Tree Gifts §7at §2Moonglade",
-        "§2Marsh §7by §a+2%§7.",
+        "§2Marsh §7by §a+$$l*2$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3535,7 +3535,7 @@
       "internalName": "ATTRIBUTE_SHARD_MOSSY_BOX;1",
       "lore": [
         "§6Mossy Box I",
-        "§7Grants §6+5 ☘ Block Fortune§7.",
+        "§7Grants §6+$$l*5$$ ☘ Block Fortune§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3564,7 +3564,7 @@
       "internalName": "ATTRIBUTE_SHARD_MOUNTAIN_CLIMBER;1",
       "lore": [
         "§6Mountain Climber I",
-        "§7Commissions grant §a+1% §7more §5HOTM Exp§7.",
+        "§7Commissions grant §a+$$l*1$$% §7more §5HOTM Exp§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3594,7 +3594,7 @@
       "internalName": "ATTRIBUTE_SHARD_NATURE_ELEMENTAL;1",
       "lore": [
         "§6Nature Elemental I",
-        "§7Grants §c+2 ❤ Health§7.",
+        "§7Grants §c+$$l*2$$ ❤ Health§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3623,7 +3623,7 @@
       "internalName": "ATTRIBUTE_SHARD_NOCTURNAL_ANIMAL;1",
       "lore": [
         "§6Nocturnal Animal I",
-        "§7Grants §2+1 ∮ Sweep§7 during the night.",
+        "§7Grants §2+$$l*1$$ ∮ Sweep§7 during the night.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3652,7 +3652,7 @@
       "internalName": "ATTRIBUTE_SHARD_OWL_FRIEND;1",
       "lore": [
         "§6Owl Friend I",
-        "§7Your pets gain §a+2%§7 more Pet EXP",
+        "§7Your pets gain §a+$$l*2$$%§7 more Pet EXP",
         "§7from Fann.",
         "",
         "§7You can Syphon this shard from",
@@ -3680,7 +3680,7 @@
       "internalName": "ATTRIBUTE_SHARD_PAYBACK;1",
       "lore": [
         "§6Payback I",
-        "§7When hit, your next hit deals §a+2%",
+        "§7When hit, your next hit deals §a+$$l*2$$%",
         "§7damage",
         "",
         "§7You can Syphon this shard from",
@@ -3711,7 +3711,7 @@
       "internalName": "ATTRIBUTE_SHARD_PEST_LUCK;1",
       "lore": [
         "§6Pest Luck I",
-        "§7Gain a §a+2% §7chance to obtain §9rare",
+        "§7Gain a §a+$$l*2$$% §7chance to obtain §9rare",
         "§9loot §7from §2ൠ Pests§7.",
         "",
         "§7You can Syphon this shard from",
@@ -3742,7 +3742,7 @@
       "internalName": "ATTRIBUTE_SHARD_PET_WISDOM;1",
       "lore": [
         "§6Pet Wisdom I",
-        "§7Grants §3+0.5 ☯ Taming Wisdom§7.",
+        "§7Grants §3+$$l*0.5$$ ☯ Taming Wisdom§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3772,7 +3772,7 @@
       "internalName": "ATTRIBUTE_SHARD_PITY;1",
       "lore": [
         "§6Pity I",
-        "§7Your §dRNG Meter §7fills §a+1% §7faster.",
+        "§7Your §dRNG Meter §7fills §a+$$l*1$$% §7faster.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3802,7 +3802,7 @@
       "internalName": "ATTRIBUTE_SHARD_PRETTY_CLOTHES;1",
       "lore": [
         "§6Pretty Clothes I",
-        "§7Gain §a+1%§7 more §cCopper §7from §aGarden",
+        "§7Gain §a+$$l*1$$%§7 more §cCopper §7from §aGarden",
         "§aVisitors§7.",
         "",
         "§7You can Syphon this shard from",
@@ -3834,7 +3834,7 @@
       "internalName": "ATTRIBUTE_SHARD_PURE_REPTILE;1",
       "lore": [
         "§6Pure Reptile I",
-        "§7Grants a §a+2% §7chance to double",
+        "§7Grants a §a+$$l*2$$% §7chance to double",
         "§7shards from a Reptile Fusion.",
         "",
         "§7You can Syphon this shard from",
@@ -3866,7 +3866,7 @@
       "lore": [
         "§6Quartz Speed I",
         "§6⸕ Mining Speed §7from events is",
-        "§7increased by §a+10%§7.",
+        "§7increased by §a+$$l*10$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3925,7 +3925,7 @@
       "internalName": "ATTRIBUTE_SHARD_RARE_BIRD;1",
       "lore": [
         "§6Rare Bird I",
-        "§7Grants §d+1 ♣ Pet Luck§7.",
+        "§7Grants §d+$$l*1$$ ♣ Pet Luck§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -3953,7 +3953,7 @@
       "internalName": "ATTRIBUTE_SHARD_REBORN;1",
       "lore": [
         "§6Reborn I",
-        "§7Killing a Prince has a §a+10%§7 chance to",
+        "§7Killing a Prince has a §a+$$l*10$$%§7 chance to",
         "§7add 1 Bonus Score to your Dungeon",
         "§7Run.",
         "",
@@ -4013,7 +4013,7 @@
       "internalName": "ATTRIBUTE_SHARD_ROTTEN_PICKAXE;1",
       "lore": [
         "§6Rotten Pickaxe I",
-        "§7Grants §6+3 ⸕ Mining Speed§7.",
+        "§7Grants §6+$$l*3$$ ⸕ Mining Speed§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4039,7 +4039,7 @@
       "internalName": "ATTRIBUTE_SHARD_SACK_SIZE;1",
       "lore": [
         "§6Sack Size I",
-        "§7Your sacks can hold §a+1% §7more items.",
+        "§7Your sacks can hold §a+$$l*1$$% §7more items.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4069,7 +4069,7 @@
       "internalName": "ATTRIBUTE_SHARD_SHADOW_ELEMENTAL;1",
       "lore": [
         "§6Shadow Elemental I",
-        "§7Grants §c+2 ❤ Health§7.",
+        "§7Grants §c+$$l*2$$ ❤ Health§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4100,7 +4100,7 @@
       "internalName": "ATTRIBUTE_SHARD_SHELL;1",
       "lore": [
         "§6Shell I",
-        "§7Gain a §a+10%§7 chance to negate",
+        "§7Gain a §a+$$l*10$$%§7 chance to negate",
         "§7knockback.",
         "",
         "§7You can Syphon this shard from",
@@ -4130,7 +4130,7 @@
       "lore": [
         "§6Skeletal Ruler I",
         "§7Increase damage to §f🦴 Skeletal",
-        "§7mobs by §a+3%§7.",
+        "§7mobs by §a+$$l*3$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4159,7 +4159,7 @@
       "internalName": "ATTRIBUTE_SHARD_SNOW_ELEMENTAL;1",
       "lore": [
         "§6Snow Elemental I",
-        "§7Grants §b+1 ✎ Intelligence§7.",
+        "§7Grants §b+$$l*1$$ ✎ Intelligence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4188,7 +4188,7 @@
       "internalName": "ATTRIBUTE_SHARD_SOLAR_POWER;1",
       "lore": [
         "§6Solar Power I",
-        "§7Grants §6+5 ☘ Farming Fortune§7 during",
+        "§7Grants §6+$$l*5$$ ☘ Farming Fortune§7 during",
         "§7the day.",
         "",
         "§7You can Syphon this shard from",
@@ -4217,7 +4217,7 @@
       "internalName": "ATTRIBUTE_SHARD_SPEED;1",
       "lore": [
         "§6Speed I",
-        "§7Grants §f+1 ✦ Speed§7.",
+        "§7Grants §f+$$l*1$$ ✦ Speed§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4243,7 +4243,7 @@
       "internalName": "ATTRIBUTE_SHARD_SPIDER_ESSENCE;1",
       "lore": [
         "§6Essence of Arthropods I",
-        "§7Gain §a+1% §7more §5Spider Essence§7.",
+        "§7Gain §a+$$l*1$$% §7more §5Spider Essence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4271,7 +4271,7 @@
       "internalName": "ATTRIBUTE_SHARD_SPIRIT_AXE;1",
       "lore": [
         "§6Spirit Axe I",
-        "§7Grants §a+3% §7more §c❁ Damage §7against",
+        "§7Grants §a+$$l*3$$% §7more §c❁ Damage §7against",
         "§2⸙ Woodland §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -4302,7 +4302,7 @@
       "internalName": "ATTRIBUTE_SHARD_STAR_BAIT;1",
       "lore": [
         "§6Star Bait I",
-        "§7Grants a §a+0.1% §7chance to fish a",
+        "§7Grants a §a+$$l*0.1$$% §7chance to fish a",
         "§7Shinyfish.",
         "",
         "§7You can Syphon this shard from",
@@ -4332,7 +4332,7 @@
       "lore": [
         "§6Starborn I",
         "§7The effect of §dStarborn Temples §7is",
-        "§a+1% §7stronger on you.",
+        "§a+$$l*1$$% §7stronger on you.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4362,7 +4362,7 @@
       "internalName": "ATTRIBUTE_SHARD_STONE_ELEMENTAL;1",
       "lore": [
         "§6Stone Elemental I",
-        "§7Grants §c+1 ❁ Strength§7.",
+        "§7Grants §c+$$l*1$$ ❁ Strength§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4392,7 +4392,7 @@
       "internalName": "ATTRIBUTE_SHARD_STORM_ELEMENTAL;1",
       "lore": [
         "§6Storm Elemental I",
-        "§7Grants §c+1 ❁ Strength§7.",
+        "§7Grants §c+$$l*1$$ ❁ Strength§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4421,7 +4421,7 @@
       "internalName": "ATTRIBUTE_SHARD_STRONG_ARMS;1",
       "lore": [
         "§6Strong Arms I",
-        "§7Your Axe gains §2+3 ∮ Sweep§7 on",
+        "§7Your Axe gains §2+$$l*3$$ ∮ Sweep§7 on",
         "§7throws.",
         "",
         "§7You can Syphon this shard from",
@@ -4452,7 +4452,7 @@
       "internalName": "ATTRIBUTE_SHARD_STRONG_LEGS;1",
       "lore": [
         "§6Strong Legs I",
-        "§7Your Axe gains §2+3 ∮ Sweep§7 on melee.",
+        "§7Your Axe gains §2+$$l*3$$ ∮ Sweep§7 on melee.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4482,7 +4482,7 @@
       "internalName": "ATTRIBUTE_SHARD_TORRENT_ELEMENTAL;1",
       "lore": [
         "§6Torrent Elemental I",
-        "§7Grants §b+1 ✎ Intelligence§7.",
+        "§7Grants §b+$$l*1$$ ✎ Intelligence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4512,7 +4512,7 @@
       "lore": [
         "§6Tree Lurker I",
         "§7Increases the odds of finding",
-        "§7monsters from §2Tree Gifts §7by §a+5%§7.",
+        "§7monsters from §2Tree Gifts §7by §a+$$l*5$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4542,7 +4542,7 @@
       "internalName": "ATTRIBUTE_SHARD_TROPHY_HUNTER;1",
       "lore": [
         "§6Trophy Hunter I",
-        "§7Grants §6+2 ♔ Trophy Fish Chance§7.",
+        "§7Grants §6+$$l*2$$ ♔ Trophy Fish Chance§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4571,7 +4571,7 @@
       "internalName": "ATTRIBUTE_SHARD_TUNING_BOX;1",
       "lore": [
         "§6Tuning Box I",
-        "§7Grants §a+1 §7Tuning Points.",
+        "§7Grants §a+$$l*1$$ §7Tuning Points.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4599,7 +4599,7 @@
       "internalName": "ATTRIBUTE_SHARD_ULTIMATE_DNA;1",
       "lore": [
         "§6Ultimate DNA I",
-        "§7Grants §6+1 ☘ Mining Fortune§7, §6☘",
+        "§7Grants §6+$$l*1$$ ☘ Mining Fortune§7, §6☘",
         "§6Farming Fortune§7, and §6☘ Foraging",
         "§6Fortune§7.",
         "",
@@ -4629,7 +4629,7 @@
       "internalName": "ATTRIBUTE_SHARD_UNDEAD;1",
       "lore": [
         "§6Undead Ruler I",
-        "§7Grants §a+3% §7more §c❁ Damage §7against",
+        "§7Grants §a+$$l*3$$% §7more §c❁ Damage §7against",
         "§2༕ Undead §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -4654,7 +4654,7 @@
       "internalName": "ATTRIBUTE_SHARD_UNDEAD_ESSENCE;1",
       "lore": [
         "§6Essence of Unliving I",
-        "§7Gain §a+1% §7more §4Undead Essence§7.",
+        "§7Gain §a+$$l*1$$% §7more §4Undead Essence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4682,7 +4682,7 @@
       "internalName": "ATTRIBUTE_SHARD_UNDEAD_RESISTANCE;1",
       "lore": [
         "§6Undead Resistance I",
-        "§7Grants §a+4 ❈ Defense §7against §2༕",
+        "§7Grants §a+$$l*4$$ ❈ Defense §7against §2༕",
         "§2Undead §7mobs.",
         "",
         "§7You can Syphon this shard from",
@@ -4713,7 +4713,7 @@
       "internalName": "ATTRIBUTE_SHARD_UNITY_IS_STRENGTH;1",
       "lore": [
         "§6Unity is Strength I",
-        "§7Grants §2+0.02 ∮ Sweep §7for each",
+        "§7Grants §2+$$l*0.02$$ ∮ Sweep §7for each",
         "§7unique §f§lCommon §7Attribute you own.",
         "",
         "§7You can Syphon this shard from",
@@ -4745,7 +4745,7 @@
       "lore": [
         "§6Unlimited Energy I",
         "§7Your §9☠ Crit Damage §7is increased by",
-        "§9+0.1%§7.",
+        "§9+$$l*0.1$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4777,7 +4777,7 @@
       "lore": [
         "§6Unlimited Power I",
         "§7Your §c❁ Strength §7is increased by",
-        "§c+0.1%§7.",
+        "§c+$$l*0.1$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4807,7 +4807,7 @@
       "internalName": "ATTRIBUTE_SHARD_VEIL;1",
       "lore": [
         "§6Veil I",
-        "§7Grants §f+1 ❂ True Defense§7.",
+        "§7Grants §f+$$l*1$$ ❂ True Defense§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4837,7 +4837,7 @@
       "internalName": "ATTRIBUTE_SHARD_VETERAN;1",
       "lore": [
         "§6Veteran I",
-        "§7Grants §3+1 ☯ Combat Wisdom§7.",
+        "§7Grants §3+$$l*1$$ ☯ Combat Wisdom§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4864,7 +4864,7 @@
       "internalName": "ATTRIBUTE_SHARD_VISITOR_BAIT;1",
       "lore": [
         "§6Visitor Bait I",
-        "§aGarden Visitors §7arrive §a+1% §7faster.",
+        "§aGarden Visitors §7arrive §a+$$l*1$$% §7faster.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4892,7 +4892,7 @@
       "lore": [
         "§6Warrior I",
         "§7Increases melee damage dealt by",
-        "§a+2.5%§7.",
+        "§a+$$l*2.5$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4921,7 +4921,7 @@
       "internalName": "ATTRIBUTE_SHARD_WART_EATER;1",
       "lore": [
         "§6Wart Eater I",
-        "§7Grants a §a+0.01% §7chance to obtain a",
+        "§7Grants a §a+$$l*0.01$$% §7chance to obtain a",
         "§5Warty §7when breaking Nether Warts.",
         "",
         "§7You can Syphon this shard from",
@@ -4952,7 +4952,7 @@
       "internalName": "ATTRIBUTE_SHARD_WATER_ELEMENTAL;1",
       "lore": [
         "§6Water Elemental I",
-        "§7Grants §b+1 ✎ Intelligence§7.",
+        "§7Grants §b+$$l*1$$ ✎ Intelligence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -4982,7 +4982,7 @@
       "internalName": "ATTRIBUTE_SHARD_WHY_NOT_MORE;1",
       "lore": [
         "§6Why Not More I",
-        "§7Your pet's EXP Share grants §a+1%",
+        "§7Your pet's EXP Share grants §a+$$l*1$$%",
         "§7more EXP.",
         "",
         "§7You can Syphon this shard from",
@@ -5013,7 +5013,7 @@
       "internalName": "ATTRIBUTE_SHARD_WIND_ELEMENTAL;1",
       "lore": [
         "§6Wind Elemental I",
-        "§7Grants §c+1 ❁ Strength§7.",
+        "§7Grants §c+$$l*1$$ ❁ Strength§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -5045,7 +5045,7 @@
       "lore": [
         "§6Wings of Destiny I",
         "§7Increases the odds of finding",
-        "§9Ananke Feathers §7by §a+2%§7.",
+        "§9Ananke Feathers §7by §a+$$l*2$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -5076,7 +5076,7 @@
       "lore": [
         "§6Winter's Serendipity I",
         "§7Increases the odds of finding rare",
-        "§7items in §fWinter Gifts §7by §a+2%§7.",
+        "§7items in §fWinter Gifts §7by §a+$$l*2$$%§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -5104,7 +5104,7 @@
       "internalName": "ATTRIBUTE_SHARD_WITHER_ESSENCE;1",
       "lore": [
         "§6Essence of Wither I",
-        "§7Gain §a+1% §7more §8Wither Essence§7.",
+        "§7Gain §a+$$l*1$$% §7more §8Wither Essence§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -5131,7 +5131,7 @@
       "internalName": "ATTRIBUTE_SHARD_WOOD_ELEMENTAL;1",
       "lore": [
         "§6Wood Elemental I",
-        "§7Grants §c+2 ❤ Health§7.",
+        "§7Grants §c+$$l*2$$ ❤ Health§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -5159,7 +5159,7 @@
       "internalName": "ATTRIBUTE_SHARD_YOG_MEMBRANE;1",
       "lore": [
         "§6Yog Membrane I",
-        "§7Grants §c+1 ♨ Heat Resistance§7.",
+        "§7Grants §c+$$l*1$$ ♨ Heat Resistance§7.",
         "",
         "§7You can Syphon this shard from",
         "§7your §aHunting Box§7.",
@@ -5186,7 +5186,7 @@
       "internalName": "ATTRIBUTE_SHARD_YUMMY;1",
       "lore": [
         "§6Yummy I",
-        "§7Grants a §a+10%§7 chance to drop",
+        "§7Grants a §a+$$l*10$$%§7 chance to drop",
         "§7double Berries and Sea Lumies.",
         "",
         "§7You can Syphon this shard from",
@@ -5216,7 +5216,7 @@
       "internalName": "ATTRIBUTE_SHARD_BAYOU_BITER;1",
       "lore": [
         "§6Bayou Biter I",
-        "§7Grants §9+0.5 ⚓ Double Hook Chance",
+        "§7Grants §9+$$l*0.5$$ ⚓ Double Hook Chance",
         "§7while on the §2Backwater Bayou§7.",
         "",
         "§7You can Syphon this shard from",
@@ -5246,7 +5246,7 @@
       "internalName": "ATTRIBUTE_SHARD_CHOP;1",
       "lore": [
         "§6Chop I",
-        "§7Grants a §a+10% §7chance to Chop §aan",
+        "§7Grants a §a+$$l*10$$% §7chance to Chop §aan",
         "§aextra log§7, on top of the ones you",
         "§7swept.",
         "",
@@ -5275,7 +5275,7 @@
       "internalName": "ATTRIBUTE_SHARD_CATACOMBS_GRADUATE;1",
       "lore": [
         "§6Catacombs Graduate I",
-        "§7Gain §a+2% §7more §cDungeons §7class",
+        "§7Gain §a+$$l*2$$% §7more §cDungeons §7class",
         "§7experience.",
         "",
         "§7You can Syphon this shard from",

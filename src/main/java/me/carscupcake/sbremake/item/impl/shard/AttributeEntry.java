@@ -25,7 +25,32 @@ public record AttributeEntry(@ConfigField IAttributeShard attributeShard, @Confi
         while (amount >= stacks[level]) {
             amount -= stacks[level];
             level++;
+            if (level == 10) return 10;
         }
         return level;
     }
+
+    public AttributeEntry withAmount(int amount) {
+        return new AttributeEntry(attributeShard, amount);
+    }
+
+    public int shardsToNextLevel() {
+        if (level == 10) return 0;
+        int toThis = 0;
+        for (int i = 0; i < level + 1; i++) {
+            toThis += Constants.ATTRIBUTE_LEVELLING.COMMON[i];
+        }
+        return toThis - amount;
+    }
+
+    public int shardsToMax() {
+        var cpLevel = level;
+        int amount = 0;
+        while (cpLevel != 10) {
+            amount += Constants.ATTRIBUTE_LEVELLING.COMMON[cpLevel];
+            cpLevel++;
+        }
+        return amount;
+    }
+
 }
