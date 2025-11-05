@@ -1,6 +1,6 @@
 {
   "attribute_levelling": {
-    "COMMON": [
+    "COMMON@int": [
       1,
       3,
       5,
@@ -12,7 +12,7 @@
       18,
       24
     ],
-    "UNCOMMON": [
+    "UNCOMMON@int": [
       1,
       2,
       3,
@@ -24,7 +24,7 @@
       12,
       16
     ],
-    "RARE": [
+    "RARE@int": [
       1,
       2,
       3,
@@ -36,7 +36,7 @@
       8,
       12
     ],
-    "EPIC": [
+    "EPIC@int": [
       1,
       1,
       2,
@@ -48,7 +48,7 @@
       5,
       7
     ],
-    "LEGENDARY": [
+    "LEGENDARY@int": [
       1,
       1,
       1,
