@@ -1,14 +1,10 @@
 package me.carscupcake.processor;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.palantir.javapoet.FieldSpec;
-import com.palantir.javapoet.JavaFile;
-import com.palantir.javapoet.MethodSpec;
-import com.palantir.javapoet.TypeSpec;
-import me.carscupcake.sbremake.item.ISbItem;
+import com.palantir.javapoet.*;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.Lore;
+import me.carscupcake.sbremake.item.impl.shard.AttributeMenu;
 import me.carscupcake.sbremake.item.impl.shard.IAttributeShard;
 import me.carscupcake.sbremake.item.impl.shard.ShardCategory;
 import me.carscupcake.sbremake.item.impl.shard.ShardFamily;
@@ -19,9 +15,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 
 public class ShardGenerator {
+    private static final Pattern EXPR_PATTERN = Pattern.compile("\\$\\$(?<expression>.+)\\$\\$");
+
     public void process(InputStream stream, Path outputDir) {
         var root = JsonParser.parseReader(new java.io.InputStreamReader(stream)).getAsJsonObject();
         var shards = root.getAsJsonArray("attributes");
@@ -56,6 +58,8 @@ public class ShardGenerator {
                 .addParameter(String.class, "abilityName")
                 .addParameter(String[].class, "loreRows")
                 .addParameter(String.class, "headValue")
+                .addParameter(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class), ParameterizedTypeName.get(ClassName.get(Function.class),
+                        ClassName.get(Integer.class), ClassName.get(Double.class))), "placeholder")
                 .addStatement("this.id = $L", "id")
                 .addStatement("this.displayName = $L", "displayName")
                 .addStatement("this.rarity = $L", "rarity")
@@ -63,7 +67,7 @@ public class ShardGenerator {
                 .addStatement("this.families = $L", "families")
                 .addStatement("this.shardId = $L", "shardId")
                 .addStatement("this.abilityName = $L", "abilityName")
-                .addStatement("this.lore = new $T($T.of($L))", Lore.class, List.class, "loreRows")
+                .addStatement("this.lore = new $T($T.of($L), $T.toPlaceholderMap(this, $L))", Lore.class, List.class, "loreRows", AttributeMenu.class, "placeholder")
                 .addStatement("this.headValue = $L", "headValue")
                 .build();
         enumBuilder.addMethod(constructor);
@@ -76,17 +80,45 @@ public class ShardGenerator {
             var families = shard.getAsJsonArray("family");
             var familyArray = families == null ? new ShardFamily[0] : new ShardFamily[families.size()];
             var builder = new StringBuilder("$S, $S, $T.$L, $T.$L, ");
-            if (familyArray.length > 0) builder.append("new $T[]{").append("$T.$L,".repeat(familyArray.length).substring(0, familyArray.length * 6 - 1)).append("}, ");
+            if (familyArray.length > 0)
+                builder.append("new $T[]{").append("$T.$L,".repeat(familyArray.length), 0, familyArray.length * 6 - 1).append("}, ");
             else builder.append("new $T[0], ");
             builder.append("$S, $S, new $T{");
-            var loreRows = shard.getAsJsonArray("lore").asList().stream().map(JsonElement::getAsString
-            ).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+            var loreRows = new ArrayList<String>();
+            int loreExpId = 0;
+            var expressions = new HashMap<String, String>();
+            for (var element1 : shard.getAsJsonArray("lore")) {
+                var lore = element1.getAsString();
+                if (lore.contains("$")) {
+                    var matcher = EXPR_PATTERN.matcher(lore);
+                    while (matcher.find()) {
+                        var expression = matcher.group("expression");
+                        lore = lore.replaceFirst(EXPR_PATTERN.pattern(), "%" + loreExpId + "%");
+                        if (expression.equals("l*1") || expression.equals("1*l")) expression = "l";
+                        expressions.put("%" + loreExpId + "%", expression);
+                        loreExpId++;
+                    }
+                }
+                loreRows.add(lore);
+            }
+            StringBuilder mapLiteral;
+            if (!expressions.isEmpty()) {
+                mapLiteral = new StringBuilder("$T.of(");
+                int i = 0;
+                for (var entry : expressions.entrySet()) {
+                    mapLiteral.append("\"").append(entry.getKey()).append("\", l -> (double)").append(entry.getValue()).append(")");
+                    if (i != expressions.size() - 1) mapLiteral.append(", ");
+                    i++;
+                }
+            } else {
+                mapLiteral = new StringBuilder("$T.of()");
+            }
             var lastEmptyIndex = loreRows.lastIndexOf("§7You can Syphon this shard from");
             if (lastEmptyIndex == -1)
                 lastEmptyIndex = loreRows.lastIndexOf("§eRight-click to send to Hunting Box!");
             loreRows.subList(lastEmptyIndex - 1, loreRows.size()).clear();
             loreRows.removeFirst();
-            var objects = familyArray.length == 0 ? new Object[11 + loreRows.size()] : new Object[11 + familyArray.length * 2 + loreRows.size()];
+            var objects = familyArray.length == 0 ? new Object[12 + loreRows.size()] : new Object[12 + familyArray.length * 2 + loreRows.size()];
             objects[0] = id.replace("'", "");
             objects[1] = displayName.replace("'", "\\'");
             objects[2] = ItemRarity.class;
@@ -104,20 +136,22 @@ public class ShardGenerator {
             objects[7 + familyArray.length * 2] = shardId;
             objects[8 + familyArray.length * 2] = abilityName;
             objects[9 + familyArray.length * 2] = String[].class;
-            builder.append("$S,".repeat(loreRows.size()).substring(0, loreRows.size() * 3 - 1)).append("}, $S");
+            builder.append("$S,".repeat(loreRows.size()), 0, loreRows.size() * 3 - 1).append("}, $S");
             for (int i = 0; i < loreRows.size(); i++) {
-                objects[10 + i + familyArray.length * 2] = loreRows.get(i).toString();
+                objects[10 + i + familyArray.length * 2] = loreRows.get(i);
             }
             var textures = shard.get("textures");
             var headValue = textures != null ? textures.getAsJsonObject().get("value").getAsString() : null;
             objects[10 + loreRows.size() + familyArray.length * 2] = headValue;
+            objects[11 + loreRows.size() + familyArray.length * 2] = Map.class;
+            builder.append(", ").append(mapLiteral);
             var enumType = TypeSpec.anonymousClassBuilder(builder.toString(), objects);
             if (headValue == null) {
                 enumType.addMethod(MethodSpec.methodBuilder("getMaterial")
-                                .returns(Material.class)
-                                .addModifiers(Modifier.PUBLIC)
-                                .addAnnotation(Override.class)
-                                .addStatement("return $T.$L", Material.class, shard.get("material").getAsString().toUpperCase())
+                        .returns(Material.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addAnnotation(Override.class)
+                        .addStatement("return $T.$L", Material.class, shard.get("material").getAsString().toUpperCase())
                         .build());
             }
             enumBuilder.addEnumConstant(GeneratorUtils.spacedToUpperCamelCase(abilityName.replace("\\", "").replace("'", "")), enumType.build());
@@ -125,8 +159,8 @@ public class ShardGenerator {
         enumBuilder.addMethod(MethodSpec.methodBuilder("getDisplayName")
                 .returns(String.class)
                 .addStatement("return this.displayName")
-                        .addAnnotation(Override.class)
-                        .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
                 .build());
         enumBuilder.addMethod(MethodSpec.methodBuilder("getRarity")
                 .returns(ItemRarity.class)
