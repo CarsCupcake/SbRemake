@@ -159,7 +159,11 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         //Packet Logger
                 /*if (!(event.getPacket() instanceof ClientChunkBatchReceivedPacket || event.getPacket() instanceof ClientPlayerPositionPacket || event.getPacket() instanceof ClientPlayerRotationPacket || event.getPacket() instanceof ClientPlayerPositionAndRotationPacket))
                     System.out.println("IN:" + event.getPacket());*/
-        if (event.getPacket() instanceof ClientTeleportConfirmPacket(int teleportId)) {
+
+                if (event.getPacket() instanceof  ClientChangeGameModePacket(var gameMode)) {
+                    event.getPlayer().setGameMode(gameMode);
+                }
+                if (event.getPacket() instanceof ClientTeleportConfirmPacket(int teleportId)) {
             if (player.spawnTeleportId == teleportId) {
                 player.scheduler().buildTask(() -> player.setNoGravity(false)).delay(TaskSchedule.tick(5)).schedule();
                 player.spawnTeleportId = -1;
