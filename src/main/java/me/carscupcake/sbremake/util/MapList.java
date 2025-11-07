@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MapList<T, K> extends HashMap<T, List<K>> {
@@ -10,7 +11,7 @@ public class MapList<T, K> extends HashMap<T, List<K>> {
         List<K> ks;
         if (super.containsKey(key)) {
             ks = super.get(key);
-        } else ks = new ArrayList<>();
+        } else ks = new LinkedList<>();
         ks.add(value);
         put(key, ks);
     }
@@ -25,11 +26,28 @@ public class MapList<T, K> extends HashMap<T, List<K>> {
     @Override
     public List<K> get(Object key) {
         List<K> k = super.get(key);
-        if (k == null) k = new ArrayList<>();
+        if (k == null) k = new LinkedList<>();
         return k;
     }
 
     public K get(Object key, int index) {
         return get(key).get(index);
+    }
+
+    public static class Builder<T, K> {
+        private final MapList<T, K> mapList = new MapList<>();
+
+        public MapList<T, K> build() {
+            return mapList;
+        }
+
+        public Builder<T, K> add(T t, K k) {
+            mapList.add(t, k);
+            return this;
+        }
+    }
+
+    public static <T, K> Builder<T, K> builder() {
+        return new Builder<>();
     }
 }
