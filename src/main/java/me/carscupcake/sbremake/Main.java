@@ -9,6 +9,7 @@ import me.carscupcake.sbremake.item.ISbItem;
 import me.carscupcake.sbremake.item.Recipe;
 import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.pets.Pets;
+import me.carscupcake.sbremake.item.impl.shard.IAttributeShard;
 import me.carscupcake.sbremake.item.minion.Minion;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
 import me.carscupcake.sbremake.item.modifiers.enchantment.SkyblockEnchantment;
@@ -176,6 +177,7 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(Minion.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(SlayerEntity.LISTENER);
         MinecraftServer.getGlobalEventHandler().addChild(InputGui.LISTENER);
+        MinecraftServer.getGlobalEventHandler().addChild(IAttributeShard.LISTENER);
         MinecraftServer.getGlobalEventHandler().addListener(ServerTickMonitorEvent.class, serverTickMonitorEvent -> tickDelay = (long) serverTickMonitorEvent.getTickMonitor().getTickTime());
         for (Potion potion : Potion.values()) IPotion.potions.put(potion.getId(), potion);
         MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (ignored, player) -> {

@@ -89,7 +89,10 @@ public record AttributeMenu(SkyblockPlayer player) implements SkyblockXpTask {
                         .fill(TemplateItems.EmptySlot.getItem(), 0, 8)
                         .fill( TemplateItems.EmptySlot.getItem(), 45, 53)
                         .verticalFill(0, 6, TemplateItems.EmptySlot.getItem())
-                        .verticalFill(8, 6, TemplateItems.EmptySlot.getItem());
+                        .verticalFill(8, 6, TemplateItems.EmptySlot.getItem())
+                        .setItem(51, new ItemBuilder(Material.GOLDEN_APPLE)
+                                .setName("§6Mass Syphon")
+                                .build());
             }
             var shard = entry.getKey();
             var playerShard = player.getAttributesShards().get(shard);
@@ -129,10 +132,30 @@ public record AttributeMenu(SkyblockPlayer player) implements SkyblockXpTask {
             i++;
         }
         if (builder != null) inventories.add(builder.build());
+        if (inventories.isEmpty()) {
+            inventories.add(new InventoryBuilder(6, "Hunting Box")
+                    .fill(TemplateItems.EmptySlot.getItem(), 0, 8)
+                    .fill( TemplateItems.EmptySlot.getItem(), 45, 53)
+                    .verticalFill(0, 6, TemplateItems.EmptySlot.getItem())
+                    .verticalFill(8, 6, TemplateItems.EmptySlot.getItem()).build());
+        }
         var pagedGui = new PageGui(inventories, PageGui.ItemSlotPosition.BottomRight, PageGui.ItemSlotPosition.BottomLeft);
         pagedGui.setCancelled(true);
         pagedGui.setGeneralClickEvent(event -> {
             var slot = event.getSlot();
+            if (slot == 51) {
+                for (var entry : new HashSet<>(player.getHuntingBox().entrySet())) {
+                    var playerShard = player.getAttributesShards().get(entry.getKey());
+                    var total = Math.min(entry.getValue(),
+                            (playerShard == null ? new AttributeEntry(entry.getKey(), 0) : playerShard).shardsToMax());
+                    if (total == 0) continue;
+                    playerShard = new AttributeEntry(entry.getKey(), total + (playerShard != null ? playerShard.amount() : 0));
+                    player.getAttributesShards().put(entry.getKey(), playerShard);
+                    player.getHuntingBox().subtract(entry.getKey(), total);
+                }
+                openHuntingBox();
+                return true;
+            }
             if (slot < 10 || slot > 53) {return true;}
             if (slot % 9 == 0 || (slot + 1) % 9 == 0) {return true;}
             var index = slot - 10 + ((slot / 9) - 1) * -2 + pagedGui.getPage() * 4 * 7;
