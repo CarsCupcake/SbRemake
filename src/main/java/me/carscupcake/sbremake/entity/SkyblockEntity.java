@@ -305,9 +305,10 @@ public abstract class SkyblockEntity extends EntityCreature {
         if (event.isCancelled()) return 0;
         float damage = (float) (event.calculateHit() * abilityDamageMultiplier());
         damage = onDamage(event.getPlayer(), damage);
-        if (damage <= 0) return 9;
+        if (damage <= 0) return 0;
         spawnDamageTag(this, event.getDamageTag());
         var finalDamage = damage * (1 - (getDefense() / (getDefense() + 100)));
+        lastDamager = event.getPlayer();
         damage(DamageType.PLAYER_ATTACK, finalDamage);
         if (isDead) {
             EventDispatcher.call(new EntityDeathEvent(this, EntityDeathEvent.Type.Magic));
