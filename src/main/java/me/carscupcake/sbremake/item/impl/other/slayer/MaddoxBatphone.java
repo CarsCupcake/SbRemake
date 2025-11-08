@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.item.impl.other.slayer;
 
+import me.carscupcake.sbremake.entity.slayer.SlayerQuest;
 import me.carscupcake.sbremake.entity.slayer.Slayers;
 import me.carscupcake.sbremake.item.*;
 import me.carscupcake.sbremake.item.ability.Ability;
@@ -89,8 +90,16 @@ public class MaddoxBatphone implements ISbItem, HeadWithValue, ISoulbound {
         var inventoryBuilder = new InventoryBuilder(4, "Slayer")
                 .fill(TemplateItems.EmptySlot.getItem())
                 .fill(NO_SLAYER, 10, 16)
-                .setItem(Slayers.Zombie.getDisplayItem(player.getSlayers().get(Slayers.Zombie).getLevel()), 10)
-                .setItem(Slayers.Enderman.getDisplayItem(player.getSlayers().get(Slayers.Enderman).getLevel()), 13)
+                .setItem(new ItemBuilder(Slayers.Zombie.getDisplayItem(player.getSlayers().get(Slayers.Zombie).getLevel()))
+                        .setGlint(player.getSlayerQuest() != null && player.getSlayerQuest().getSlayer().getSlayer() == Slayers.Zombie && player.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.Completed)
+                        .addLoreIf(() -> player.getSlayerQuest() != null && player.getSlayerQuest().getSlayer().getSlayer() == Slayers.Zombie && player.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.Completed,
+                                () -> " \n§7Reward: §5" + player.getSlayerQuest().getISlayer().getSlayerXp(player.getSlayerQuest().getTier()) + " Zombie Slayer XP\n \n§eClick to claim!")
+                        .build(), 10)
+                .setItem(new ItemBuilder(Slayers.Enderman.getDisplayItem(player.getSlayers().get(Slayers.Enderman).getLevel()))
+                        .setGlint(player.getSlayerQuest() != null && player.getSlayerQuest().getSlayer().getSlayer() == Slayers.Enderman && player.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.Completed)
+                        .addLoreIf(() -> player.getSlayerQuest() != null && player.getSlayerQuest().getSlayer().getSlayer() == Slayers.Enderman && player.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.Completed,
+                                () -> " \n§7Reward: §5" + player.getSlayerQuest().getISlayer().getSlayerXp(player.getSlayerQuest().getTier()) + " Enderman Slayer XP\n \n§eClick to claim!")
+                        .build(), 13)
                 .setItem(TemplateItems.Close.getItem(), 31)
                 .setItem(new ItemBuilder(player.isAutoSlayerEnabled() ? Material.LIME_DYE : Material.GRAY_DYE)
                         .setName("§bAuto-Slayer")
@@ -121,10 +130,22 @@ public class MaddoxBatphone implements ISbItem, HeadWithValue, ISoulbound {
             return true;
         });
         gui.getClickEvents().add(13, _ -> {
+            if (player.getSlayerQuest() != null && player.getSlayerQuest().getSlayer().getSlayer() == Slayers.Enderman && player.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.Completed) {
+                player.closeGui();
+                player.getSlayerQuest().claim();
+                player.setSlayerQuest(null);
+                return true;
+            }
             player.getSlayers().get(Slayers.Enderman).openSlayerMenu();
             return true;
         });
         gui.getClickEvents().add(10, _ -> {
+            if (player.getSlayerQuest() != null && player.getSlayerQuest().getSlayer().getSlayer() == Slayers.Zombie && player.getSlayerQuest().getStage() == SlayerQuest.SlayerQuestStage.Completed) {
+                player.closeGui();
+                player.getSlayerQuest().claim();
+                player.setSlayerQuest(null);
+                return true;
+            }
             player.getSlayers().get(Slayers.Zombie).openSlayerMenu();
             return true;
         });

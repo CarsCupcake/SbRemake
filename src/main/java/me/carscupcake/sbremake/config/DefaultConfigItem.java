@@ -154,6 +154,20 @@ public interface DefaultConfigItem extends ConfigItem {
                         throw new RuntimeException(e);
                     }
                 }
+                var data = resolveDatatype(p0, typeArgs[0]);
+                if (data != null) {
+
+                    try {
+                        Collection<Object> collection = (Collection<Object>) (defaultValue != null ? defaultValue : clazz.getConstructor().newInstance());
+                        var secs = section.get(fieldName, ConfigSection.SECTION_ARRAY, new ConfigSection[0]);
+                        for (var sec : secs) {
+                            collection.add(sec.as(data));
+                        }
+                        value = collection;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             } else if (Map.class.isAssignableFrom(rawType)) {
                 typeArgs = TypeUtil.getMapGenericTypes(type);
                 var p0 = getClass(typeArgs[0]);
@@ -333,6 +347,19 @@ public interface DefaultConfigItem extends ConfigItem {
                                     secs[i++] = sec;
                                 }
                                 section.set(fieldName, secs, ConfigSection.SECTION_ARRAY);
+                                continue;
+                            }
+                            var dataType = resolveDatatype(p0, typeArgs[0]);
+                            if (dataType != null) {
+                                var objs = (Collection<?>) instance;
+                                var data = new ConfigSection[objs.size()];
+                                var i = 0;
+                                for (var o : objs) {
+                                    data[i] = new ConfigSection(new JsonObject());
+                                    data[i].unsafeSet(null, o, (ConfigSection.Data<Object>) dataType);
+                                    i++;
+                                }
+                                section.set(fieldName, data, ConfigSection.SECTION_ARRAY);
                                 continue;
                             }
                         } else if (Map.class.isAssignableFrom(clazz)) {
