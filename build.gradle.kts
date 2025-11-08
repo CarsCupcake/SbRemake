@@ -77,6 +77,7 @@ dependencies {
     implementation("org.apache.commons:commons-csv:1.14.0")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.19.0")
     implementation("com.palantir.javapoet:javapoet:0.7.0")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
 }
 
 tasks.jar {

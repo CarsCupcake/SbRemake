@@ -27,8 +27,7 @@ public class VisitCommand extends Command {
         });
         addSyntax((sender, context) -> {
             String playerName = context.get(argumentPlayer);
-            var playerId = SkyblockPlayer.getUUID(playerName);
-            visit(playerId, (SkyblockPlayer) sender);
+            SkyblockPlayer.getUUID(playerName).thenAccept(uuid -> visit(uuid, (SkyblockPlayer) sender));
         }, argumentPlayer);
     }
 

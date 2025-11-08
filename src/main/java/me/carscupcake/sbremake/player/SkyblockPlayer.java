@@ -1,5 +1,7 @@
 package me.carscupcake.sbremake.player;
 
+import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -94,7 +96,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import org.reflections.Reflections;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -106,6 +107,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -145,7 +147,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
             STORED_PET_DATA.set(array, null, pets);
         return array;
     });
-    private static final EventNode<Event> PLAYER_NODE = EventNode.all("player.events").addListener(EntityAttackEvent.class, event -> {
+    private static final EventNode<@NotNull Event> PLAYER_NODE = EventNode.all("player.events").addListener(EntityAttackEvent.class, event -> {
         final Entity source = event.getEntity();
         final Entity entity = event.getTarget();
 
@@ -174,23 +176,10 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
                 long time = System.currentTimeMillis();
                 long delta = time - player.lastAttack;
                 Pos eyePos = player.getPosition().add(0, player.getEyeHeight(), 0);
-                Set<Entity> entities = EntityUtils.getEntitiesInLine(eyePos, eyePos.add(player.getPosition().direction().normalize().mul(player.getStat(Stat.SwingRange)).asPosition()), player.getInstance());
-                double low = Double.MAX_VALUE;
-                SkyblockEntity entity = null;
-                for (Entity e : entities) {
-                    if (e instanceof SkyblockEntity sbEntity) {
-                        double distance = sbEntity.getDistance(eyePos);
-                        if (distance < low) {
-                            low = distance;
-                            entity = sbEntity;
-                        }
-                    }
-                }
-                if (entity != null && EntityUtils.blocksInSight(player.getInstance(), eyePos, eyePos.direction(), low)) {
+                var entity = EntityUtils.getSkyblockEntityInLine(eyePos, eyePos.add(player.getPosition().direction().normalize().mul(player.getStat(Stat.SwingRange)).asPos()), player.getInstance(), 1d);
+                if (entity != null && EntityUtils.blocksInSight(player.getInstance(), eyePos, eyePos.direction(), entity.getDistance(player))) {
                     entity = null;
                 }
-                        /*Entity result = player.getLineOfSightEntity(player.getStat(Stat.SwingRange), entity -> entity.getEntityType() != EntityType.PLAYER && entity instanceof LivingEntity);
-                        SkyblockEntity entity = (result instanceof SkyblockEntity sb) ? sb : null;*/
                 if (player.blockInteractBuffer == 0){
                     MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, entity, PlayerInteractEvent.Interaction.Left));
                     player.lastInteractPacket = System.currentTimeMillis();
@@ -363,7 +352,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
                 if (npc.getInteraction() != null)
                     npc.getInteraction().interact(player, PlayerInteractEvent.Interaction.Right);
             } else if (((SkyblockPlayer) event.getPlayer()).getSbItemInMainHand().item().material() != Material.FISHING_ROD)
-                MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, player.getInstance().getEntities().stream().filter(entity -> entity.getEntityId() == packet.targetId()).findFirst().orElse(null), PlayerInteractEvent.Interaction.Right));
+                MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, player.getInstance().getEntityById(packet.targetId()), PlayerInteractEvent.Interaction.Right));
         }
 
     }).addListener(ProjectileCollideWithBlockEvent.class, event -> {
@@ -437,7 +426,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
                 event.setCancelled(true);
                 event.getPlayer().getInventory().setItemStack(slot, clicked.item());
                 event.getPlayer().getInventory().setItemStack(event.getSlot(), ItemStack.of(Material.AIR));
-                ((SkyblockPlayer) event.getPlayer()).recalculateArmor();
+                //((SkyblockPlayer) event.getPlayer()).recalculateArmor(SbItemStack.AIR, clicked);
             }
             return;
         }
@@ -447,10 +436,6 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         }
         if (getSlot(cursor.sbItem().getType()) != event.getSlot()) {
             event.setCancelled(true);
-        }
-    }).addListener(InventoryClickEvent.class, event -> {
-        if (event.getInventory() == event.getPlayer().getInventory() && (event.getClickType() == ClickType.SHIFT_CLICK || (event.getSlot() >= 41 && event.getSlot() <= 44))) {
-            MinecraftServer.getSchedulerManager().buildTask(() -> ((SkyblockPlayer) event.getPlayer()).recalculateArmor()).delay(1, TimeUnit.SERVER_TICK).schedule();
         }
     }).addListener(PlayerDisconnectEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
@@ -937,9 +922,9 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         var previous = this.skyblockXp;
         skyblockXp += xp;
         if (previous / 100 < skyblockXp / 100) {
-            //TODO: Upgrade Message
+            sendMessage("§3Skyblock Level Up!");
+            sendMessage("§3You are now §b" + (skyblockXp / 100));
         }
-
     }
 
     public int getSkyblockLevel() {
@@ -986,7 +971,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
                     effect.potion().stop(player, effect.amplifier());
                 }
             }
-            double speed = player.getStat(Stat.Speed);
+            double speed = Math.round(player.getStat(Stat.Speed));
             if (speed != player.lastSpeed) {
                 player.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue((float) (0.1 * (speed / 100d)));
                 player.getAttribute(Attribute.FLYING_SPEED).setBaseValue((float) (0.1 * (speed / 100d)));
@@ -1013,29 +998,30 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
                 if (player.notEnoughManaTicks == 0) player.notEnoughMana = false;
             }
             player.sendPacket(packet);
-            int lines = 0;
-            Set<Sidebar.ScoreboardLine> lineCopie = new HashSet<>(player.sidebar.getLines());
-            for (Function<SkyblockPlayer, String[]> display : player.scoreboardDisplay) {
-                String[] l = display.apply(player);
-                for (String s : l) {
-                    Component text = Component.text(s);
-                    String id = Integer.toString(15 - lines);
-                    if (lines >= lineCopie.size())
-                        player.sidebar.createLine(new Sidebar.ScoreboardLine(id, text, 15 - lines));
-                    else {
-                        Sidebar.ScoreboardLine line = player.sidebar.getLine(id);
-                        if (line == null) {
-                            System.err.println("Warning! Line " + (id) + " is null!");
-                            continue;
+            if (player.isOftick()){
+                int lines = 0;
+                var oldLen = player.sidebar.getLines().size();
+                for (Function<SkyblockPlayer, String[]> display : player.scoreboardDisplay) {
+                    String[] l = display.apply(player);
+                    for (String s : l) {
+                        String id = Integer.toString(15 - lines);
+                        if (lines >= oldLen)
+                            player.sidebar.createLine(new Sidebar.ScoreboardLine(id, Component.text(s), 15 - lines));
+                        else {
+                            Sidebar.ScoreboardLine line = player.sidebar.getLine(id);
+                            if (line == null) {
+                                System.err.println("Warning! Line " + (id) + " is null!");
+                                continue;
+                            }
+                            if (!((TextComponent) line.getContent()).content().equals(s)) player.sidebar.updateLineContent(id, Component.text(s));
                         }
-                        if (!line.getContent().equals(text)) player.sidebar.updateLineContent(id, text);
+                        lines++;
                     }
-                    lines++;
                 }
-            }
-            for (int i = lines; i < lineCopie.size(); i++) {
-                String id = Integer.toString(15 - i);
-                player.sidebar.removeLine(id);
+                for (int i = lines; i < oldLen; i++) {
+                    String id = Integer.toString(15 - i);
+                    player.sidebar.removeLine(id);
+                }
             }
         })).repeat(TaskSchedule.seconds(1)).schedule();
     }
@@ -1322,43 +1308,6 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         ConfigFile defaults = new ConfigFile("defaults", this);
         save(defaults);
         defaults.save();
-        /*onfigFile configFile = new ConfigFile("inventory", this);
-        configFile.setRawElement(new JsonObject());
-        for (int i = 0; i < this.getInventory().getSize(); i++) {
-            SbItemStack item = getPlayerInventory().getSbItemStack(i);
-            if (item == SbItemStack.AIR) continue;
-            configFile.set(i + "", item, ConfigSection.ITEM);
-        }
-        configFile.save();
-        var accessoryBagConfig = new ConfigFile("accessoryBag", this);
-        ((ConfigFile) accessoryBag.save(accessoryBagConfig)).save();
-        ConfigFile defaults = new ConfigFile("defaults", this);
-        defaults.set("coins", this.coins, ConfigSection.DOUBLE);
-        defaults.set("bankBalance", this.bankBalance, ConfigSection.DOUBLE);
-        defaults.set("bankAccountType", this.bankAccountType.name(), ConfigSection.STRING);
-        defaults.set("tags", tags.toArray(new String[0]), ConfigSection.STRING_ARRAY);
-        defaults.set("zealotPity", zealotPity, ConfigSection.INTEGER);
-        ConfigSection powders = defaults.get("powder", ConfigSection.SECTION, new ConfigSection(new JsonObject()));
-        for (Map.Entry<Powder, Integer> powderIntegerEntry : powder.entrySet()) {
-            powders.set(powderIntegerEntry.getKey().getId(), powderIntegerEntry.getValue(), ConfigSection.INTEGER);
-        }
-        defaults.set("powder", powders, ConfigSection.SECTION);
-        ConfigSection potions = new ConfigSection(new JsonObject());
-        for (me.carscupcake.sbremake.player.potion.PotionEffect potionEffect : potionEffects)
-            potionEffect.store(potions);
-        defaults.set("potions", potions, ConfigSection.SECTION);
-        defaults.set("autoSlayer", autoSlayerEnabled, ConfigSection.BOOLEAN);
-        defaults.save();
-        for (ISkill skill : this.skills.values()) skill.save();
-        collections.values().forEach(me.carscupcake.sbremake.item.collections.Collection::save);
-        hotm.save();
-        ConfigFile petsFile = new ConfigFile("pets", this);
-        petsFile.set("stored", pets, STORED_PET_LIST_DATA);
-        petsFile.save();
-
-        ConfigFile file = new ConfigFile("slayer", this);
-        for (PlayerSlayer s : slayers.values())
-         s.save(file);*/
     }
 
     @Override
@@ -1442,7 +1391,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         }
         setFlying(false);
         absorption = 0;
-        recalculateArmor();
+        recalculateFullArmor();
         if (pet != null) {
             pet.getPet().despawnPet(this, pet);
             pet.getPet().spawnPet(this, pet);
@@ -1453,7 +1402,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         instance.loadChunk(spawn.chunkX(), spawn.chunkZ());
         setNoGravity(true);
         spawnTeleportId = getNextTeleportId();
-        PlayerPositionAndLookPacket packet = new PlayerPositionAndLookPacket(spawnTeleportId, spawn, getVelocity(), spawn.yaw(), spawn.pitch(), (byte) 0);
+        PlayerPositionAndLookPacket packet = new PlayerPositionAndLookPacket(spawnTeleportId, spawn, getVelocity(), spawn.yaw(), spawn.pitch(), RelativeFlags.NONE);
         sendPacket(packet);
         sendPacket(new ClearTitlesPacket(true));
         getInventory().setItemStack(8, ISbItem.get(SkyblockMenu.class).create().item());
@@ -1899,13 +1848,54 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         return true;
     }
 
-    public void recalculateArmor() {
-        recalculateArmor(getPlayerInventory());
+    private void recalculateFullArmor() {
+        for (var fullSetBonus : fullSetBonuses.keySet()) {
+            fullSetBonus.stop(this);
+        }
+        fullSetBonuses.clear();
+        for (var equipmentSlot : EquipmentSlot.armors()) {
+            var item = getSbEquipment(equipmentSlot);
+            recalculateArmor(SbItemStack.AIR, item);
+        }
     }
 
-    public void recalculateArmor(SkyblockPlayerInventory inventory) {
+    public void recalculateArmor(SbItemStack old, SbItemStack newItem) {
+        recalculateArmor(getPlayerInventory(), old, newItem);
+    }
+
+    public void recalculateArmor(SkyblockPlayerInventory inventory, @NotNull SbItemStack old, @NotNull SbItemStack newItem) {
         Main.LOGGER.debug("Recalculate Armor");
-        Map<FullSetBonus, Integer> copy = new HashMap<>(fullSetBonuses);
+        if (old == SbItemStack.AIR && newItem == SbItemStack.AIR) return;
+        for (var ability : old.getAbilities(this)) {
+            if (ability instanceof FullSetBonus fullSetBonus) {
+                var prev = fullSetBonuses.getOrDefault(fullSetBonus, 0);
+                var newValue = prev - 1;
+                fullSetBonuses.put(fullSetBonus, newValue);
+                if (prev == 0) continue;
+                if (newValue == 0)
+                    fullSetBonus.stop(this);
+            }
+        }
+        for (var ability : newItem.getAbilities(this)) {
+            if (ability instanceof FullSetBonus fullSetBonus) {
+                var requirements = newItem.sbItem().requirements();
+                boolean fulfilled = true;
+                for (var requirement : requirements) {
+                    if (!requirement.canUse(this, newItem.item())) {
+                        fulfilled = false;
+                        break;
+                    }
+                }
+                if (!fulfilled) continue;
+                var prev = fullSetBonuses.getOrDefault(fullSetBonus, 0);
+                fullSetBonuses.put(fullSetBonus, prev+1);
+                if (prev != 0) {
+                    fullSetBonus.stop(this);
+                }
+                fullSetBonus.start(this);
+            }
+        }
+        /*Map<FullSetBonus, Integer> copy = new HashMap<>(fullSetBonuses);
         fullSetBonuses.clear();
         for (EquipmentSlot slot : EquipmentSlot.armors()) {
             SbItemStack stack = inventory.getSbItemStack(slot.armorSlot());
@@ -1940,7 +1930,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
             SbItemStack stack = inventory.getSbItemStack(slot.armorSlot());
             if (stack == null) continue;
             inventory.setItemStack(slot.armorSlot(), stack.update(this));
-        }
+        }*/
     }
 
     public void playSound(SoundType type, Sound.Source source, float volume, float pitch) {
@@ -1969,29 +1959,38 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         return new ConfigFile(name, this);
     }
 
-    public static UUID getUUID(String name) {
+    private static final AsyncLoadingCache<String, UUID> usernameCache = Caffeine.newBuilder()
+            .maximumSize(100)
+            .expireAfterWrite(Duration.ofHours(1))
+            .buildAsync(s -> getUUID0(s).get());
+
+    public static CompletableFuture<UUID> getUUID(String name) {
+        return usernameCache.get(name);
+    }
+
+    private static CompletableFuture<UUID> getUUID0(String name) {
         var player = MinecraftServer.getConnectionManager().getOnlinePlayers().stream().filter(p -> p.getUsername().equals(name)).findFirst();
-        if (player.isPresent()) return player.get().getUuid();
+        if (player.isPresent()) return CompletableFuture.completedFuture(player.get().getUuid());
         if (Main.isCracked) {
-            return Main.crackedRegistry.get(name, ConfigSection.UUID);
+            return CompletableFuture.completedFuture(Main.crackedRegistry.get(name, ConfigSection.UUID));
         } else {
-            HttpClient client = HttpClient.newHttpClient();
-            try {
-                var response = client.send(HttpRequest.newBuilder(URI.create("https://api.mojang.com/users/profiles/minecraft/" + (name))).GET().build(), HttpResponse.BodyHandlers.ofString());
-                client.close();
-                if (response.statusCode() == 204) {
-                    return null;
-                }
-                if (response.statusCode() != 200) {
-                    Main.LOGGER.error("Unexpected Mojang API response: {}, Body: {}", response.statusCode(), response.body());
-                    return null;
-                }
-                return UUID.fromString(JsonParser.parseString(response.body()).getAsJsonObject().get("id").getAsString().replaceFirst(
-                        "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
-                ));
-            } catch (IOException | InterruptedException ex) {
-                throw new RuntimeException(ex);
+            try (var client = HttpClient.newHttpClient()) {
+                var r = client.sendAsync(HttpRequest.newBuilder(URI.create("https://api.mojang.com/users/profiles/minecraft/" + (name))).GET().build(), HttpResponse.BodyHandlers.ofString());
+                return r.thenApply(response -> {
+                    client.close();
+                    if (response.statusCode() == 204) {
+                        return null;
+                    }
+                    if (response.statusCode() != 200) {
+                        Main.LOGGER.error("Unexpected Mojang API response: {}, Body: {}", response.statusCode(), response.body());
+                        return null;
+                    }
+                    return UUID.fromString(JsonParser.parseString(response.body()).getAsJsonObject().get("id").getAsString().replaceFirst(
+                            "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
+                    ));
+                });
             }
+
         }
     }
 }

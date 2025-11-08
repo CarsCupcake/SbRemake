@@ -37,7 +37,7 @@ public class InkWand implements ISbItem {
             public void run() {
                 i++;
                 Pos old = item.getPosition().sub(dir).sub(0, movement.calculateOffset(i, 40) - movement.calculateOffset(i - 1, 40), 0);
-                List<Entity> list = EntityUtils.getEntitiesInLine(old, item.getPosition(), item.getInstance())
+                List<Entity> list = EntityUtils.getEntitiesInLine(old, item.getPosition(), item.getInstance(), 1d)
                         .stream().filter(entity -> entity instanceof SkyblockEntity).toList();
                 ParticleUtils.spawnParticle(item.getInstance(), item.getPosition(), Particle.SQUID_INK, 1);
                 if (list.isEmpty()) return;
