@@ -38,18 +38,23 @@ public interface IDamageEvent extends Event {
 
     double getNormalDamage();
 
-    double getTargetDefense();
+    double getDefense();
 
-    double getTargetTrueDefense();
+    double getTrueDefense();
+    void setDefense(double d);
+    void setTrueDefense(double d);
 
-    double getMultiplier();
+    double getAdditiveMultiplier();
+    double getMultiplicativeMultiplier();
+    void addAdditiveMultiplier(double d);
+    void addMultiplicativeMultiplier(double d);
 
     default double calculateDamage() {
-        double defense = getTargetDefense();
-        double trueDefense = getTargetTrueDefense();
+        double defense = getDefense();
+        double trueDefense = getTrueDefense();
         double damageReduction = defense / (defense + 100d);
         double trueDamageReduction = trueDefense / (trueDefense + 100);
-        setCachedDamage(((getNormalDamage() * (1d - damageReduction)) + (getTrueDamage() * (1d - trueDamageReduction))) * getMultiplier());
+        setCachedDamage(((getNormalDamage() * (1d - damageReduction)) + (getTrueDamage() * (1d - trueDamageReduction))) * getAdditiveMultiplier() * getMultiplicativeMultiplier());
         return getCachedDamage();
     }
 

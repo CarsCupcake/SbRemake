@@ -1771,8 +1771,23 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
             }
 
             @Override
-            public double getMultiplier() {
+            public double getAdditiveMultiplier() {
                 return 1;
+            }
+
+            @Override
+            public double getMultiplicativeMultiplier() {
+                return 0;
+            }
+
+            @Override
+            public void addAdditiveMultiplier(double d) {
+
+            }
+
+            @Override
+            public void addMultiplicativeMultiplier(double d) {
+
             }
 
             @Override
@@ -1811,13 +1826,23 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
             }
 
             @Override
-            public double getTargetDefense() {
+            public double getDefense() {
                 return 0;
             }
 
             @Override
-            public double getTargetTrueDefense() {
+            public double getTrueDefense() {
                 return 0;
+            }
+
+            @Override
+            public void setDefense(double d) {
+
+            }
+
+            @Override
+            public void setTrueDefense(double d) {
+
             }
         });
     }

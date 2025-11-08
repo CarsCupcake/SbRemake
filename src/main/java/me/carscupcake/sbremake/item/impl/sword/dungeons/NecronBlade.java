@@ -15,7 +15,6 @@ import me.carscupcake.sbremake.util.ParticleUtils;
 import me.carscupcake.sbremake.util.SoundType;
 import me.carscupcake.sbremake.util.StringUtils;
 import me.carscupcake.sbremake.util.TaskScheduler;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.nbt.StringBinaryTag;
 import net.minestom.server.component.DataComponents;
@@ -192,7 +191,7 @@ public class NecronBlade implements ISbItem, ISbItem.StatProvider, Dungeonizable
     @Override
     public EventNode<Event> node() {
         return EventNode.all("wither_scrolls.ability").addListener(EntityMeleeDamagePlayerEvent.class, event -> {
-            if (witherShields.contains(event.getPlayer())) event.setNormalDamage(event.getNormalDamage() * 0.9);
+            if (witherShields.contains(event.getTarget())) event.setNormalDamage(event.getNormalDamage() * 0.9);
         }).addListener(GetItemStatEvent.class, event -> {
             if (event.getPlayer() == null) return;
             if (!(event.getItemStack().sbItem() instanceof NecronBlade)) return;
