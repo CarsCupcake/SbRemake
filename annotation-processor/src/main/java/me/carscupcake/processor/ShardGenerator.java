@@ -1,29 +1,25 @@
 package me.carscupcake.processor;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.palantir.javapoet.*;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.Lore;
-import me.carscupcake.sbremake.item.impl.shard.AttributeMenu;
-import me.carscupcake.sbremake.item.impl.shard.IAttributeShard;
-import me.carscupcake.sbremake.item.impl.shard.ShardCategory;
-import me.carscupcake.sbremake.item.impl.shard.ShardFamily;
+import me.carscupcake.sbremake.item.impl.shard.*;
+import me.carscupcake.sbremake.util.Pair;
 import net.minestom.server.item.Material;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class ShardGenerator {
     private static final Pattern EXPR_PATTERN = Pattern.compile("\\$\\$(?<expression>.+)\\$\\$");
-
+    private Map<String, String> mapName = new HashMap<>();
     public void process(InputStream stream, Path outputDir) {
         var root = JsonParser.parseReader(new java.io.InputStreamReader(stream)).getAsJsonObject();
         var shards = root.getAsJsonArray("attributes");
@@ -71,8 +67,10 @@ public class ShardGenerator {
                 .addStatement("this.headValue = $L", "headValue")
                 .build();
         enumBuilder.addMethod(constructor);
+        var fusionElements = new LinkedList<JsonObject>();
         for (var element : shards) {
             var shard = element.getAsJsonObject();
+            if (shard.has("fusion")) fusionElements.add(shard.getAsJsonObject("fusion"));
             var id = shard.get("id").getAsString();
             var displayName = shard.get("displayName").getAsString();
             var rarity = ItemRarity.valueOf(shard.get("rarity").getAsString());
@@ -154,7 +152,9 @@ public class ShardGenerator {
                         .addStatement("return $T.$L", Material.class, shard.get("material").getAsString().toUpperCase())
                         .build());
             }
-            enumBuilder.addEnumConstant(GeneratorUtils.spacedToUpperCamelCase(abilityName.replace("\\", "").replace("'", "")), enumType.build());
+            var typeName = GeneratorUtils.spacedToUpperCamelCase(abilityName.replace("\\", "").replace("'", ""));
+            mapName.put(id, typeName);
+            enumBuilder.addEnumConstant(typeName, enumType.build());
         }
         enumBuilder.addMethod(MethodSpec.methodBuilder("getDisplayName")
                 .returns(String.class)
@@ -217,6 +217,28 @@ public class ShardGenerator {
                 .addStatement("return $T.$L", Material.class, "PLAYER_HEAD")
                 .build());
         enumBuilder.addModifiers(Modifier.PUBLIC);
+        var builder = new StringBuilder("$T.<$T<$T, $T>>of(");
+        var list = new ArrayList<>();
+        list.add(List.class);
+        list.add(Pair.class);
+        list.add(FusionIngredient.class);
+        list.add(FusionIngredient.class);
+        for (var obj : fusionElements) {
+            builder.append("new $T<>(");
+            list.add(Pair.class);
+            var components = obj.getAsJsonArray("components");
+            var first = components.get(0).getAsJsonObject();
+            computeFusionIngredient(first, builder, list);
+            builder.append(", ");
+            var second = components.get(1).getAsJsonObject();
+            computeFusionIngredient(second, builder, list);
+            builder.append("),\n");
+        }
+        builder.deleteCharAt(builder.length() - 2).append(")");
+        enumBuilder.addField(FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(List.class), ParameterizedTypeName.get(ClassName.get(Pair.class), ClassName.get(FusionIngredient.class), ClassName.get(FusionIngredient.class))),
+                        "FUSION_RECIPES", Modifier.PUBLIC, javax.lang.model.element.Modifier.FINAL, javax.lang.model.element.Modifier.STATIC)
+                        .initializer(builder.toString(), list.toArray())
+                .build());
         var javaFile = JavaFile.builder("me.carscupcake.sbremake.item.impl.shard", enumBuilder.build()).build();
         try {
             javaFile.writeTo(outputDir);
@@ -225,5 +247,117 @@ public class ShardGenerator {
             System.err.println(e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    private void computeFusionIngredient(JsonObject obj, StringBuilder builder, List<Object> list) {
+        builder.append("new $T($L, $T.of(");
+        list.add(FusionIngredient.class);
+        var amount = obj.get("amount").getAsInt();
+        list.add(amount);
+        list.add(List.class);
+        var type = obj.get("type").getAsString();
+        switch (type) {
+            case "family" -> {
+                builder.append("new $T(");
+                list.add(FusionIngredient.FamilyConstrain.class);
+                var values = obj.get("value");
+                if (values.isJsonArray()) {
+                    builder.append("$T.of(");
+                    list.add(List.class);
+                    var array = values.getAsJsonArray();
+                    for (var element : array) {
+                        builder.append("$T.$L,");
+                        list.add(ShardFamily.class);
+                        list.add(element.getAsString().replace(" ", ""));
+                    }
+                    builder.deleteCharAt(builder.length() - 1);
+                    builder.append("))");
+                } else {
+                    builder.append("$T.of($T.$L))");
+                    list.add(List.class);
+                    list.add(ShardFamily.class);
+                    list.add(values.getAsString().replace(" ", ""));
+                }
+            }
+            case "rarity" -> {
+                builder.append("new $T(");
+                list.add(FusionIngredient.RarityConstrain.class);
+                var values = obj.get("value");
+                if (values.isJsonArray()) {
+                    builder.append("$T.of(");
+                    list.add(List.class);
+                    var array = values.getAsJsonArray();
+                    for (var element : array) {
+                        builder.append("$T.$L,");
+                        list.add(ItemRarity.class);
+                        list.add(element.getAsString());
+                    }
+                    builder.deleteCharAt(builder.length() - 1).append("))");
+                } else {
+                    builder.append("$T.of($T.$L))");
+                    list.add(List.class);
+                    list.add(ItemRarity.class);
+                    list.add(values.getAsString());
+                }
+            }
+            case "shard" -> {
+                builder.append("new $T(");
+                list.add(FusionIngredient.ShardConstrain.class);
+                var values = obj.getAsJsonArray("value");
+                builder.append("$T.of(");
+                list.add(List.class);
+                var array = values.getAsJsonArray();
+                for (var element : array) {
+                    builder.append("$L.$L,");
+                    list.add("Shard");
+                    list.add(mapName.get(element.getAsString()));
+                }
+                builder.deleteCharAt(builder.length() - 1).append("))");
+            }
+            case "alignment" -> {
+                builder.append("new $T(");
+                list.add(FusionIngredient.CategoryConstrain.class);
+                var values = obj.get("value");
+                if (values.isJsonArray()) {
+                    builder.append("$T.of(");
+                    list.add(List.class);
+                    var array = values.getAsJsonArray();
+                    for (var element : array) {
+                        builder.append("$T.$L,");
+                        list.add(ShardCategory.class);
+                        list.add(element.getAsString());
+                    }
+                    builder.deleteCharAt(builder.length() - 1).append("))");
+                } else {
+                    builder.append("$T.of($T.$L))");
+                    list.add(List.class);
+                    list.add(ShardCategory.class);
+                    list.add(values.getAsString());
+                }
+            }
+        }
+        if (obj.has("rarity")) {
+            builder.append(", ");
+            builder.append("new $T(");
+            list.add(FusionIngredient.RarityConstrain.class);
+            var values = obj.get("rarity");
+            if (values.isJsonArray()) {
+                builder.append("$T.of(");
+                list.add(List.class);
+                var array = values.getAsJsonArray();
+                for (var element : array) {
+                    builder.append("$T.$L,");
+                    list.add(ItemRarity.class);
+                    list.add(element.getAsString());
+                }
+                builder.deleteCharAt(builder.length() - 1).append("))");
+            } else {
+                builder.append("$T.of($T.$L))");
+                list.add(List.class);
+                list.add(ItemRarity.class);
+                list.add(values.getAsString());
+            }
+        }
+        builder.append("))");
     }
 }
