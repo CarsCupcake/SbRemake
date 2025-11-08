@@ -22,6 +22,8 @@ import net.minestom.server.item.Material;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+
 public interface IAttributeShard extends KeyClass {
     static @Nullable IAttributeShard fromKey(String id) {
         for (var shard : Shard.values())
