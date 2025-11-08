@@ -7,6 +7,8 @@ import me.carscupcake.sbremake.event.ManaRegenEvent;
 import me.carscupcake.sbremake.event.PlayerMeleeDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerProjectileDamageEntityEvent;
 import me.carscupcake.sbremake.event.PlayerStatEvent;
+import me.carscupcake.sbremake.event.eventBinding.DamagingPlayerEventBinding;
+import me.carscupcake.sbremake.event.eventBinding.EntityToPlayerDamageBinding;
 import me.carscupcake.sbremake.event.eventBinding.PlayerDamageEntityBinding;
 import me.carscupcake.sbremake.item.ItemRarity;
 import me.carscupcake.sbremake.item.Lore;
@@ -126,6 +128,13 @@ public interface IAttributeShard extends KeyClass {
             .add(MobType.Infernal, new Pair<>(Shard.Blazing, 0.03))
             .build();
 
+    MapList<MobType, Pair<IAttributeShard, Number>> MOB_TYPE_RESISTANCE_SHARDS = new MapList.Builder<MobType, Pair<IAttributeShard, Number>>()
+            .add(MobType.Arthropod, new Pair<>(Shard.ArthropodResistance, 4))
+            .add(MobType.Undead, new Pair<>(Shard.UndeadResistance, 4))
+            .add(MobType.Ender, new Pair<>(Shard.EnderResistance, 4))
+            .add(MobType.Infernal, new Pair<>(Shard.BlazingResistance, 4))
+            .build();
+
 
     EventNode<@NotNull Event> LISTENER = EventNode.all("shards")
             .addListener(PlayerStatEvent.class, event -> {
@@ -189,6 +198,24 @@ public interface IAttributeShard extends KeyClass {
                         if (playerShard == null || playerShard.level() == 0) continue;
                         var amount = entry.getSecond().doubleValue() * playerShard.level();
                         event.addAdditiveMultiplier(amount * (1+mult));
+                    }
+                }
+            }))
+            .register(new EntityToPlayerDamageBinding(event -> {
+                var rulerEcho = event.getTarget().getAttributesShards().get(Shard.EchoOfResistance);
+                double mult = rulerEcho != null ? (rulerEcho.level() * 0.02) : 0;
+                if (mult != 0) {
+                    var echoOfEchos = event.getTarget().getAttributesShards().get(Shard.EchoOfEchoes);
+                    mult += mult * (echoOfEchos == null ? 0 : echoOfEchos.level() * 0.05);
+                }
+                for (var mobtype : event.getSource().getMobTypes()) {
+                    var shards = MOB_TYPE_RESISTANCE_SHARDS.get(mobtype);
+                    if (shards == null || shards.isEmpty()) continue;
+                    for (var entry : shards) {
+                        var playerShard = event.getTarget().getAttributesShards().get(entry.getFirst());
+                        if (playerShard == null || playerShard.level() == 0) continue;
+                        var amount = entry.getSecond().doubleValue() * playerShard.level();
+                        event.setDefense(event.getDefense() + amount * (1+mult));
                     }
                 }
             }));
