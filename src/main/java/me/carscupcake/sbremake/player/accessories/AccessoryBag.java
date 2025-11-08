@@ -33,7 +33,7 @@ public class AccessoryBag implements DefaultConfigItem {
     });
 
     @ConfigField
-    private List<SbItemStack> items;
+    private List<SbItemStack> items = new ArrayList<>();
     @Setter
     @ConfigField
     private int capacity;

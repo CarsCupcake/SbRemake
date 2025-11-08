@@ -326,6 +326,9 @@ public class ConfigSection {
 
     public void unsafeSet(String key, Object value, Data<Object> type) {
         if (element == null) element = new JsonObject();
+        if (key == null) {
+            type.set(element, null, value);
+        }
         if (value == null) {
             if (element instanceof JsonObject object)
                 if (object.has(key))
@@ -396,8 +399,14 @@ public class ConfigSection {
         public void set(JsonElement element, String key, T data) {
             if (element.isJsonArray())
                 element.getAsJsonArray().add(elementBuilder.apply(data));
-            else
-                element.getAsJsonObject().add(key, elementBuilder.apply(data));
+            else {
+                if (key == null) {
+                    for (var e : elementBuilder.apply(data).getAsJsonObject().entrySet()) {
+                        element.getAsJsonObject().add(e.getKey(), e.getValue());
+                    }
+                } else
+                    element.getAsJsonObject().add(key, elementBuilder.apply(data));
+            }
         }
     }
 
