@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.config.ConfigFile;
 import me.carscupcake.sbremake.config.ConfigSection;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 
@@ -21,12 +22,12 @@ public class AsyncPlayerConfigurationListener implements Consumer<AsyncPlayerCon
         }
         if (world == SkyblockWorld.Dungeon) world = SkyblockWorld.PrivateIsle;
         assert world != null;
-        SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(player, world);
+        WorldProvider provider = SkyblockWorld.getBestWorld(player, world);
         if (provider == null) {
             provider = world.get();
         }
         if (!provider.isLoaded()) {
-            SkyblockWorld.WorldProvider finalProvider = provider;
+            WorldProvider finalProvider = provider;
             provider.init(MinecraftServer.getInstanceManager().createInstanceContainer(), () -> player.setWorldProvider(finalProvider), false);
         } else {
             player.setWorldProvider(provider);

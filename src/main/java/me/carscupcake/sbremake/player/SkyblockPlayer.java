@@ -56,6 +56,7 @@ import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.color.Color;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.metadata.other.FishingHookMeta;
@@ -452,6 +453,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         System.gc();
     }).addListener(PlayerRespawnEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
+        player.setVelocity(Vec.ZERO);
         event.setRespawnPosition(player.getWorldProvider().spawn());
         player.setSbHealth(player.getMaxSbHealth());
         player.sendPacket(new PlayerAbilitiesPacket(player.getGameMode() == GameMode.CREATIVE ? PlayerAbilitiesPacket.FLAG_ALLOW_FLYING : (byte) 0, 0.05f, (float) (0.1 * (player.getStat(Stat.Speed) / 100d))));
@@ -563,7 +565,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     @Setter
     public Mining blockBreakScheduler = null;
     private boolean lastInteractPotion = false;
-    private SkyblockWorld.WorldProvider worldProvider = null;
+    private WorldProvider worldProvider = null;
     @Getter
     private double sbHealth;
     @Getter
@@ -1458,6 +1460,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
             effect.potion().start(this, effect.amplifier(), (long) ((effect.expiration() - System.currentTimeMillis()) / 50d));
         sendPacket(new EntityMetaDataPacket(getEntityId(), Map.of(11, Metadata.Boolean(true))));
         sendPacket(new TimeUpdatePacket(0, Time.tick, false));
+        sendPacket(new ChangeGameStatePacket(ChangeGameStatePacket.Reason.ENABLE_RESPAWN_SCREEN, 1));
         if (!worldProvider.isRelight()) worldProvider.relight();
         sendMessage("§bYour Skyblock Level is: §3" + getSkyblockLevel());
         var speed = getStat(Stat.Speed);
@@ -1475,7 +1478,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         return (float) getAttribute(Attribute.MAX_HEALTH).getValue();
     }
 
-    public void setWorldProvider(SkyblockWorld.WorldProvider provider) {
+    public void setWorldProvider(WorldProvider provider) {
         if (worldProvider != null && provider != worldProvider) {
             worldProvider.removePlayer(this);
             previous = worldProvider.type();
@@ -1486,7 +1489,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         onLaunchpad = false;
     }
 
-    public void setWorldProvider(SkyblockWorld.WorldProvider provider, WarpLocation location) {
+    public void setWorldProvider(WorldProvider provider, WarpLocation location) {
         if (worldProvider != null && provider != worldProvider) {
             worldProvider.removePlayer(this);
             previous = location.getWorld();

@@ -5,6 +5,7 @@ import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
 import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
 import me.carscupcake.sbremake.worlds.region.PolygonalRegion;
 import net.minestom.server.collision.BoundingBox;
@@ -16,7 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SpidersDen extends SkyblockWorld.WorldProvider {
+public class SpidersDen extends WorldProvider {
     public SpidersDen() {
         super(List.of(new Launchpad(-199, -230, -195, -226, 82, SkyblockWorld.Hub, new Pos(-160, 75, -156)),
                 new Launchpad(-384, -260, -385, -262, 118, SkyblockWorld.End, new Pos(-503, 101, -275.5))));

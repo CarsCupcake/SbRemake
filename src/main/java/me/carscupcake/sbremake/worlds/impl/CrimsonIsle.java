@@ -4,13 +4,14 @@ import me.carscupcake.sbremake.entity.impl.crimsonIsle.WitherSpectre;
 import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class CrimsonIsle extends SkyblockWorld.WorldProvider {
+public class CrimsonIsle extends WorldProvider {
     public static final Pos SPAWN_POS = new Pos(-360.5, 80.1, -430.5, 180f, 0f);
     @Override
     public SkyblockWorld type() {

@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface WorldSelector {
     @Nullable
-    default SkyblockWorld.WorldProvider getWorldProvider(List<SkyblockWorld.WorldProvider> providers, SkyblockPlayer player) {
-        SkyblockWorld.WorldProvider provider = null;
-        for (SkyblockWorld.WorldProvider p : providers) {
+    default WorldProvider getWorldProvider(List<WorldProvider> providers, SkyblockPlayer player) {
+        WorldProvider provider = null;
+        for (WorldProvider p : providers) {
             if (p.getPlayers().size() > 14) continue;
             provider = p;
             break;

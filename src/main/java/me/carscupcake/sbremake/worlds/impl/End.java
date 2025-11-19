@@ -10,6 +10,7 @@ import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
 import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
 
@@ -17,7 +18,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class End extends SkyblockWorld.WorldProvider {
+public class End extends WorldProvider {
     public End() {
         super(Collections.singletonList(new Launchpad(-496, -277, -495, -274, 100, SkyblockWorld.SpidersDen, new Pos(-378, 130, -261))));
     }

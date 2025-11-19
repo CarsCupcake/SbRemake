@@ -3,6 +3,7 @@ package me.carscupcake.sbremake.worlds.impl;
 import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.color.Color;
@@ -20,7 +21,7 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Galatea extends SkyblockWorld.WorldProvider {
+public class Galatea extends WorldProvider {
     public static final EventNode<Event> LISTENER = EventNode.all("galatea").addListener(PlayerBlockBreakEvent.class, event -> {
     });
     public static final Pos spawnPos = new Pos(-541, 108, -28, 45f, 0f);

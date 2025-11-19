@@ -4,13 +4,13 @@ import me.carscupcake.sbremake.blocks.Log;
 import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.AbstractNpc;
 import me.carscupcake.sbremake.worlds.Launchpad;
-import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import net.minestom.server.coordinate.BlockVec;
 
 import java.util.HashMap;
 import java.util.List;
 
-public abstract class ForagingIsle extends SkyblockWorld.WorldProvider {
+public abstract class ForagingIsle extends WorldProvider {
     public final HashMap<BlockVec, Log.LogInfo> brokenLogs = new HashMap<>();
     private final TaskScheduler foragingReset = new TaskScheduler() {
         @Override

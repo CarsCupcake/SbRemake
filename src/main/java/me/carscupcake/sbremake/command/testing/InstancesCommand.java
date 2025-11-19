@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.command.testing;
 
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import net.minestom.server.command.builder.Command;
 
 import java.util.List;
@@ -16,9 +17,9 @@ public class InstancesCommand extends Command {
             }
 
             sender.sendMessage("§9--------------------------------------------------");
-            for (Map.Entry<SkyblockWorld, List<SkyblockWorld.WorldProvider>> entry : SkyblockWorld.getWorlds().entrySet()) {
+            for (Map.Entry<SkyblockWorld, List<WorldProvider>> entry : SkyblockWorld.getWorlds().entrySet()) {
                 sender.sendMessage("§a%s§7:".formatted(entry.getKey().name()));
-                for (SkyblockWorld.WorldProvider world : entry.getValue()) {
+                for (WorldProvider world : entry.getValue()) {
                     sender.sendMessage("§7- §a%s %d Players".formatted(world.getId(), world.getPlayers().size()));
                 }
             }

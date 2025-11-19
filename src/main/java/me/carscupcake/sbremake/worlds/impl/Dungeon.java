@@ -2,19 +2,16 @@ package me.carscupcake.sbremake.worlds.impl;
 
 import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import me.carscupcake.sbremake.worlds.impl.dungeon.DungeonWorldProvider;
 import me.carscupcake.sbremake.worlds.impl.dungeon.Generator;
-import me.carscupcake.sbremake.worlds.impl.dungeon.Paster;
-import me.carscupcake.sbremake.worlds.impl.dungeon.Room;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.IChunkLoader;
-import net.minestom.server.instance.InstanceContainer;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
-public class Dungeon extends SkyblockWorld.WorldProvider {
+public class Dungeon extends WorldProvider {
 
     private final Generator generator;
 
