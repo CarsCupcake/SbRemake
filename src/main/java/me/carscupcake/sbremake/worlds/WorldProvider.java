@@ -115,7 +115,7 @@ public abstract class WorldProvider {
             var element = JsonParser.parseReader(new InputStreamReader(Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream(path))));
             var baseSection = new ConfigSection(element);
             if (offset == null) {
-                offset = Pos.fromPoint(baseSection.get("playerPos", ConfigSection.POSITION, Pos.ZERO)).withYaw(0).withPitch(0);
+                offset = baseSection.get("playerPos", ConfigSection.POSITION, Pos.ZERO).asPos().withYaw(0).withPitch(0);
             }
             for (var section : baseSection.get("stands", ConfigSection.SECTION_ARRAY)) {
                 var stand = new LivingEntity(EntityType.ARMOR_STAND);
@@ -172,7 +172,7 @@ public abstract class WorldProvider {
 
     public abstract Pair<Pos, Pos> getChunksToLoad();
 
-    public RegistryKey<DimensionType> getDimension() {
+    public RegistryKey<@NotNull DimensionType> getDimension() {
         return type().getDimension();
     }
 
