@@ -20,8 +20,8 @@ public record Launchpad(int x1, int z1, int x2, int z2, int y, SkyblockWorld tar
         Vec direction = targetPos.asVec().sub(entity.getPosition().asVec()).normalize().mul(1);
         int iterations = (int) (entity.getPosition().distance(targetPos) * 1) - 2;
         player.setOnLaunchpad(true);
-        SkyblockWorld.WorldProvider provider = SkyblockWorld.getBestWorld(player, targetWorld);
-        Future<SkyblockWorld.WorldProvider> instanceContainerFuture;
+        WorldProvider provider = SkyblockWorld.getBestWorld(player, targetWorld);
+        Future<WorldProvider> instanceContainerFuture;
         if (provider == null) {
             provider = targetWorld.get();
             instanceContainerFuture = provider.initAsync();
@@ -37,7 +37,7 @@ public record Launchpad(int x1, int z1, int x2, int z2, int y, SkyblockWorld tar
                 if (i == iterations) {
                     cancel();
                     try {
-                        SkyblockWorld.WorldProvider finalProvider = instanceContainerFuture.get();
+                        WorldProvider finalProvider = instanceContainerFuture.get();
                         synchronized (player) {
                             entity.removePassenger(player);
                             player.setOnLaunchpad(false);

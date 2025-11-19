@@ -10,6 +10,7 @@ import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.worlds.EntitySpawner;
 import me.carscupcake.sbremake.worlds.Launchpad;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import me.carscupcake.sbremake.worlds.region.CuboidRegion;
 import me.carscupcake.sbremake.worlds.region.PolygonalRegion;
 import net.minestom.server.collision.BoundingBox;
@@ -21,7 +22,7 @@ import net.minestom.server.instance.block.Block;
 import java.util.*;
 
 @Getter
-public class FarmingIsles extends SkyblockWorld.WorldProvider {
+public class FarmingIsles extends WorldProvider {
     public static final String FARMING_CRYSTAL_SKIN = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI2NWY5NmY1NGI3ODg4NWM0NmU3ZDJmODZiMWMxZGJmZTY0M2M2MDYwZmM3ZmNjOTgzNGMzZTNmZDU5NTEzNSJ9fX0=";
     private List<FarmingCrystal> crystals = new ArrayList<>();
     private final MapList<Integer, BlockVec> sugarCane = new MapList<>();

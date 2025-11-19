@@ -563,7 +563,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     @Setter
     public Mining blockBreakScheduler = null;
     private boolean lastInteractPotion = false;
-    private SkyblockWorld.WorldProvider worldProvider = null;
+    private WorldProvider worldProvider = null;
     @Getter
     private double sbHealth;
     @Getter
@@ -1475,7 +1475,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         return (float) getAttribute(Attribute.MAX_HEALTH).getValue();
     }
 
-    public void setWorldProvider(SkyblockWorld.WorldProvider provider) {
+    public void setWorldProvider(WorldProvider provider) {
         if (worldProvider != null && provider != worldProvider) {
             worldProvider.removePlayer(this);
             previous = worldProvider.type();
@@ -1486,7 +1486,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         onLaunchpad = false;
     }
 
-    public void setWorldProvider(SkyblockWorld.WorldProvider provider, WarpLocation location) {
+    public void setWorldProvider(WorldProvider provider, WarpLocation location) {
         if (worldProvider != null && provider != worldProvider) {
             worldProvider.removePlayer(this);
             previous = location.getWorld();

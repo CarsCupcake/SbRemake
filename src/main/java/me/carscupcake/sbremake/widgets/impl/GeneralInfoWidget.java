@@ -5,12 +5,12 @@ import me.carscupcake.sbremake.util.Span;
 import me.carscupcake.sbremake.widgets.IWidget;
 import me.carscupcake.sbremake.widgets.TabListItem;
 import me.carscupcake.sbremake.widgets.WidgetTypes;
-import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import net.kyori.adventure.text.Component;
 
 public class GeneralInfoWidget implements IWidget {
     private final SkyblockPlayer player;
-    private SkyblockWorld.WorldProvider lastProvider;
+    private WorldProvider lastProvider;
     private Span<TabListItem> allocated;
     public GeneralInfoWidget(SkyblockPlayer player) {
         this.player = player;

@@ -29,6 +29,7 @@ import me.carscupcake.sbremake.util.gui.InputGui;
 import me.carscupcake.sbremake.util.lootTable.blockLoot.BlockLootTable;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.Time;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import me.carscupcake.sbremake.worlds.impl.Galatea;
 import me.carscupcake.sbremake.worlds.impl.PrivateIsle;
 import me.carscupcake.sbremake.worlds.region.Region;
@@ -208,7 +209,7 @@ public class Main {
                 Time.save();
             });
             LOGGER.debug("Unloading Worlds...");
-            for (SkyblockWorld.WorldProvider provider : SkyblockWorld.getAllWorlds()) {
+            for (WorldProvider provider : SkyblockWorld.getAllWorlds()) {
                 provider.remove();
             }
         });

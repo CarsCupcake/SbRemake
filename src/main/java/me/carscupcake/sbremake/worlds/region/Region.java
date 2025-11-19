@@ -1,7 +1,7 @@
 package me.carscupcake.sbremake.worlds.region;
 
 import me.carscupcake.sbremake.player.SkyblockPlayer;
-import me.carscupcake.sbremake.worlds.SkyblockWorld;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
@@ -21,7 +21,7 @@ public interface Region {
 
     EventNode<Event> LISTENER = EventNode.all("region.listener").addListener(PlayerMoveEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
-        SkyblockWorld.WorldProvider provider = player.getWorldProvider();
+        WorldProvider provider = player.getWorldProvider();
         if (provider == null) return;
         for (Region region : provider.regions()) {
             if (region.isInRegion(player.getPosition())) {

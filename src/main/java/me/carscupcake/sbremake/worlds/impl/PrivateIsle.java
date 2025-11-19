@@ -14,6 +14,7 @@ import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.EntityNpc;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.WarpLocation;
+import me.carscupcake.sbremake.worlds.WorldProvider;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityType;
@@ -34,7 +35,7 @@ import static me.carscupcake.sbremake.worlds.SkyblockWorld.extract;
 import static me.carscupcake.sbremake.worlds.SkyblockWorld.getZipFiles;
 
 @Getter
-public class PrivateIsle extends SkyblockWorld.WorldProvider {
+public class PrivateIsle extends WorldProvider {
     public static final EventNode<Event> NODE = EventNode.all("privateIsle")
             .addListener(PlayerMoveEvent.class, playerMoveEvent -> {
                 SkyblockPlayer player = (SkyblockPlayer) playerMoveEvent.getPlayer();
