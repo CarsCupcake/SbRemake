@@ -33,6 +33,14 @@ public class Generator {
         this.rooms = dimensions;
         this.doorsVertical = new DoorType[rooms.length][rooms[0].length - 1];
         this.doorsHorizontal = new DoorType[rooms.length - 1][rooms[0].length];
+        if (seed == -1) {
+            entrance = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            blood = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            fairy = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            trap = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            random = new Random();
+            return;
+        }
         this.random = new Random(seed);
         Main.LOGGER.info("Rooms seed {}", seed);
         var xEs = new Integer[dimensions.length];

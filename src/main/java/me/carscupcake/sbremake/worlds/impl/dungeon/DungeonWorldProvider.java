@@ -96,7 +96,7 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
                             }
                         }
                     }
-                    if (chunkX % 2 != 0 && chunkZ % 2 == 0) {
+                    /*if (chunkX % 2 != 0 && chunkZ % 2 == 0) {
                         if (generator.getDoorsHorizontal().length > chunkX / 2 && generator.getDoorsHorizontal()[0].length > chunkZ / 2) {
                             var type = generator.getDoorsHorizontal()[chunkX / 2][chunkZ / 2];
                             var blockType = type == DoorType.Normal ? Block.STONE : type == DoorType.Wither ? Block.COAL_BLOCK : Block.AIR;
@@ -162,6 +162,76 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
                                 chunk.setBlock(0, 73, 15, blockType);
                             }
                         }
+                    }*/
+
+                    //Boarders
+                    if (chunkX == 0) {
+                        if (chunkZ % 2 == 0) {
+                            setIfAir(chunk, 0, 69, 14);
+                            setIfAir(chunk, 0, 69, 15);
+                            setIfAir(chunk, 0, 70, 14);
+                            setIfAir(chunk, 0, 70, 15);
+                            setIfAir(chunk, 0, 71, 14);
+                            setIfAir(chunk, 0, 71, 15);
+                            setIfAir(chunk, 0, 72, 14);
+                            setIfAir(chunk, 0, 72, 15);
+                        } else {
+                            setIfAir(chunk, 0, 69, 0);
+                            setIfAir(chunk, 0, 70, 0);
+                            setIfAir(chunk, 0, 71, 0);
+                            setIfAir(chunk, 0, 72, 0);
+                        }
+                    }
+                    if ((chunkX + 1) == rooms.length * 2) {
+                        if (chunkZ % 2 == 0) {
+                            setIfAir(chunk, 14, 69, 14);
+                            setIfAir(chunk, 14, 69, 15);
+                            setIfAir(chunk, 14, 70, 14);
+                            setIfAir(chunk, 14, 70, 15);
+                            setIfAir(chunk, 14, 71, 14);
+                            setIfAir(chunk, 14, 71, 15);
+                            setIfAir(chunk, 14, 72, 14);
+                            setIfAir(chunk, 14, 72, 15);
+                        } else {
+                            setIfAir(chunk, 14, 69, 0);
+                            setIfAir(chunk, 14, 70, 0);
+                            setIfAir(chunk, 14, 71, 0);
+                            setIfAir(chunk, 14, 72, 0);
+                        }
+                    }
+                    if (chunkZ == 0) {
+                        if (chunkX % 2 == 0) {
+                            setIfAir(chunk, 14, 69, 0);
+                            setIfAir(chunk, 15, 69, 0);
+                            setIfAir(chunk, 14, 70, 0);
+                            setIfAir(chunk, 15, 70, 0);
+                            setIfAir(chunk, 14, 71, 0);
+                            setIfAir(chunk, 15, 71, 0);
+                            setIfAir(chunk, 14, 72, 0);
+                            setIfAir(chunk, 15, 72, 0);
+                        } else {
+                            setIfAir(chunk, 0, 69, 0);
+                            setIfAir(chunk, 0, 70, 0);
+                            setIfAir(chunk, 0, 71, 0);
+                            setIfAir(chunk, 0, 72, 0);
+                        }
+                    }
+                    if (chunkZ + 1 == rooms[0].length * 2) {
+                        if (chunkX % 2 == 0) {
+                            setIfAir(chunk, 14, 69, 14);
+                            setIfAir(chunk, 15, 69, 14);
+                            setIfAir(chunk, 14, 70, 14);
+                            setIfAir(chunk, 15, 70, 14);
+                            setIfAir(chunk, 14, 71, 14);
+                            setIfAir(chunk, 15, 71, 14);
+                            setIfAir(chunk, 14, 72, 14);
+                            setIfAir(chunk, 15, 72, 14);
+                        } else {
+                            setIfAir(chunk, 0, 69, 14);
+                            setIfAir(chunk, 0, 70, 14);
+                            setIfAir(chunk, 0, 71, 14);
+                            setIfAir(chunk, 0, 72, 14);
+                        }
                     }
                 }
             }
@@ -173,7 +243,14 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
         return chunk;
     }
 
-    static void loadPalette(int origin, JsonArray jsonPalette, Block[] blocks) {
+    private void setIfAir(Chunk chunk, int x, int y, int z) {
+        var block = chunk.getBlock(x, y, z);
+        if (block.isAir() || block == Block.COAL_BLOCK || block == Block.RED_TERRACOTTA) {
+            chunk.setBlock(x, y, z, Block.STONE);
+        }
+    }
+
+    public static void loadPalette(int origin, JsonArray jsonPalette, Block[] blocks) {
         for (int i = 0; i < blocks.length; i++) {
             var object = jsonPalette.get(i).getAsJsonObject();
             var map = new HashMap<String, String>();
