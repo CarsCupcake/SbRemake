@@ -36,6 +36,15 @@ public class LaunchPrefilledDungeonCOmmand extends Command {
                     }
             };
             var generator = new Generator(rooms, -1);
+            for (int x = 0; x < rooms.length; x++) {
+                for (int y = 0; y < rooms[x].length; y++) {
+                    if (x != rooms.length - 1)
+                        generator.getDoorsHorizontal()[x][y] = DoorType.None;
+                    if (y != rooms[x].length - 1)
+                        generator.getDoorsVertical()[x][y] = DoorType.None;
+
+                }
+            }
             generator.setRooms(rooms);
             Dungeon dungeon = new Dungeon(generator);
             var player = ((SkyblockPlayer) sender);
