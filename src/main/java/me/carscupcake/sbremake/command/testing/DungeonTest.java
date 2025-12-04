@@ -42,7 +42,7 @@ public class DungeonTest extends Command {
                 for (int y = generator.getRooms()[x].length - 1; y >= 0; y--) {
                     var z =  generator.getRooms()[x][y];
                     if (z.pos().z() != generator.getRooms()[x].length - 1) {
-                        if (generator.getDoorsVertical()[z.pos().x()][z.pos().z()] == null) {
+                        if (generator.getDoorsVertical()[z.pos().x()][z.pos().z()] == DoorType.None) {
                             System.out.print("|");
                         } else {
                             var type = generator.getDoorsVertical()[z.pos().x()][z.pos().z()];
@@ -70,7 +70,7 @@ public class DungeonTest extends Command {
                     var z =  generator.getRooms()[x][y];
                     if (z.pos().x() == 5) continue;
                     System.out.print("-".repeat(4));
-                    if (generator.getDoorsHorizontal()[z.pos().x()][z.pos().z()] != null) {
+                    if (generator.getDoorsHorizontal()[z.pos().x()][z.pos().z()] != DoorType.None) {
                         var type = generator.getDoorsHorizontal()[z.pos().x()][z.pos().z()];
                         if (type == DoorType.Wither || type == DoorType.Fairy) System.out.print(ANSI_BLACK);
                         if (type == DoorType.Bridge) System.out.print(ANSI_CYAN);

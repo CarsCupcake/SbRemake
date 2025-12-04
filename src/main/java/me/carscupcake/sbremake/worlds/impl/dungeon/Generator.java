@@ -203,6 +203,20 @@ public class Generator {
         dijkstraPath(entrance.pos(), fairy.pos());
         dijkstraPath(fairy.pos(), blood.pos());
         fixSpecialRoomRotations();
+        for (int x = 0; x < doorsVertical.length; x++) {
+            for (int z = 0; z < doorsVertical[x].length; z++) {
+                if (doorsVertical[x][z] == null) {
+                    doorsVertical[x][z] = DoorType.None;
+                }
+            }
+        }
+        for (int x = 0; x < doorsHorizontal.length; x++) {
+            for (int z = 0; z < doorsHorizontal[x].length; z++) {
+                if (doorsHorizontal[x][z] == null) {
+                    doorsHorizontal[x][z] = DoorType.None;
+                }
+            }
+        }
     }
 
     private void addDoor(Pos2d targetPos, List<Pos2d> posebilities, boolean[][] discovered) {

@@ -67,8 +67,8 @@ public enum RoomShape {
             return switch (rotation) {
                 case NW -> point;
                 case NE -> point.add(30, 0, 0);
-                case SE -> point.add(91, 0, 30);
-                case SW -> point.add(0, 0, 91);
+                case SE -> point.add(94, 0, 30);
+                case SW -> point.add(0, 0, 94);
             };
         }
     },
