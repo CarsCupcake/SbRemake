@@ -218,6 +218,10 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
                 player.shortbowTask = null;
             }
         }
+        if (event.getPacket() instanceof ClientChangeGameModePacket(var gameMode)) {
+            player.setGameMode(gameMode);
+            return;
+        }
         if (event.getPacket() instanceof ClientPlayerDiggingPacket packet) {
             if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
                 player.lastInteractPotion = false;
