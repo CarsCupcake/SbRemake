@@ -55,7 +55,7 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
             if (id == null) return null;
             ids[room.pos().x()][room.pos().z()] = id;
         }
-        try {
+        try {       //TODO Look into L-Shape Pasting (There is an issue)
             var path = "assets/shematics/dungeon/rooms/" + (room.type() == RoomType.Room ? room.shape().toString() : room.type().toString().toLowerCase()) + "/" + id;
             try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
                 try (GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {

@@ -18,40 +18,40 @@ public class PasteTest extends Command {
         var xPos = new ArgumentInteger("x");
         var zPos = new ArgumentInteger("z");
         addSyntax((sender, context) -> {
-            var paster = new Paster(new Room[0][0], ((SkyblockPlayer) sender).getInstance());
+            var instance = ((SkyblockPlayer)sender).getInstance();
             var rotation = context.get(enumRotation);
             var roomShape = context.get(enumRoomShape);
-            paster.paste(new Pos2d(0, 0), rotation, roomShape, switch (roomShape) {
+            Paster.paste(new Pos2d(0, 0), rotation, roomShape, switch (roomShape) {
                 case ONE_BY_ONE -> "overgrown-3";
                 case ONE_BY_TWO -> "pedestal-5";
                 case ONE_BY_THREE -> "wizard-4";
                 case ONE_BY_FOUR -> "mossy-4";
                 case TWO_BY_TWO -> "mithril-cave-10";
                 case L_SHAPE -> "dino-dig-site-4";
-            }, RoomType.Room);
+            }, RoomType.Room, instance);
         }, enumRoomShape, enumRotation);
         addSyntax((sender, context) -> {
-            var paster = new Paster(new Room[0][0], ((SkyblockPlayer) sender).getInstance());
+            var instance = ((SkyblockPlayer)sender).getInstance();
             var rotation = context.get(enumRotation);
             var roomShape = context.get(enumRoomShape);
-            paster.paste(new Pos2d(context.get(xPos), context.get(zPos)), rotation, roomShape, switch (roomShape) {
+            Paster.paste(new Pos2d(context.get(xPos), context.get(zPos)), rotation, roomShape, switch (roomShape) {
                 case ONE_BY_ONE -> "overgrown-3";
                 case ONE_BY_TWO -> "pedestal-5";
                 case ONE_BY_THREE -> "wizard-4";
                 case ONE_BY_FOUR -> "mossy-4";
                 case TWO_BY_TWO -> "mithril-cave-10";
                 case L_SHAPE -> "dino-dig-site-4";
-            }, RoomType.Room);
+            }, RoomType.Room, instance);
         }, enumRoomShape, enumRotation, xPos, zPos);
         addSyntax((sender, context) -> {
-            var paster = new Paster(new Room[0][0], ((SkyblockPlayer) sender).getInstance());
+            var instance = ((SkyblockPlayer)sender).getInstance();
             var rotation = context.get(enumRotation);
             var roomType = context.get(enumRoomType);
-            paster.paste(new Pos2d(0, 0), rotation, RoomShape.ONE_BY_ONE, switch (roomType) {
+            Paster.paste(new Pos2d(0, 0), rotation, RoomShape.ONE_BY_ONE, switch (roomType) {
                 case Trap -> "trap-hard-4";
                 case Puzzle -> "boxes-room";
                 default -> throw new IllegalArgumentException("Not a valid room type");
-            }, roomType);
+            }, roomType, instance);
         }, enumRoomType, enumRotation);
         System.gc();
 

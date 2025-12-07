@@ -30,7 +30,7 @@ public class Paster {
                     continue;
                 }
                 threads.add(Thread.startVirtualThread(() -> {
-                    paste(room.pos(), room.rotation(), room.shape(), "dino-dig-site-4", room.type());
+                    paste(room.pos(), room.rotation(), room.shape(), "dino-dig-site-4", room.type(), instance);
                     Main.LOGGER.debug("{}/{}", i.addAndGet(1), total);
 
                 }));
@@ -55,7 +55,7 @@ public class Paster {
                 if (room.type() == RoomType.Trap) {
                     final var isHard = new Random().nextBoolean();
                     threads.add(Thread.startVirtualThread(() -> {
-                        paste(room.pos(), room.rotation(), room.shape(), isHard ? "trap-very-hard-3" : "trap-hard-4", room.type());
+                        paste(room.pos(), room.rotation(), room.shape(), isHard ? "trap-very-hard-3" : "trap-hard-4", room.type(), instance);
                         Main.LOGGER.debug("Trap: {}/{}", i.addAndGet(1), total);
                         //System.gc();
                     }));
@@ -65,7 +65,7 @@ public class Paster {
                 if (room.type() == RoomType.Puzzle) {
                     final var puzzle = puzzles[new Random().nextInt(puzzles.length)];
                     threads.add(Thread.startVirtualThread(() -> {
-                        paste(room.pos(), room.rotation(), room.shape(), puzzle, room.type());
+                        paste(room.pos(), room.rotation(), room.shape(), puzzle, room.type(), instance);
                         Main.LOGGER.debug("Puzzle: {}/{}", i.addAndGet(1), total);
                         //System.gc();
                     }));
@@ -84,7 +84,7 @@ public class Paster {
                         case ONE_BY_FOUR -> "mossy-4";
                         case TWO_BY_TWO -> "mithril-cave-10";
                         default -> throw new IllegalStateException("Unexpected value: " + room.shape());
-                    }, room.type());
+                    }, room.type(), instance);
                     Main.LOGGER.debug("{}/{}", i.addAndGet(1), total);
                     //System.gc();
                 }));
@@ -100,7 +100,7 @@ public class Paster {
         System.gc();
     }
 
-    public void paste(Pos2d pos2d, Rotation rotation, RoomShape shape, String id, RoomType type) {
+    public static void paste(Pos2d pos2d, Rotation rotation, RoomShape shape, String id, RoomType type, Instance instance) {
         try {
             var path = "assets/shematics/dungeon/rooms/" + (type == RoomType.Room ?  shape.toString() : type.toString().toLowerCase()) + "/" + id;
             try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {

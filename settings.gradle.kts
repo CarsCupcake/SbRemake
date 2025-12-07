@@ -13,3 +13,4 @@ include("minestom:jmh-benchmarks")
 //include("minestom:jcstress-tests")
 
 include("annotation-processor")
+include("index-dungeon-structures")

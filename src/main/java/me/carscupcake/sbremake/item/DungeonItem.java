@@ -26,7 +26,7 @@ public abstract class DungeonItem implements ISbItem, Dungeonizable {
                     itemStack.item().get(DataComponents.CUSTOM_DATA, new CustomData(CompoundBinaryTag.empty())).withTag(Tag.Integer("item_tier"), integer)));
         }
     };
-    public static final EventNode<Event> LISTENER = EventNode.all("dungeon_item")
+    public static final EventNode<@NotNull Event> LISTENER = EventNode.all("dungeon_item")
             .addListener(GetItemStatEvent.class, event -> {
                 if (event.getItemStack().sbItem() instanceof DungeonItem item) {
                     if (item.stats.containsKey(event.getStat())) {
