@@ -132,7 +132,7 @@ public class Main {
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
         for (var s : registerDefaultManagers)
             MinecraftServer.getBlockManager().registerHandler("minecraft:" + s, () -> () -> Key.key(s));
-        if (System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true")) {
+        if (IS_DEBUG) {
             LOGGER.setLogLevel(0);
             LOGGER.isEnabledForLevel(Level.DEBUG);
             LOGGER.debug("Debug logging enabled");
