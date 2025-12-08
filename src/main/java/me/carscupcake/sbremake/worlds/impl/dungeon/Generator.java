@@ -370,22 +370,28 @@ public class Generator {
         for (int x = 0; x < rooms.length; x++) {
             for (int z = 0; z < rooms[x].length; z++) {
                 var room = rooms[x][z];
-                if (room.type() == RoomType.Puzzle) {
+                if (room.type() != RoomType.Room && room.type() != RoomType.Fairy) {
                     if (x != 0) {
                         if (doorsHorizontal[x - 1][z] == DoorType.Normal) {
-                            rooms[x][z] = room.withRotation(Rotation.fromOffset(-1, 0));
+                            rooms[x][z] = room.withRotation(Rotation.SW);
+                            continue;
                         }
-                    } else if (x != doorsHorizontal.length) {
+                    }
+                    if (x != doorsHorizontal.length) {
                         if (doorsHorizontal[x][z] == DoorType.Normal) {
-                            rooms[x][z] = room.withRotation(Rotation.fromOffset(1, 0));
+                            rooms[x][z] = room.withRotation(Rotation.NE);
+                            continue;
                         }
-                    } else if (z != 0) {
+                    }
+                    if (z != 0) {
                         if (doorsVertical[x][z - 1] == DoorType.Normal) {
-                            rooms[x][z] = room.withRotation(Rotation.fromOffset(0, -1));
+                            rooms[x][z] = room.withRotation(Rotation.SE);
+                            continue;
                         }
-                    } else if (z != doorsVertical[x].length) {
-                        if (doorsHorizontal[x][z] == DoorType.Normal) {
-                            rooms[x][z] = room.withRotation(Rotation.fromOffset(0, 1));
+                    }
+                    if (z != doorsVertical[x].length) {
+                        if (doorsVertical[x][z] == DoorType.Normal) {
+                            rooms[x][z] = room.withRotation(Rotation.NW);
                         }
                     }
                 }
@@ -458,7 +464,7 @@ public class Generator {
             try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
                 Path folderRootPath = fileSystem.getPath(resourceDir);
                 try (Stream<Path> walk = Files.walk(folderRootPath, 1)) {
-                    return Math.toIntExact(walk.count());
+                    return Math.toIntExact(walk.count()) - 1;
                 }
             }
         } catch (Exception e) {
