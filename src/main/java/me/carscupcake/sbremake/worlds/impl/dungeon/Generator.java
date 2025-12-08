@@ -1,11 +1,24 @@
 package me.carscupcake.sbremake.worlds.impl.dungeon;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Main;
+import me.carscupcake.sbremake.item.Recipe;
+import me.carscupcake.sbremake.util.CountMap;
 import me.carscupcake.sbremake.util.Pos2d;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Getter
 public class Generator {
@@ -24,6 +37,8 @@ public class Generator {
     private final Room trap;
     @Setter //DEBUG ONLY!!!!!!!!!
     private Room[][] rooms;
+    private final String[][] roomIds;
+    private final CountMap<RoomShape> caps = new CountMap<>();
 
     public Generator(Room[][] dimensions) {
         this(dimensions, System.currentTimeMillis());
@@ -33,6 +48,7 @@ public class Generator {
         this.rooms = dimensions;
         this.doorsVertical = new DoorType[rooms.length][rooms[0].length - 1];
         this.doorsHorizontal = new DoorType[rooms.length - 1][rooms[0].length];
+        this.roomIds = new String[rooms.length][rooms[0].length];
         if (seed == -1) {
             entrance = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
             blood = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
@@ -41,6 +57,11 @@ public class Generator {
             random = new Random();
             return;
         }
+        caps.put(RoomShape.ONE_BY_TWO, count("1x2"));
+        caps.put(RoomShape.ONE_BY_THREE, count("1x3"));
+        caps.put(RoomShape.ONE_BY_FOUR, count("1x4"));
+        caps.put(RoomShape.TWO_BY_TWO, count("2x2"));
+        caps.put(RoomShape.L_SHAPE, count("L-shape"));
         this.random = new Random(seed);
         Main.LOGGER.info("Rooms seed {}", seed);
         var xEs = new Integer[dimensions.length];
@@ -119,7 +140,7 @@ public class Generator {
     }
 
     private void tryPlace(Pos2d pos2d) {
-        var shapes = new RoomShape[]{RoomShape.ONE_BY_TWO, RoomShape.ONE_BY_THREE, RoomShape.ONE_BY_FOUR, RoomShape.L_SHAPE, RoomShape.TWO_BY_TWO};
+        var shapes = caps.entrySet().stream().filter(e -> e.getValue() > 0).map(Map.Entry::getKey).toArray(RoomShape[]::new);
         shuffleArray(shapes);
         for (RoomShape shape : shapes) {
             var rot = Rotation.values()[random.nextInt(4)];
@@ -150,6 +171,7 @@ public class Generator {
                         }
                     }
                 }
+                caps.subtract(shape, 1);
                 return;
             }
         }
@@ -368,6 +390,105 @@ public class Generator {
                     }
                 }
             }
+        }
+    }
+
+    public void determineIds() {
+        var gson = new GsonBuilder().create();
+        var lShaped = source("L-shape");
+        var oneByOne = source("1x1");
+        var oneByTwo = source("1x2");
+        var oneByThree = source("1x3");
+        var oneByFour = source("1x4");
+        var twoByTwo = source("2x2");
+        var trap = source("trap");
+        var puzzle = source("puzzle");
+        for (int x = 0; x < rooms.length; x++) {
+            for (int z = 0; z < rooms[x].length; z++) {
+                var room = rooms[x][z];
+                if (room.parent() != null) continue;
+                roomIds[x][z] = switch (room.type()) {
+                    case Puzzle -> puzzle.pop();
+                    case Blood -> "blood";
+                    case Mini -> "mini";
+                    case Trap ->  trap.pop();
+                    case Entrance ->  "entrance";
+                    case Fairy -> "fairy";
+                    default -> {
+                        System.out.println(room.shape());
+                        yield  switch (room.shape()) {
+                            case L_SHAPE -> lShaped.pop();
+                            case ONE_BY_TWO ->  oneByTwo.pop();
+                            case ONE_BY_THREE ->  oneByThree.pop();
+                            case ONE_BY_FOUR ->  oneByFour.pop();
+                            case TWO_BY_TWO ->   twoByTwo.pop();
+                            case ONE_BY_ONE -> {
+                                var doors = new DoorwaysModel(x != 0 && doorsHorizontal[x-1][z] != DoorType.None, z != 0 && doorsVertical[x][z-1] != DoorType.None,
+                                        x+1 != rooms.length && doorsHorizontal[x][z] != DoorType.None, z+1 != rooms.length && doorsVertical[x][z] != DoorType.None);
+                                String match = null;
+                                var it = oneByOne.iterator();
+                                while (match == null  && it.hasNext()) {
+                                    var peek = it.next();
+                                    try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("assets/shematics/dungeon/rooms/1x1/" + peek + ".json");
+                                         var reader = new InputStreamReader(Objects.requireNonNull(resourceAsStream));) {
+                                        var parsed = gson.fromJson(reader, DoorwaysModel.class);
+                                        if (doors.passable(parsed)) {
+                                            Main.LOGGER.debug("Match: {}", peek);
+                                            match = peek;
+                                        }
+                                    } catch (Exception e) {
+                                        Main.LOGGER.error("Failed to load room {}", peek);
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                                oneByOne.remove(match);
+                                yield match;
+                            }
+                        };
+                    }
+                };
+            }
+        }
+    }
+
+    private int count(String subDir) {
+        var resourceDir = "assets/shematics/dungeon/rooms/" + subDir + "/";
+        try {
+            URI uri = Objects.requireNonNull(Main.class.getClassLoader().getResource(resourceDir)).toURI();
+            try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+                Path folderRootPath = fileSystem.getPath(resourceDir);
+                try (Stream<Path> walk = Files.walk(folderRootPath, 1)) {
+                    return Math.toIntExact(walk.count());
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private LinkedList<String> source(String subDir) {
+        var list = new LinkedList<String>();
+        try {
+            Recipe.forFilesInResourceFolder("assets/shematics/dungeon/rooms/" + subDir + "/", (s, _) -> {
+                if (s.endsWith(".json")) return;
+                list.add(s);
+            });
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        Collections.shuffle(list, random);
+        return list;
+    }
+    @Data
+    @AllArgsConstructor
+    static class DoorwaysModel {
+        public boolean north;
+        public boolean east;
+        public boolean south;
+        public boolean west;
+
+        public boolean passable(DoorwaysModel other) {
+            return (north || !other.north) && (east || !other.east) && (south || !other.south) && (west || !other.west);
         }
     }
 

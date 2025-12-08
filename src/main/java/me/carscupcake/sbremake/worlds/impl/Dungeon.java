@@ -26,7 +26,8 @@ public class Dungeon extends WorldProvider {
 
     @Override
     public IChunkLoader getChunkLoader() throws IOException {
-        return new DungeonWorldProvider(generator, new String[6][6]);
+        generator.determineIds();
+        return new DungeonWorldProvider(generator, generator.getRoomIds());
     }
 
     @Override
