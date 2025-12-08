@@ -1,6 +1,5 @@
 package me.carscupcake.sbremake.worlds.impl.dungeon;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +10,6 @@ import me.carscupcake.sbremake.item.Recipe;
 import me.carscupcake.sbremake.util.CountMap;
 import me.carscupcake.sbremake.util.Pos2d;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -339,7 +337,7 @@ public class Generator {
         throw new IllegalStateException(start + " to " + end + " not possible");
     }
 
-    private List<Node> reconstructPath(Node[][] parent, Node endNode) {
+    private void reconstructPath(Node[][] parent, Node endNode) {
         List<Node> path = new ArrayList<>();
         Node current = endNode;
         while (current != null) {
@@ -363,7 +361,6 @@ public class Generator {
         }
 
         Collections.reverse(path);
-        return path;
     }
 
     private void fixSpecialRoomRotations() {
@@ -385,13 +382,13 @@ public class Generator {
                     }
                     if (z != 0) {
                         if (doorsVertical[x][z - 1] == DoorType.Normal) {
-                            rooms[x][z] = room.withRotation(Rotation.SE);
+                            rooms[x][z] = room.withRotation(Rotation.NW);
                             continue;
                         }
                     }
                     if (z != doorsVertical[x].length) {
                         if (doorsVertical[x][z] == DoorType.Normal) {
-                            rooms[x][z] = room.withRotation(Rotation.NW);
+                            rooms[x][z] = room.withRotation(Rotation.SE);
                         }
                     }
                 }
@@ -408,6 +405,7 @@ public class Generator {
         var oneByFour = source("1x4");
         var twoByTwo = source("2x2");
         var trap = source("trap");
+        var miniboss = source("mini");
         var puzzle = source("puzzle");
         for (int x = 0; x < rooms.length; x++) {
             for (int z = 0; z < rooms[x].length; z++) {
@@ -416,42 +414,39 @@ public class Generator {
                 roomIds[x][z] = switch (room.type()) {
                     case Puzzle -> puzzle.pop();
                     case Blood -> "blood";
-                    case Mini -> "mini";
+                    case Mini -> miniboss.pop();
                     case Trap ->  trap.pop();
-                    case Entrance ->  "entrance";
+                    case Entrance ->  "entry";
                     case Fairy -> "fairy";
-                    default -> {
-                        System.out.println(room.shape());
-                        yield  switch (room.shape()) {
-                            case L_SHAPE -> lShaped.pop();
-                            case ONE_BY_TWO ->  oneByTwo.pop();
-                            case ONE_BY_THREE ->  oneByThree.pop();
-                            case ONE_BY_FOUR ->  oneByFour.pop();
-                            case TWO_BY_TWO ->   twoByTwo.pop();
-                            case ONE_BY_ONE -> {
-                                var doors = new DoorwaysModel(x != 0 && doorsHorizontal[x-1][z] != DoorType.None, z != 0 && doorsVertical[x][z-1] != DoorType.None,
-                                        x+1 != rooms.length && doorsHorizontal[x][z] != DoorType.None, z+1 != rooms.length && doorsVertical[x][z] != DoorType.None);
-                                String match = null;
-                                var it = oneByOne.iterator();
-                                while (match == null  && it.hasNext()) {
-                                    var peek = it.next();
-                                    try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("assets/shematics/dungeon/rooms/1x1/" + peek + ".json");
-                                         var reader = new InputStreamReader(Objects.requireNonNull(resourceAsStream));) {
-                                        var parsed = gson.fromJson(reader, DoorwaysModel.class);
-                                        if (doors.passable(parsed)) {
-                                            Main.LOGGER.debug("Match: {}", peek);
-                                            match = peek;
-                                        }
-                                    } catch (Exception e) {
-                                        Main.LOGGER.error("Failed to load room {}", peek);
-                                        throw new RuntimeException(e);
+                    default -> switch (room.shape()) {
+                        case L_SHAPE -> lShaped.pop();
+                        case ONE_BY_TWO ->  oneByTwo.pop();
+                        case ONE_BY_THREE ->  oneByThree.pop();
+                        case ONE_BY_FOUR ->  oneByFour.pop();
+                        case TWO_BY_TWO ->   twoByTwo.pop();
+                        case ONE_BY_ONE -> {
+                            var doors = new DoorwaysModel(x != 0 && doorsHorizontal[x-1][z] != DoorType.None, z != 0 && doorsVertical[x][z-1] != DoorType.None,
+                                    x+1 != rooms.length && doorsHorizontal[x][z] != DoorType.None, z+1 != rooms.length && doorsVertical[x][z] != DoorType.None);
+                            String match = null;
+                            var it = oneByOne.iterator();
+                            while (match == null  && it.hasNext()) {
+                                var peek = it.next();
+                                try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("assets/shematics/dungeon/rooms/1x1/" + peek + ".json");
+                                     var reader = new InputStreamReader(Objects.requireNonNull(resourceAsStream));) {
+                                    var parsed = gson.fromJson(reader, DoorwaysModel.class);
+                                    if (doors.passable(parsed)) {
+                                        Main.LOGGER.debug("Match: {}", peek);
+                                        match = peek;
                                     }
+                                } catch (Exception e) {
+                                    Main.LOGGER.error("Failed to load room {}", peek);
+                                    throw new RuntimeException(e);
                                 }
-                                oneByOne.remove(match);
-                                yield match;
                             }
-                        };
-                    }
+                            oneByOne.remove(match);
+                            yield match;
+                        }
+                    };
                 };
             }
         }
