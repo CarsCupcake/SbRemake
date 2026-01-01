@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
@@ -107,7 +108,8 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
             ids[room.pos().x()][room.pos().z()] = id;
         }
         try {
-            var path = "assets/shematics/dungeon/rooms/" + (room.type() == RoomType.Room ? room.shape().toString() : room.type().toString().toLowerCase()) + "/" + id;
+            var path = "assets/shematics/dungeon/rooms/" +(room.type().isSpecial() ? room.type().name().toLowerCase(Locale.ENGLISH)
+                    : (room.type() == RoomType.Room ? room.shape().toString() : room.type().toString().toLowerCase()) + "/" + id);
             try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
                 if (resourceAsStream != null)
                     try (GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {

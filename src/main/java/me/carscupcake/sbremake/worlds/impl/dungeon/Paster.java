@@ -15,11 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
 
 public class Paster {
-    private final Instance instance;
 
     @SneakyThrows
     public Paster(Room[][] rooms, Instance instance) {
-        this.instance = instance;
         var threads = new ArrayList<Thread>();
         AtomicInteger i = new AtomicInteger(0);
         if (rooms.length == 0) return;
@@ -102,7 +100,8 @@ public class Paster {
 
     public static void paste(Pos2d pos2d, Rotation rotation, RoomShape shape, String id, RoomType type, Instance instance) {
         try {
-            var path = "assets/shematics/dungeon/rooms/" + (type == RoomType.Room ?  shape.toString() : type.toString().toLowerCase()) + "/" + id;
+            var path = "assets/shematics/dungeon/rooms/" + (type.isSpecial() ? type.name().toLowerCase(Locale.ENGLISH)
+                    : (type == RoomType.Room ?  shape.toString() : type.toString().toLowerCase()) + "/" + id);
             try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
                 try (GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {
                     var obj = JsonParser.parseReader(new InputStreamReader(gzipOut)).getAsJsonObject();

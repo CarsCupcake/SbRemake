@@ -89,14 +89,14 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
         try(ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipfile))) {
             for (File file : files) {
                 try(FileInputStream in = new FileInputStream(file.getCanonicalFile())) {
-                    // add ZIP entry to output stream
+                    // add ZIP entrance to output stream
                     out.putNextEntry(new ZipEntry(file.getName()));
                     // transfer bytes from the file to the ZIP file
                     int len;
                     while ((len = in.read(buf)) > 0) {
                         out.write(buf, 0, len);
                     }
-                    // complete the entry
+                    // complete the entrance
                     out.closeEntry();
                 }
             }

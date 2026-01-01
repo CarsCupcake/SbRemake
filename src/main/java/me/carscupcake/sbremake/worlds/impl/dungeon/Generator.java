@@ -33,6 +33,7 @@ public class Generator {
     private final Room blood;
     private final Room fairy;
     private final Room trap;
+    private final Room mini;
     @Setter //DEBUG ONLY!!!!!!!!!
     private Room[][] rooms;
     private final String[][] roomIds;
@@ -49,9 +50,10 @@ public class Generator {
         this.roomIds = new String[rooms.length][rooms[0].length];
         if (seed == -1) {
             entrance = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
-            blood = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
-            fairy = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
-            trap = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            blood = new Room(RoomType.Blood, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            fairy = new Room(RoomType.Fairy, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            trap = new Room(RoomType.Trap, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            mini = new Room(RoomType.Mini, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
             random = new Random();
             return;
         }
@@ -120,6 +122,18 @@ public class Generator {
             rooms[x][z] =
                     new Room(RoomType.Puzzle, RoomShape.ONE_BY_ONE, new Pos2d(x, z), Rotation.NW, List.of(), null); //TODO RoomData with puzzle data
         }
+
+
+        int mx;
+        int mz;
+        do {
+            mx = random.nextInt(rooms.length);
+            mz = random.nextInt(rooms[0].length);
+        } while (!canPlacePuzzle(mx, mz));
+        var room = new Room(RoomType.Mini, RoomShape.ONE_BY_ONE, new Pos2d(mx, mz), Rotation.NW, List.of(), null);
+        rooms[mx][mz] = room;
+        mini = room;
+
 
         for (var x : xEs)
             for (var z : zEs) {
@@ -416,7 +430,7 @@ public class Generator {
                     case Blood -> "blood";
                     case Mini -> miniboss.pop();
                     case Trap ->  trap.pop();
-                    case Entrance ->  "entry";
+                    case Entrance ->  "entranceance";
                     case Fairy -> "fairy";
                     default -> switch (room.shape()) {
                         case L_SHAPE -> lShaped.pop();
