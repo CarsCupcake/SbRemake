@@ -30,7 +30,7 @@ public abstract class CrimsonHelmetBaseline extends KuudraHelmetBaseline {
 
     @Override
     public String getName() {
-        return (armorTier().getName()) + " Crimson Helmet";
+        return (armorTier().getName()) + "Crimson Helmet";
     }
 
     @Override

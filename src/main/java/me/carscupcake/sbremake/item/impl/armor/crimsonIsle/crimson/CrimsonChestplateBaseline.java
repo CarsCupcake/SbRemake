@@ -31,7 +31,7 @@ public abstract class CrimsonChestplateBaseline extends KuudraChestplateBaseline
 
     @Override
     public String getName() {
-        return (armorTier().getName()) + " Crimson Chestplate";
+        return (armorTier().getName()) + "Crimson Chestplate";
     }
 
     @Override

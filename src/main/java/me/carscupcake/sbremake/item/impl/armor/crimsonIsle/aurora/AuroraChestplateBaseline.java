@@ -21,7 +21,7 @@ public abstract class AuroraChestplateBaseline extends KuudraChestplateBaseline 
 
     @Override
     public String getName() {
-        return (armorTier().getName()) + " Aurora Chestplate";
+        return (armorTier().getName()) + "Aurora Chestplate";
     }
 
     @Override

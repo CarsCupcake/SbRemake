@@ -22,7 +22,7 @@ public abstract class AuroraHelmetBaseline extends KuudraHelmetBaseline {
 
     @Override
     public String getName() {
-        return (armorTier().getName()) + " Aurora Helmet";
+        return (armorTier().getName()) + "Aurora Helmet";
     }
 
     @Override

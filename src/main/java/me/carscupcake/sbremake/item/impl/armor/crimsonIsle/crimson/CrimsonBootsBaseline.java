@@ -31,7 +31,7 @@ public abstract class CrimsonBootsBaseline extends KuudraBootsBaseline {
 
     @Override
     public String getName() {
-        return (armorTier().getName()) + " Crimson Boots";
+        return (armorTier().getName()) + "Crimson Boots";
     }
 
     @Override

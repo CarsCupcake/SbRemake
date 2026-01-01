@@ -34,6 +34,8 @@ public record AttributeMenu(SkyblockPlayer player) implements SkyblockXpTask {
         List<Inventory> inventories = new LinkedList<>();
         InventoryBuilder builder = null;
         int i = 10;
+        int unlocked = 0;
+        int max = 0;
         for (var shard : Arrays.stream(Shard.values()).sorted(IAttributeShard::compareTo).toList()) {
             if (builder == null) {
                 builder = new InventoryBuilder(6, "Attribute Shards")
@@ -43,6 +45,14 @@ public record AttributeMenu(SkyblockPlayer player) implements SkyblockXpTask {
                         .verticalFill(8, 6, TemplateItems.EmptySlot.getItem());
             }
             var playerShard = player.getAttributesShards().get(shard);
+            if (playerShard != null) {
+                if (playerShard.level() == 10) {
+                    unlocked++;
+                    max++;
+                } else if (playerShard.level() > 0) {
+                    unlocked++;
+                }
+            }
             var level = playerShard == null ? 0 : playerShard.level();
             var previewItem = new ItemBuilder(level == 0 ? Material.GRAY_DYE : shard.getMaterial())
                     .setName("§6" + shard.getAbilityName() + (level == 0 ? "" : (" " + StringUtils.toRoman(level))))
@@ -73,6 +83,19 @@ public record AttributeMenu(SkyblockPlayer player) implements SkyblockXpTask {
             i++;
         }
         if (builder != null) inventories.add(builder.build());
+        var attributeMenuShowItem = new ItemBuilder(Material.LEAD)
+                .setName("§3Attribute Menu")
+                .addLore("""
+                        §7Syphon Shards to unlock and level up your §aAttributes§7
+                        §7Each Attribute grant its own unique §dpower§7, active at all times, no matter where you are!
+                        §aAttributs §7can reach up to level §b10§7. with shard costs scaling based on their §drarity§7.
+                        """)
+                .addAllLore("§7Attributes Found: §e" + unlocked + "§6/§e" + Shard.values().length,
+                        "§7Attributes Maxed: §e" + max + "§6/§e" + Shard.values().length,
+                        "§7Total XP: §b" + getTotalXp() + "§3/§b" + getMaxXp())
+                .build();
+        for (var inventory : inventories)
+            inventory.setItemStack(4, attributeMenuShowItem);
         var pagedGui = new PageGui(inventories, PageGui.ItemSlotPosition.BottomRight, PageGui.ItemSlotPosition.BottomLeft);
         pagedGui.setCancelled(true);
         pagedGui.showGui(player);
