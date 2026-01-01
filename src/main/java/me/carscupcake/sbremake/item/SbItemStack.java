@@ -373,7 +373,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         double gemstoneValue = 0;
         gemstoneValue = getGemstoneStat(stat, gemstoneValue, gemstoneSlots);
         var dungeonValue = 0d;
-        if (isDungeonItem() && (player == null || player.getWorldProvider().type() != SkyblockWorld.Dungeon)) {
+        if (isDungeonItem() && (player == null || player.getWorldProvider() != null && player.getWorldProvider().type() != SkyblockWorld.Dungeon)) {
             var stars = getModifier(Modifier.STARS);
             var mult = calculatePlayerDungeonBonus(player);
             dungeonValue = (value - value * ((StarUpgradable) sbItem).getBonus(player, stars)) * (1 + mult);
@@ -425,7 +425,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         }
         GetItemStatEvent event = new GetItemStatEvent(this, stat, baseStat, player);
         if (sbItem instanceof StarUpgradable starUpgradable) {
-            if ((isDungeonItem() || getModifier(Modifier.DUNGEON_ITEM)) && player != null && player.getWorldProvider().type() == SkyblockWorld.Dungeon)
+            if ((isDungeonItem() || getModifier(Modifier.DUNGEON_ITEM)) && player != null && player.getWorldProvider() != null && player.getWorldProvider().type() == SkyblockWorld.Dungeon)
                 event.setMultiplier(event.getMultiplier() + calculatePlayerDungeonBonus(player));
             else
                 event.setMultiplier(event.getMultiplier() + starUpgradable.getBonus(player, getModifier(Modifier.STARS)));

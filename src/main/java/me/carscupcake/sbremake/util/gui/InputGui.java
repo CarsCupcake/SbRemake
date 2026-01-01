@@ -27,7 +27,11 @@ public record InputGui(List<String> prompt) {
             .addListener(PlayerPacketEvent.class, event -> {
                 if (event.getPacket() instanceof ClientUpdateSignPacket(var pos, _, List<String> lines) && inputGuis.containsKey((SkyblockPlayer) event.getPlayer())) {
                     event.getPlayer().sendPacket(new BlockChangePacket(pos, event.getPlayer().getInstance().getBlock(pos)));
-                    inputGuis.get((SkyblockPlayer) event.getPlayer()).accept(lines);
+                    try {
+                        inputGuis.get((SkyblockPlayer) event.getPlayer()).accept(lines);
+                    } catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
                     inputGuis.remove((SkyblockPlayer) event.getPlayer());
                     event.setCancelled(true);
                 }

@@ -201,7 +201,7 @@ public enum CentauriToyBox {
         private final InputGui input = new InputGui(List.of("", "^^^^^^", "Enter your", "amount!"));
         @Override
         public void executeToy(SkyblockPlayer player) {
-            input.show(player, InputGui.SIMPLE_INTEGER_FORMAT, i -> {
+            input.show(player, InputGui.SHORTENED_LONG_FORMAT, i -> {
                 if (i == null) {
                     player.sendMessage("Not a valid number");
                     return;
