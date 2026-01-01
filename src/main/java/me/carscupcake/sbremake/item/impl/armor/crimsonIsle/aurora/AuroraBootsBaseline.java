@@ -22,7 +22,7 @@ public abstract class AuroraBootsBaseline extends KuudraBootsBaseline {
 
     @Override
     public String getName() {
-        return (armorTier().getName()) + " Aurora Boots";
+        return (armorTier().getName()) + "Aurora Boots";
     }
 
     @Override

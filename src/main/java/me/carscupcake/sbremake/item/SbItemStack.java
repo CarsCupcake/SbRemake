@@ -6,6 +6,7 @@ import me.carscupcake.sbremake.item.ability.Ability;
 import me.carscupcake.sbremake.item.impl.bow.Shortbow;
 import me.carscupcake.sbremake.item.impl.other.SkyblockMenu;
 import me.carscupcake.sbremake.item.impl.pets.Pet;
+import me.carscupcake.sbremake.item.impl.shard.ShardItem;
 import me.carscupcake.sbremake.item.modifiers.Modifier;
 import me.carscupcake.sbremake.item.modifiers.RuneModifier;
 import me.carscupcake.sbremake.item.modifiers.enchantment.NormalEnchantments;
@@ -96,6 +97,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     @NotNull
     public static SbItemStack base(Material material) {
         ISbItem item = items.get(material.key().value().toUpperCase());
+        if (item == null) return SbItemStack.AIR;
         return item.create();
     }
 
@@ -139,11 +141,28 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
                 list = list.with(Enchantment.PROTECTION, 1);
             }
         }
+        if (sbItem instanceof ShardItem) {
+            var modifier = getModifier(Modifier.ATTRIBUTE);
+            if (modifier != null) {
+                if (modifier.getMaterial() == Material.PLAYER_HEAD) {
+                    itemStack = itemStack.with(DataComponents.PROFILE, new HeadProfile(new PlayerSkin(Objects.requireNonNull(modifier.getHeadValue()), "")));
+                } else {
+                    itemStack = itemStack.withMaterial(modifier.getMaterial());
+                }
+            }
+        }
         return new SbItemStack(itemStack.with(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(false, ISbItem.HIDDEN_COMPONENTS))
                 .with(DataComponents.LORE, lore).with(DataComponents.ENCHANTMENTS, list).with(DataComponents.CUSTOM_NAME, Component.text(getRarity().getPrefix() + displayName())), sbItem);
     }
 
     public String displayName() {
+        if (sbItem instanceof ShardItem) {
+            var modifier = getModifier(Modifier.ATTRIBUTE);
+            if (modifier != null) {
+                return modifier.getDisplayName();
+            }
+        }
+
         var suffix = new StringBuilder();
 
         if (sbItem instanceof StarUpgradable u) {
@@ -187,7 +206,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     Soulbound or not
     Rarity - Type String
      */
-    public static final Stat[] redStats = {Stat.Damage, Stat.Strength, Stat.CritChance, Stat.CritDamage, Stat.AttackSpeed};
+    public static final Stat[] redStats = {Stat.Damage, Stat.Strength, Stat.CritChance, Stat.CritDamage, Stat.AttackSpeed, Stat.HeatResistance};
     public static final Stat[] greenStats = {Stat.SwingRange, Stat.Health, Stat.Defense, Stat.Speed, Stat.Intelligence, Stat.MagicFind, Stat.PetLuck,
             Stat.TrueDefense, Stat.Ferocity, Stat.MiningSpeed, Stat.Pristine, Stat.MiningFortune, Stat.FarmingFortune, Stat.WheatFortune, Stat.CarrotFortune, Stat.PotatoFortune, Stat.PumpkinFortune, Stat.MelonFortune, Stat.MushroomFortune, Stat.CactusFortune, Stat.SugarCaneFortune, Stat.NetherWartFortune, Stat.CocoaBeansFortune, Stat.ForagingFortune, Stat.SeaCreatureChance, Stat.FishingSpeed, Stat.Vitality, Stat.Mending, Stat.Sweep};
 
@@ -321,6 +340,19 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             lore.add((rarity.getPrefix()) + "Shortbow: Instantly shoots!");
             lore.add("  ");
         }
+        if (sbItem instanceof ShardItem) {
+            var modifier = getModifier(Modifier.ATTRIBUTE);
+            if (modifier != null) {
+                lore.add("§6" + modifier.getAbilityName() + " I");
+                lore.addAll(modifier.getLore().build(this, player));
+                lore.add(" ");
+                lore.add("§7You can syphon this shard from");
+                lore.add("§7from your §aHunting Box§7.");
+                lore.add(" ");
+                lore.add(getRarity().getPrefix() + "§l" + getRarity().getDisplay().toUpperCase() + " " + modifier.getCategory().name().toUpperCase() +" SHARD §7(ID " + modifier.getShardId() + ")");
+                return lore;
+            }
+        }
         if (sbItem.getType().isReforgable() && reforge == null) {
             lore.add("§8This item can be reforged!");
         }
@@ -341,7 +373,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         double gemstoneValue = 0;
         gemstoneValue = getGemstoneStat(stat, gemstoneValue, gemstoneSlots);
         var dungeonValue = 0d;
-        if (isDungeonItem() && (player == null || player.getWorldProvider().type() != SkyblockWorld.Dungeon)) {
+        if (isDungeonItem() && (player == null || player.getWorldProvider() != null && player.getWorldProvider().type() != SkyblockWorld.Dungeon)) {
             var stars = getModifier(Modifier.STARS);
             var mult = calculatePlayerDungeonBonus(player);
             dungeonValue = (value - value * ((StarUpgradable) sbItem).getBonus(player, stars)) * (1 + mult);
@@ -351,6 +383,12 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
     }
 
     public ItemRarity getRarity() {
+        if (sbItem instanceof ShardItem) {
+            var modifier = getModifier(Modifier.ATTRIBUTE);
+            if (modifier != null) {
+                return modifier.getRarity();
+            }
+        }
         if (sbItem.getType() == ItemType.Rune) {
             RuneModifier modifier = getModifier(Modifier.RUNE);
             if (modifier != null)
@@ -387,7 +425,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         }
         GetItemStatEvent event = new GetItemStatEvent(this, stat, baseStat, player);
         if (sbItem instanceof StarUpgradable starUpgradable) {
-            if ((isDungeonItem() || getModifier(Modifier.DUNGEON_ITEM)) && player != null && player.getWorldProvider().type() == SkyblockWorld.Dungeon)
+            if ((isDungeonItem() || getModifier(Modifier.DUNGEON_ITEM)) && player != null && player.getWorldProvider() != null && player.getWorldProvider().type() == SkyblockWorld.Dungeon)
                 event.setMultiplier(event.getMultiplier() + calculatePlayerDungeonBonus(player));
             else
                 event.setMultiplier(event.getMultiplier() + starUpgradable.getBonus(player, getModifier(Modifier.STARS)));

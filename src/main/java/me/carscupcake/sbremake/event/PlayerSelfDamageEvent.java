@@ -17,7 +17,8 @@ public class PlayerSelfDamageEvent implements CancellableEvent, IDamageEvent {
     private final SkyblockPlayer player;
     private double normalDamage;
     private double trueDamage;
-    private double multiplier = 1;
+    private double multiplicativeMultiplier = 1;
+    private double additiveMultiplier = 1;
     private boolean cancelled = false;
     private final Set<Consumer<Double>> finalizers = new HashSet<>();
 
@@ -50,13 +51,43 @@ public class PlayerSelfDamageEvent implements CancellableEvent, IDamageEvent {
     }
 
     @Override
-    public double getTargetDefense() {
+    public double getDefense() {
         return player.getStat(Stat.Defense);
     }
 
     @Override
-    public double getTargetTrueDefense() {
+    public double getTrueDefense() {
         return player.getStat(Stat.TrueDefense);
+    }
+
+    @Override
+    public void setDefense(double d) {
+
+    }
+
+    @Override
+    public void setTrueDefense(double d) {
+
+    }
+
+    @Override
+    public double getAdditiveMultiplier() {
+        return additiveMultiplier;
+    }
+
+    @Override
+    public double getMultiplicativeMultiplier() {
+        return multiplicativeMultiplier;
+    }
+
+    @Override
+    public void addAdditiveMultiplier(double d) {
+        this.additiveMultiplier += d;
+    }
+
+    @Override
+    public void addMultiplicativeMultiplier(double d) {
+        this.multiplicativeMultiplier *= d;
     }
 
     @Override

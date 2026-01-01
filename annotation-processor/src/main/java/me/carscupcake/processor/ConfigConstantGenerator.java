@@ -42,7 +42,7 @@ public class ConfigConstantGenerator {
 
     private TypeSpec generateClass(String name, JsonObject section) {
         var modifiers = new javax.lang.model.element.Modifier[]{javax.lang.model.element.Modifier.PUBLIC, javax.lang.model.element.Modifier.STATIC, javax.lang.model.element.Modifier.FINAL};
-        var classBuilder = TypeSpec.classBuilder(name)
+        var classBuilder = TypeSpec.classBuilder(name.split("@")[0])
                 .addModifiers(Modifier.FINAL, Modifier.PUBLIC);
         for (var elements : section.entrySet()) {
             var fieldName = elements.getKey().toUpperCase().replace("-", "_");
@@ -79,12 +79,18 @@ public class ConfigConstantGenerator {
                         for (int i = 0; i < array.size(); i++) {
                             strs[i] = array.get(i).getAsString();
                         }
-                        var filedBuilder = FieldSpec.builder(String[].class, fieldName, modifiers)
+                        var filedBuilder = FieldSpec.builder(String[].class, fieldName.split("@")[0], modifiers)
                                 .initializer("new String[]{" + "$S,".repeat(strs.length).substring(0, strs.length * 3 - 1) + "}", (Object[]) strs)
                                 .addJavadoc("The value of the config option $L", elements.getKey());
                         classBuilder.addField(filedBuilder.build());
                     } else if (firstElement.getAsJsonPrimitive().isNumber()) {
                         Class<?> type;
+                        if (fieldName.contains("@")){
+                            var split = fieldName.split("@");
+                            fieldName = split[0];
+                            var typeString = split[1].toLowerCase();
+                            type = Class.forPrimitiveName(typeString).arrayType();
+                        } else
                         if (array.get(0).getAsJsonPrimitive().getAsNumber() instanceof Integer) {
                             type = int[].class;
                         } else if (array.get(0).getAsJsonPrimitive().getAsNumber() instanceof Long) {

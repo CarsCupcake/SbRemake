@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.worlds.impl.hub;
 
 import lombok.Getter;
+import me.carscupcake.sbremake.item.impl.shard.Shard;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.player.hotm.Powder;
 import me.carscupcake.sbremake.player.potion.IPotion;
@@ -200,7 +201,7 @@ public enum CentauriToyBox {
         private final InputGui input = new InputGui(List.of("", "^^^^^^", "Enter your", "amount!"));
         @Override
         public void executeToy(SkyblockPlayer player) {
-            input.show(player, InputGui.SIMPLE_INTEGER_FORMAT, i -> {
+            input.show(player, InputGui.SHORTENED_LONG_FORMAT, i -> {
                 if (i == null) {
                     player.sendMessage("Not a valid number");
                     return;
@@ -275,7 +276,8 @@ public enum CentauriToyBox {
             .build()) {
         @Override
         public void executeToy(SkyblockPlayer player) {
-            player.sendMessage("§cShards are not implemented yet!");
+            for (var shard : Shard.values())
+                player.getHuntingBox().add(shard, 10);
         }
     };
 

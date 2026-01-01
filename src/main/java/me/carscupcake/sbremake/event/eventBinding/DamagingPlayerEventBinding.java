@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-public record DamagingPlayerEventBinding(Consumer<IDamageEvent> eventConsumer) implements EventBinding<IDamageEvent> {
+public record DamagingPlayerEventBinding(Consumer<IDamageEvent> eventConsumer) implements EventBinding<@NotNull IDamageEvent> {
 
     private static final Collection<Class<? extends Event>> eventTypes = List.of(PlayerSelfDamageEvent.class,
             EntityMeleeDamagePlayerEvent.class, ProjectileDamagePlayerEvent.class);

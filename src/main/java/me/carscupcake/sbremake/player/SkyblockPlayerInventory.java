@@ -8,7 +8,6 @@ import me.carscupcake.sbremake.item.SbItemStack;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.event.inventory.InventoryItemChangeEvent;
-import net.minestom.server.inventory.AbstractInventory;
 import net.minestom.server.inventory.PlayerInventory;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.utils.MathUtils;
@@ -48,10 +47,10 @@ public class SkyblockPlayerInventory extends PlayerInventory implements Iterable
 
     @Override
     protected void UNSAFE_itemInsert(int slot, @NotNull ItemStack item, @NotNull ItemStack previous, boolean sendPacket) {
-        UNSAFE_itemInsert(slot, SbItemStack.from(item), sendPacket);
+        UNSAFE_itemInsert(slot, SbItemStack.from(item), SbItemStack.from(previous), sendPacket);
     }
 
-    protected void UNSAFE_itemInsert(int slot, @NotNull SbItemStack itemStack, boolean sendPacket) {
+    protected void UNSAFE_itemInsert(int slot, @NotNull SbItemStack itemStack, @NotNull SbItemStack previous, boolean sendPacket) {
         EquipmentSlot var10000;
         switch (slot) {
             case 41 -> var10000 = EquipmentSlot.HELMET;
@@ -64,6 +63,9 @@ public class SkyblockPlayerInventory extends PlayerInventory implements Iterable
 
         EquipmentSlot equipmentSlot = var10000;
         if (equipmentSlot != null) {
+            if (equipmentSlot.isArmor()) {
+                player.recalculateArmor(previous, itemStack);
+            }
             SbEntityEquipEvent entityEquipEvent = new SbEntityEquipEvent(this.player, itemStack, equipmentSlot);
             EventDispatcher.call(entityEquipEvent);
             itemStack = entityEquipEvent.getSbItemStack();
@@ -153,7 +155,7 @@ public class SkyblockPlayerInventory extends PlayerInventory implements Iterable
                 return;
             }
 
-            this.UNSAFE_itemInsert(slot, itemStack, sendPacket);
+            this.UNSAFE_itemInsert(slot, itemStack, previous, sendPacket);
         }
 
         EventDispatcher.call(new InventoryItemChangeEvent(this, slot, previous.item(), itemStack.item()));

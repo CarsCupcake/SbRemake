@@ -62,7 +62,7 @@ public class CrimsonBoots extends CrimsonBootsBaseline implements Listener {
                             Vec v = new Vec(3, 0, 0).rotateAroundY(Math.toRadians(new Random().nextInt(360)));
                             Vec supportVec = event.getTarget().getPosition().asVec().add(v);
                             Vec dir = v.mul(-1).mul(2).withY(2);
-                            Set<Entity> es = EntityUtils.getEntitiesInLine(supportVec.asPosition(), supportVec.add(dir).asPosition(), player.getInstance(), 2);
+                            Set<Entity> es = EntityUtils.getEntitiesInLine(supportVec.asPos(), supportVec.add(dir).asPos(), player.getInstance(), 2);
                             double swipeStrength = switch (ability.getTier()) {
                                 case Base -> switch (pieces) {
                                     case 3 -> 1;

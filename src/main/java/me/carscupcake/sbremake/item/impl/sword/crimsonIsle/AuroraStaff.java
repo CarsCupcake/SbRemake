@@ -37,8 +37,7 @@ public class AuroraStaff implements ISbItem, ISbItem.StatProvider, NpcSellable, 
     }), new ItemAbility<>("Runic Zap", AbilityType.RIGHT_CLICK, event -> {
         var type = SELECTED_TYPES.getOrDefault(event.player(), RuneType.Mediator);
         final var eyePos = event.player().getPosition().add(0, event.player().getEyeHeight(), 0);
-        var hit = EntityUtils.getEntitiesInLine(eyePos, eyePos.add(event.player().getPosition().direction().normalize().mul(RANGE)), event.player().getInstance());
-        SkyblockEntity hitEntity = (SkyblockEntity) hit.stream().filter(entity -> entity instanceof SkyblockEntity).min((o1, o2) -> (int) (o1.getPosition().distance(eyePos) - o2.getPosition().distance(eyePos))).orElse(null);
+        SkyblockEntity hitEntity = EntityUtils.getSkyblockEntityInLine(eyePos, eyePos.add(event.player().getPosition().direction().normalize().mul(RANGE)), event.player().getInstance(), 1d);
         var steps = RANGE * 2;
         if (hitEntity != null) {
             steps = (int) (hitEntity.getDistance(eyePos) * 2);
