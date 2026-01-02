@@ -1,5 +1,6 @@
 package me.carscupcake.sbremake.worlds.impl;
 
+import lombok.Getter;
 import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.WorldProvider;
@@ -13,6 +14,7 @@ import java.io.IOException;
 
 public class Dungeon extends WorldProvider {
 
+    @Getter
     private final Generator generator;
 
     public Dungeon(Generator generator) {

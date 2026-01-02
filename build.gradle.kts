@@ -63,7 +63,10 @@ dependencies {
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:6.0.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.slf4j:slf4j-api:2.0.13")
     implementation("org.slf4j:slf4j-simple:2.0.13")
@@ -93,6 +96,9 @@ tasks.jar {
             "Multi-Release" to "true" // Indicates a multi-release JAR
         )
     }
+}
+tasks.test {
+    useJUnitPlatform()
 }
 tasks.shadowJar {
     archiveFileName.set("SbRemake.jar")

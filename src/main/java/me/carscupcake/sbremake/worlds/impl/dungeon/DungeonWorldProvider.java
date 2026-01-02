@@ -90,22 +90,25 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
         }
         var chunk = instance.getChunkSupplier().createChunk(instance, chunkX, chunkZ);
         var room = rooms[chunkX / 2][chunkZ / 2];
-        if (room == null) return null;
+        if (room == null) {
+            Main.LOGGER.warn("Room is null at {} {}", chunkX, chunkZ);
+            return null;
+        }
+        var pos = room.pos();
         if (room.parent() != null) room = generator.getFromPos(room.parent());
         var id = ids[room.pos().x()][room.pos().z()];
         if (id == null) {
             //id = room.shape().getSchematics().get()[generator.getRandom().nextInt(room.shape().getSchematics().get().length)];
-            if (room.type() != RoomType.Room) {
+            /*if (room.type() != RoomType.Room) {
                 id = switch (room.type()) {
                     case Trap -> "trap-hard-4";
                     case Puzzle -> "blaze-room-1-high";
-                    default -> null;
+                    default -> ids[pos.x()][pos.z()];
                 };
-            }
+            }*/
 
-
-            if (id == null) return null;
-            ids[room.pos().x()][room.pos().z()] = id;
+            Main.LOGGER.warn("Room id is null at pos {}. Room type is {}. The shape is {}. Defaulting to andesite-2", pos, room.type(), room.shape());
+            id = "andesite-2";
         }
         try {
             var path = "assets/shematics/dungeon/rooms/" +(room.type().isSpecial() ? room.type().name().toLowerCase(Locale.ENGLISH)
@@ -129,8 +132,8 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
                         for (int x = 0; x < 16; x++) {
                             for (int y = 0; y < 140; y++) {
                                 for (int z = 0; z < 16; z++) {
-                                    var pos = new Vec(x + (chunkX * 16), y, z + (chunkZ * 16));
-                                    var undoRotation = room.shape().toRelative(room.pos(), pos, room.rotation());
+                                    var vPos = new Vec(x + (chunkX * 16), y, z + (chunkZ * 16));
+                                    var undoRotation = room.shape().toRelative(room.pos(), vPos, room.rotation());
                                     if (xArr.size() <= undoRotation.blockX() || undoRotation.blockX() < 0) {
                                         continue;
                                     }
@@ -222,8 +225,8 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
                         }
 
                         //North Doors
-                        if (chunkZ % 2 == 0 && room.pos().x() != 0) {
-                            var northDoor = generator.getDoorsHorizontal()[room.pos().x() - 1][room.pos().z()];
+                        if (chunkZ % 2 == 0 && room.pos().z() != 0) {
+                            var northDoor = generator.getDoorsVertical()[room.pos().x()][room.pos().z() - 1];
                             if (northDoor != DoorType.Bridge) {
                                 var block = getBlockFromDoor(northDoor);
                                 if (chunkX % 2 == 0) {
@@ -243,10 +246,9 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
                                 }
                             }
                         }
-
                         //East Doors
-                        if (chunkX % 2 != 0 && room.pos().z() != rooms[0].length - 1) {
-                            var eastDoor = generator.getDoorsVertical()[room.pos().x()][room.pos().z()];
+                        if (chunkX % 2 != 0 && pos.x() != rooms.length - 1) {
+                            var eastDoor = generator.getDoorsHorizontal()[pos.x()][pos.z()];
                             if (eastDoor != DoorType.Bridge) {
                                 var block = getBlockFromDoor(eastDoor);
                                 if (chunkZ % 2 == 0) {
@@ -278,7 +280,7 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
                                     setIfAir(chunk, block, 15, 72, 1);
                                 }
                             }
-                            if (eastDoor == DoorType.None) {
+                            if (eastDoor == DoorType.Normal) {
                                 //TODO Fill with air to make passage
                                 if (chunkZ % 2 == 0) {
                                     setIfAir(chunk, 15, 69, 13);
@@ -305,8 +307,8 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
                         }
 
                         //South Doors
-                        if (chunkZ % 2 != 0 && room.pos().x() != rooms.length - 1) {
-                            var southDoor = generator.getDoorsHorizontal()[room.pos().x()][room.pos().z()];
+                        if (chunkZ % 2 != 0 && pos.z() != rooms.length - 1) {
+                            var southDoor = generator.getDoorsVertical()[pos.x()][pos.z()];
                             if (southDoor != DoorType.Bridge) {
                                 var block = getBlockFromDoor(southDoor);
                                 if (chunkX % 2 == 0) {
@@ -338,7 +340,7 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
                                     setIfAir(chunk, block, 0, 72, 15);
                                 }
                             }
-                            if (southDoor == DoorType.None) {
+                            if (southDoor == DoorType.Normal) {
                                 //TODO Fill with air to make passage
                                 if (chunkX % 2 == 0) {
                                     setIfAir(chunk, 13, 69, 15);
@@ -363,10 +365,9 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
                                 }
                             }
                         }
-
                         //West Doors
-                        if (chunkX % 2 == 0 && room.pos().z() != 0) {
-                            var westDoor = generator.getDoorsVertical()[room.pos().x()][room.pos().z() - 1];
+                        if (chunkX % 2 == 0 && pos.x() != 0) {
+                            var westDoor = generator.getDoorsHorizontal()[pos.x() - 1][pos.z()];
                             if (westDoor != DoorType.Bridge) {
                                 var block = getBlockFromDoor(westDoor);
                                 if (chunkZ % 2 == 0) {
@@ -412,8 +413,12 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
     }
 
     private Block getBlockFromDoor(DoorType door) {
+        if (door == null) {
+            Main.LOGGER.warn("Door type is null");
+            return Block.STONE;
+        }
         return switch (door) {
-            case Normal -> Block.STONE;
+            case None -> Block.STONE;
             case Blood -> Block.RED_TERRACOTTA;
             case Wither -> Block.COAL_BLOCK;
             case Start -> Block.CHISELED_STONE_BRICKS;

@@ -79,4 +79,7 @@ public enum Rotation {
     public static Rotation next(Rotation rotation) {
         return values()[(rotation.ordinal() + 1) % values().length];
     }
+    public Rotation next() {
+        return next(this);
+    }
 }

@@ -1897,7 +1897,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     }
 
     public void recalculateArmor(SkyblockPlayerInventory inventory, @NotNull SbItemStack old, @NotNull SbItemStack newItem) {
-        Main.LOGGER.debug("Recalculate Armor");
+        Main.LOGGER.debug("Recalculate Armor Piece {}", old != SbItemStack.AIR ? old.sbItem().getType() : (newItem != SbItemStack.AIR ? newItem.sbItem().getType() : "Empty"));
         if (old == SbItemStack.AIR && newItem == SbItemStack.AIR) return;
         for (var ability : old.getAbilities(this)) {
             if (ability instanceof FullSetBonus fullSetBonus) {
