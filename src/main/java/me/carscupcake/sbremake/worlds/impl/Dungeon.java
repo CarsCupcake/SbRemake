@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.worlds.impl;
 
 import lombok.Getter;
+import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.util.Pair;
 import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.WorldProvider;
@@ -16,9 +17,12 @@ public class Dungeon extends WorldProvider {
 
     @Getter
     private final Generator generator;
+    private final Pos spawn;
 
     public Dungeon(Generator generator) {
         this.generator = generator;
+        spawn = new Pos(15, 71, generator.getEntrance().pos().z() * 32 + 15);
+        Main.LOGGER.debug("Dungeon Spawn: {}", spawn);
     }
 
     @Override
@@ -34,12 +38,12 @@ public class Dungeon extends WorldProvider {
 
     @Override
     public Pair<Pos, Pos> getChunksToLoad() {
-        return new Pair<>(Pos.ZERO, new Pos(6*31, 0, 6*31));
+        return new Pair<>(new Pos(-31, 0,-31), new Pos(6*31, 0, 6*31));
     }
 
     @Override
     public Pos spawn() {
-        return new Pos(0, 140, 0);
+        return spawn;
     }
 
     @Override

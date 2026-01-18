@@ -158,7 +158,7 @@ public class Generator {
         var shapes = caps.entrySet().stream().filter(e -> e.getValue() > 0).map(Map.Entry::getKey).toArray(RoomShape[]::new);
         shuffleArray(shapes);
         for (RoomShape shape : shapes) {
-            var rot = Rotation.values()[random.nextInt(4)];
+            var rot = shape == RoomShape.ONE_BY_ONE ? Rotation.NW : Rotation.values()[random.nextInt(4)];
             if (shape.tryInsert(rooms, pos2d, rot)) {
                 if (shape == RoomShape.TWO_BY_TWO) {
                     doorsHorizontal[pos2d.x()][pos2d.z()] = DoorType.Bridge;
@@ -471,13 +471,15 @@ public class Generator {
                                         parsed.rotate();
                                         rot = rot.next();
                                     }
+                                    System.out.println("Old: " + rooms[x][z].rotation());
                                     rooms[x][z] = room.withRotation(rot);
+                                    System.out.println("New: " + rooms[x][z].rotation());
                                 } catch (Exception e) {
                                     Main.LOGGER.error("Failed to load room {}", peek);
                                     throw new RuntimeException(e);
                                 }
                             }
-                            if (match == null) throw new IllegalStateException("No room found for " + doors);
+                            if (match == null) throw new DungeonException("No room found for " + doors);
                             oneByOne.remove(match);
                             yield match;
                         }
