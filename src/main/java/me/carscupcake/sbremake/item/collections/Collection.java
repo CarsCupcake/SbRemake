@@ -21,7 +21,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.inventory.click.Click;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import org.junit.Assert;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +43,8 @@ public abstract class Collection implements SkyblockXpTask, DefaultConfigItem {
         this.levelProgress = levels;
         this.rewards = rewards;
         this.maxLevel = levels.length;
-        Assert.assertEquals(levels.length, rewards.size());
+        if (levels.length != rewards.size())
+            throw new IllegalArgumentException("Levels and Rewards must be the same length!");
     }
 
     @Override

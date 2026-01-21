@@ -6,7 +6,6 @@ import me.carscupcake.sbremake.entity.SkyblockEntity;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
-import org.junit.Assert;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -50,7 +49,8 @@ public abstract class TaskScheduler implements Runnable {
     }
 
     public void delayTask(int delay) {
-        Assert.assertNull("Task is already running", task);
+        if (task != null)
+            throw new IllegalStateException("Task is already running");
         task = MinecraftServer.getSchedulerManager().buildTask(() -> {
             run();
             task = null;

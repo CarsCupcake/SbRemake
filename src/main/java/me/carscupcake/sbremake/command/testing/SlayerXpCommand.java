@@ -2,11 +2,11 @@ package me.carscupcake.sbremake.command.testing;
 
 import me.carscupcake.sbremake.entity.slayer.Slayers;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
+import me.carscupcake.sbremake.util.TriConsumer;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentEnum;
 import net.minestom.server.command.builder.arguments.number.ArgumentInteger;
 import net.minestom.server.command.builder.arguments.number.ArgumentNumber;
-import net.openhft.chronicle.wire.TriConsumer;
 
 public class SlayerXpCommand extends Command {
     public SlayerXpCommand() {

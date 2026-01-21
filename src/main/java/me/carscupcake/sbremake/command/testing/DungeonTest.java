@@ -1,29 +1,15 @@
 package me.carscupcake.sbremake.command.testing;
 
-import com.google.common.base.Stopwatch;
 import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.command.DebugCommand;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.Pos2d;
 import me.carscupcake.sbremake.util.TaskScheduler;
-import me.carscupcake.sbremake.worlds.SkyblockWorld;
 import me.carscupcake.sbremake.worlds.WarpLocation;
 import me.carscupcake.sbremake.worlds.impl.Dungeon;
 import me.carscupcake.sbremake.worlds.impl.dungeon.*;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.number.ArgumentInteger;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.LivingEntity;
-import net.minestom.server.instance.IChunkLoader;
-import net.minestom.server.item.component.TooltipDisplay;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
 
 @DebugCommand
 public class DungeonTest extends Command {
@@ -73,7 +59,7 @@ public class DungeonTest extends Command {
         }
         for (int x = 0; x < generator.getRooms().length; x++) {
             for (int y = generator.getRooms()[x].length - 1; y >= 0; y--) {
-                var z =  generator.getRooms()[x][y];
+                var z = generator.getRooms()[x][y];
                 if (z.pos().z() != generator.getRooms()[x].length - 1) {
                     if (generator.getDoorsVertical()[z.pos().x()][z.pos().z()] == DoorType.None) {
                         System.out.print("|");
@@ -89,18 +75,18 @@ public class DungeonTest extends Command {
                 if (len / 2 != 0) System.out.print("-".repeat(len / 2));
                 if (z.type() == RoomType.Blood) System.out.print(ANSI_RED);
                 if (z.type() == RoomType.Entrance) System.out.print(ANSI_GREEN);
-                if (z.type() == RoomType.Fairy)  System.out.print(ANSI_PURPLE);
+                if (z.type() == RoomType.Fairy) System.out.print(ANSI_PURPLE);
                 if (z.type() == RoomType.Trap) System.out.print(ANSI_WHITE);
-                if (z.type() == RoomType.Mini)   System.out.print(ANSI_YELLOW);
-                if (z.type() == RoomType.Puzzle)   System.out.print(ANSI_BLUE);
+                if (z.type() == RoomType.Mini) System.out.print(ANSI_YELLOW);
+                if (z.type() == RoomType.Puzzle) System.out.print(ANSI_BLUE);
                 System.out.print("[" + s + "]");
                 if (z.type() != RoomType.Room) System.out.print(ANSI_RESET);
                 if (len / 2 != 0) System.out.print("-".repeat(len / 2));
             }
             System.out.println();
             for (int y = generator.getRooms()[x].length - 1; y >= 0; y--) {
-                var z =  generator.getRooms()[x][y];
-                if (z.pos().x() == size-1) continue;
+                var z = generator.getRooms()[x][y];
+                if (z.pos().x() == size - 1) continue;
                 System.out.print("-".repeat(4));
                 if (generator.getDoorsHorizontal()[z.pos().x()][z.pos().z()] != DoorType.None) {
                     var type = generator.getDoorsHorizontal()[z.pos().x()][z.pos().z()];
@@ -109,7 +95,7 @@ public class DungeonTest extends Command {
                     System.out.print(ANSI_RESET);
                 } else System.out.print("-");
                 System.out.print("-".repeat(4));
-                if (z.pos().z() == size-1) continue;
+                if (z.pos().z() == size - 1) continue;
                 System.out.print("-");
             }
             System.out.println();
