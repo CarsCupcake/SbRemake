@@ -15,6 +15,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.*;
 import net.minestom.server.item.enchant.Enchantment;
+import net.minestom.server.network.player.ResolvableProfile;
 import net.minestom.server.registry.RegistryKey;
 
 import java.util.*;
@@ -43,8 +44,10 @@ public class ItemBuilder {
         lore.addAll(Objects.requireNonNull(itemStack.get(DataComponents.LORE)));
         count = itemStack.amount();
         isHead = material == Material.PLAYER_HEAD && itemStack.get(DataComponents.PROFILE) != null;
-        if (isHead)
-            headTexture = Objects.requireNonNull(Objects.requireNonNull(itemStack.get(DataComponents.PROFILE)).skin()).textures();
+        if (isHead) {
+            var e = Objects.requireNonNull(Objects.requireNonNull(itemStack.get(DataComponents.PROFILE)).profile());
+            headTexture = e.unify(gameProfile -> gameProfile.properties().getFirst().value(), partial -> partial.properties().getFirst().value());
+        }
         leatherColor = itemStack.get(DataComponents.DYED_COLOR);
         BannerPatterns patterns = itemStack.get(DataComponents.BANNER_PATTERNS);
         if (patterns != null) {
@@ -168,7 +171,7 @@ public class ItemBuilder {
             item.set(DataComponents.BANNER_PATTERNS, new BannerPatterns(bannerPatterns));
         }
         if (isHead) {
-            item.set(DataComponents.PROFILE, new HeadProfile(new PlayerSkin(headTexture, "")));
+            item.set(DataComponents.PROFILE, new ResolvableProfile(new PlayerSkin(headTexture, "")));
         }
         item.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(hideTooltip, ISbItem.HIDDEN_COMPONENTS));
         item.amount(count);

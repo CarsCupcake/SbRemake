@@ -12,7 +12,7 @@ import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Chunk;
-import net.minestom.server.instance.IChunkLoader;
+import net.minestom.server.instance.ChunkLoader;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 public record DungeonWorldProvider(int floor, Pos bounds, Generator generator, String[][] ids, Chunk[][] chunks,
-                                   Block[][][] cachedPallets, ArrayList<Block> bossPallet) implements IChunkLoader {
+                                   Block[][][] cachedPallets, ArrayList<Block> bossPallet) implements ChunkLoader {
     public DungeonWorldProvider(Dungeon dungeon, Generator generator, String[][] ids) {
         this(dungeon.getFloor(), getMax(dungeon.getChunksToLoad()), generator, ids, new Chunk[generator.getRooms().length * 2][generator.getRooms()[0].length * 2], new Block[generator.getRooms().length][generator.getRooms()[0].length][], new ArrayList<>());
     }

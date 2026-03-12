@@ -13,7 +13,7 @@ public class SpecialZealot extends SkyblockEntity {
     public SpecialZealot(SkyblockPlayer owner) {
         super(EntityType.ENDERMAN, MobType.Ender);
         this.owner = owner;
-        ((EndermanMeta) this.entityMeta).setCarriedBlockID(Block.END_PORTAL_FRAME.id());
+        ((EndermanMeta) this.entityMeta).setCarriedBlock(Block.END_PORTAL_FRAME);
     }
 
     @Override

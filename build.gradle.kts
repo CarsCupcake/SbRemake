@@ -7,7 +7,7 @@ plugins {
     `maven-publish`
     signing
     alias(libs.plugins.nmcp)
-    id("com.gradleup.shadow") version "9.0.0-rc1"
+    alias(libs.plugins.shadow)
 }
 
 group = "me.carscupcake"

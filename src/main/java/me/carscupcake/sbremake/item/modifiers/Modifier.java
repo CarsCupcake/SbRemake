@@ -25,7 +25,7 @@ import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.component.CustomData;
-import net.minestom.server.item.component.HeadProfile;
+import net.minestom.server.network.player.ResolvableProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -207,7 +207,7 @@ public interface Modifier<T> {
 
         @Override
         public SbItemStack toNbt(Pet.PetInfo petInfo, SbItemStack itemStack) {
-            ItemStack item = itemStack.item().with(DataComponents.PROFILE, new HeadProfile(new PlayerSkin("", petInfo.pet().skullValue())));
+            ItemStack item = itemStack.item().with(DataComponents.PROFILE, new ResolvableProfile(new PlayerSkin("", petInfo.pet().skullValue())));
             CompoundBinaryTag extraAttributes = Objects.requireNonNull(itemStack.item().get(DataComponents.CUSTOM_DATA)).nbt();
             CompoundBinaryTag petInfoTag = extraAttributes.getCompound("petInfo");
             petInfoTag = petInfoTag.putString("type", petInfo.pet().getId()).putDouble("exp", petInfo.exp()).putInt("candyUsed", petInfo.petCandyUsed()).putString("tier", petInfo.rarity().name());
