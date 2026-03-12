@@ -3,10 +3,13 @@ package me.carscupcake.sbremake.worlds.impl.dungeon;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import me.carscupcake.sbremake.Main;
+import me.carscupcake.sbremake.util.Pair;
+import me.carscupcake.sbremake.worlds.impl.Dungeon;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import net.minestom.server.coordinate.BlockVec;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.IChunkLoader;
@@ -18,16 +21,17 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
-public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][] chunks,
-                                   Block[][][] cachedPallets) implements IChunkLoader {
-    public DungeonWorldProvider(Generator generator, String[][] ids) {
-        this(generator, ids, new Chunk[generator.getRooms().length * 2][generator.getRooms()[0].length * 2], new Block[generator.getRooms().length][generator.getRooms()[0].length][]);
+public record DungeonWorldProvider(int floor, Pos bounds, Generator generator, String[][] ids, Chunk[][] chunks,
+                                   Block[][][] cachedPallets, ArrayList<Block> bossPallet) implements IChunkLoader {
+    public DungeonWorldProvider(Dungeon dungeon, Generator generator, String[][] ids) {
+        this(dungeon.getFloor(), getMax(dungeon.getChunksToLoad()), generator, ids, new Chunk[generator.getRooms().length * 2][generator.getRooms()[0].length * 2], new Block[generator.getRooms().length][generator.getRooms()[0].length][], new ArrayList<>());
+    }
+
+    private static Pos getMax(Pair<Pos, Pos> bounds) {
+        return new Pos(Math.max(bounds.getFirst().x(), bounds.getSecond().x()), 0, Math.max(bounds.getFirst().z(), bounds.getSecond().z()));
     }
 
     public static void loadPalette(int origin, JsonArray jsonPalette, Block[] blocks) {
@@ -81,7 +85,7 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
     }
 
     private void loadSchematic(Room room, int chunkX, int chunkZ, Chunk chunk, String id, BlockVec schematicIndexOffset) throws IOException {
-        var path = "assets/shematics/dungeon/rooms/" + (room.type().isSpecial() ? room.type().name().toLowerCase(Locale.ENGLISH)
+        var path = "assets/schematics/dungeon/rooms/" + (room.type().isSpecial() ? room.type().name().toLowerCase(Locale.ENGLISH)
                 : (room.type() == RoomType.Room ? room.shape().toString() : room.type().toString().toLowerCase()) + "/" + id);
         try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
             if (resourceAsStream != null)
@@ -129,12 +133,70 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
         }
     }
 
+    private void loadSchematic(List<Block> blocks, int chunkX, int chunkZ, Chunk chunk, String path, BlockVec schematicIndexOffset) throws IOException {
+        try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
+            if (resourceAsStream != null)
+                try (GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {
+                    var obj = JsonParser.parseReader(new InputStreamReader(gzipOut)).getAsJsonObject();
+                    var xArr = obj.get("blocks").getAsJsonArray();
+                    for (int x = 0; x < Math.min(16, xArr.size() - (schematicIndexOffset.blockX() + x + (chunkX * 16))); x++) {
+                        var yArr = xArr.get(schematicIndexOffset.blockX() + x + (chunkX * 16)).getAsJsonArray();
+                        for (int y = 0; y < yArr.size(); y++) {
+                            var zArr = yArr.get(schematicIndexOffset.blockY() + y).getAsJsonArray();
+                            for (int z = 0; z < Math.min(16, zArr.size() - (schematicIndexOffset.blockZ() + z + (chunkZ * 16))); z++) {
+                                try{
+                                var block = blocks.get(zArr.get(schematicIndexOffset.blockZ() + z + (chunkZ * 16)).getAsInt());
+                                if (block.isAir()) {
+                                    continue;
+                                }
+                                    chunk.setBlock(x, y, z, block);
+                                } catch (IndexOutOfBoundsException e) {
+                                    System.err.println("Failed to load schematic " + path);
+                                    e.printStackTrace(System.err);
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+        }
+    }
+
     @Override
     public @Nullable Chunk loadChunk(@NotNull Instance instance, int chunkX, int chunkZ) {
         Room[][] rooms = generator.getRooms();
-        if (chunkX > rooms.length * 2 || chunkZ > rooms[0].length * 2) return null;
         if (chunkZ < 0) return null;
-        if (chunks.length <= chunkX || chunks.length <= chunkZ) return null;
+        if (chunkX > bounds.chunkX() || chunkZ > bounds.chunkZ()) return null;
+        /*if (chunkX > 0 && rooms[0].length * 2 < chunkZ) {
+            String floorSchematic = "assets/schematics/dungeon/boss/floor" + floor + ".schematic.gz";
+            if (bossPallet.isEmpty()) {
+                synchronized (bossPallet) {
+                    if (bossPallet.isEmpty())
+                        try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(floorSchematic); GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {
+                            var obj = JsonParser.parseReader(new InputStreamReader(gzipOut)).getAsJsonObject();
+                            var jsonPallete = obj.get("pallete").getAsJsonArray();
+                            var blocks = new Block[jsonPallete.size()];
+                            loadPalette(0, jsonPallete, blocks);
+                            bossPallet.addAll(Arrays.asList(blocks));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                }
+            }
+            var chunk = instance.getChunkSupplier().createChunk(instance, chunkX, chunkZ);
+            try {
+                loadSchematic(bossPallet, chunkX, chunkZ, chunk, floorSchematic, new BlockVec(0, 0,  -rooms[0].length * 32));
+            } catch (IOException e) {
+                e.printStackTrace(System.err);
+            } catch (Exception e) {
+                System.err.println("Failed to load boss floor schematic");
+                e.printStackTrace(System.err);
+            }
+            return chunk;
+        }*/
+        if (chunkX > rooms.length * 2 || rooms[0].length * 2 < chunkZ) return null;
+        if (chunks.length <= chunkX || chunks[0].length <= chunkZ) return null;
         if (chunkX < 0) {
             if (chunkX == -1) {
                 var room = rooms[0][chunkZ / 2];

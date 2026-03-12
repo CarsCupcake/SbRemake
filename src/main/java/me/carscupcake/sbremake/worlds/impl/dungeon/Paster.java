@@ -100,7 +100,7 @@ public class Paster {
 
     public static void paste(Pos2d pos2d, Rotation rotation, RoomShape shape, String id, RoomType type, Instance instance) {
         try {
-            var path = "assets/shematics/dungeon/rooms/" + (type.isSpecial() ? type.name().toLowerCase(Locale.ENGLISH)
+            var path = "assets/schematics/dungeon/rooms/" + (type.isSpecial() ? type.name().toLowerCase(Locale.ENGLISH)
                     : (type == RoomType.Room ?  shape.toString() : type.toString().toLowerCase()) + "/" + id);
             try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
                 try (GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {
@@ -131,6 +131,31 @@ public class Paster {
                     var p = o.get("pos").getAsJsonObject();
                     test.setInstance(instance, new Pos(p.get("x").getAsInt(), p.get("y").getAsInt(), p.get("z").getAsInt()));
                 }*/
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void paste(Pos2d pos2d, String path, Instance instance) {
+        try {
+            try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
+                try (GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {
+                    var obj = JsonParser.parseReader(new InputStreamReader(gzipOut)).getAsJsonObject();
+                    var jsonPallete = obj.get("pallete").getAsJsonArray();
+                    Block[] blocks = new Block[jsonPallete.size()];
+                    DungeonWorldProvider.loadPalette(0, jsonPallete, blocks);
+                    var xArr = obj.get("blocks").getAsJsonArray();
+                    for (var x = 0; x < xArr.size(); x++) {
+                        var yArr = xArr.get(x).getAsJsonArray();
+                        for (var y = 0; y < yArr.size(); y++) {
+                            var zArr = yArr.get(y).getAsJsonArray();
+                            for (var z = 0; z < zArr.size(); z++) {
+                                instance.setBlock(new Vec(pos2d.x() * 32 + x, y, pos2d.z() * 32 + z), blocks[zArr.get(z).getAsInt()], false);
+                            }
+                        }
+                    }
                 }
             }
         } catch (Exception e) {

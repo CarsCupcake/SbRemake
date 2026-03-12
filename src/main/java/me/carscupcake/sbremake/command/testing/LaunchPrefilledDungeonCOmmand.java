@@ -46,7 +46,7 @@ public class LaunchPrefilledDungeonCOmmand extends Command {
                 }
             }
             generator.setRooms(rooms);
-            Dungeon dungeon = new Dungeon(generator);
+            Dungeon dungeon = new Dungeon(generator, 1);
             var player = ((SkyblockPlayer) sender);
             dungeon.init(() -> {
                 synchronized (player) {

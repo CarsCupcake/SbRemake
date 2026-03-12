@@ -9,7 +9,7 @@ import java.util.zip.GZIPInputStream;
 
 public class Main {
     public static void main(String[] args) {
-        var dir = new File("./sbremake-data/src/main/resources/assets/shematics/dungeon/rooms/1x1");
+        var dir = new File("./sbremake-data/src/main/resources/assets/schematics/dungeon/rooms/1x1");
         trace(dir);
     }
 

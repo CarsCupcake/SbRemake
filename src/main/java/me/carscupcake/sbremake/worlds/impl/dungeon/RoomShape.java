@@ -136,7 +136,7 @@ public enum RoomShape {
     RoomShape(String shape) {
         this.shape = shape;
         schematics = new Lazy<>(() -> {
-            var inResourcesPath = "assets/shematics/dungeon/rooms/" + shape + "/";
+            var inResourcesPath = "assets/schematics/dungeon/rooms/" + shape + "/";
             URI uri = null;
             try {
                 uri = Objects.requireNonNull(Main.class.getClassLoader().getResource(inResourcesPath)).toURI();

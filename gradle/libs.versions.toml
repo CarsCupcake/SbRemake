@@ -31,6 +31,7 @@ blossom = "2.1.0"
 nmcp = "1.0.0-rc.1"
 jmh-plugin = "0.7.2"
 jcstress-plugin = "0.8.15"
+lombok = "1.18.42"
 
 [libraries]
 
@@ -72,6 +73,7 @@ javaPoet = { group = "com.palantir.javapoet", name = "javapoet", version.ref = "
 # Log impl (for demo & codegen)
 logback-core = { group = "ch.qos.logback", name = "logback-core", version.ref = "logback" }
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
 
 [bundles]
 

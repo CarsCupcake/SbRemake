@@ -49,6 +49,7 @@ repositories {
 
 dependencies {
     implementation(project(":sbremake-data"))
+    implementation(libs.lombok)
     platform("com.intellectualsites.bom:bom-1.18.x:1.12")
     platform("org.jboss.shrinkwrap:shrinkwrap-bom:1.2.6")
     implementation("net.kyori:adventure-api:4.21.0")

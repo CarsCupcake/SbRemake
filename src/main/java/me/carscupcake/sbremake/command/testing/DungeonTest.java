@@ -115,7 +115,7 @@ public class DungeonTest extends Command {
             return;
         }
         var watch = System.currentTimeMillis();
-        var dungeon = new Dungeon(generator);
+        var dungeon = new Dungeon(generator, 1);
         dungeon.init(() -> {
             synchronized (player) {
                 player.setWorldProvider(dungeon, WarpLocation.Dungeon);

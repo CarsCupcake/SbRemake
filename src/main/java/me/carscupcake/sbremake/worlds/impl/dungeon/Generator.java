@@ -457,7 +457,7 @@ public class Generator {
                             var it = oneByOne.iterator();
                             while (match == null  && it.hasNext()) {
                                 var peek = it.next();
-                                try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("assets/shematics/dungeon/rooms/1x1/" + peek + ".json");
+                                try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("assets/schematics/dungeon/rooms/1x1/" + peek + ".json");
                                      var reader = new InputStreamReader(Objects.requireNonNull(resourceAsStream));) {
                                     var parsed = gson.fromJson(reader, DoorwaysModel.class);
                                     if (doors.count() < count) continue;
@@ -490,7 +490,7 @@ public class Generator {
     }
 
     private int count(String subDir) {
-        var resourceDir = "assets/shematics/dungeon/rooms/" + subDir + "/";
+        var resourceDir = "assets/schematics/dungeon/rooms/" + subDir + "/";
         try {
             URI uri = Objects.requireNonNull(Main.class.getClassLoader().getResource(resourceDir)).toURI();
             try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
@@ -507,7 +507,7 @@ public class Generator {
     private LinkedList<String> source(String subDir) {
         var list = new LinkedList<String>();
         try {
-            Recipe.forFilesInResourceFolder("assets/shematics/dungeon/rooms/" + subDir + "/", (s, _) -> {
+            Recipe.forFilesInResourceFolder("assets/schematics/dungeon/rooms/" + subDir + "/", (s, _) -> {
                 if (s.endsWith(".json")) return;
                 list.add(s);
             });
