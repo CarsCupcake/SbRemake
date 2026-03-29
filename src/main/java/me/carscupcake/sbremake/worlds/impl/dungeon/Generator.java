@@ -1,11 +1,22 @@
 package me.carscupcake.sbremake.worlds.impl.dungeon;
 
+import com.google.gson.GsonBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import me.carscupcake.sbremake.Main;
+import me.carscupcake.sbremake.item.Recipe;
+import me.carscupcake.sbremake.util.CountMap;
 import me.carscupcake.sbremake.util.Pos2d;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Getter
 public class Generator {
@@ -22,8 +33,11 @@ public class Generator {
     private final Room blood;
     private final Room fairy;
     private final Room trap;
+    private final Room mini;
     @Setter //DEBUG ONLY!!!!!!!!!
     private Room[][] rooms;
+    private final String[][] roomIds;
+    private final CountMap<RoomShape> caps = new CountMap<>();
 
     public Generator(Room[][] dimensions) {
         this(dimensions, System.currentTimeMillis());
@@ -33,6 +47,21 @@ public class Generator {
         this.rooms = dimensions;
         this.doorsVertical = new DoorType[rooms.length][rooms[0].length - 1];
         this.doorsHorizontal = new DoorType[rooms.length - 1][rooms[0].length];
+        this.roomIds = new String[rooms.length][rooms[0].length];
+        if (seed == -1) {
+            entrance = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            blood = new Room(RoomType.Blood, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            fairy = new Room(RoomType.Fairy, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            trap = new Room(RoomType.Trap, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            mini = new Room(RoomType.Mini, RoomShape.ONE_BY_ONE, new Pos2d(0, 0), Rotation.NW, new ArrayList<>(), null);
+            random = new Random();
+            return;
+        }
+        caps.put(RoomShape.ONE_BY_TWO, count("1x2"));
+        caps.put(RoomShape.ONE_BY_THREE, count("1x3"));
+        caps.put(RoomShape.ONE_BY_FOUR, count("1x4"));
+        caps.put(RoomShape.TWO_BY_TWO, count("2x2"));
+        caps.put(RoomShape.L_SHAPE, count("L-shape"));
         this.random = new Random(seed);
         Main.LOGGER.info("Rooms seed {}", seed);
         var xEs = new Integer[dimensions.length];
@@ -51,6 +80,7 @@ public class Generator {
         var entrancePos = new Pos2d(0, random.nextInt(rooms[0].length));
         entrance = new Room(RoomType.Entrance, RoomShape.ONE_BY_ONE, entrancePos, Rotation.NW, List.of(), null);
         rooms[entrancePos.x()][entrancePos.z()] = entrance;
+        roomIds[entrancePos.x()][entrancePos.z()] = "entrance";
 
         var redZ = random.nextInt(rooms[0].length);
         var redX = rooms.length - 1;
@@ -59,6 +89,7 @@ public class Generator {
                 redX--;
         blood = new Room(RoomType.Blood, RoomShape.ONE_BY_ONE, new Pos2d(redX, redZ), Rotation.NW, List.of(), null);
         rooms[redX][redZ] = blood;
+        roomIds[redX][redZ] = "blood";
 
         var fairyPossibilities = new ArrayList<Pos2d>();
         for (int x = 1; x < rooms.length - 1; x++) {
@@ -70,6 +101,7 @@ public class Generator {
         var fairyPos = fairyPossibilities.get(random.nextInt(fairyPossibilities.size()));
         fairy = new Room(RoomType.Fairy, RoomShape.ONE_BY_ONE, fairyPos, Rotation.NW, List.of(), null);
         rooms[fairyPos.x()][fairyPos.z()] = fairy;
+        roomIds[fairyPos.x()][fairyPos.z()] = "fairy";
 
         var trapSpots = new ArrayList<Pos2d>(6);
         trapSpots.add(fairyPos.add(1, 0));
@@ -94,6 +126,18 @@ public class Generator {
                     new Room(RoomType.Puzzle, RoomShape.ONE_BY_ONE, new Pos2d(x, z), Rotation.NW, List.of(), null); //TODO RoomData with puzzle data
         }
 
+
+        int mx;
+        int mz;
+        do {
+            mx = random.nextInt(rooms.length);
+            mz = random.nextInt(rooms[0].length);
+        } while (!canPlacePuzzle(mx, mz));
+        var room = new Room(RoomType.Mini, RoomShape.ONE_BY_ONE, new Pos2d(mx, mz), Rotation.NW, List.of(), null);
+        rooms[mx][mz] = room;
+        mini = room;
+
+
         for (var x : xEs)
             for (var z : zEs) {
                 tryPlace(new Pos2d(x, z));
@@ -111,10 +155,10 @@ public class Generator {
     }
 
     private void tryPlace(Pos2d pos2d) {
-        var shapes = new RoomShape[]{RoomShape.ONE_BY_TWO, RoomShape.ONE_BY_THREE, RoomShape.ONE_BY_FOUR, RoomShape.L_SHAPE, RoomShape.TWO_BY_TWO};
+        var shapes = caps.entrySet().stream().filter(e -> e.getValue() > 0).map(Map.Entry::getKey).toArray(RoomShape[]::new);
         shuffleArray(shapes);
         for (RoomShape shape : shapes) {
-            var rot = Rotation.values()[random.nextInt(4)];
+            var rot = shape == RoomShape.ONE_BY_ONE ? Rotation.NW : Rotation.values()[random.nextInt(4)];
             if (shape.tryInsert(rooms, pos2d, rot)) {
                 if (shape == RoomShape.TWO_BY_TWO) {
                     doorsHorizontal[pos2d.x()][pos2d.z()] = DoorType.Bridge;
@@ -142,6 +186,7 @@ public class Generator {
                         }
                     }
                 }
+                caps.subtract(shape, 1);
                 return;
             }
         }
@@ -177,24 +222,44 @@ public class Generator {
             }
             if (testPos(current.pos(), 1, 0, discovered)) {
                 addDoor(current.pos().add(1, 0), posebilities, discovered);
-                doorsHorizontal[current.pos().x()][current.pos().z()] = DoorType.Normal;
+                var door = doorsHorizontal[current.pos().x()][current.pos().z()];
+                if (door != DoorType.Bridge)
+                    doorsHorizontal[current.pos().x()][current.pos().z()] = DoorType.Normal;
             }
             if (testPos(current.pos(), -1, 0, discovered)) {
                 addDoor(current.pos().add(-1, 0), posebilities, discovered);
-                doorsHorizontal[current.pos().x() - 1][current.pos().z()] = getFromPos(current.pos().add(-1, 0)).type() == RoomType.Entrance ? DoorType.Start : DoorType.Normal;
+                var door = doorsHorizontal[current.pos().x() - 1][current.pos().z()];
+                if (door != DoorType.Bridge)
+                    doorsHorizontal[current.pos().x() - 1][current.pos().z()] = getFromPos(current.pos().add(-1, 0)).type() == RoomType.Entrance ? DoorType.Start : DoorType.Normal;
             }
             if (testPos(current.pos(), 0, 1, discovered)) {
                 addDoor(current.pos().add(0, 1), posebilities, discovered);
-                doorsVertical[current.pos().x()][current.pos().z()] = DoorType.Normal;
+                if (doorsVertical[current.pos().x()][current.pos().z()] != DoorType.Bridge)
+                    doorsVertical[current.pos().x()][current.pos().z()] = DoorType.Normal;
             }
             if (testPos(current.pos(), 0, -1, discovered)) {
                 addDoor(current.pos().add(0, -1), posebilities, discovered);
-                doorsVertical[current.pos().x()][current.pos().z() - 1] = DoorType.Normal;
+                if (doorsVertical[current.pos().x()][current.pos().z() - 1] != DoorType.Bridge)
+                    doorsVertical[current.pos().x()][current.pos().z() - 1] = DoorType.Normal;
             }
         }
-        dijkstraPath(entrance.pos(), fairy.pos());
-        dijkstraPath(fairy.pos(), blood.pos());
+        dijkstraPath(entrance.pos(), fairy.pos(), DoorType.Fairy);
+        dijkstraPath(fairy.pos(), blood.pos(), DoorType.Blood);
         fixSpecialRoomRotations();
+        for (int x = 0; x < doorsVertical.length; x++) {
+            for (int z = 0; z < doorsVertical[x].length; z++) {
+                if (doorsVertical[x][z] == null) {
+                    doorsVertical[x][z] = DoorType.None;
+                }
+            }
+        }
+        for (int x = 0; x < doorsHorizontal.length; x++) {
+            for (int z = 0; z < doorsHorizontal[x].length; z++) {
+                if (doorsHorizontal[x][z] == null) {
+                    doorsHorizontal[x][z] = DoorType.None;
+                }
+            }
+        }
     }
 
     private void addDoor(Pos2d targetPos, List<Pos2d> posebilities, boolean[][] discovered) {
@@ -222,7 +287,7 @@ public class Generator {
         return !discovered[pos2d.x() + x][pos2d.z() + z];
     }
 
-    public void dijkstraPath(Pos2d start, Pos2d end) {
+    public void dijkstraPath(Pos2d start, Pos2d end, DoorType endDoorType) {
         int[][] dists = new int[rooms.length][rooms[0].length];
         var numRows = rooms.length;
         var numCols = rooms[0].length;
@@ -245,7 +310,7 @@ public class Generator {
                 continue;
             }
             if (r == end.x() && c == end.z()) {
-                reconstructPath(parent, new Node(end.x(), end.z(), currentDist));
+                reconstructPath(parent, new Node(end.x(), end.z(), currentDist), endDoorType);
                 return;
             }
             for (int[] dir : DIRECTIONS) {
@@ -292,10 +357,10 @@ public class Generator {
             }
             System.out.println();
         }
-        throw new IllegalStateException(start + " to " + end + " not possible");
+        throw new DungeonException("Dijkstra Pathfinding Failed!\n" + start + " to " + end + " not possible");
     }
 
-    private List<Node> reconstructPath(Node[][] parent, Node endNode) {
+    private void reconstructPath(Node[][] parent, Node endNode, DoorType endDoorType) {
         List<Node> path = new ArrayList<>();
         Node current = endNode;
         while (current != null) {
@@ -309,43 +374,171 @@ public class Generator {
                 if (diff.x() != 0) {
                     int i = curr.x() + (diff.x() > 0 ? 0 : -1);
                     if (doorsHorizontal[i][curr.z()] == DoorType.Normal)
-                        doorsHorizontal[i][curr.z()] = o == endNode ? DoorType.Fairy : DoorType.Wither;
+                        doorsHorizontal[i][curr.z()] = o == endNode ? endDoorType : DoorType.Wither;
                 } else {
                     int i = curr.z() + (diff.z() > 0 ? 0 : -1);
                     if (doorsVertical[curr.x()][i] == DoorType.Normal)
-                        doorsVertical[curr.x()][i] = o == endNode ? DoorType.Fairy : DoorType.Wither;
+                        doorsVertical[curr.x()][i] = o == endNode ? endDoorType : DoorType.Wither;
                 }
             }
         }
 
         Collections.reverse(path);
-        return path;
     }
 
     private void fixSpecialRoomRotations() {
         for (int x = 0; x < rooms.length; x++) {
             for (int z = 0; z < rooms[x].length; z++) {
                 var room = rooms[x][z];
-                if (room.type() == RoomType.Puzzle) {
+                if (room.type() != RoomType.Room && room.type() != RoomType.Fairy) {
                     if (x != 0) {
                         if (doorsHorizontal[x - 1][z] == DoorType.Normal) {
-                            rooms[x][z] = room.withRotation(Rotation.fromOffset(-1, 0));
-                        }
-                    } else if (x != doorsHorizontal.length) {
-                        if (doorsHorizontal[x][z] == DoorType.Normal) {
-                            rooms[x][z] = room.withRotation(Rotation.fromOffset(1, 0));
-                        }
-                    } else if (z != 0) {
-                        if (doorsVertical[x][z - 1] == DoorType.Normal) {
-                            rooms[x][z] = room.withRotation(Rotation.fromOffset(0, -1));
-                        }
-                    } else if (z != doorsVertical[x].length) {
-                        if (doorsHorizontal[x][z] == DoorType.Normal) {
-                            rooms[x][z] = room.withRotation(Rotation.fromOffset(0, 1));
+                            rooms[x][z] = room.withRotation(Rotation.SW);
+                            continue;
                         }
                     }
+                    if (x != doorsHorizontal.length) {
+                        if (doorsHorizontal[x][z] == DoorType.Normal) {
+                            rooms[x][z] = room.withRotation(Rotation.NE);
+                            continue;
+                        }
+                    }
+                    if (z != 0) {
+                        if (doorsVertical[x][z - 1] == DoorType.Normal) {
+                            rooms[x][z] = room.withRotation(Rotation.NW);
+                            continue;
+                        }
+                    }
+                    if (z != doorsVertical[x].length) {
+                        if (doorsVertical[x][z] == DoorType.Normal) {
+                            rooms[x][z] = room.withRotation(Rotation.SE);
+                        }
+                    }
+                    if (room.type() == RoomType.Blood)
+                        rooms[x][z] = room.withRotation(room.rotation().next());
                 }
             }
+        }
+    }
+
+    public void determineIds() {
+        var gson = new GsonBuilder().create();
+        var lShaped = source("L-shape");
+        var oneByOne = source("1x1");
+        var oneByTwo = source("1x2");
+        var oneByThree = source("1x3");
+        var oneByFour = source("1x4");
+        var twoByTwo = source("2x2");
+        var trap = source("trap");
+        var miniboss = source("mini");
+        var puzzle = source("puzzle");
+        for (int x = 0; x < rooms.length; x++) {
+            for (int z = 0; z < rooms[x].length; z++) {
+                var room = rooms[x][z];
+                if (room.parent() != null) continue;
+                roomIds[x][z] = switch (room.type()) {
+                    case Puzzle -> puzzle.pop();
+                    case Blood -> "blood";
+                    case Mini -> miniboss.pop();
+                    case Trap ->  trap.pop();
+                    case Entrance ->  "entrance";
+                    case Fairy -> "fairy";
+                    default -> switch (room.shape()) {
+                        case L_SHAPE -> lShaped.pop();
+                        case ONE_BY_TWO ->  oneByTwo.pop();
+                        case ONE_BY_THREE ->  oneByThree.pop();
+                        case ONE_BY_FOUR ->  oneByFour.pop();
+                        case TWO_BY_TWO ->   twoByTwo.pop();
+                        case ONE_BY_ONE -> {
+                            var doors = new DoorwaysModel(x != 0 && doorsHorizontal[x-1][z] != DoorType.None, z != 0 && doorsVertical[x][z-1] != DoorType.None,
+                                    x+1 != rooms.length && doorsHorizontal[x][z] != DoorType.None, z+1 != rooms.length && doorsVertical[x][z] != DoorType.None);
+                            var count = doors.count();
+                            String match = null;
+                            var it = oneByOne.iterator();
+                            while (match == null  && it.hasNext()) {
+                                var peek = it.next();
+                                try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("assets/schematics/dungeon/rooms/1x1/" + peek + ".json");
+                                     var reader = new InputStreamReader(Objects.requireNonNull(resourceAsStream));) {
+                                    var parsed = gson.fromJson(reader, DoorwaysModel.class);
+                                    if (doors.count() < count) continue;
+                                    var rot = Rotation.NW;
+                                    for (int i = 0; i < 4; i++){
+                                        if (parsed.passable(doors)) {
+                                            Main.LOGGER.debug("Match: {}", peek);
+                                            match = peek;
+                                            break;
+                                        }
+                                        parsed.rotate();
+                                        rot = rot.next();
+                                    }
+                                    System.out.println("Old: " + rooms[x][z].rotation());
+                                    rooms[x][z] = room.withRotation(rot);
+                                    System.out.println("New: " + rooms[x][z].rotation());
+                                } catch (Exception e) {
+                                    Main.LOGGER.error("Failed to load room {}", peek);
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                            if (match == null) throw new DungeonException("No room found for " + doors);
+                            oneByOne.remove(match);
+                            yield match;
+                        }
+                    };
+                };
+            }
+        }
+    }
+
+    private int count(String subDir) {
+        var resourceDir = "assets/schematics/dungeon/rooms/" + subDir + "/";
+        try {
+            URI uri = Objects.requireNonNull(Main.class.getClassLoader().getResource(resourceDir)).toURI();
+            try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+                Path folderRootPath = fileSystem.getPath(resourceDir);
+                try (Stream<Path> walk = Files.walk(folderRootPath, 1)) {
+                    return Math.toIntExact(walk.count()) - 1;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private LinkedList<String> source(String subDir) {
+        var list = new LinkedList<String>();
+        try {
+            Recipe.forFilesInResourceFolder("assets/schematics/dungeon/rooms/" + subDir + "/", (s, _) -> {
+                if (s.endsWith(".json")) return;
+                list.add(s);
+            });
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        Collections.shuffle(list, random);
+        return list;
+    }
+    @Data
+    @AllArgsConstructor
+    public static class DoorwaysModel {
+        public boolean north;
+        public boolean east;
+        public boolean south;
+        public boolean west;
+
+        public boolean passable(DoorwaysModel other) {
+            return (north || !other.north) && (east || !other.east) && (south || !other.south) && (west || !other.west);
+        }
+
+        public int count() {
+            return (north ? 1 : 0) + (east ? 1 : 0) + (south ? 1 : 0) + (west ? 1 : 0);
+        }
+
+        public void rotate() {
+            var temp = north;
+            north = west;
+            west = south;
+            south = east;
+            east = temp;
         }
     }
 

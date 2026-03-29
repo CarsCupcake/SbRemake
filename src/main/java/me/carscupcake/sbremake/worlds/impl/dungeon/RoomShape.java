@@ -67,8 +67,8 @@ public enum RoomShape {
             return switch (rotation) {
                 case NW -> point;
                 case NE -> point.add(30, 0, 0);
-                case SE -> point.add(91, 0, 30);
-                case SW -> point.add(0, 0, 91);
+                case SE -> point.add(94, 0, 30);
+                case SW -> point.add(0, 0, 94);
             };
         }
     },
@@ -136,7 +136,7 @@ public enum RoomShape {
     RoomShape(String shape) {
         this.shape = shape;
         schematics = new Lazy<>(() -> {
-            var inResourcesPath = "assets/shematics/dungeon/rooms/" + shape + "/";
+            var inResourcesPath = "assets/schematics/dungeon/rooms/" + shape + "/";
             URI uri = null;
             try {
                 uri = Objects.requireNonNull(Main.class.getClassLoader().getResource(inResourcesPath)).toURI();

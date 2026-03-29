@@ -218,8 +218,12 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
                 player.shortbowTask = null;
             }
         }
-        if (event.getPacket() instanceof ClientPlayerDiggingPacket packet) {
-            if (packet.status() == ClientPlayerDiggingPacket.Status.UPDATE_ITEM_STATE) {
+        if (event.getPacket() instanceof ClientChangeGameModePacket(var gameMode)) {
+            player.setGameMode(gameMode);
+            return;
+        }
+        if (event.getPacket() instanceof ClientPlayerActionPacket packet) {
+            if (packet.status() == ClientPlayerActionPacket.Status.UPDATE_ITEM_STATE) {
                 player.lastInteractPotion = false;
                 if (player.bowStartPull < 0) return;
                 SbItemStack item = player.getSbItemInHand(PlayerHand.MAIN);
@@ -234,7 +238,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
                     }
                 SkyblockPlayerArrow.shootBow(player, chargingTime, item, (SkyblockArrow) SbItemStack.base(Material.ARROW).sbItem());
             }
-            if (packet.status() == ClientPlayerDiggingPacket.Status.STARTED_DIGGING) {
+            if (packet.status() == ClientPlayerActionPacket.Status.STARTED_DIGGING) {
                 MinecraftServer.getGlobalEventHandler().call(new PlayerInteractEvent(player, packet.blockPosition(), packet.blockFace(), PlayerInteractEvent.Interaction.Left));
                 player.lastInteractPacket = System.currentTimeMillis();
                 player.blockInteractBuffer = 3;
@@ -1696,7 +1700,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         double health = getMaxHealth() * (sbHealth / getMaxSbHealth());
         if (health != getHealth()) setHealth((float) health);
         if (absorption > 0 || lastAbsorbtion != absorption) {
-            EntityMetaDataPacket packet = new EntityMetaDataPacket(getEntityId(), Map.of(15, Metadata.Float(getAbsorptionHearts(absorption))));
+            EntityMetaDataPacket packet = new EntityMetaDataPacket(getEntityId(), Map.of(17, Metadata.Float(getAbsorptionHearts(absorption))));
             sendPacket(packet);
             lastAbsorbtion = absorption;
         }
@@ -1893,7 +1897,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
     }
 
     public void recalculateArmor(SkyblockPlayerInventory inventory, @NotNull SbItemStack old, @NotNull SbItemStack newItem) {
-        Main.LOGGER.debug("Recalculate Armor");
+        Main.LOGGER.debug("Recalculate Armor Piece {}", old != SbItemStack.AIR ? old.sbItem().getType() : (newItem != SbItemStack.AIR ? newItem.sbItem().getType() : "Empty"));
         if (old == SbItemStack.AIR && newItem == SbItemStack.AIR) return;
         for (var ability : old.getAbilities(this)) {
             if (ability instanceof FullSetBonus fullSetBonus) {

@@ -48,7 +48,6 @@ import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.client.play.ClientConfigurationAckPacket;
-import net.minestom.server.network.packet.client.play.ClientDebugSampleSubscriptionPacket;
 import net.minestom.server.network.packet.server.play.DebugSamplePacket;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.NotNull;
@@ -132,7 +131,7 @@ public class Main {
         MinecraftServer.setBrandName("CarsCupcakes Skyblock Remake");
         for (var s : registerDefaultManagers)
             MinecraftServer.getBlockManager().registerHandler("minecraft:" + s, () -> () -> Key.key(s));
-        if (System.getenv().getOrDefault("DEVELOPEMENT", "false").equals("true")) {
+        if (IS_DEBUG) {
             LOGGER.setLogLevel(0);
             LOGGER.isEnabledForLevel(Level.DEBUG);
             LOGGER.debug("Debug logging enabled");
@@ -181,10 +180,6 @@ public class Main {
         MinecraftServer.getGlobalEventHandler().addChild(IAttributeShard.LISTENER);
         MinecraftServer.getGlobalEventHandler().addListener(ServerTickMonitorEvent.class, serverTickMonitorEvent -> tickDelay = (long) serverTickMonitorEvent.getTickMonitor().getTickTime());
         for (Potion potion : Potion.values()) IPotion.potions.put(potion.getId(), potion);
-        MinecraftServer.getPacketListenerManager().setPlayListener(ClientDebugSampleSubscriptionPacket.class, (ignored, player) -> {
-            //TODO return Debug Sample Packet
-            player.sendPacket(new DebugSamplePacket(new long[]{tickDelay, tickDelay, 0, 50 - tickDelay}, DebugSamplePacket.Type.TICK_TIME));
-        });
         for (SkyblockEnchantment enchantment : NormalEnchantments.values())
             SkyblockEnchantment.enchantments.put(enchantment.getId(), enchantment);
         for (SkyblockEnchantment enchantment : UltimateEnchantments.values())

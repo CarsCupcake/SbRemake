@@ -75,4 +75,11 @@ public enum Rotation {
         if (x == 1 && z == 0) return Rotation.NE;
         throw new IllegalArgumentException("Not a valid offset: x=" + x + ", z=" + z);
     }
+
+    public static Rotation next(Rotation rotation) {
+        return values()[(rotation.ordinal() + 1) % values().length];
+    }
+    public Rotation next() {
+        return next(this);
+    }
 }

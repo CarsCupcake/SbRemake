@@ -3,177 +3,38 @@ package me.carscupcake.sbremake.worlds.impl.dungeon;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import me.carscupcake.sbremake.Main;
+import me.carscupcake.sbremake.util.Pair;
+import me.carscupcake.sbremake.worlds.impl.Dungeon;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
+import net.minestom.server.coordinate.BlockVec;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Chunk;
-import net.minestom.server.instance.IChunkLoader;
+import net.minestom.server.instance.ChunkLoader;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
-public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][] chunks, Block[][][] cachedPallets) implements IChunkLoader {
-    public DungeonWorldProvider(Generator generator, String[][] ids) {
-        this(generator, ids, new Chunk[generator.getRooms().length * 2][generator.getRooms()[0].length * 2], new Block[generator.getRooms().length][generator.getRooms()[0].length][]);
+public record DungeonWorldProvider(int floor, Pos bounds, Generator generator, String[][] ids, Chunk[][] chunks,
+                                   Block[][][] cachedPallets, ArrayList<Block> bossPallet) implements ChunkLoader {
+    public DungeonWorldProvider(Dungeon dungeon, Generator generator, String[][] ids) {
+        this(dungeon.getFloor(), getMax(dungeon.getChunksToLoad()), generator, ids, new Chunk[generator.getRooms().length * 2][generator.getRooms()[0].length * 2], new Block[generator.getRooms().length][generator.getRooms()[0].length][], new ArrayList<>());
     }
 
-    @Override
-    public @Nullable Chunk loadChunk(@NotNull Instance instance, int chunkX, int chunkZ) {
-        Room[][] rooms = generator.getRooms();
-        if (chunkX > rooms.length * 2 || chunkZ > rooms[0].length * 2) return null;
-        if (chunkX < 0 || chunkZ < 0) return null;
-        if (chunks.length <= chunkX || chunks.length <= chunkZ) return null;
-        if (chunks[chunkX][chunkZ] != null) {
-            System.out.println("Load Existing " + chunkX + " " + chunkZ);
-            return chunks[chunkX][chunkZ];
-        }
-        var chunk = instance.getChunkSupplier().createChunk(instance, chunkX, chunkZ);
-        var room = rooms[chunkX / 2][chunkZ / 2];
-        if (room == null) return null;
-        if (room.parent() != null) room = generator.getFromPos(room.parent());
-        var id = ids[room.pos().x()][room.pos().z()];
-        if (id == null) {
-            id = room.shape().getSchematics().get()[generator.getRandom().nextInt(room.shape().getSchematics().get().length)];
-            if (room.type() != RoomType.Room) {
-                id = switch (room.type()) {
-                    case Trap -> "trap-hard-4";
-                    case Puzzle -> "blaze-room-1-high";
-                    default -> null;
-                };
-            }
-
-
-            if (id == null) return null;
-            ids[room.pos().x()][room.pos().z()] = id;
-        }
-        try {
-            var path = "assets/shematics/dungeon/rooms/" + (room.type() == RoomType.Room ? room.shape().toString() : room.type().toString().toLowerCase()) + "/" + id;
-            try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
-                try (GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {
-                    var obj = JsonParser.parseReader(new InputStreamReader(gzipOut)).getAsJsonObject();
-                    var origin = room.rotation().ordinal() - Rotation.fromName(obj.get("originRotation").getAsString()).ordinal();
-                    if (origin < 0) origin += 4;
-                    var jsonPallete = obj.get("pallete").getAsJsonArray();
-                    Block[] blocks = cachedPallets[room.pos().x()][room.pos().z()];
-                    if (blocks == null) {
-                        blocks = new Block[jsonPallete.size()];
-                        loadPalette(origin, jsonPallete, blocks);
-                        if (room.shape() != RoomShape.ONE_BY_ONE) {
-                            cachedPallets[room.pos().x()][room.pos().z()] = blocks;
-                        }
-                    }
-                    var xArr = obj.get("blocks").getAsJsonArray();
-                    for (int x = 0; x < 16; x++) {
-                        for (int y = 0; y < 140; y++) {
-                            for (int z = 0; z < 16; z++) {
-                                var pos = new Vec(x + (chunkX * 16), y, z + (chunkZ * 16));
-                                var undoRotation = room.shape().toRelative(room.pos(), pos, room.rotation());
-                                if (xArr.size() <= undoRotation.blockX() || undoRotation.blockX() < 0) {
-                                    continue;
-                                }
-                                var yArr = xArr.get(undoRotation.blockX()).getAsJsonArray();
-                                if (yArr.size() <= undoRotation.blockY() || undoRotation.blockY() < 0) {
-                                    continue;
-                                }
-                                var zArr = yArr.get(undoRotation.blockY()).getAsJsonArray();
-                                if (zArr.size() <= undoRotation.blockZ() || undoRotation.blockZ() < 0) {
-                                    continue;
-                                }
-                                var block = blocks[zArr.get(undoRotation.blockZ()).getAsInt()];
-                                if (block.isAir()) {
-                                    continue;
-                                }
-                                chunk.setBlock(x, y, z, block);
-                            }
-                        }
-                    }
-                    if (chunkX % 2 != 0 && chunkZ % 2 == 0) {
-                        if (generator.getDoorsHorizontal().length > chunkX / 2 && generator.getDoorsHorizontal()[0].length > chunkZ / 2) {
-                            var type = generator.getDoorsHorizontal()[chunkX / 2][chunkZ / 2];
-                            var blockType = type == DoorType.Normal ? Block.STONE : type == DoorType.Wither ? Block.COAL_BLOCK : Block.AIR;
-                            chunk.setBlock(15, 68, 15, blockType);
-                            chunk.setBlock(15, 68, 14, blockType);
-                            chunk.setBlock(15, 69, 13, blockType);
-                            chunk.setBlock(15, 70, 13, blockType);
-                            chunk.setBlock(15, 71, 13, blockType);
-                            chunk.setBlock(15, 72, 13, blockType);
-                            chunk.setBlock(15, 73, 15, blockType);
-                            chunk.setBlock(15, 73, 14, blockType);
-                            blockType = type == DoorType.Normal ? Block.AIR : type == DoorType.Wither ? Block.COAL_BLOCK : Block.STONE;
-                            for (int x = 15; x >= 14; x--) {
-                                for (int y = 69; y < 73; y++)
-                                    for (int z = 15; z > 13; z--) {
-                                        var block = chunk.getBlock(x, y, z);
-                                        if (!block.isAir() && block.registry().equals(Block.IRON_BARS.registry()) && blockType == Block.STONE) break;
-                                        chunk.setBlock(x, y, z, blockType);
-                                }
-                            }
-                        }
-                    }
-                    if (chunkX % 2 != 0 && chunkZ % 2 != 0) {
-                        if (generator.getDoorsHorizontal().length > chunkX / 2 && generator.getDoorsHorizontal()[0].length > chunkZ / 2) {
-                            var type = generator.getDoorsHorizontal()[chunkX / 2][chunkZ / 2];
-                            if (type != DoorType.Bridge) {
-                                var blockType = type == DoorType.Normal ? Block.STONE : type == DoorType.Wither ? Block.COAL_BLOCK : Block.AIR;
-                                chunk.setBlock(15, 68, 0, blockType);
-                                chunk.setBlock(15, 69, 1, blockType);
-                                chunk.setBlock(15, 70, 1, blockType);
-                                chunk.setBlock(15, 71, 1, blockType);
-                                chunk.setBlock(15, 72, 1, blockType);
-                                chunk.setBlock(15, 73, 0, blockType);
-                            }
-                        }
-                    }
-                    if (chunkX % 2 == 0 && chunkZ % 2 != 0) {
-                        if (generator.getDoorsVertical().length > chunkX / 2 && generator.getDoorsVertical()[0].length > chunkZ / 2) {
-                            var type = generator.getDoorsVertical()[chunkX / 2][chunkZ / 2];
-                            if(type != DoorType.Bridge) {
-                                var blockType = type == DoorType.Normal ? Block.STONE : type == DoorType.Wither ? Block.COAL_BLOCK : Block.AIR;
-                                chunk.setBlock(15, 68, 15, blockType);
-                                chunk.setBlock(14, 68, 15, blockType);
-                                chunk.setBlock(13, 69, 15, blockType);
-                                chunk.setBlock(13, 70, 15, blockType);
-                                chunk.setBlock(13, 71, 15, blockType);
-                                chunk.setBlock(13, 72, 15, blockType);
-                                chunk.setBlock(15, 73, 15, blockType);
-                                chunk.setBlock(14, 73, 15, blockType);
-                            }
-                        }
-                    }
-                    if (chunkX % 2 != 0 && chunkZ % 2 != 0) {
-                        if (generator.getDoorsVertical().length > chunkX / 2 && generator.getDoorsVertical()[0].length > chunkZ / 2) {
-                            var type = generator.getDoorsVertical()[chunkX / 2][chunkZ / 2];
-                            if (type != DoorType.Bridge) {
-                                var blockType = type == DoorType.Normal ? Block.STONE : type == DoorType.Wither ? Block.COAL_BLOCK : Block.AIR;
-                                chunk.setBlock(0, 68, 15, blockType);
-                                chunk.setBlock(1, 69, 15, blockType);
-                                chunk.setBlock(1, 70, 15, blockType);
-                                chunk.setBlock(1, 71, 15, blockType);
-                                chunk.setBlock(1, 72, 15, blockType);
-                                chunk.setBlock(0, 73, 15, blockType);
-                            }
-                        }
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        chunks[chunkX][chunkZ] = chunk;
-        return chunk;
+    private static Pos getMax(Pair<Pos, Pos> bounds) {
+        return new Pos(Math.max(bounds.getFirst().x(), bounds.getSecond().x()), 0, Math.max(bounds.getFirst().z(), bounds.getSecond().z()));
     }
 
-    static void loadPalette(int origin, JsonArray jsonPalette, Block[] blocks) {
+    public static void loadPalette(int origin, JsonArray jsonPalette, Block[] blocks) {
         for (int i = 0; i < blocks.length; i++) {
             var object = jsonPalette.get(i).getAsJsonObject();
             var map = new HashMap<String, String>();
@@ -221,6 +82,490 @@ public record DungeonWorldProvider(Generator generator, String[][] ids, Chunk[][
             }
             blocks[i] = b;
         }
+    }
+
+    private void loadSchematic(Room room, int chunkX, int chunkZ, Chunk chunk, String id, BlockVec schematicIndexOffset) throws IOException {
+        var path = "assets/schematics/dungeon/rooms/" + (room.type().isSpecial() ? room.type().name().toLowerCase(Locale.ENGLISH)
+                : (room.type() == RoomType.Room ? room.shape().toString() : room.type().toString().toLowerCase()) + "/" + id);
+        try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
+            if (resourceAsStream != null)
+                try (GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {
+                    var obj = JsonParser.parseReader(new InputStreamReader(gzipOut)).getAsJsonObject();
+                    var origin = room.rotation().ordinal() - Rotation.fromName(obj.get("originRotation").getAsString()).ordinal();
+                    if (origin < 0) origin += 4;
+                    var jsonPallete = obj.get("pallete").getAsJsonArray();
+                    Block[] blocks = cachedPallets[room.pos().x()][room.pos().z()];
+                    if (blocks == null) {
+                        blocks = new Block[jsonPallete.size()];
+                        loadPalette(origin, jsonPallete, blocks);
+                        if (room.shape() != RoomShape.ONE_BY_ONE) {
+                            cachedPallets[room.pos().x()][room.pos().z()] = blocks;
+                        }
+                    }
+                    var xArr = obj.get("blocks").getAsJsonArray();
+                    for (int x = 0; x < 16; x++) {
+                        for (int y = 0; y < 140; y++) {
+                            for (int z = 0; z < 16; z++) {
+                                var vPos = new Vec(schematicIndexOffset.blockX() + x + (chunkX * 16), schematicIndexOffset.blockY() + y, schematicIndexOffset.blockZ() + z + (chunkZ * 16));
+                                var undoRotation = room.shape().toRelative(room.pos(), vPos, room.rotation());
+                                if (xArr.size() <= undoRotation.blockX() || undoRotation.blockX() < 0) {
+                                    continue;
+                                }
+                                var yArr = xArr.get(undoRotation.blockX()).getAsJsonArray();
+                                if (yArr.size() <= undoRotation.blockY() || undoRotation.blockY() < 0) {
+                                    continue;
+                                }
+                                var zArr = yArr.get(undoRotation.blockY()).getAsJsonArray();
+                                if (zArr.size() <= undoRotation.blockZ() || undoRotation.blockZ() < 0) {
+                                    continue;
+                                }
+                                var block = blocks[zArr.get(undoRotation.blockZ()).getAsInt()];
+                                if (block.isAir()) {
+                                    continue;
+                                }
+                                chunk.setBlock(x, y, z, block);
+                            }
+                        }
+                    }
+
+
+                }
+        }
+    }
+
+    private void loadSchematic(List<Block> blocks, int chunkX, int chunkZ, Chunk chunk, String path, BlockVec schematicIndexOffset) throws IOException {
+        try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(path)) {
+            if (resourceAsStream != null)
+                try (GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {
+                    var obj = JsonParser.parseReader(new InputStreamReader(gzipOut)).getAsJsonObject();
+                    var xArr = obj.get("blocks").getAsJsonArray();
+                    for (int x = 0; x < Math.min(16, xArr.size() - (schematicIndexOffset.blockX() + x + (chunkX * 16))); x++) {
+                        var yArr = xArr.get(schematicIndexOffset.blockX() + x + (chunkX * 16)).getAsJsonArray();
+                        for (int y = 0; y < yArr.size(); y++) {
+                            var zArr = yArr.get(schematicIndexOffset.blockY() + y).getAsJsonArray();
+                            for (int z = 0; z < Math.min(16, zArr.size() - (schematicIndexOffset.blockZ() + z + (chunkZ * 16))); z++) {
+                                try{
+                                var block = blocks.get(zArr.get(schematicIndexOffset.blockZ() + z + (chunkZ * 16)).getAsInt());
+                                if (block.isAir()) {
+                                    continue;
+                                }
+                                    chunk.setBlock(x, y, z, block);
+                                } catch (IndexOutOfBoundsException e) {
+                                    System.err.println("Failed to load schematic " + path);
+                                    e.printStackTrace(System.err);
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+        }
+    }
+
+    @Override
+    public @Nullable Chunk loadChunk(@NotNull Instance instance, int chunkX, int chunkZ) {
+        Room[][] rooms = generator.getRooms();
+        if (chunkZ < 0) return null;
+        if (chunkX > bounds.chunkX() || chunkZ > bounds.chunkZ()) return null;
+        /*if (chunkX > 0 && rooms[0].length * 2 < chunkZ) {
+            String floorSchematic = "assets/schematics/dungeon/boss/floor" + floor + ".schematic.gz";
+            if (bossPallet.isEmpty()) {
+                synchronized (bossPallet) {
+                    if (bossPallet.isEmpty())
+                        try (InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream(floorSchematic); GZIPInputStream gzipOut = new GZIPInputStream(Objects.requireNonNull(resourceAsStream))) {
+                            var obj = JsonParser.parseReader(new InputStreamReader(gzipOut)).getAsJsonObject();
+                            var jsonPallete = obj.get("pallete").getAsJsonArray();
+                            var blocks = new Block[jsonPallete.size()];
+                            loadPalette(0, jsonPallete, blocks);
+                            bossPallet.addAll(Arrays.asList(blocks));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                }
+            }
+            var chunk = instance.getChunkSupplier().createChunk(instance, chunkX, chunkZ);
+            try {
+                loadSchematic(bossPallet, chunkX, chunkZ, chunk, floorSchematic, new BlockVec(0, 0,  -rooms[0].length * 32));
+            } catch (IOException e) {
+                e.printStackTrace(System.err);
+            } catch (Exception e) {
+                System.err.println("Failed to load boss floor schematic");
+                e.printStackTrace(System.err);
+            }
+            return chunk;
+        }*/
+        if (chunkX > rooms.length * 2 || rooms[0].length * 2 < chunkZ) return null;
+        if (chunks.length <= chunkX || chunks[0].length <= chunkZ) return null;
+        if (chunkX < 0) {
+            if (chunkX == -1) {
+                var room = rooms[0][chunkZ / 2];
+                if (room.type() != RoomType.Entrance) return null;
+                var chunk = instance.getChunkSupplier().createChunk(instance, chunkX, chunkZ);
+                try {
+                    loadSchematic(room, chunkX, chunkZ, chunk, "entrance", new BlockVec(12, 0, 0));
+                } catch (IOException e) {
+                    e.printStackTrace(System.err);
+                }
+                return chunk;
+            } else
+                return null;
+        }
+        if (chunks[chunkX][chunkZ] != null) {
+            System.out.println("Load Existing " + chunkX + " " + chunkZ);
+            return chunks[chunkX][chunkZ];
+        }
+        var chunk = instance.getChunkSupplier().createChunk(instance, chunkX, chunkZ);
+        var room = rooms[chunkX / 2][chunkZ / 2];
+        if (room == null) {
+            Main.LOGGER.warn("Room is null at {} {}", chunkX, chunkZ);
+            return null;
+        }
+        var pos = room.pos();
+        if (room.parent() != null) room = generator.getFromPos(room.parent());
+        var id = ids[room.pos().x()][room.pos().z()];
+        if (id == null) {
+            //id = room.shape().getSchematics().get()[generator.getRandom().nextInt(room.shape().getSchematics().get().length)];
+            /*if (room.type() != RoomType.Room) {
+                id = switch (room.type()) {
+                    case Trap -> "trap-hard-4";
+                    case Puzzle -> "blaze-room-1-high";
+                    default -> ids[pos.x()][pos.z()];
+                };
+            }*/
+
+            Main.LOGGER.warn("Room id is null at pos {}. Room type is {}. The shape is {}. Defaulting to andesite-2", pos, room.type(), room.shape());
+            id = "andesite-2";
+        }
+        try {
+            loadSchematic(room, chunkX, chunkZ, chunk, id, new BlockVec(room.type() == RoomType.Entrance ? 12 : 0, 0, 0));
+            //Boarders
+            if (chunkX == 0) {
+                if (chunkZ % 2 == 0) {
+                    setIfAir(chunk, 0, 69, 14);
+                    setIfAir(chunk, 0, 69, 15);
+                    setIfAir(chunk, 0, 70, 14);
+                    setIfAir(chunk, 0, 70, 15);
+                    setIfAir(chunk, 0, 71, 14);
+                    setIfAir(chunk, 0, 71, 15);
+                    setIfAir(chunk, 0, 72, 14);
+                    setIfAir(chunk, 0, 72, 15);
+                } else {
+                    setIfAir(chunk, 0, 69, 0);
+                    setIfAir(chunk, 0, 70, 0);
+                    setIfAir(chunk, 0, 71, 0);
+                    setIfAir(chunk, 0, 72, 0);
+                }
+            }
+            if ((chunkX + 1) == rooms.length * 2) {
+                if (chunkZ % 2 == 0) {
+                    setIfAir(chunk, 14, 69, 14);
+                    setIfAir(chunk, 14, 69, 15);
+                    setIfAir(chunk, 14, 70, 14);
+                    setIfAir(chunk, 14, 70, 15);
+                    setIfAir(chunk, 14, 71, 14);
+                    setIfAir(chunk, 14, 71, 15);
+                    setIfAir(chunk, 14, 72, 14);
+                    setIfAir(chunk, 14, 72, 15);
+                } else {
+                    setIfAir(chunk, 14, 69, 0);
+                    setIfAir(chunk, 14, 70, 0);
+                    setIfAir(chunk, 14, 71, 0);
+                    setIfAir(chunk, 14, 72, 0);
+                }
+            }
+            if (chunkZ == 0) {
+                if (chunkX % 2 == 0) {
+                    setIfAir(chunk, 14, 69, 0);
+                    setIfAir(chunk, 15, 69, 0);
+                    setIfAir(chunk, 14, 70, 0);
+                    setIfAir(chunk, 15, 70, 0);
+                    setIfAir(chunk, 14, 71, 0);
+                    setIfAir(chunk, 15, 71, 0);
+                    setIfAir(chunk, 14, 72, 0);
+                    setIfAir(chunk, 15, 72, 0);
+                } else {
+                    setIfAir(chunk, 0, 69, 0);
+                    setIfAir(chunk, 0, 70, 0);
+                    setIfAir(chunk, 0, 71, 0);
+                    setIfAir(chunk, 0, 72, 0);
+                }
+            }
+            if (chunkZ + 1 == rooms[0].length * 2) {
+                if (chunkX % 2 == 0) {
+                    setIfAir(chunk, 14, 69, 14);
+                    setIfAir(chunk, 15, 69, 14);
+                    setIfAir(chunk, 14, 70, 14);
+                    setIfAir(chunk, 15, 70, 14);
+                    setIfAir(chunk, 14, 71, 14);
+                    setIfAir(chunk, 15, 71, 14);
+                    setIfAir(chunk, 14, 72, 14);
+                    setIfAir(chunk, 15, 72, 14);
+                } else {
+                    setIfAir(chunk, 0, 69, 14);
+                    setIfAir(chunk, 0, 70, 14);
+                    setIfAir(chunk, 0, 71, 14);
+                    setIfAir(chunk, 0, 72, 14);
+                }
+            }
+
+            //North Doors
+            if (chunkZ % 2 == 0 && room.pos().z() != 0) {
+                var northDoor = generator.getDoorsVertical()[room.pos().x()][room.pos().z() - 1];
+                if (northDoor != DoorType.Bridge) {
+                    var block = getBlockFromDoor(northDoor);
+                    if (chunkX % 2 == 0) {
+                        setIfAir(chunk, block, 14, 69, 0);
+                        setIfAir(chunk, block, 15, 69, 0);
+                        setIfAir(chunk, block, 14, 70, 0);
+                        setIfAir(chunk, block, 15, 70, 0);
+                        setIfAir(chunk, block, 14, 71, 0);
+                        setIfAir(chunk, block, 15, 71, 0);
+                        setIfAir(chunk, block, 14, 72, 0);
+                        setIfAir(chunk, block, 15, 72, 0);
+                    } else {
+                        setIfAir(chunk, block, 0, 69, 0);
+                        setIfAir(chunk, block, 0, 70, 0);
+                        setIfAir(chunk, block, 0, 71, 0);
+                        setIfAir(chunk, block, 0, 72, 0);
+                    }
+                }
+                if (northDoor == DoorType.Normal || northDoor == DoorType.Fairy) {
+                    if (chunkX % 2 == 0) {
+                        chunk.setBlock(14, 69, 1, Block.AIR);
+                        chunk.setBlock(15, 69, 1, Block.AIR);
+                        chunk.setBlock(14, 70, 1, Block.AIR);
+                        chunk.setBlock(15, 70, 1, Block.AIR);
+                        chunk.setBlock(14, 71, 1, Block.AIR);
+                        chunk.setBlock(15, 71, 1, Block.AIR);
+                        chunk.setBlock(14, 72, 1, Block.AIR);
+                        chunk.setBlock(15, 72, 1, Block.AIR);
+                        chunk.setBlock(14, 69, 2, Block.AIR);
+                        chunk.setBlock(15, 69, 2, Block.AIR);
+                        chunk.setBlock(14, 70, 2, Block.AIR);
+                        chunk.setBlock(15, 70, 2, Block.AIR);
+                        chunk.setBlock(14, 71, 2, Block.AIR);
+                        chunk.setBlock(15, 71, 2, Block.AIR);
+                        chunk.setBlock(14, 69, 3, Block.AIR);
+                        chunk.setBlock(15, 69, 3, Block.AIR);
+                        chunk.setBlock(14, 70, 3, Block.AIR);
+                        chunk.setBlock(15, 70, 3, Block.AIR);
+                        chunk.setBlock(14, 71, 3, Block.AIR);
+                        chunk.setBlock(15, 71, 3, Block.AIR);
+                    } else {
+                        chunk.setBlock(0, 69, 1, Block.AIR);
+                        chunk.setBlock(0, 70, 1, Block.AIR);
+                        chunk.setBlock(0, 71, 1, Block.AIR);
+                        chunk.setBlock(0, 72, 1, Block.AIR);
+
+                        chunk.setBlock(0, 69, 2, Block.AIR);
+                        chunk.setBlock(0, 70, 2, Block.AIR);
+                        chunk.setBlock(0, 71, 2, Block.AIR);
+
+                        chunk.setBlock(0, 69, 3, Block.AIR);
+                        chunk.setBlock(0, 70, 3, Block.AIR);
+                        chunk.setBlock(0, 71, 3, Block.AIR);
+                    }
+                }
+            }
+            //East Doors
+            if (chunkX % 2 != 0 && pos.x() != rooms.length - 1) {
+                var eastDoor = generator.getDoorsHorizontal()[pos.x()][pos.z()];
+                if (eastDoor != DoorType.Bridge) {
+                    var block = getBlockFromDoor(eastDoor);
+                    if (chunkZ % 2 == 0) {
+                        for (var x = 14; x <= 15; x++) {
+                            for (var y = 68; y <= 73; y++) {
+                                for (var z = 13; z <= 15; z++) {
+                                    setIfAir(chunk, block, x, y, z);
+                                }
+                            }
+                        }
+                    } else {
+                        setIfAir(chunk, block, 14, 69, 0);
+                        setIfAir(chunk, block, 14, 70, 0);
+                        setIfAir(chunk, block, 14, 71, 0);
+                        setIfAir(chunk, block, 14, 72, 0);
+
+
+                        setIfAir(chunk, block, 15, 68, 0);
+                        setIfAir(chunk, block, 15, 69, 0);
+                        setIfAir(chunk, block, 15, 70, 0);
+                        setIfAir(chunk, block, 15, 71, 0);
+                        setIfAir(chunk, block, 15, 72, 0);
+                        setIfAir(chunk, block, 15, 73, 0);
+
+
+                        setIfAir(chunk, block, 15, 69, 1);
+                        setIfAir(chunk, block, 15, 70, 1);
+                        setIfAir(chunk, block, 15, 71, 1);
+                        setIfAir(chunk, block, 15, 72, 1);
+                    }
+                }
+                if (eastDoor == DoorType.Normal || eastDoor == DoorType.Fairy) {
+                    //TODO Fill with air to make passage
+                    if (chunkZ % 2 == 0) {
+                        setIfAir(chunk, 15, 69, 13);
+                        setIfAir(chunk, 15, 70, 13);
+                        setIfAir(chunk, 15, 71, 13);
+                        setIfAir(chunk, 15, 72, 13);
+
+                        setIfAir(chunk, 15, 68, 14);
+                        setIfAir(chunk, 15, 73, 14);
+
+                        setIfAir(chunk, 15, 68, 15);
+                        setIfAir(chunk, 15, 73, 15);
+
+                    } else {
+                        setIfAir(chunk, 15, 68, 0);
+                        setIfAir(chunk, 15, 73, 0);
+
+                        setIfAir(chunk, 15, 69, 1);
+                        setIfAir(chunk, 15, 70, 1);
+                        setIfAir(chunk, 15, 71, 1);
+                        setIfAir(chunk, 15, 72, 1);
+                    }
+                }
+            }
+
+            //South Doors
+            if (chunkZ % 2 != 0 && pos.z() != rooms.length - 1) {
+                var southDoor = generator.getDoorsVertical()[pos.x()][pos.z()];
+                if (southDoor != DoorType.Bridge) {
+                    var block = getBlockFromDoor(southDoor);
+                    if (chunkX % 2 == 0) {
+                        for (var x = 13; x <= 15; x++) {
+                            for (var y = 68; y <= 73; y++) {
+                                for (var z = 14; z <= 15; z++) {
+                                    setIfAir(chunk, block, x, y, z);
+                                }
+                            }
+                        }
+                    } else {
+                        setIfAir(chunk, block, 0, 69, 14);
+                        setIfAir(chunk, block, 0, 70, 14);
+                        setIfAir(chunk, block, 0, 71, 14);
+                        setIfAir(chunk, block, 0, 72, 14);
+
+
+                        setIfAir(chunk, block, 0, 68, 15);
+                        setIfAir(chunk, block, 1, 69, 15);
+                        setIfAir(chunk, block, 1, 70, 15);
+                        setIfAir(chunk, block, 1, 71, 15);
+                        setIfAir(chunk, block, 1, 72, 15);
+                        setIfAir(chunk, block, 0, 73, 15);
+
+
+                        setIfAir(chunk, block, 0, 69, 15);
+                        setIfAir(chunk, block, 0, 70, 15);
+                        setIfAir(chunk, block, 0, 71, 15);
+                        setIfAir(chunk, block, 0, 72, 15);
+                    }
+                }
+                if (southDoor == DoorType.Normal || southDoor == DoorType.Fairy) {
+                    //TODO Fill with air to make passage
+                    if (chunkX % 2 == 0) {
+                        chunk.setBlock(13, 69, 15, Block.STONE);
+                        chunk.setBlock(13, 70, 15, Block.STONE);
+                        chunk.setBlock(13, 71, 15, Block.STONE);
+                        chunk.setBlock(13, 72, 15, Block.STONE);
+                        chunk.setBlock(14, 68, 15, Block.STONE);
+                        chunk.setBlock(14, 73, 15, Block.STONE);
+                        chunk.setBlock(15, 68, 15, Block.STONE);
+                        chunk.setBlock(15, 73, 15, Block.STONE);
+
+                        chunk.setBlock(14, 69, 14, Block.AIR);
+                        chunk.setBlock(14, 70, 14, Block.AIR);
+                        chunk.setBlock(14, 71, 14, Block.AIR);
+                        chunk.setBlock(14, 72, 14, Block.AIR);
+                        chunk.setBlock(15, 69, 14, Block.AIR);
+                        chunk.setBlock(15, 70, 14, Block.AIR);
+                        chunk.setBlock(15, 71, 14, Block.AIR);
+                        chunk.setBlock(15, 72, 14, Block.AIR);
+                        chunk.setBlock(14, 69, 13, Block.AIR);
+                        chunk.setBlock(14, 70, 13, Block.AIR);
+                        chunk.setBlock(14, 71, 13, Block.AIR);
+                        chunk.setBlock(15, 69, 13, Block.AIR);
+                        chunk.setBlock(15, 70, 13, Block.AIR);
+                        chunk.setBlock(15, 71, 13, Block.AIR);
+
+                    } else {
+                        chunk.setBlock(0, 68, 15, Block.STONE);
+                        chunk.setBlock(0, 73, 15, Block.STONE);
+                        chunk.setBlock(1, 69, 15, Block.STONE);
+                        chunk.setBlock(1, 70, 15, Block.STONE);
+                        chunk.setBlock(1, 71, 15, Block.STONE);
+                        chunk.setBlock(1, 72, 15, Block.STONE);
+                        chunk.setBlock(1, 68, 15, Block.STONE);
+                        chunk.setBlock(1, 73, 15, Block.STONE);
+
+                        chunk.setBlock(1, 69, 14, Block.AIR);
+                        chunk.setBlock(1, 70, 14, Block.AIR);
+                        chunk.setBlock(1, 71, 14, Block.AIR);
+                        chunk.setBlock(1, 72, 14, Block.AIR);
+                        chunk.setBlock(1, 69, 13, Block.AIR);
+                        chunk.setBlock(1, 70, 13, Block.AIR);
+                        chunk.setBlock(1, 71, 13, Block.AIR);
+                    }
+                }
+            }
+            //West Doors
+            if (chunkX % 2 == 0 && pos.x() != 0) {
+                var westDoor = generator.getDoorsHorizontal()[pos.x() - 1][pos.z()];
+                if (westDoor != DoorType.Bridge) {
+                    var block = getBlockFromDoor(westDoor);
+                    if (chunkZ % 2 == 0) {
+                        setIfAir(chunk, block, 0, 69, 14);
+                        setIfAir(chunk, block, 0, 69, 15);
+                        setIfAir(chunk, block, 0, 70, 14);
+                        setIfAir(chunk, block, 0, 70, 15);
+                        setIfAir(chunk, block, 0, 71, 14);
+                        setIfAir(chunk, block, 0, 71, 15);
+                        setIfAir(chunk, block, 0, 72, 14);
+                        setIfAir(chunk, block, 0, 72, 15);
+                    } else {
+                        setIfAir(chunk, block, 0, 69, 0);
+                        setIfAir(chunk, block, 0, 70, 0);
+                        setIfAir(chunk, block, 0, 71, 0);
+                        setIfAir(chunk, block, 0, 72, 0);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            Main.LOGGER.error("Failed to load room with id  {}", id);
+            throw new RuntimeException(e);
+        }
+        chunks[chunkX][chunkZ] = chunk;
+        return chunk;
+    }
+
+    private void setIfAir(Chunk chunk, int x, int y, int z) {
+        var block = chunk.getBlock(x, y, z);
+        if (block.isAir() || block == Block.COAL_BLOCK || block == Block.RED_TERRACOTTA) {
+            chunk.setBlock(x, y, z, Block.STONE);
+        }
+    }
+
+    private void setIfAir(Chunk chunk, Block block, int x, int y, int z) {
+        var b = chunk.getBlock(x, y, z);
+        if (b.isAir() || b == Block.COAL_BLOCK || b == Block.RED_TERRACOTTA) {
+            chunk.setBlock(x, y, z, block);
+        }
+    }
+
+    private Block getBlockFromDoor(DoorType door) {
+        if (door == null) {
+            Main.LOGGER.warn("Door type is null");
+            return Block.STONE;
+        }
+        return switch (door) {
+            case None -> Block.STONE;
+            case Blood -> Block.RED_TERRACOTTA;
+            case Wither -> Block.COAL_BLOCK;
+            case Start -> Block.CHISELED_STONE_BRICKS;
+            default -> Block.AIR;
+        };
     }
 
     @Override

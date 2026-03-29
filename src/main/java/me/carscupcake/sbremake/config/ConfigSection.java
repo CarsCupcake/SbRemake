@@ -18,7 +18,6 @@ import net.minestom.server.item.component.CustomData;
 import net.minestom.server.item.component.EnchantmentList;
 import net.minestom.server.item.enchant.Enchantment;
 import org.intellij.lang.annotations.Subst;
-import org.junit.Assert;
 
 import java.time.LocalDateTime;
 import java.util.*;

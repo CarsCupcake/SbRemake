@@ -32,8 +32,8 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.AttributeList;
 import net.minestom.server.item.component.CustomData;
-import net.minestom.server.item.component.HeadProfile;
 import net.minestom.server.item.component.TooltipDisplay;
+import net.minestom.server.network.player.ResolvableProfile;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
@@ -127,7 +127,7 @@ public interface ISbItem extends KeyClass {
     default SbItemStack create() {
         ItemStack.Builder builder = ItemStack.builder(getMaterial()).set(DataComponents.ATTRIBUTE_MODIFIERS, new AttributeList(List.of()));
         if (getMaterial() == Material.PLAYER_HEAD && this instanceof HeadWithValue value) {
-            builder.set(DataComponents.PROFILE, new HeadProfile(new PlayerSkin(value.value(), "")));
+            builder.set(DataComponents.PROFILE, new ResolvableProfile(new PlayerSkin(value.value(), "")));
         }
         if (this instanceof ColoredLeather leather) {
             builder.set(DataComponents.DYED_COLOR, new Color(leather.color().asRGB()));
@@ -149,6 +149,7 @@ public interface ISbItem extends KeyClass {
     }
 
     static void init() {
+        MinecraftServer.getGlobalEventHandler().addChild(DungeonItem.LISTENER);
         UltimateEnchantment.ULTIMATE_ENCHANTMENTS.addAll(Arrays.asList(UltimateEnchantments.values()));
         for (Material material : Material.values()) {
             String name = StringUtils.connect(material.key().value().split("_"), true);

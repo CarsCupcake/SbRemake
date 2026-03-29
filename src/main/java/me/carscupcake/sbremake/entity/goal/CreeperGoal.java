@@ -15,6 +15,7 @@ import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.network.packet.server.play.ExplosionPacket;
 import net.minestom.server.particle.Particle;
 import net.minestom.server.sound.SoundEvent;
+import net.minestom.server.utils.WeightedList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -59,7 +60,7 @@ public class CreeperGoal extends GoalSelector {
             if (range < desiredRange || (range < explosionRange && explosionTicks < 30)) {
                 if (explosionTicks == 0) {
                     stop = true;
-                    ExplosionPacket packet = new ExplosionPacket(entity.getPosition(), new Vec(explosionRange), Particle.EXPLOSION, SoundEvent.ENTITY_GENERIC_EXPLODE);
+                    ExplosionPacket packet = new ExplosionPacket(entity.getPosition(), explosionRange, (int) (explosionRange*3), null, Particle.EXPLOSION, SoundEvent.ENTITY_GENERIC_EXPLODE, WeightedList.of());
                     entity.getInstance().sendGroupedPacket(packet);
                     for (Entity e : entity.getInstance().getNearbyEntities(entity.getPosition(), explosionRange)) {
                         if (e instanceof SkyblockPlayer player) {

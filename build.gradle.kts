@@ -7,7 +7,7 @@ plugins {
     `maven-publish`
     signing
     alias(libs.plugins.nmcp)
-    id("com.gradleup.shadow") version "9.0.0-rc1"
+    alias(libs.plugins.shadow)
 }
 
 group = "me.carscupcake"
@@ -49,6 +49,7 @@ repositories {
 
 dependencies {
     implementation(project(":sbremake-data"))
+    implementation(libs.lombok)
     platform("com.intellectualsites.bom:bom-1.18.x:1.12")
     platform("org.jboss.shrinkwrap:shrinkwrap-bom:1.2.6")
     implementation("net.kyori:adventure-api:4.21.0")
@@ -60,16 +61,19 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.17.1")
     implementation("dev.hollowcube:polar:1.7.2")
     implementation(project(":minestom"))
-    implementation("com.googlecode.json-simple:json-simple:1.1.1")
+    implementation("com.google.code.gson:gson:2.13.2")
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:6.0.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.slf4j:slf4j-api:2.0.13")
     implementation("org.slf4j:slf4j-simple:2.0.13")
-    implementation("log4j:log4j:1.2.17")
+    implementation("org.apache.logging.log4j:log4j-core:2.25.3")
     implementation("org.jooq:joor:0.9.15")
-    implementation("org.apache.cassandra:cassandra-all:5.0.3")
+    implementation("com.google.guava:guava:33.5.0-jre")
     implementation("org.kohsuke:github-api:1.326")
     implementation("net.sf.sevenzipjbinding:sevenzipjbinding:16.02-2.01")
     implementation("net.sf.sevenzipjbinding:sevenzipjbinding-all-platforms:16.02-2.01")
@@ -93,6 +97,9 @@ tasks.jar {
             "Multi-Release" to "true" // Indicates a multi-release JAR
         )
     }
+}
+tasks.test {
+    useJUnitPlatform()
 }
 tasks.shadowJar {
     archiveFileName.set("SbRemake.jar")

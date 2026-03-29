@@ -20,24 +20,8 @@ public interface StarUpgradable {
              Place an item above to upgrade its level.
              §7
             View the §dEssence Guide §7below for a list of upgradeable items and §dEssence§7!""");
-    ItemStack emptyAnvil = new ItemBuilder(Material.ANVIL)
-            .setLore(emptyUpgradeLore)
-            .setName("§cUpgrade Item")
-            .build();
-    InventoryBuilder upgradeInventory = new InventoryBuilder(6, "Upgrade Item")
-            .fill(TemplateItems.EmptySlot.getItem())
-            .setItem(new ItemBuilder(Material.BARRIER)
-                    .setName("§cClose").build(), 49)
-            .setItem(ItemStack.of(Material.AIR), 13)
-            .setItem(emptyAnvil, 22)
-            .setItem(new ItemBuilder(Material.BARRIER)
-                    .setLore(emptyUpgradeLore)
-                    .setName("§cUpgrade Item")
-                    .build(), 31)
-            .verticalFill(0, 6, new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
-                    .setName("§7").build())
-            .verticalFill(8, 6, new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
-                    .setName("§7").build());
+    ItemStack emptyAnvil = new ItemBuilder(Material.ANVIL).setLore(emptyUpgradeLore).setName("§cUpgrade Item").build();
+    InventoryBuilder upgradeInventory = new InventoryBuilder(6, "Upgrade Item").fill(TemplateItems.EmptySlot.getItem()).setItem(new ItemBuilder(Material.BARRIER).setName("§cClose").build(), 49).setItem(ItemStack.of(Material.AIR), 13).setItem(emptyAnvil, 22).setItem(new ItemBuilder(Material.BARRIER).setLore(emptyUpgradeLore).setName("§cUpgrade Item").build(), 31).verticalFill(0, 6, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName("§7").build()).verticalFill(8, 6, new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setName("§7").build());
 
     static void showStarUpgradingGui(SkyblockPlayer player) {
         var crafted = new AtomicBoolean(false);
@@ -47,7 +31,8 @@ public interface StarUpgradable {
             return true;
         });
         gui.setGeneralClickEvent(inventoryPreClickEvent -> {
-            if (inventoryPreClickEvent.getInventory() == inventoryPreClickEvent.getPlayer().getInventory()) return false;
+            if (inventoryPreClickEvent.getInventory() == inventoryPreClickEvent.getPlayer().getInventory())
+                return false;
             if (inventoryPreClickEvent.getSlot() == 31 && crafted.get()) {
                 return false;
             }
@@ -120,10 +105,7 @@ public interface StarUpgradable {
                 builder.append(cost).append("\n");
             }
             builder.append("\n§eClick to upgrade!");
-            gui.getInventory().setItemStack(22, new ItemBuilder(Material.ANVIL)
-                            .setName("§aUpgrade Item")
-                            .setLore(new Lore("§7Upgrades the item to " + upgradedItem.getRarity().getPrefix() + upgradedItem.displayName() + "§7!\n §7\nCost\n" + builder))
-                    .build());
+            gui.getInventory().setItemStack(22, new ItemBuilder(Material.ANVIL).setName("§aUpgrade Item").setLore(new Lore("§7Upgrades the item to " + upgradedItem.getRarity().getPrefix() + upgradedItem.displayName() + "§7!\n §7\nCost\n" + builder)).build());
             gui.getInventory().setItemStack(31, new ItemBuilder(upgradedItem.item()).addLore("§7Cost\n" + builder).build());
         });
         gui.showGui(player);

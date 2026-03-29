@@ -109,6 +109,7 @@ public interface Recipe {
                         if (e.getMessage().endsWith("is a directory")) return;
                         throw new RuntimeException(e);
                     } catch (IOException e) {
+                        Main.LOGGER.error("Could not itterate {}", inResourcesPath);
                         throw new RuntimeException(e);
                     }
                 });

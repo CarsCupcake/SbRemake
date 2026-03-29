@@ -30,7 +30,6 @@ import net.minestom.server.item.Material;
 import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Assert;
 
 import java.util.*;
 
@@ -68,7 +67,8 @@ public abstract class AbstractMinion implements Minion {
      * @param placer           is the player who owns the isle
      */
     public AbstractMinion(int level, IMinionData base, Instance instance, Pos location, String minionIdentifier, UUID placer) {
-        Assert.assertTrue(level <= base.getLevels());
+        if (level > base.getLevels())
+            throw new IllegalArgumentException("Level is out of bounds!");
         this.instance = instance;
         inventorySpace = getMinionInventorySpace(level);
         this.level = level;
@@ -293,7 +293,8 @@ public abstract class AbstractMinion implements Minion {
     }
 
     public void setLevel(int i) {
-        Assert.assertTrue("New Minion level has to be larger than the level before!", level <= i);
+        if (level <= i)
+            throw new IllegalArgumentException("New Minion level has to be larger than the level before!");
         level = i;
         stand.setEquipment(EquipmentSlot.HELMET, new ItemBuilder(Material.PLAYER_HEAD).setHeadTexture(base.getHeadStrings()[level - 1]).build());
         inventorySpace = getMinionInventorySpace(level);

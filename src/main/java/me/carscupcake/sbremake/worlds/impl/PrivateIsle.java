@@ -23,7 +23,6 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
 import org.kohsuke.github.GitHub;
 
 import java.io.*;
@@ -36,23 +35,22 @@ import static me.carscupcake.sbremake.worlds.SkyblockWorld.getZipFiles;
 
 @Getter
 public class PrivateIsle extends WorldProvider {
-    public static final EventNode<Event> NODE = EventNode.all("privateIsle")
-            .addListener(PlayerMoveEvent.class, playerMoveEvent -> {
-                SkyblockPlayer player = (SkyblockPlayer) playerMoveEvent.getPlayer();
-                if (player.getWorldProvider().type() == SkyblockWorld.Hub) {
-                    var pos = player.getPosition();
-                    if (pos.x() <= -1 && pos.x() >= -5 && pos.z() <= -62 && pos.z() >= -65 && ((long) pos.y()) == 70) {
-                        SkyblockWorld.sendToBest(WarpLocation.PrivateIsle, player);
-                    }
-                }
-            });
+    public static final EventNode<Event> NODE = EventNode.all("privateIsle").addListener(PlayerMoveEvent.class, playerMoveEvent -> {
+        SkyblockPlayer player = (SkyblockPlayer) playerMoveEvent.getPlayer();
+        if (player.getWorldProvider().type() == SkyblockWorld.Hub) {
+            var pos = player.getPosition();
+            if (pos.x() <= -1 && pos.x() >= -5 && pos.z() <= -62 && pos.z() >= -65 && ((long) pos.y()) == 70) {
+                SkyblockWorld.sendToBest(WarpLocation.PrivateIsle, player);
+            }
+        }
+    });
     public final Map<UUID, Minion> minions = new HashMap<>();
     private final UUID owner;
     @Setter
     private int maxMinions = 5;
 
     public PrivateIsle(UUID owner) throws IOException {
-        super(new EntityNpc[]{new EntityNpc(new Pos(9, 100, 33), null, "Jerry", EntityType.VILLAGER)});
+        super(new EntityNpc(new Pos(9, 100, 33), null, "Jerry", EntityType.VILLAGER));
         this.owner = owner;
         customEntry.put(SkyblockWorld.Hub, new Pos(6.5, 100, 40.5, 180, 0));
         File dir = new File(ConfigFile.getConfigFolder(owner), "private_isle");
@@ -209,7 +207,8 @@ public class PrivateIsle extends WorldProvider {
     }
 
     public void pickupMinion(SkyblockPlayer player, Minion minion) {
-        Assert.assertTrue(minions.containsValue(minion));
+        if (!minions.containsValue(minion))
+            throw new IllegalArgumentException("Minion is not in this isle!");
         minion.remove(player, MinionRemoveReason.PICKUP_MINION);
         minions.remove(minion.getId());
     }

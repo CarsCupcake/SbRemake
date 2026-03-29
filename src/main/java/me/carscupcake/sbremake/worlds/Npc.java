@@ -16,6 +16,7 @@ import net.minestom.server.color.Color;
 import net.minestom.server.component.DataComponent;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.network.packet.server.play.*;
@@ -51,12 +52,12 @@ public class Npc extends AbstractNpc {
 
     public void spawn(SkyblockPlayer player) {
         player.sendPacket(new PlayerInfoUpdatePacket(PlayerInfoUpdatePacket.Action.ADD_PLAYER, entry));
-        player.sendPacket(new SpawnEntityPacket(entityId, entry.uuid(), EntityType.PLAYER.id(), getPos(), getPos().yaw(), 0, (short) 0, (short) 0, (short) 0));
+        player.sendPacket(new SpawnEntityPacket(entityId, entry.uuid(), EntityType.PLAYER, getPos(), getPos().yaw(), 0, Vec.ZERO));
         byte b = 0b1111111;
         new TaskScheduler() {
             @Override
             public void run() {
-                player.sendPacket(new EntityMetaDataPacket(entityId, Map.of(17, Metadata.Byte(b))));
+                player.sendPacket(new EntityMetaDataPacket(entityId, Map.of(16, Metadata.Byte(b))));
                 player.sendPacket(new TeamsPacket(fakeName, new TeamsPacket.CreateTeamAction(Component.text(fakeName), (byte) 0, TeamsPacket.NameTagVisibility.NEVER, TeamsPacket.CollisionRule.NEVER, NamedTextColor.BLACK, Component.empty(), Component.empty(), List.of(fakeName))));
             }
         }.delayTask(10);
