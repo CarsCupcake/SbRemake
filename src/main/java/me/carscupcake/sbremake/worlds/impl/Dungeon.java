@@ -12,7 +12,7 @@ import me.carscupcake.sbremake.worlds.impl.dungeon.Generator;
 import me.carscupcake.sbremake.worlds.impl.dungeon.Paster;
 import me.carscupcake.sbremake.worlds.region.Region;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.instance.IChunkLoader;
+import net.minestom.server.instance.ChunkLoader;
 
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ public class Dungeon extends WorldProvider {
     }
 
     @Override
-    public IChunkLoader getChunkLoader() throws IOException {
+    public ChunkLoader getChunkLoader() throws IOException {
         generator.determineIds();
         return new DungeonWorldProvider(this, generator, generator.getRoomIds());
     }

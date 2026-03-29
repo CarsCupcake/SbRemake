@@ -33,10 +33,10 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.component.EnchantmentList;
-import net.minestom.server.item.component.HeadProfile;
 import net.minestom.server.item.component.PotionContents;
 import net.minestom.server.item.component.TooltipDisplay;
 import net.minestom.server.item.enchant.Enchantment;
+import net.minestom.server.network.player.ResolvableProfile;
 import net.minestom.server.potion.PotionType;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.NotNull;
@@ -125,13 +125,13 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
         if (sbItem.getType() == ItemType.Pet) {
             Pet.PetInfo petInfo = getModifier(Modifier.PET_INFO);
             if (petInfo.pet() != null) {
-                itemStack = itemStack.with(DataComponents.PROFILE, new HeadProfile(new PlayerSkin(petInfo.pet().skullValue(), "")));
+                itemStack = itemStack.with(DataComponents.PROFILE, new ResolvableProfile(new PlayerSkin(petInfo.pet().skullValue(), "")));
             }
         }
         if (sbItem.getType() == ItemType.Rune) {
             RuneModifier modifier = getModifier(Modifier.RUNE);
             if (modifier != null) {
-                itemStack = itemStack.with(DataComponents.PROFILE, new HeadProfile(new PlayerSkin(modifier.rune().headValue(), "")));
+                itemStack = itemStack.with(DataComponents.PROFILE, new ResolvableProfile(new PlayerSkin(modifier.rune().headValue(), "")));
             }
         }
         if (sbItem.getType() == ItemType.Potion) {
@@ -145,7 +145,7 @@ public record SbItemStack(@NotNull ItemStack item, @NotNull ISbItem sbItem,
             var modifier = getModifier(Modifier.ATTRIBUTE);
             if (modifier != null) {
                 if (modifier.getMaterial() == Material.PLAYER_HEAD) {
-                    itemStack = itemStack.with(DataComponents.PROFILE, new HeadProfile(new PlayerSkin(Objects.requireNonNull(modifier.getHeadValue()), "")));
+                    itemStack = itemStack.with(DataComponents.PROFILE, new ResolvableProfile(new PlayerSkin(Objects.requireNonNull(modifier.getHeadValue()), "")));
                 } else {
                     itemStack = itemStack.withMaterial(modifier.getMaterial());
                 }

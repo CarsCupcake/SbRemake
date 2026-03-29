@@ -85,7 +85,7 @@ public class VoidgloomSeraphII extends VoidgloomSeraphI {
 
     private void holdBeacon() {
         var endermanMeta = (EndermanMeta) getEntityMeta();
-        endermanMeta.setCarriedBlockID(Block.BEACON.stateId());
+        endermanMeta.setCarriedBlock(Block.BEACON);
         isHolding = true;
         beaconTasks = new TaskScheduler() {
             @Override
@@ -115,7 +115,7 @@ public class VoidgloomSeraphII extends VoidgloomSeraphI {
     private void throwBeacon() {
         isHolding = false;
         var endermanMeta = (EndermanMeta) getEntityMeta();
-        endermanMeta.setCarriedBlockID(Block.AIR.id());
+        endermanMeta.setCarriedBlock(Block.AIR);
         var possibles = new ArrayList<BlockVec>();
         for (int x = -16; x <= 16; x++) {
             for (int y = -5; y <= 5; y++) {

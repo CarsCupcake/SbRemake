@@ -29,7 +29,7 @@ import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Chunk;
-import net.minestom.server.instance.IChunkLoader;
+import net.minestom.server.instance.ChunkLoader;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
@@ -102,7 +102,7 @@ public abstract class WorldProvider {
         return summonArmorStandFixture(path, null);
     }
 
-    public IChunkLoader getChunkLoader() throws IOException {
+    public ChunkLoader getChunkLoader() throws IOException {
         File f = type().updateFiles();
         if (this instanceof PrivateIsle pI)
             f = pI.findWorldFolder();

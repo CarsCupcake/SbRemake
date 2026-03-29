@@ -30,14 +30,14 @@ public class DebugGridCommand extends Command {
     private void execute(@NotNull CommandSender sender, @NotNull CommandContext context) {
         Player player = (Player) sender;
         final RelativeBlockBatch relativeBlockBatch = new RelativeBlockBatch();
-        final Integer radius = context.get(this.radius);
+        final int radius = context.get(this.radius);
         for (int x = -radius / 2; x < radius / 2; x++) {
             for (int z = -radius / 2; z < radius / 2; z++) {
                 relativeBlockBatch.setBlock(x, 0, z, ((x % 2 == 0) ^ (z % 2) == 0) ? Block.WHITE_CONCRETE : Block.BLACK_CONCRETE);
             }
         }
         //noinspection ConstantConditions
-        relativeBlockBatch.apply(player.getInstance(), context.get(center).from(player), () -> {
+        relativeBlockBatch.apply(player.getInstance(), context.get(center).from(player), (_) -> {
         });
     }
 }
