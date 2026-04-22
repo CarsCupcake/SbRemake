@@ -1,5 +1,3 @@
-import org.gradle.internal.os.OperatingSystem
-
 plugins {
     java
     application
@@ -64,10 +62,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.2")
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:6.0.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.1")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.slf4j:slf4j-api:2.0.13")
     implementation("org.slf4j:slf4j-simple:2.0.13")
@@ -82,6 +76,12 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.19.0")
     implementation("com.palantir.javapoet:javapoet:0.7.0")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
+
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.params)
+    testImplementation(libs.junit.suite.api)
+    testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.suite.engine)
 }
 
 tasks.jar {

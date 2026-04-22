@@ -1,6 +1,7 @@
 package me.carscupcake.junit;
 
 import me.carscupcake.sbremake.worlds.impl.dungeon.Generator;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -8,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.ArrayList;
 import java.util.stream.Stream;
@@ -44,7 +46,7 @@ public class RoomLoadingTests {
 
     static class BooleanCombinations implements ArgumentsProvider {
         @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+        public @NonNull Stream<? extends Arguments> provideArguments(@NonNull ParameterDeclarations declarations, @NonNull ExtensionContext context) throws Exception {
             var args = new ArrayList<Arguments>();
             for (int i = 0; i < 0b10000; i++) {
                 args.add(Arguments.of(
