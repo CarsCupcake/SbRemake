@@ -4,12 +4,10 @@ import me.carscupcake.sbremake.Main;
 import me.carscupcake.sbremake.util.Pos2d;
 import me.carscupcake.sbremake.util.SkyblockSimpleLogger;
 import me.carscupcake.sbremake.worlds.impl.dungeon.*;
-import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Marker;
 import org.slf4j.event.Level;
 
@@ -24,7 +22,7 @@ public class DungeonTests {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
-    @BeforeClass
+    @BeforeAll
     public static void oneTimeSetup() {
         Main.LOGGER = new SkyblockSimpleLogger() {
             @Override
@@ -85,7 +83,7 @@ public class DungeonTests {
     public void testIsDeterministic() {
         var gen1 = new Generator(new Room[6][6], 1);
         var gen2 = new Generator(new Room[6][6], 1);
-        Assert.assertArrayEquals(gen1.getRooms(), gen2.getRooms());
+        Assertions.assertArrayEquals(gen1.getRooms(), gen2.getRooms());
     }
 
     @Test
@@ -98,7 +96,7 @@ public class DungeonTests {
                             for (var shape : RoomShape.values()) {
                                 for (var dir : Rotation.values()) {
                                     var pos = new Vec(x, y, z);
-                                    Assert.assertEquals(pos, shape.toRelative(new Pos2d(1, 2), shape.toActual(new Pos2d(1, 2), pos, dir), dir));
+                                    Assertions.assertEquals(pos, shape.toRelative(new Pos2d(1, 2), shape.toActual(new Pos2d(1, 2), pos, dir), dir));
                                 }
                             }
                     }
@@ -112,7 +110,7 @@ public class DungeonTests {
                 for (int z = 0; z < 20; z++) {
                     for (var dir : Rotation.values()) {
                         var pos = new Vec(x, y, z);
-                        Assert.assertEquals(pos, dir.toRelative(new Pos2d(1, 2), dir.toActual(new Pos2d(1, 2), pos)));
+                        Assertions.assertEquals(pos, dir.toRelative(new Pos2d(1, 2), dir.toActual(new Pos2d(1, 2), pos)));
                     }
                 }
     }

@@ -3,7 +3,7 @@ package me.carscupcake.junit;
 import me.carscupcake.sbremake.player.Essence;
 import me.carscupcake.sbremake.util.CountMap;
 import me.carscupcake.sbremake.util.TypeUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
