@@ -149,7 +149,7 @@ public class RevenantHorrorV extends SlayerEntity {
                             i = 0;
                             thunder = true;
                             BlockVec surface = surface(getPosition());
-                            teleport(Pos.fromPoint(surface.add(0.5, 1, 0.5)));
+                            teleport(surface.add(0.5, 1, 0.5).asPos());
                             checkingBlocks.add(surface);
                             blocks.add(new FakeBlock(surface, instance, Block.BEDROCK).show());
                         } else

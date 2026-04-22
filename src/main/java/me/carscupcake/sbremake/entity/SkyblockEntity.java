@@ -22,6 +22,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.color.Color;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
@@ -91,7 +92,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         //in case the entity got removed in the damage process
         if (entity.instance == null) return;
         EntityCreature creature = new EntityCreature(EntityType.ARMOR_STAND, UUID.randomUUID());
-        creature.setCustomName(Component.text(tag));
+        creature.set(DataComponents.CUSTOM_NAME, Component.text(tag));
         creature.setCustomNameVisible(true);
         creature.setInvisible(true);
         creature.setNoGravity(true);
@@ -245,7 +246,7 @@ public abstract class SkyblockEntity extends EntityCreature {
                 if (showCustomNameTag()) {
                     nameTag = new LivingEntity(EntityType.ARMOR_STAND);
                     ((ArmorStandMeta) nameTag.getEntityMeta()).setMarker(true);
-                    nameTag.setCustomName(getCustomName());
+                    nameTag.set(DataComponents.CUSTOM_NAME, get(DataComponents.CUSTOM_NAME));
                     nameTag.setCustomNameVisible(true);
                     nameTag.setInstance(instance, getPosition());
                     nameTag.setCustomNameVisible(true);
@@ -265,14 +266,6 @@ public abstract class SkyblockEntity extends EntityCreature {
         super.remove();
         if (nameTag != null) {
             nameTag.remove();
-        }
-    }
-
-    @Override
-    public void setCustomName(@Nullable Component customName) {
-        super.setCustomName(customName);
-        if (showCustomNameTag() && nameTag != null) {
-            nameTag.setCustomName(customName);
         }
     }
 
@@ -398,7 +391,7 @@ public abstract class SkyblockEntity extends EntityCreature {
 
     @Override
     public void setHealth(float health) {
-        this.health = Math.max(0, Math.min(getMaxHealth(), health));
+        this.health = Math.clamp(health, 0, getMaxHealth());
         super.setHealth((float) (getAttribute(Attribute.MAX_HEALTH).getValue() * (health / getMaxHealth())));
         update();
     }
@@ -406,7 +399,7 @@ public abstract class SkyblockEntity extends EntityCreature {
     public void update() {
         if (isDead) return;
         String name = nameTag().apply(this);
-        setCustomName(Component.text(name));
+        set(DataComponents.CUSTOM_NAME, Component.text(name));
         setCustomNameVisible(true);
     }
 
@@ -433,7 +426,6 @@ public abstract class SkyblockEntity extends EntityCreature {
         Basic() {
             @Override
             public String apply(SkyblockEntity skyblockEntity) {
-                var builder = new StringBuilder();
                 return "§8[§7Lv" + (skyblockEntity.getLevel()) + "§8] " + (skyblockEntity.mobTypesNameTag == null || skyblockEntity.mobTypesNameTag.isEmpty() ? "" : (skyblockEntity.mobTypesNameTag + " "))  +
                 "§c" + (skyblockEntity.getName()) + " §a" + ((skyblockEntity.getHealth() >= 100_000 ?  StringUtils.toShortNumber(skyblockEntity.getHealth()) : StringUtils.toFormatedNumber(skyblockEntity.getHealth()))) + "§7/§a" + (skyblockEntity.getMaxHealth() >= 100_000 ?  StringUtils.toShortNumber(skyblockEntity.getMaxHealth()) : StringUtils.toFormatedNumber(skyblockEntity.getMaxHealth())) + "§c" + (Stat.Health.getSymbol());
             }
@@ -592,7 +584,7 @@ public abstract class SkyblockEntity extends EntityCreature {
         public static void navigator(long time, Entity target, Navigator navigator, Cooldown cooldown) {
             final var pathPosition = navigator.getPathPosition();
             final var targetPosition = target.getPosition();
-            if (pathPosition == null || !pathPosition.samePoint(targetPosition)) {
+            if (!pathPosition.samePoint(targetPosition)) {
                 if (cooldown.isReady(time)) {
                     cooldown.refreshLastUpdate(time);
                     navigator.setPathTo(targetPosition);

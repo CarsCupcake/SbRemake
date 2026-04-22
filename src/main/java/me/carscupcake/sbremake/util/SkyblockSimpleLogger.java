@@ -1,6 +1,7 @@
 package me.carscupcake.sbremake.util;
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
@@ -55,14 +56,14 @@ public class SkyblockSimpleLogger extends SimpleLogger implements ComponentLogge
                 try {
                     BasicFileAttributes attr = Files.readAttributes(logs.toPath(), BasicFileAttributes.class);
                     if (attr.creationTime().toMillis() != 0) {
-                        var myFormatObj = new ISO8601DateFormat();
+                        var myFormatObj = new StdDateFormat();
                         zip(logFolder, List.of(logs, errors), myFormatObj.format(new Date(attr.creationTime().toMillis())));
                         success = true;
                     }
                 } catch (IOException ignored) {
                 }
                 if (!success) {
-                    var myFormatObj = new ISO8601DateFormat();
+                    var myFormatObj = new StdDateFormat();
                     zip(logFolder, List.of(logs, errors), myFormatObj.format(new Date()));
                 }
             }

@@ -48,7 +48,7 @@ public class LocationsStick implements ISbItem {
     public List<Ability> getDefaultAbilities() {
         return List.of(new ItemAbility<>("Mark Location", AbilityType.RIGHT_CLICK, event -> {
                     if (event.block() == null) return;
-                    positions.add(Pos.fromPoint(event.block()));
+                    positions.add(event.block().asPos());
                     event.player().sendMessage("§aAdded Block " + (event.block().x()) + " " + (event.block().y()) + " " + (event.block().z()));
                     StringBuilder builder = new StringBuilder("new Pos[]{");
                     Iterator<Pos> iterator = positions.iterator();
@@ -56,7 +56,7 @@ public class LocationsStick implements ISbItem {
                         Pos pos = iterator.next();
                         builder.append("new Pos(").append(pos.x()).append(", ").append(pos.y()).append(", ").append(pos.z()).append(")").append((iterator.hasNext()) ? "," : "");
                     }
-                    event.player().sendMessage(Component.text("§e§lCOPY").clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, builder.toString())));
+                    event.player().sendMessage(Component.text("§e§lCOPY").clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, ClickEvent.Payload.string(builder.toString()))));
                 }, new Lore("Mark the block")),
                 new ItemAbility<>("Reset Locations", AbilityType.LEFT_CLICK, event -> {
                     positions.clear();

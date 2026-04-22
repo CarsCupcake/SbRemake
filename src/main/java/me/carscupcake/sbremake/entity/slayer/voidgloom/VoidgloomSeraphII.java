@@ -141,7 +141,7 @@ public class VoidgloomSeraphII extends VoidgloomSeraphI {
         while (itterable.hasNext()) {
             var next = itterable.next();
             if (EntityUtils.blocksInSight(instance, getPosition().add(0, 1,0),
-                                      Vec.fromPoint(next.middle().add(0, .5, 0).sub(getPosition().add(0,1, 0))),
+                                      next.middle().add(0, .5, 0).sub(getPosition().add(0,1, 0)).asVec(),
                                       next.middle().add(0, .5, 0).distance(getPosition().add(0,1, 0))))
                 continue;
             pos = next;

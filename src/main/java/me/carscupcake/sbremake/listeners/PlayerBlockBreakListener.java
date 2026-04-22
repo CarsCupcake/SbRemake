@@ -42,15 +42,15 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
 
     public PlayerBlockBreakListener() {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        try (InputStream resource = classloader.getResourceAsStream("assets/tags/blocks/pickaxe.json")) {
+        try (InputStream resource = classloader.getResourceAsStream("assets/tags/native/block/mineable/pickaxe.json")) {
             JsonElement json = JsonParser.parseReader(new InputStreamReader(Objects.requireNonNull(resource)));
             pickaxesBlocks = json.getAsJsonObject().get("values").getAsJsonArray().asList().stream().parallel().map(JsonElement::getAsString).toArray(String[]::new);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        loadTierBlocks("assets/tags/blocks/needs_diamond_tool.json", VanillaPickaxeTier.Diamond);
-        loadTierBlocks("assets/tags/blocks/needs_iron_tool.json", VanillaPickaxeTier.Iron);
-        loadTierBlocks("assets/tags/blocks/needs_stone_tool.json", VanillaPickaxeTier.Stone);
+        loadTierBlocks("assets/tags/native/block/needs_diamond_tool.json", VanillaPickaxeTier.Diamond);
+        loadTierBlocks("assets/tags/native/block/needs_iron_tool.json", VanillaPickaxeTier.Iron);
+        loadTierBlocks("assets/tags/native/block/needs_stone_tool.json", VanillaPickaxeTier.Stone);
     }
 
     private void loadTierBlocks(String file, VanillaPickaxeTier tier) {
@@ -89,7 +89,7 @@ public class PlayerBlockBreakListener implements Consumer<PlayerBlockBreakEvent>
                     }
                 }
                 if (block != null && block.allowed(player.getWorldProvider().type())) {
-                    block.breakBlock(Pos.fromPoint(event.getBlockPosition()), player, event.getBlockFace());
+                    block.breakBlock(event.getBlockPosition().asPos(), player, event.getBlockFace());
                     event.setCancelled(true);
                     return;
                 }

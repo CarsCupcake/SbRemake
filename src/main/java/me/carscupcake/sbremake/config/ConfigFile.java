@@ -1,9 +1,6 @@
 package me.carscupcake.sbremake.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import lombok.Getter;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 
@@ -15,7 +12,7 @@ import java.util.UUID;
 
 @Getter
 public class ConfigFile extends ConfigSection {
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().setStrictness(Strictness.LENIENT).create();
     private final File file;
     public static final File DATA_PATH = new File(Paths.get("").toAbsolutePath().toString(), "data");
 

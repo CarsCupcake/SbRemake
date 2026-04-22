@@ -54,29 +54,41 @@ public interface Recipe {
     List<Integer> craftingGrid = List.of(10, 11, 12, 19, 20, 21, 28, 29, 30);
 
     static void loadTags(String path) throws URISyntaxException, IOException {
+        var files = new HashMap<String, JsonArray>();
         forFilesInResourceFolder(path, (name, f) -> {
             JsonArray array;
             try {
                 array = JsonParser.parseReader(new InputStreamReader(f)).getAsJsonObject().getAsJsonArray("values");
+                files.put(name, array);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            ISbItem[] items = new ISbItem[array.size()];
-            int i = 0;
-            boolean doLater = false;
-            for (JsonElement e : array) {
-                String member = e.getAsString();
-                if (member.startsWith("#")) {
-                    doLater = true;
-                    later.put(name.split("\\.")[0], array);
-                    break;
-                }
-                items[i] = Objects.requireNonNull(SbItemStack.from(member.split(":", 2)[1].toUpperCase())).sbItem();
-                i++;
-            }
-            if (doLater) return;
-            tags.put(name.split("\\.")[0], new CraftingIngredient(1, items));
         });
+        while (!files.isEmpty()) {
+            for (Map.Entry<String, JsonArray> entry : new HashSet<>(files.entrySet())) {
+                var name = entry.getKey();
+                var array = entry.getValue();
+                var items = new ArrayList<ISbItem>(array.size());
+                boolean doLater = false;
+                for (JsonElement e : array) {
+                    String member = e.getAsString();
+                    if (member.startsWith("#")) {
+                        var tag = tags.get(member.split(":", 2)[1]);
+                        if (tag == null) {
+                            doLater = true;
+                            break;
+                        }
+                        items.addAll(Arrays.asList(tag.items()));
+                    } else
+                        items.add(Objects.requireNonNull(SbItemStack.from(member.split(":", 2)[1].toUpperCase())).sbItem());
+                }
+                if (doLater) {
+                    continue;
+                }
+                files.remove(entry.getKey());
+                tags.put(name.split("\\.")[0], new CraftingIngredient(1, items.toArray(ISbItem[]::new)));
+            }
+        }
     }
 
     static void loadRecipes(String path) throws URISyntaxException {
@@ -121,14 +133,20 @@ public interface Recipe {
 
     static void init() {
         try {
-            loadTags("assets/tags/items/");
+            loadTags("assets/tags/native/item/");
+            loadTags("assets/tags/custom/items/");
             for (Map.Entry<String, JsonArray> entry : later.entrySet()) {
                 JsonArray array = entry.getValue();
                 List<ISbItem> items = new ArrayList<>();
                 for (JsonElement e : array) {
                     String member = e.getAsString();
                     if (member.startsWith("#")) {
-                        items.addAll(Arrays.asList(tags.get(member.split(":", 2)[1]).items()));
+                        var tag = tags.get(member.split(":", 2)[1]);
+                        if (tag == null) {
+                            Main.LOGGER.warn("Tag {} was not found while loading {}!", member, entry.getKey());
+                            break;
+                        }
+                        items.addAll(Arrays.asList(tag.items()));
                         continue;
                     }
                     items.add(Objects.requireNonNull(SbItemStack.from(member.split(":", 2)[1].toUpperCase())).sbItem());
@@ -347,10 +365,20 @@ public interface Recipe {
                             ISbItem[] items = new ISbItem[array.size()];
                             int index = 0;
                             for (JsonElement e : array) {
-                                items[index++] = Objects.requireNonNull(SbItemStack.from(e.getAsJsonObject().get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem();
+                                if (e.isJsonPrimitive()) {
+                                    items[index++] = Objects.requireNonNull(SbItemStack.from(e.getAsJsonPrimitive().getAsString().split(":", 2)[1].toUpperCase())).sbItem();
+                                } else
+                                    items[index++] = Objects.requireNonNull(SbItemStack.from(e.getAsJsonObject().get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem();
                             }
                             ingredientHashMap.put(c, new CraftingIngredient(1, items));
-                        } else {
+                        } else if (element.getValue().isJsonPrimitive()) {
+                            var id = element.getValue().getAsJsonPrimitive().getAsString();
+                            if (id.startsWith("#")) {
+                                ingredientHashMap.put(c, tags.get(id.split(":", 2)[1]));
+                            } else {
+                                ingredientHashMap.put(c, new CraftingIngredient(1, Objects.requireNonNull(SbItemStack.from(id.split(":", 2)[1].toUpperCase())).sbItem()));
+                            }
+                        }else {
                             JsonObject o = element.getValue().getAsJsonObject();
                             if (o.has("tag")) {
                                 if (!o.has("count"))
@@ -368,7 +396,8 @@ public interface Recipe {
                     }
                     Requirement[] requirements = readRequirements(jsonObject);
                     JsonObject resultObject = jsonObject.get("result").getAsJsonObject();
-                    ISbItem result = Objects.requireNonNull(SbItemStack.from(resultObject.get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem();
+                    ISbItem result = Objects.requireNonNull(SbItemStack.from((resultObject.has("item") ? resultObject.get("item")
+                            : resultObject.get("id")).getAsString().split(":", 2)[1].toUpperCase())).sbItem();
                     int count = resultObject.has("count") ? resultObject.get("count").getAsInt() : 1;
                     return ShapedRecipe.createShapedRecipe(result, count, resultObject.has("priority") ? resultObject.get("priority").getAsInt() : -1, requirements, ingredientHashMap, lines);
                 } catch (Exception e) {
@@ -389,10 +418,21 @@ public interface Recipe {
                             ISbItem[] items = new ISbItem[array.size()];
                             int index = 0;
                             for (JsonElement element : array) {
-                                items[index++] = Objects.requireNonNull(SbItemStack.from(element.getAsJsonObject().get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem();
+                                if (element.isJsonPrimitive()) {
+                                    items[index++] = Objects.requireNonNull(SbItemStack.from(element.getAsJsonPrimitive().getAsString().split(":", 2)[1].toUpperCase())).sbItem();
+
+                                } else
+                                    items[index++] = Objects.requireNonNull(SbItemStack.from(element.getAsJsonObject().get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem();
                             }
                             ingredients[i] = new CraftingIngredient(1, items);
-                        } else {
+                        } else if (e.isJsonPrimitive()) {
+                            var id = e.getAsJsonPrimitive().getAsString();
+                            if (id.startsWith("#")) {
+                                ingredients[i] = tags.get(id.split(":", 2)[1]);
+                            } else {
+                                ingredients[i] = new CraftingIngredient(1, Objects.requireNonNull(SbItemStack.from(id.split(":", 2)[1].toUpperCase())).sbItem());
+                            }
+                        }else {
                             JsonObject o = e.getAsJsonObject();
                             ingredients[i] = (o.has("tag")) ? tags.get(o.get("tag").getAsString().split(":", 2)[1]) : new CraftingIngredient((o.has("count") ? o.get("count").getAsInt() : 1), Objects.requireNonNull(SbItemStack.from(o.get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem());
                         }
@@ -400,7 +440,7 @@ public interface Recipe {
                     }
                     Requirement[] requirements = readRequirements(jsonObject);
                     JsonObject resultObject = jsonObject.get("result").getAsJsonObject();
-                    ISbItem result = Objects.requireNonNull(SbItemStack.from(resultObject.get("item").getAsString().split(":", 2)[1].toUpperCase())).sbItem();
+                    ISbItem result = Objects.requireNonNull(SbItemStack.from(resultObject.get((resultObject.has("item") ? "item" : "id")).getAsString().split(":", 2)[1].toUpperCase())).sbItem();
                     int count = resultObject.has("count") ? resultObject.get("count").getAsInt() : 1;
                     return new ShapelessRecipe(result, count, requirements, ingredients);
                 } catch (Exception e) {

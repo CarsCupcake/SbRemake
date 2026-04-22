@@ -38,7 +38,7 @@ public class GyrokineticWand implements ISbItem, Listener {
                     }
                 }
                 middle = middle.add(0.5, 0.7, 0.5);
-                var pulling = Vec.fromPoint(middle.add(0, 1, 0));
+                var pulling = middle.add(0, 1, 0).asVec();
                 var instance = event.getPlayer().getInstance();
                 var finalMiddle = middle;
                 new TaskScheduler() {
@@ -83,7 +83,7 @@ public class GyrokineticWand implements ISbItem, Listener {
                             if (!(entity instanceof SkyblockEntity)) continue;
                             var dir = pulling.sub(entity.getPosition());
                             if (dir.length() < 1)
-                                entity.teleport(pulling.asPosition());
+                                entity.teleport(pulling.asPos());
                             else {
                                 dir = dir.normalize().mul(1);
                                 entity.teleport(entity.getPosition().add(dir));

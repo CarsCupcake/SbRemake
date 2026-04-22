@@ -122,7 +122,7 @@ public abstract class MiningBlock {
             player.getBlockBreakScheduler().cancel();
             player.setBlockBreakScheduler(null);
         }
-        Mining.make(player, Pos.fromPoint(event.getBlockPosition()), event.getBlockFace());
+        Mining.make(player, event.getBlockPosition().asPos(), event.getBlockFace());
     }).addListener(PlayerCancelDiggingEvent.class, event -> {
         SkyblockPlayer player = (SkyblockPlayer) event.getPlayer();
         if (!player.getWorldProvider().useCustomMining()) return;
