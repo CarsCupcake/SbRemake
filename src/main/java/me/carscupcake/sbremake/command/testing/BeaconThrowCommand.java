@@ -40,7 +40,7 @@ public class BeaconThrowCommand extends Command {
                 }
             }
             var items = possibles.parallelStream().filter(next -> !EntityUtils.blocksInSight(player.getInstance(), player.getPosition().add(0, 1, 0),
-                                                                        Vec.fromPoint(next.middle().add(0, .5, 0).sub(player.getPosition().add(0,1, 0))),
+                                                                        next.middle().add(0, .5, 0).sub(player.getPosition().add(0,1, 0)).asVec(),
                                                                         next.middle().add(0, .5, 0).distance(player.getPosition().add(0,1, 0)))).toList();
             if (items.isEmpty()) {
                 player.sendMessage("No beacon pos!");

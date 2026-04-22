@@ -2,6 +2,7 @@ package me.carscupcake.sbremake.event;
 
 import me.carscupcake.sbremake.util.StringUtils;
 import net.kyori.adventure.text.Component;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.LivingEntity;
@@ -14,7 +15,7 @@ import java.util.function.Consumer;
 public interface IDamageEvent extends Event {
     default void spawnDamageTag() {
         LivingEntity e = new LivingEntity(EntityType.ARMOR_STAND);
-        e.setCustomName(Component.text("§7" + (StringUtils.cleanDouble(getCachedDamage(), 0))));
+        e.set(DataComponents.CUSTOM_NAME, Component.text("§7" + (StringUtils.cleanDouble(getCachedDamage(), 0))));
         e.setCustomNameVisible(true);
         e.setInvisible(true);
         e.setNoGravity(true);

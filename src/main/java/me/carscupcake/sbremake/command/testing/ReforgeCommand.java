@@ -45,7 +45,7 @@ public class ReforgeCommand extends Command {
                     return;
                 }
             item = reforge.apply(item);
-            player.setItemInHand(PlayerHand.MAIN, item.update(player).item());
+            player.setItemInHand(PlayerHand.MAIN, item.update(player));
         }, word);
     }
 }

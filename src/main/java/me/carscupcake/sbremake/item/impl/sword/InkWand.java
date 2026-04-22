@@ -29,7 +29,7 @@ public class InkWand implements ISbItem {
         item.setNoGravity(true);
         item.setInstance(event.getPlayer().getInstance(), event.getPlayer().getPosition().add(0, 1.5, 0));
         Vec finish = event.getPlayer().getPosition().direction().normalize().mul(30);
-        final Vec dir = Vec.fromPoint(finish.sub(item.getPosition())).normalize().mul(item.getPosition().distance(finish) / 40);
+        final Vec dir = finish.sub(item.getPosition()).normalize().mul(item.getPosition().distance(finish) / 40);
         movement.move(item, item::remove, 40, 0, item.getPosition(), event.getPlayer().getPosition().add(finish), new Runnable() {
             int i = 0;
 

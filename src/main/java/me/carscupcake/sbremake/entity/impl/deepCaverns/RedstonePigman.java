@@ -34,7 +34,7 @@ public class RedstonePigman extends SkyblockEntity {
             if (player.getRegion() != DeepCaverns.Region.PigmensDen) return false;
             if (attacked.contains(entity1)) return true;
             int i = 0;
-            for (ItemStack itemStack : player.getInventory().getItemStacks())
+            for (ItemStack itemStack : player.getPlayerInventory().getItemStacks())
                 if (itemStack.material() == Material.REDSTONE) {
                     i += itemStack.amount();
                     if (i >= 64) return true;

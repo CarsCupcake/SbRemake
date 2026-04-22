@@ -7,6 +7,7 @@ import me.carscupcake.sbremake.player.skill.Skill;
 import me.carscupcake.sbremake.player.skill.SkillXpDropper;
 import me.carscupcake.sbremake.util.gui.ItemBuilder;
 import net.kyori.adventure.text.Component;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.EquipmentSlot;
@@ -15,6 +16,7 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -29,7 +31,7 @@ public class Bladesoul extends CrimonIsleBossEntity implements SkillXpDropper {
                 .setHeadTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTYzMDA5NGYyN2IxMWEyZTkwMmUyNmMxNmZlNWRmZTM1ZmI0OTMxYWI1Zjk0N2JiYzlhY2NhYjJlZTUwMTcwNCJ9fX0=")
                 .build());
         blazeHelmet = new LivingEntity(EntityType.BLAZE);
-        blazeHelmet.setCustomName(Component.text("Dinnerbone"));
+        blazeHelmet.set(DataComponents.CUSTOM_NAME, Component.text("Dinnerbone"));
     }
 
     @Override
@@ -53,7 +55,7 @@ public class Bladesoul extends CrimonIsleBossEntity implements SkillXpDropper {
     }
 
     @Override
-    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
+    public @NonNull CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
         return super.setInstance(instance, spawnPosition).thenRun(() -> blazeHelmet.setInstance(instance, spawnPosition)
                 .thenRun(() -> addPassenger(blazeHelmet)));
     }

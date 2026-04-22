@@ -7,6 +7,7 @@ import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.block.BlockEntityType;
 import net.minestom.server.network.packet.client.play.ClientUpdateSignPacket;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import net.minestom.server.network.packet.server.play.BlockEntityDataPacket;
@@ -90,7 +91,7 @@ public record InputGui(List<String> prompt) {
                 .putInt("z", pos.blockZ())
                 .build();
         player.sendPacket(new BlockChangePacket(pos, Block.OAK_SIGN.withNbt(full)));
-        player.sendPacket(new BlockEntityDataPacket(pos, 7, full));
+        player.sendPacket(new BlockEntityDataPacket(pos, BlockEntityType.SIGN, full));
         player.sendPacket(new OpenSignEditorPacket(pos, true));
     }
     public interface InputFormater<T> {

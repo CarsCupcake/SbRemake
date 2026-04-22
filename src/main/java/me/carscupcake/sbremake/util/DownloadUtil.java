@@ -1,6 +1,8 @@
 package me.carscupcake.sbremake.util;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +26,7 @@ public class DownloadUtil {
         System.out.println("Downloading...");
         String filename = (urlString.substring(urlString.lastIndexOf("/") + 1, urlString.lastIndexOf("."))) + ((sufix == null) ? "" : ("_" + (sufix))) + (urlString.substring(urlString.lastIndexOf(".")));
         File fileOut = new File(parent, filename);
-        try (BufferedInputStream in = new BufferedInputStream(new URL(urlString).openStream()); FileOutputStream fout = new FileOutputStream(fileOut)) {
+        try (BufferedInputStream in = new BufferedInputStream(new URI(urlString).toURL().openStream()); FileOutputStream fout = new FileOutputStream(fileOut)) {
 
             final byte[] data = new byte[1024];
             int count;
@@ -38,9 +40,9 @@ public class DownloadUtil {
         return fileOut;
     }
 
-    private static String getUrlSource(String url) throws IOException {
+    private static String getUrlSource(String url) throws IOException, URISyntaxException {
         System.out.println("Connecting...");
-        URL yahoo = new URL(url);
+        URL yahoo = new URI(url).toURL();
         URLConnection yc = yahoo.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), StandardCharsets.UTF_8));
         String inputLine;

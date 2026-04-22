@@ -31,7 +31,7 @@ public class GodPotion implements ISbItem, HeadWithValue {
             }
             event.player().startPotionEffect(new PotionEffect(Potion.JumpBoost, ms, (byte) 6));
         }
-        event.player().setItemInHand(PlayerHand.MAIN, ItemStack.AIR);
+        event.player().setItemInHand(PlayerHand.MAIN, SbItemStack.AIR);
         new TaskScheduler() {
             int i = 0;
 

@@ -43,7 +43,7 @@ public class EntitySinusMovement {
 
     public void move(Entity e, Runnable end, int ticks, int staringTick, Point start, Point finish, Runnable tick) {
         if (tasks.containsKey(e)) return;
-        final Vec dir = Vec.fromPoint(finish.sub(start)).normalize().mul(start.distance(finish) / (ticks - staringTick));
+        final Vec dir = finish.sub(start).asVec().normalize().mul(start.distance(finish) / (ticks - staringTick));
 
         tasks.put(e, e.scheduler().buildTask(
                 new Runnable() {

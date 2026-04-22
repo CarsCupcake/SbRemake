@@ -62,7 +62,7 @@ public class ConfigSection {
     public static final Data<Double> DOUBLE = new ClassicGetter<>(JsonElement::getAsDouble, JsonPrimitive::new);
     public static final Data<Byte> BYTE = new ClassicGetter<>(JsonElement::getAsByte, JsonPrimitive::new);
     public static final Data<Short> SHORT = new ClassicGetter<>(JsonElement::getAsShort, JsonPrimitive::new);
-    public static final Data<Character> CHARACTER = new ClassicGetter<>(JsonElement::getAsCharacter, JsonPrimitive::new);
+    public static final Data<Character> CHARACTER = new ClassicGetter<>(jsonElement -> jsonElement.getAsString().charAt(0), JsonPrimitive::new);
     public static final Data<List<String>> STRING_LIST = new ClassicGetter<>(jsonElement -> {
         var array = jsonElement.getAsJsonArray();
         var list = new ArrayList<String>(array.size());
