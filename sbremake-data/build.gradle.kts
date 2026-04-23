@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "me.carscupcake"
-version = "0.0.11"
+version = "0.0.12"
 
 repositories {
     mavenCentral()
