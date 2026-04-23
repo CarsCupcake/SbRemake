@@ -11,17 +11,16 @@ import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.util.quest.Dialog;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.util.RGBLike;
-import net.minestom.server.color.Color;
-import net.minestom.server.component.DataComponent;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
 import net.minestom.server.instance.Instance;
-import net.minestom.server.network.packet.server.play.*;
+import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
+import net.minestom.server.network.packet.server.play.PlayerInfoUpdatePacket;
+import net.minestom.server.network.packet.server.play.SpawnEntityPacket;
+import net.minestom.server.network.packet.server.play.TeamsPacket;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -29,6 +28,7 @@ import java.util.Random;
 @Setter
 @Getter
 public class Npc extends AbstractNpc {
+    private static final Random random = new Random();
     private final int entityId;
     private final PlayerInfoUpdatePacket.Entry entry;
     private final String fakeName = makeName();
@@ -48,6 +48,21 @@ public class Npc extends AbstractNpc {
         nameStand.setNoGravity(true);
         nameStand.setInvulnerable(true);
         nameStand.set(DataComponents.CUSTOM_NAME, Component.text(name));
+        AbstractNpc.npcs.put(nameStand.getEntityId(), this);
+        Main.LOGGER.debug("Created npc {} ID: {}", name, entityId);
+    }
+
+    private static String makeName() {
+        var builder = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            var rand = random.nextInt(36);
+            if (rand > 25) {
+                builder.append((rand - 26));
+            } else
+                builder.append((char) ('a' + rand));
+        }
+        Main.LOGGER.debug("Generated fake name {}", builder.toString());
+        return builder.toString();
     }
 
     public void spawn(SkyblockPlayer player) {
@@ -70,21 +85,6 @@ public class Npc extends AbstractNpc {
     @Override
     public Pos getEyePosition() {
         return getPos().add(0, 1.75, 0);
-    }
-
-    private static final Random random = new Random();
-
-    private static String makeName() {
-        var builder = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            var rand = random.nextInt(36);
-            if (rand > 25) {
-                builder.append((rand - 26));
-            } else
-                builder.append((char) ('a' + rand));
-        }
-        Main.LOGGER.debug("Generated fake name {}", builder.toString());
-        return builder.toString();
     }
 
 }
