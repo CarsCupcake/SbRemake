@@ -98,6 +98,7 @@ public class Main {
         Auth auth = new Auth.Online();
         boolean openToLan = false;
         var itt = Arrays.stream(args).iterator();
+        String address = "127.0.0.1";
         while (itt.hasNext()) {
             var arg = itt.next();
             if (arg.equals("--open-lan")) {
@@ -117,6 +118,9 @@ public class Main {
             }
             if (arg.equals("--debug") || arg.equals("-d")) {
                 IS_DEBUG = true;
+            }
+            if (arg.equals("--address") || arg.equals("-a")) {
+                address = itt.hasNext() ? itt.next() : null;
             }
         }
         try {
@@ -234,8 +238,13 @@ public class Main {
         }
         var key = Key.key("skyblock", "moonglare");
         Galatea.MOONGLARE_KEY = MinecraftServer.getBiomeRegistry().register(key, Galatea.MOONGLARE);
-        server.start("127.0.0.1", port);
-        System.out.println("Started Server on port " + (port));
+        if (address == null) {
+            System.err.println("Please provide a correct Address!");
+            System.exit(1);
+            return;
+        }
+        server.start(address, port);
+        System.out.println("Started Server on " + address + ":" + (port));
         CONSOLE_THREAD = java.lang.Thread.ofPlatform().name("Console").start(() -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             ConsoleSender console = new ConsoleSender();
