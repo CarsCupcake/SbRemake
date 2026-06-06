@@ -120,7 +120,8 @@ public class Main {
             }
         }
         try {
-            isCracked = Boolean.parseBoolean(args[1]);
+            if (Boolean.parseBoolean(args[1]))
+                isCracked = true;
         } catch (Exception ignored) {
         }
         if (isCracked) {
