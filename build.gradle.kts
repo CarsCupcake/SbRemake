@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "me.carscupcake"
-version = "0.0.12"
+version = "0.0.13"
 
 java {
     toolchain {
