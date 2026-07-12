@@ -25,7 +25,7 @@ public abstract class Mithril extends MiningBlock {
         TitaniumInsanium titaniumInsanium = player.getHotm().getUpgrade(TitaniumInsanium.class);
         double titaniumChance = (titaniumInsanium.getLevel() > 0 && titaniumInsanium.isEnabled()) ? (titaniumInsanium.reward(titaniumInsanium.getLevel()) / 100) : 0.005;
         if (titaniumChance >= new Random().nextDouble())
-            Titanium.setBlock(player.getInstance(), new BlockVec(pos), this);
+            Titanium.setBlock(player.getInstance(), pos.asBlockVec(), this);
         else
             new TaskScheduler() {
                 @Override

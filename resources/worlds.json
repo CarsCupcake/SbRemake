@@ -1,3 +1,14 @@
 {
-  "hub": 2
+  "backwater_bayou": 1,
+  "hub": 3,
+  "crimson_isle": 2,
+  "deep": 2,
+  "dungeon_hub": 1,
+  "end": 2,
+  "farming_isles": 2,
+  "galatea": 2,
+  "gold": 2,
+  "mines": 2,
+  "spiders_den": 2,
+  "the_park": 2
 }

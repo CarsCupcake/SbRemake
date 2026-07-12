@@ -11,6 +11,7 @@ import me.carscupcake.sbremake.util.TaskScheduler;
 import me.carscupcake.sbremake.util.quest.Dialog;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minestom.server.color.TeamColor;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
@@ -73,7 +74,8 @@ public class Npc extends AbstractNpc {
             @Override
             public void run() {
                 player.sendPacket(new EntityMetaDataPacket(entityId, Map.of(16, Metadata.Byte(b))));
-                player.sendPacket(new TeamsPacket(fakeName, new TeamsPacket.CreateTeamAction(Component.text(fakeName), (byte) 0, TeamsPacket.NameTagVisibility.NEVER, TeamsPacket.CollisionRule.NEVER, NamedTextColor.BLACK, Component.empty(), Component.empty(), List.of(fakeName))));
+                var settings = new TeamsPacket.Settings(Component.text(fakeName), Component.empty(), Component.empty(), TeamsPacket.NameTagVisibility.NEVER, TeamsPacket.CollisionRule.NEVER, TeamColor.BLACK, (byte) 0);
+                player.sendPacket(new TeamsPacket(fakeName, new TeamsPacket.CreateTeamAction(settings, List.of(fakeName))));
             }
         }.delayTask(10);
     }

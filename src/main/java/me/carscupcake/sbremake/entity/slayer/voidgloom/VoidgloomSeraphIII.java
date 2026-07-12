@@ -20,6 +20,7 @@ import me.carscupcake.sbremake.util.lootTable.rngMeter.RngMeterItemLoot;
 import me.carscupcake.sbremake.util.lootTable.rngMeter.SlayerLootTable;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.collision.BoundingBox;
+import net.minestom.server.color.TeamColor;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
@@ -140,7 +141,7 @@ public class VoidgloomSeraphIII extends VoidgloomSeraphII {
             var meta = (ArmorStandMeta) getEntityMeta();
             meta.setHasNoBasePlate(true);
             meta.setHasArms(false);
-            setGlowColor(NamedTextColor.DARK_PURPLE);
+            setGlowColor(TeamColor.DARK_PURPLE);
         }
 
         private int ticks = 10;

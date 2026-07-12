@@ -230,14 +230,14 @@ public class RevenantHorrorV extends SlayerEntity {
                 blockVec = blockVec.add(0, 1, 0);
                 b = instance.getBlock(blockVec);
             }
-            return new BlockVec(blockVec.sub(0, 1, 0));
+            return blockVec.sub(0, 1, 0).asBlockVec();
         }
         while (b.isAir()) {
 
             blockVec = blockVec.sub(0, 1, 0);
             b = instance.getBlock(blockVec);
         }
-        return new BlockVec(blockVec);
+        return blockVec.asBlockVec();
     }
 
     private FakeBlock findBlock(Point blockVec, Block material) {
@@ -247,14 +247,14 @@ public class RevenantHorrorV extends SlayerEntity {
                 blockVec = blockVec.add(0, 1, 0);
                 b = instance.getBlock(blockVec);
             }
-            return new FakeBlock(new BlockVec(blockVec.sub(0, 1, 0)), instance, material);
+            return new FakeBlock(blockVec.sub(0, 1, 0).asBlockVec(), instance, material);
         }
         while (b.isAir()) {
 
             blockVec = blockVec.sub(0, 1, 0);
             b = instance.getBlock(blockVec);
         }
-        return new FakeBlock(new BlockVec(blockVec), instance, material);
+        return new FakeBlock(blockVec.asBlockVec(), instance, material);
     }
 
     @Override

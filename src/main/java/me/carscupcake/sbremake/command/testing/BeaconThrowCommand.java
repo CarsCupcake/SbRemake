@@ -4,6 +4,7 @@ import me.carscupcake.sbremake.command.DebugCommand;
 import me.carscupcake.sbremake.player.SkyblockPlayer;
 import me.carscupcake.sbremake.util.EntityUtils;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minestom.server.color.TeamColor;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Vec;
@@ -35,7 +36,7 @@ public class BeaconThrowCommand extends Command {
                         if (!player.getInstance().getBlock(root.relative(BlockFace.EAST)).isAir()) continue;
                         if (!player.getInstance().getBlock(root.relative(BlockFace.WEST)).isAir()) continue;
                         if (player.getInstance().getBlock(root).isAir())
-                            possibles.add(new BlockVec(root));
+                            possibles.add(root.asBlockVec());
                     }
                 }
             }
@@ -50,7 +51,7 @@ public class BeaconThrowCommand extends Command {
                 var shulker = new LivingEntity(EntityType.SHULKER);
                 shulker.setInstance(player.getInstance(), next.middle());
                 shulker.setGlowing(true);
-                shulker.setGlowColor(NamedTextColor.GREEN);
+                shulker.setGlowColor(TeamColor.GREEN);
                 shulker.scheduleRemove(Duration.ofSeconds(10));
                 shulker.setGlowing(true);
                 shulker.setInvisible(true);

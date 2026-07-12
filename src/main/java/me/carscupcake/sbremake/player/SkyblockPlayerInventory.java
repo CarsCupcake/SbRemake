@@ -115,7 +115,7 @@ public class SkyblockPlayerInventory extends PlayerInventory implements Iterable
 
     public void setEquipment(@NotNull EquipmentSlot slot, @NotNull SbItemStack itemStack) {
         if (slot == EquipmentSlot.BODY) {
-            Check.fail("PlayerInventory does not support body equipment");
+            throw new IllegalArgumentException("PlayerInventory does not support body equipment");
         }
 
         this.safeItemInsert(this.getSlotId(slot), itemStack, true);

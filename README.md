@@ -21,7 +21,7 @@ Its ment as a little project to test some gear for the real game or enjoy a litt
 Install Java 25  
 Put the run.bat and SbRemake.jar from the releases into an empty folder  
 Run (double click) the run.bat  
-To connect use Minecraft Version 1.21.11 with the Address localhost:25565
+To connect use Minecraft Version 26.2 with the Address localhost:25565
 
 ## Contributing
 To pull the repo successfully please not that i use a submodule here which allso has to be pulled.  

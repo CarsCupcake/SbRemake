@@ -5,11 +5,12 @@ plugins {
     `maven-publish`
     signing
     alias(libs.plugins.nmcp)
+    alias(libs.plugins.graalvm.native)
     alias(libs.plugins.shadow)
 }
 
 group = "me.carscupcake"
-version = "0.0.13"
+version = "0.0.14"
 
 java {
     toolchain {

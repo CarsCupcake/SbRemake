@@ -131,7 +131,7 @@ public class VoidgloomSeraphII extends VoidgloomSeraphI {
                     if (!getInstance().getBlock(root.relative(BlockFace.EAST)).isAir()) continue;
                     if (!getInstance().getBlock(root.relative(BlockFace.WEST)).isAir()) continue;
                     if (getInstance().getBlock(root).isAir())
-                        possibles.add(new BlockVec(root));
+                        possibles.add(root.asBlockVec());
                 }
             }
         }

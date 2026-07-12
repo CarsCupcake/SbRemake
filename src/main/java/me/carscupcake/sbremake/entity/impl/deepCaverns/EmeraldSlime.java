@@ -6,7 +6,7 @@ import me.carscupcake.sbremake.entity.goal.SlimeAttackGoal;
 import me.carscupcake.sbremake.worlds.impl.DeepCaverns;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.ai.EntityAIGroup;
-import net.minestom.server.entity.metadata.other.SlimeMeta;
+import net.minestom.server.entity.metadata.cube.SlimeMeta;
 import net.minestom.server.utils.time.TimeUnit;
 
 import java.time.Duration;

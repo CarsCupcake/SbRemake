@@ -36,7 +36,7 @@ public class Titanium extends MiningBlock {
 
     @Override
     public void reset(Instance instance, Pos block) {
-        BlockVec vec = new BlockVec(block);
+        BlockVec vec = block.asBlockVec();
         instance.setBlock(vec, mithrilBlocks.get(vec));
         mithrilBlocks.remove(vec);
     }

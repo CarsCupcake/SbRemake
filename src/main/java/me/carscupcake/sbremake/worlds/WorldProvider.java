@@ -106,7 +106,7 @@ public abstract class WorldProvider {
         File f = type().updateFiles();
         if (this instanceof PrivateIsle pI)
             f = pI.findWorldFolder();
-        return new AnvilLoader(f.toPath());
+        return new AnvilLoader(f.toPath(), getDimension().key());
     }
 
     protected List<LivingEntity> summonArmorStandFixture(String path, @Nullable Pos offset) {

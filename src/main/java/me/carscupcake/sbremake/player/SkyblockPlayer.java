@@ -93,6 +93,7 @@ import net.minestom.server.tag.Tag;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import net.minestom.server.utils.time.TimeUnit;
+import net.minestom.server.world.clock.WorldClock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import org.reflections.Reflections;
@@ -339,7 +340,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         }
 
         if (event.getPacket() instanceof ClientInteractEntityPacket packet) {
-            if (packet.type() instanceof ClientInteractEntityPacket.Attack) {
+            /*if (packet.type() instanceof ClientInteractEntityPacket.Attack) {
                 if (player.getDialog() != null) return;
                 AbstractNpc npc = AbstractNpc.npcs.get(packet.targetId());
                 if (npc != null) {
@@ -347,7 +348,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
                         npc.getInteraction().interact(player, PlayerInteractEvent.Interaction.Left);
                 }
                 return;
-            }
+            }*/
             long now = System.currentTimeMillis();
             if (now - player.lastInteractPacket < 100) return;
             player.lastInteractPacket = now;
@@ -1428,7 +1429,7 @@ public class SkyblockPlayer extends Player implements DefaultConfigItem {
         for (me.carscupcake.sbremake.player.potion.PotionEffect effect : potionEffects)
             effect.potion().start(this, effect.amplifier(), (long) ((effect.expiration() - System.currentTimeMillis()) / 50d));
         sendPacket(new EntityMetaDataPacket(getEntityId(), Map.of(11, Metadata.Boolean(true))));
-        sendPacket(new TimeUpdatePacket(0, Time.tick, false));
+        sendPacket(new SetTimePacket(0, Map.of(WorldClock.OVERWORLD, new SetTimePacket.ClockState(Time.tick, 0, 0))));
         sendPacket(new ChangeGameStatePacket(ChangeGameStatePacket.Reason.ENABLE_RESPAWN_SCREEN, 1));
         if (!worldProvider.isRelight()) worldProvider.relight();
         sendMessage("§bYour Skyblock Level is: §3" + getSkyblockLevel());

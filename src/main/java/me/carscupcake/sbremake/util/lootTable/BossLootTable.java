@@ -54,11 +54,11 @@ public class BossLootTable extends LootTable<SbItemStack> {
         for (var inner : locs) {
             var pos = middle.add(inner);
             var block = instance.getBlock(pos);
-            var fake = FakeBlock.of(instance, new BlockVec(pos), block, Block.IRON_BLOCK);
+            var fake = FakeBlock.of(instance, pos.asBlockVec(), block, Block.IRON_BLOCK);
             fake.setActive(true);
             blocks.add(fake);
         }
-        var middleBlock = FakeBlock.of(instance, new BlockVec(middle), instance.getBlock(middle), Block.BEACON);
+        var middleBlock = FakeBlock.of(instance, middle.asBlockVec(), instance.getBlock(middle), Block.BEACON);
         middleBlock.setActive(true);
         blocks.add(middleBlock);
         return blocks;

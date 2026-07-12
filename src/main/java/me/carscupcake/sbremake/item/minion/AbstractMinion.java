@@ -494,7 +494,7 @@ public abstract class AbstractMinion implements Minion {
                             x = -2;
                             z++;
                         }
-                        return new BlockVec(location.add(x++, -1, z));
+                        return location.add(x++, -1, z).asBlockVec();
                     }
                 };
             }
